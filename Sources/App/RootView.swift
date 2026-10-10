@@ -30,7 +30,7 @@ struct RootView: View {
             NavigationStack {
                 QuotaView(accounts: connection.accounts, loading: connection.loadingAccounts,
                           loadFailed: connection.accountLoadFailed, canConnect: connection.canConnect,
-                          updatingID: connection.quotaUpdatingID, updatingIDs: connection.quotaUpdatingIDs,
+                          updatingID: connection.quotaUpdatingID, updatingIDs: connection.visibleQuotaUpdatingIDs,
                           canRefreshAll: connection.canRefreshAll, refreshAll: { connection.refreshAllQuota() }, quotaFailure: connection.quotaFailure,
                           quotaFailureID: connection.quotaFailureID,
                           failedAccountIDs: Set(connection.quotaFailures.keys),
@@ -38,7 +38,6 @@ struct RootView: View {
                           connect: { connection.showPlatformPicker() },
                           retry: { connection.retryDashboardQuota(for: $0) },
                           closeFeedback: { connection.hideQuotaFeedback() },
-                          canCancelUpdate: connection.manualQuotaInProgress, cancelUpdate: { connection.cancelQuotaUpdate() },
                           deleteAccount: { connection.deleteAccount($0) }, canManage: connection.canManageAccounts,
                           canRefresh: connection.quotaUpdatingID == nil, refreshAccount: { connection.refreshQuota(for: $0) },
                           canReorder: connection.canReorderAccounts, savingOrder: connection.reorderingAccounts,

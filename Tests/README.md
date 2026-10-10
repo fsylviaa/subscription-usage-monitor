@@ -113,3 +113,10 @@ T23 大字号专项优化：`testT23AccessibilityLayoutUsesFullWidthIdentityAndS
 `CodexQuotaServiceTests/testT26…` 六项使用 `T26BatchFixture` 的随机临时目录、人工账户与合成授权，经过正式 `CodexQuotaService` 的网络检查／解析／保存，覆盖部分失败及全部范围重试、低分与未知评分、最多三户并行、五户取消与迟到检查、慢账户不阻塞成功、删除不复活。没有真实网络或正式 Keychain 读取。
 
 `CodexQuotaUITests/testT26…` 两项用 Debug 专用 `--t26-isolated-ui partial|blocked|ui-cancel` 验证页面按钮、各户新旧值及时间、整批重试和迟到检查取消；不加入产品设置。`LaunchTests/testT26DemoToolbarUpdatesEveryCardAndPersistsOnReopen` 走已有演示模式验证用户亲验路径、空列表刷新禁用及结果重开保持；既有单卡／删除／关闭演示回归使用 `testManagementDemoMenuClearAndReopen`。结果见 [T26 验收](../docs/mvp任务清单/记录/T26-验收.md)。真实五小时余额仍延期。
+
+
+### D-60 已登录账户刷新反馈修正
+
+`testD60…` 验证手动全量／单卡的原生转圈、各户独立停转、固定标题／身份／卡片位置、深色最大辅助字号，以及自动触发成功无提示／失败才提示。自动触发由Debug `--t26-auto`显式调用，**不代表T27前台生命周期已接入**。`--t26-dark`仅用于隔离外观，不更改正式偏好。使用可访问标识查询，iOS将该转圈报告为ActivityIndicator。
+
+`testT26BlockedFailureCanCloseWithoutChangingCards`替代旧检查取消页面测试；普通刷新不再提供取消按钮。T26内部取消测试仍用于验证系统中断和旧结果保护，不作为产品取消入口。登录弹层的查询／取消回归沿用`testQueryProgressStaysWithItsOriginAndDoesNotOfferFailureClose`，仅更新其已有卡片重试阶段的预期。

@@ -8,6 +8,11 @@ import Foundation
 enum CodexConnectionUITestSupport {
     static var preferences: UserDefaults {
         let args = ProcessInfo.processInfo.arguments
+        if args.contains("--t26-isolated-ui") {
+            let preferences = UserDefaults(suiteName: "T26-feedback-fixture")!
+            preferences.set(args.contains("--t26-dark") ? "dark" : "light", forKey: "appearance")
+            return preferences
+        }
         if let marker = args.firstIndex(of: "--t23-card-fixture"), args.indices.contains(marker + 2) {
             let preferences = UserDefaults(suiteName: "T23-card-fixture")!
             preferences.set(args[marker + 2], forKey: "appearance")
@@ -38,7 +43,15 @@ enum CodexConnectionUITestSupport {
         }
         if let marker = arguments.firstIndex(of: "--t26-isolated-ui"), arguments.indices.contains(marker + 1) {
             let fixture = T26BatchFixture(scenario: arguments[marker + 1])
-            return CodexConnectionFlow(transactions: FixtureTransactions(), bindings: fixture, quotaUpdater: fixture)
+            let flow = CodexConnectionFlow(transactions: FixtureTransactions(), bindings: fixture, quotaUpdater: fixture)
+            if arguments.contains("--t26-auto") {
+                Task {
+                    await flow.loadAccounts()
+                    try? await Task.sleep(for: .seconds(2))
+                    flow.refreshAllQuota(manually: false)
+                }
+            }
+            return flow
         }
         if let id = managementRunID {
             let store = AccountStore(fileURL: FileManager.default.temporaryDirectory
@@ -752,6 +765,8 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
         checks[account.id, default: 0] += 1
         if scenario == "cancel" || (scenario == "slow" && account.scope.remoteAccountID == "t26-account-1") {
             if !released { await withCheckedContinuation { waiting.append($0) } }
+        } else if scenario == "ui-staggered" || scenario == "ui-single" || scenario == "ui-auto-failure" {
+            try? await Task.sleep(for: .seconds(account.scope.remoteAccountID == "t26-account-0" ? 8 : 20))
         } else if scenario == "ui-cancel" {
             // Deliberately ignore cancellation until the late allowed result.
             await withCheckedContinuation { continuation in
@@ -770,7 +785,7 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
         let id = request.value(forHTTPHeaderField: "ChatGPT-Account-Id")!
         requests[id, default: 0] += 1
         let attempt = requests[id]!
-        let fails = scenario == "partial" && id == "t26-account-1" && attempt == 1
+        let fails = (scenario == "partial" || scenario == "ui-auto-failure") && id == "t26-account-1" && attempt == 1
         let body = Self.body(id, used: 40 + attempt * 5)
         return (body, HTTPURLResponse(url: request.url!, statusCode: fails ? 500 : 200, httpVersion: nil,
             headerFields: ["Content-Type": "application/json"])!)

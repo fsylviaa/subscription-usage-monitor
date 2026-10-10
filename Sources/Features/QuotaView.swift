@@ -38,8 +38,6 @@ struct QuotaView: View {
     var connect: () -> Void = {}
     var retry: (UUID) -> Void = { _ in }
     var closeFeedback: () -> Void = {}
-    var canCancelUpdate = false
-    var cancelUpdate: () -> Void = {}
     var deleteAccount: (UUID) -> Void = { _ in }
     var canManage = true
     var canRefresh = false
@@ -87,17 +85,7 @@ struct QuotaView: View {
             } else {
                 VStack(spacing: 0) {
                         if showDashboardFeedback {
-                            if updatingID != nil {
-                                HStack(spacing: 10) {
-                                    ProgressView()
-                                    Text("正在更新").font(.subheadline)
-                                    Spacer()
-                                    if canCancelUpdate { Button("取消", action: cancelUpdate).accessibilityIdentifier("quota.cancelUpdate") }
-                                }
-                                .padding(12).background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 14))
-                                .accessibilityElement(children: .contain)
-                                .accessibilityIdentifier("quota.updating")
-                            } else if let quotaFailure, let id = quotaFailureID {
+                            if updatingID == nil, let quotaFailure, let id = quotaFailureID {
                                 HStack(spacing: 12) {
                                     Text(quotaFailure).font(.subheadline)
                                         .accessibilityIdentifier("quota.failure")
@@ -219,9 +207,9 @@ private struct QuotaAccountCard: View {
                     }
                 }
             } else if account.quotaState == .notFetched {
-                Text(updating ? "正在获取额度" : (failed ? "获取失败" : "尚未获取额度"))
+                Text(failed ? "获取失败" : "尚未获取额度")
                     .font(metadataFont).foregroundStyle(DashboardStyle.secondary)
-                    .accessibilityIdentifier(updating || failed ? "quota.accountStatus" : "quota.notFetched")
+                    .accessibilityIdentifier(failed ? "quota.accountStatus" : "quota.notFetched")
             }
         }
         // Keep the content at its natural height while UIKit interpolates the row.
@@ -243,13 +231,27 @@ private struct QuotaAccountCard: View {
             .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 12))
     }
 
-    @ViewBuilder private var planControl: some View {
-        if account.quotaSnapshot != nil {
-            Button { expanded.toggle() } label: { planTitle }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("quota.details")
-                .accessibilityValue(expanded ? "已展开" : "已收起")
-        } else { planTitle }
+    private var planControl: some View {
+        HStack(spacing: 6) {
+            if account.quotaSnapshot != nil {
+                Button { expanded.toggle() } label: { planTitle }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("quota.details")
+                    .accessibilityValue(expanded ? "已展开" : "已收起")
+            } else { planTitle }
+            // Reserve the same small slot when idle so refresh never reflows
+            // the plan, chevron or identity. System progress animates independently
+            // of the card's disabled layout animations.
+            ZStack {
+                if updating {
+                    ProgressView().controlSize(.mini)
+                        .dynamicTypeSize(.medium)
+                        .accessibilityLabel("正在刷新")
+                        .accessibilityIdentifier("quota.refreshProgress")
+                }
+            }
+            .frame(width: 14, height: 14)
+        }
     }
 
     @ViewBuilder private var identity: some View {

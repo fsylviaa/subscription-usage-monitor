@@ -25,7 +25,7 @@ final class CodexQuotaUITests: XCTestCase {
         screenshot(app, "T26-部分成功与旧值保留")
         app.buttons["quota.retry"].tap()
         XCTAssertTrue(app.staticTexts["quota.failure"].waitForNonExistence(timeout: 8))
-        XCTAssertTrue(app.otherElements["quota.updating"].waitForNonExistence(timeout: 8))
+        XCTAssertTrue(app.descendants(matching: .any)["quota.refreshProgress"].firstMatch.waitForNonExistence(timeout: 8))
         XCTAssertEqual(first.staticTexts["quota.weekly.remaining"].label, "剩余 50%")
         XCTAssertEqual(second.staticTexts["quota.weekly.remaining"].label, "剩余 50%")
         XCTAssertNotEqual(first.staticTexts["quota.updatedAt"].label, firstTime)
@@ -34,29 +34,113 @@ final class CodexQuotaUITests: XCTestCase {
     }
 
     @MainActor
-    func testT26BlockedBatchAndCancelKeepBothCards() {
-        continueAfterFailure = false
-        for scenario in ["blocked", "ui-cancel"] {
-            let app = XCUIApplication()
-            app.launchArguments = ["--t26-isolated-ui", scenario]
-            app.launch()
+    func testT26BlockedFailureCanCloseWithoutChangingCards() {
+        let app = launchD60("blocked")
+        defer { app.terminate() }
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        app.buttons["quota.refresh"].tap()
+        XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 8))
+        XCTAssertEqual(app.staticTexts["quota.failure"].label, "网络不达标，无法更新")
+        app.buttons["quota.closeFeedback"].tap()
+        XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+        XCTAssertEqual(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 90%")
+        XCTAssertEqual(cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].label, "剩余 70%")
+        assertNoRefreshBanner(app)
+        screenshot(app, "D60-关闭失败仅隐藏提示")
+    }
+
+    @MainActor
+    func testD60ManualBatchSpinsBesidePlanAndEachCardStopsWithoutLayoutJump() {
+        let app = launchD60("ui-staggered")
+        defer { app.terminate() }
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
+        let plan = first.buttons["quota.details"].frame
+        let identity = first.staticTexts["quota.accountIdentity"].frame
+        let secondY = second.frame.minY
+        app.buttons["quota.refresh"].tap()
+        let spinner = first.descendants(matching: .any)["quota.refreshProgress"]
+        screenshot(app, "D60-开始手动刷新")
+        XCTAssertTrue(spinner.waitForExistence(timeout: 3))
+        XCTAssertTrue(second.descendants(matching: .any)["quota.refreshProgress"].exists)
+        assertNoRefreshBanner(app)
+        XCTAssertGreaterThan(spinner.frame.minX, first.buttons["quota.details"].frame.maxX)
+        XCTAssertEqual(first.buttons["quota.details"].frame, plan)
+        XCTAssertEqual(first.staticTexts["quota.accountIdentity"].frame, identity)
+        XCTAssertEqual(second.frame.minY, secondY, accuracy: 1)
+        screenshot(app, "D60-手动全量卡片小转圈")
+        XCTAssertTrue(spinner.waitForNonExistence(timeout: 14))
+        XCTAssertTrue(second.descendants(matching: .any)["quota.refreshProgress"].exists)
+        XCTAssertEqual(first.staticTexts["quota.weekly.remaining"].label, "剩余 55%")
+        screenshot(app, "D60-第一户完成第二户仍刷新")
+        XCTAssertTrue(second.descendants(matching: .any)["quota.refreshProgress"].waitForNonExistence(timeout: 22))
+        XCTAssertEqual(first.buttons["quota.details"].frame, plan)
+        XCTAssertEqual(second.frame.minY, secondY, accuracy: 1)
+        XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+    }
+
+    @MainActor
+    func testD60ManualSingleOnlySpinsSelectedCard() {
+        let app = launchD60("ui-single", extra: ["--t26-dark", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        defer { app.terminate() }
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        cards.element(boundBy: 0).buttons["quota.menu"].tap()
+        app.buttons["刷新额度"].tap()
+        XCTAssertTrue(cards.element(boundBy: 0).descendants(matching: .any)["quota.refreshProgress"].waitForExistence(timeout: 3))
+        let spinner = cards.element(boundBy: 0).descendants(matching: .any)["quota.refreshProgress"]
+        XCTAssertLessThanOrEqual(spinner.frame.width, 20)
+        XCTAssertLessThanOrEqual(spinner.frame.height, 20)
+        XCTAssertGreaterThan(spinner.frame.minX, cards.element(boundBy: 0).buttons["quota.details"].frame.maxX)
+        XCTAssertFalse(cards.element(boundBy: 1).descendants(matching: .any)["quota.refreshProgress"].exists)
+        assertNoRefreshBanner(app)
+        screenshot(app, "D60-手动单卡小转圈")
+        XCTAssertTrue(cards.element(boundBy: 0).descendants(matching: .any)["quota.refreshProgress"].waitForNonExistence(timeout: 14))
+        XCTAssertEqual(cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].label, "剩余 70%")
+    }
+
+    @MainActor
+    func testD60AutomaticRefreshIsSilentAndOnlyFailureShowsBanner() {
+        for scenario in ["ui-staggered", "ui-auto-failure"] {
+            let app = launchD60(scenario, extra: ["--t26-auto"])
             let cards = app.otherElements.matching(identifier: "quota.card")
-            XCTAssertTrue(cards.element(boundBy: 1).waitForExistence(timeout: 10))
-            app.buttons["quota.refresh"].tap()
-            if scenario == "blocked" {
-                XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 8))
-                XCTAssertEqual(app.staticTexts["quota.failure"].label, "网络不达标，无法更新")
-            } else {
-                XCTAssertTrue(app.buttons["quota.cancelUpdate"].waitForExistence(timeout: 3))
-                app.buttons["quota.cancelUpdate"].tap()
-                XCTAssertTrue(app.otherElements["quota.updating"].waitForNonExistence(timeout: 8))
+            let firstY = cards.element(boundBy: 0).frame.minY
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == false"),
+                object: app.buttons["quota.refresh"])], timeout: 6), .completed)
+            XCTAssertFalse(app.descendants(matching: .any)["quota.refreshProgress"].firstMatch.exists)
+            assertNoRefreshBanner(app)
+            XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+            screenshot(app, "D60-自动刷新无进度-\(scenario)")
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true"),
+                object: app.buttons["quota.refresh"])], timeout: 28), .completed)
+            XCTAssertFalse(app.descendants(matching: .any)["quota.refreshProgress"].firstMatch.exists)
+            if scenario == "ui-auto-failure" {
+                XCTAssertEqual(app.staticTexts["quota.failure"].label, "刷新失败")
+                XCTAssertEqual(cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].label, "剩余 70%")
+                screenshot(app, "D60-自动刷新失败可关闭")
+                app.buttons["quota.closeFeedback"].tap()
                 XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+            } else {
+                XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+                XCTAssertEqual(cards.element(boundBy: 0).frame.minY, firstY, accuracy: 1)
             }
-            XCTAssertEqual(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 90%")
-            XCTAssertEqual(cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].label, "剩余 70%")
-            screenshot(app, "T26-\(scenario)-两户保留")
+            XCTAssertEqual(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 55%")
+            screenshot(app, "D60-自动结束-\(scenario)")
             app.terminate()
         }
+    }
+
+    @MainActor private func launchD60(_ scenario: String, extra: [String] = []) -> XCUIApplication {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--t26-isolated-ui", scenario] + extra
+        app.launch()
+        XCTAssertTrue(app.otherElements.matching(identifier: "quota.card").element(boundBy: 1).waitForExistence(timeout: 10))
+        return app
+    }
+    @MainActor private func assertNoRefreshBanner(_ app: XCUIApplication) {
+        XCTAssertFalse(app.otherElements["quota.updating"].exists)
+        XCTAssertFalse(app.buttons["quota.cancelUpdate"].exists)
+        XCTAssertFalse(app.staticTexts["正在更新"].exists)
     }
 
     @MainActor
@@ -636,10 +720,11 @@ final class CodexQuotaUITests: XCTestCase {
         XCTAssertTrue(dashboard.buttons["connection.quotaClose"].waitForExistence(timeout: 10))
         dashboard.buttons["connection.quotaClose"].tap()
         dashboard.buttons["quota.refresh"].tap()
-        XCTAssertTrue(dashboard.otherElements["quota.updating"].waitForExistence(timeout: 5))
+        XCTAssertTrue(dashboard.descendants(matching: .any)["quota.refreshProgress"].waitForExistence(timeout: 5))
+        assertNoRefreshBanner(dashboard)
         XCTAssertFalse(dashboard.buttons["quota.closeFeedback"].exists)
         XCTAssertFalse(dashboard.staticTexts["connection.title"].exists)
-        screenshot(dashboard, "T13-样式-顶部查询中")
+        screenshot(dashboard, "D60-已有卡片重试中")
         assertSuccessfulCard(dashboard)
     }
 

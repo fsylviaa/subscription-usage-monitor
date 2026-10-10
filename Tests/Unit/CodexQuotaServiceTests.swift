@@ -893,6 +893,22 @@ final class CodexQuotaServiceTests: XCTestCase {
         XCTAssertEqual(persisted, flow.accounts)
     }
 
+    func testD60AutomaticRefreshHasNoVisibleProgressAndManualRetryShowsItsScope() async throws {
+        let (flow, fixture) = try await batch("partial")
+        flow.refreshAllQuota(manually: false)
+        XCTAssertFalse(flow.quotaUpdatingIDs.isEmpty)
+        XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.quotaFailure, "刷新失败")
+        flow.retryDashboardQuota(for: try XCTUnwrap(flow.quotaFailureID))
+        XCTAssertEqual(flow.visibleQuotaUpdatingIDs, Set(flow.accounts.map(\.id)))
+        await flow.waitForInitialQuota()
+        XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+        XCTAssertNil(flow.quotaFailure)
+        let checks = await fixture.checks
+        XCTAssertTrue(checks.values.allSatisfy { $0 == 2 })
+    }
+
     private typealias Setup = (store: AccountStore, account: ConnectedAccount, url: URL)
     private func setup(save: Bool = true) async throws -> Setup {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T12-test-\(UUID())")

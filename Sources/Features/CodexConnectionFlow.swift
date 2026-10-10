@@ -103,6 +103,7 @@ final class CodexConnectionFlow: ObservableObject {
     @Published private(set) var manualQuotaInProgress = false
     @Published private(set) var quotaUpdatingID: UUID?
     @Published private(set) var quotaUpdatingIDs: Set<UUID> = []
+    var visibleQuotaUpdatingIDs: Set<UUID> { manualQuotaInProgress ? quotaUpdatingIDs : [] }
     private var batchQuotaIDs: [UUID]?
     var canRefreshAll: Bool { canManageAccounts && quotaWork == nil && !accounts.isEmpty && quotaUpdater != nil }
     @Published private(set) var quotaFailure: String?
@@ -703,22 +704,26 @@ final class CodexConnectionFlow: ObservableObject {
         startInitialQuota(for: account)
     }
 
-    func refreshAllQuota() {
-        startQuotaBatch(ids: accounts.filter { $0.deletionPending != true }.map(\.id))
+    func refreshAllQuota(manually: Bool = true) {
+        startQuotaBatch(ids: accounts.filter { $0.deletionPending != true }.map(\.id), manually: manually)
     }
 
     func retryDashboardQuota(for id: UUID) {
         guard quotaFailureID == id else { return }
         if let ids = batchQuotaIDs { startQuotaBatch(ids: ids) }
-        else { retryInitialQuota(for: id) }
+        else {
+            guard quotaWork == nil else { return }
+            manualQuotaInProgress = true
+            retryInitialQuota(for: id)
+        }
     }
 
-    private func startQuotaBatch(ids: [UUID]) {
+    private func startQuotaBatch(ids: [UUID], manually: Bool = true) {
         guard canRefreshAll else { return }
         let targets = ids.compactMap { id in accounts.first { $0.id == id && $0.deletionPending != true } }
         guard let first = targets.first else { return }
         batchQuotaIDs = targets.map(\.id)
-        manualQuotaInProgress = true
+        manualQuotaInProgress = manually
         quotaFeedbackLocation = .dashboard
         quotaFeedbackHidden = false
         quotaFailure = nil
@@ -764,6 +769,7 @@ final class CodexConnectionFlow: ObservableObject {
         }
     }
 
+    // Internal cancellation remains for interruption tests; there is no dashboard cancel action.
     func cancelQuotaUpdate() { if manualQuotaInProgress { quotaWork?.cancel() } }
 
     /// Retry remains scoped to the failed identity, including an existing snapshot.

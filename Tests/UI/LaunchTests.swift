@@ -195,33 +195,6 @@ final class LaunchTests: XCTestCase {
     }
 
     @MainActor
-    func testManualRefreshCancelLeavesQuotaUnchanged() {
-        continueAfterFailure = false
-        let app = XCUIApplication()
-        app.launchArguments = ["--t12-isolated-ui", "slow-quota", "--t08-run-id", UUID().uuidString]
-        app.launch()
-        app.buttons["quota.toolbarConnect"].tap()
-        app.buttons["platforms.codex"].tap()
-        XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
-        app.buttons["connection.open"].tap()
-        XCTAssertTrue(app.buttons["quota.menu"].waitForExistence(timeout: 15))
-        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
-            object: app.staticTexts["connection.title"])], timeout: 10), .completed)
-        app.buttons["quota.details"].tap()
-        let time = app.staticTexts["quota.updatedAt"].label
-        let amount = app.staticTexts["quota.weekly.remaining"].label
-        app.buttons["quota.menu"].tap()
-        app.buttons["刷新额度"].tap()
-        XCTAssertTrue(app.buttons["quota.cancelUpdate"].waitForExistence(timeout: 3))
-        app.buttons["quota.cancelUpdate"].tap()
-        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
-            object: app.buttons["quota.cancelUpdate"])], timeout: 5), .completed)
-        XCTAssertEqual(app.staticTexts["quota.weekly.remaining"].label, amount)
-        XCTAssertEqual(app.staticTexts["quota.updatedAt"].label, time)
-        XCTAssertFalse(app.staticTexts["quota.failure"].exists)
-    }
-
-    @MainActor
     func testNavigationEmptyStateAndUnavailableActions() {
         continueAfterFailure = false
         let app = XCUIApplication()
