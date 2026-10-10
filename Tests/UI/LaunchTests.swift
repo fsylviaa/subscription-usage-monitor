@@ -2,6 +2,29 @@ import XCTest
 
 final class LaunchTests: XCTestCase {
     @MainActor
+    func testT58ManualAppearanceSurvivesRelaunch() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        app.launch()
+        app.buttons["tab.settings"].tap()
+        let toggle = app.switches["settings.darkAppearance"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        let original = toggle.value as? String
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        let selected = original == "1" ? "0" : "1"
+        XCTAssertTrue(NSPredicate(format: "value == %@", selected).evaluate(with: toggle) || XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", selected), object: toggle)], timeout: 3) == .completed)
+        saveScreenshot(of: app, name: "T58-手动外观")
+        app.terminate(); app.launch()
+        app.buttons["tab.settings"].tap()
+        XCTAssertEqual(toggle.value as? String, selected)
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        app.terminate(); app.launch()
+        app.buttons["tab.settings"].tap()
+        XCTAssertEqual(toggle.value as? String, original)
+    }
+
+    @MainActor
     func testNavigationEmptyStateAndUnavailableActions() {
         continueAfterFailure = false
         let app = XCUIApplication()

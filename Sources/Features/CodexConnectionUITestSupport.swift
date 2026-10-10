@@ -6,6 +6,17 @@ import Foundation
 /// flow uses real clients but an entirely separate account directory and vault.
 @MainActor
 enum CodexConnectionUITestSupport {
+    static var preferences: UserDefaults {
+        guard let id = managementRunID else { return .standard }
+        return UserDefaults(suiteName: "ManagementUI-\(id)")!
+    }
+
+    private static var managementRunID: UUID? {
+        let args = ProcessInfo.processInfo.arguments
+        guard let index = args.firstIndex(of: "--management-ui"), args.indices.contains(index + 1) else { return nil }
+        return UUID(uuidString: args[index + 1])
+    }
+
     static func makeFlow() -> CodexConnectionFlow {
         let arguments = ProcessInfo.processInfo.arguments
         // Hosted unit tests assemble their own isolated dependencies. Do not let
@@ -13,6 +24,16 @@ enum CodexConnectionUITestSupport {
         if NSClassFromString("XCTestCase") != nil {
             return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
                 authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+        }
+        if let id = managementRunID {
+            let store = AccountStore(fileURL: FileManager.default.temporaryDirectory
+                .appendingPathComponent("ManagementUI-\(id)/accounts.json"))
+            let vault = CredentialVault(service: "ManagementUI-\(id)")
+            return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
+                authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions(),
+                bindings: CodexAccountBindingStore(accountStore: store, vault: vault),
+                quotaUpdater: CodexQuotaService(store: store, loadCredential: { _ in nil },
+                    checkNetwork: { .unavailable(.transport) }))
         }
         if let marker = arguments.firstIndex(of: "--t16-isolated-ui") {
             let scenario = arguments.indices.contains(marker + 1) ? arguments[marker + 1] : "success"

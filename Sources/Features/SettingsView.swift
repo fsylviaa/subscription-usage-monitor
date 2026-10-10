@@ -11,6 +11,8 @@ struct SettingsView: View {
     var demoEnabled = false
     var canManage = true
     var setDemoMode: (Bool) -> Void = { _ in }
+    var darkAppearance = false
+    var setDarkAppearance: (Bool) -> Void = { _ in }
     var body: some View {
         Form {
             Section("账户") {
@@ -48,6 +50,8 @@ struct SettingsView: View {
             }
 
             Section("通用") {
+                Toggle("深色模式", isOn: Binding(get: { darkAppearance }, set: setDarkAppearance))
+                    .accessibilityIdentifier("settings.darkAppearance")
                 // T38 接入持久化开关与系统通知权限后开放。
                 Toggle(isOn: .constant(false)) {
                     Label("额度重置通知", systemImage: "bell")

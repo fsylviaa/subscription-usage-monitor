@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct RootView: View {
+    @AppStorage private var appearance: String
+    @Environment(\.colorScheme) private var systemColorScheme
     @StateObject private var connection: CodexConnectionFlow
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -8,7 +10,8 @@ struct RootView: View {
     @State private var selection: Tab = .quota
     @State private var connectionDetent: PresentationDetent = .height(250)
 
-    init(connection: CodexConnectionFlow = CodexConnectionFlow.live()) {
+    init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard) {
+        _appearance = AppStorage(wrappedValue: "system", "appearance", store: preferences)
         _connection = StateObject(wrappedValue: connection)
     }
 
@@ -42,7 +45,9 @@ struct RootView: View {
                              move: { connection.moveAccounts(from: $0, to: $1) },
                              dismissOrderFailure: { connection.dismissAccountOrderFailure() },
                              demoEnabled: connection.demoEnabled, canManage: connection.canManageAccounts,
-                             setDemoMode: { connection.setDemoMode($0) })
+                             setDemoMode: { connection.setDemoMode($0) },
+                             darkAppearance: appearance == "dark" || (appearance == "system" && systemColorScheme == .dark),
+                             setDarkAppearance: { appearance = $0 ? "dark" : "light" })
             }
             .tag(Tab.settings).toolbar(.hidden, for: .tabBar)
         }
@@ -58,6 +63,7 @@ struct RootView: View {
             set: { if !$0 { connection.accountActionFailure = nil } })) {
             Button("好", role: .cancel) { connection.accountActionFailure = nil }
         } message: { Text(connection.accountActionFailure ?? "请重试") }
+        .preferredColorScheme(appearance == "dark" ? .dark : appearance == "light" ? .light : nil)
         .tint(DashboardStyle.text)
         .task {
             connection.setActive(scenePhase == .active)
