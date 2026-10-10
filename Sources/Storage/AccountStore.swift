@@ -10,6 +10,8 @@ actor AccountStore {
         case accountNotFound
         case accountAlreadyExists
         case invalidOrder
+        case staleQuotaContext
+        case invalidQuotaSnapshot
     }
 
     private struct Document: Codable {
@@ -79,6 +81,29 @@ actor AccountStore {
         try commit(accounts)
     }
 
+    /// Commits quota only to the same verified binding that began the request.
+    /// No suspension between the identity check and atomic file replacement.
+    func saveQuota(_ snapshot: CodexQuotaSnapshot, for expected: ConnectedAccount) throws -> ConnectedAccount {
+        try Task.checkCancellation()
+        var accounts = try load()
+        guard let index = accounts.firstIndex(where: { $0.id == expected.id }) else {
+            throw StoreError.accountNotFound
+        }
+        let current = accounts[index]
+        guard current.provider == expected.provider, current.product == expected.product,
+              current.generation == expected.generation, current.scope == expected.scope,
+              current.credentialRef == expected.credentialRef,
+              current.remoteUserID == expected.remoteUserID, current.verifiedEmail == expected.verifiedEmail,
+              current.quotaSnapshot.map({ $0.observedAt <= snapshot.observedAt }) ?? true else {
+            throw StoreError.staleQuotaContext
+        }
+        accounts[index].quotaSnapshot = snapshot
+        accounts[index].quotaState = .available
+        try Task.checkCancellation()
+        try commit(accounts)
+        return accounts[index]
+    }
+
     /// Requires an exact permutation: sorting cannot silently add, remove or duplicate accounts.
     func reorder(_ ids: [UUID]) throws {
         let accounts = try load()
@@ -92,6 +117,23 @@ actor AccountStore {
     private func validate(_ accounts: [ConnectedAccount]) throws {
         guard Set(accounts.map(\.id)).count == accounts.count else {
             throw StoreError.duplicateLocalID
+        }
+        for account in accounts {
+            guard let quota = account.quotaSnapshot else {
+                guard account.quotaState == .notFetched else { throw StoreError.invalidQuotaSnapshot }
+                continue
+            }
+            guard account.quotaState == .available, quota.hasKnownQuota,
+                  quota.accountID == account.id, quota.provider == account.provider,
+                  quota.product == account.product, quota.scope == account.scope,
+                  quota.generation == account.generation,
+                  quota.observedAt.timeIntervalSince1970.isFinite,
+                  quota.weekly.window == .weekly, quota.fiveHours.window == .fiveHours,
+                  [quota.weekly, quota.fiveHours].allSatisfy({
+                      $0.observedAt == quota.observedAt && ($0.resetsAt.map {
+                          $0.timeIntervalSince1970.isFinite && (1...253_402_300_799).contains($0.timeIntervalSince1970)
+                      } ?? true)
+                  }) else { throw StoreError.invalidQuotaSnapshot }
         }
     }
 

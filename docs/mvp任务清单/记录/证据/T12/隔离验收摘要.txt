@@ -1,0 +1,102 @@
+T12 隔离验收摘要；固定输入不代表真实平台数据。
+时间：2026-10-10（Asia/Shanghai）
+
+模拟器功能
+Executed 10 tests, with 0 failures (0 unexpected) in 0.023 (0.025) seconds
+Executed 9 tests, with 0 failures (0 unexpected) in 0.025 (0.027) seconds
+Executed 17 tests, with 0 failures (0 unexpected) in 0.116 (0.119) seconds
+Executed 17 tests, with 0 failures (0 unexpected) in 0.037 (0.040) seconds
+Executed 14 tests, with 0 failures (0 unexpected) in 0.682 (0.685) seconds
+Executed 14 tests, with 0 failures (0 unexpected) in 0.017 (0.020) seconds
+Executed 8 tests, with 0 failures (0 unexpected) in 0.013 (0.014) seconds
+Executed 15 tests, with 0 failures (0 unexpected) in 1.398 (1.401) seconds
+Executed 10 tests, with 0 failures (0 unexpected) in 0.326 (0.330) seconds
+Executed 16 tests, with 0 failures (0 unexpected) in 0.067 (0.070) seconds
+T12 | 成功保存重读 | 周剩余70%、5小时20%，各自真实重置、响应后成功时间与账户作用域一致；普通文件无授权
+T12 | 登录后自动查询 | 无刷新操作，绑定完成后自动显示70%/20%，关闭登录弹层不撤销结果
+T12 | 新增前51、实际查询前50 | 绑定成功保留，请求0次，显示网络不达标，无法更新
+T12 | 查询前50分/49分/未知/取消 | 请求0次；账户保留；没有成功快照和时间
+T12 | 部分响应 | 周70%保留，5小时未知，两窗口无重置时间；不填余额或假0%
+T12 | 无有效窗口/身份错误/HTTP与解析失败 | 原快照及成功时间不变
+Executed 13 tests, with 0 failures (0 unexpected) in 0.031 (0.033) seconds
+Executed 17 tests, with 0 failures (0 unexpected) in 0.009 (0.013) seconds
+Executed 14 tests, with 0 failures (0 unexpected) in 0.055 (0.058) seconds
+Executed 21 tests, with 0 failures (0 unexpected) in 0.016 (0.020) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 0.006 (0.006) seconds
+Executed 196 tests, with 0 failures (0 unexpected) in 2.819 (2.864) seconds
+Executed 196 tests, with 0 failures (0 unexpected) in 2.819 (2.864) seconds
+** TEST SUCCEEDED **
+
+真机功能
+Executed 10 tests, with 0 failures (0 unexpected) in 0.046 (0.050) seconds
+Executed 9 tests, with 0 failures (0 unexpected) in 0.046 (0.049) seconds
+Executed 17 tests, with 0 failures (0 unexpected) in 0.136 (0.143) seconds
+Executed 17 tests, with 0 failures (0 unexpected) in 0.062 (0.068) seconds
+Executed 14 tests, with 0 failures (0 unexpected) in 1.837 (1.841) seconds
+Executed 14 tests, with 0 failures (0 unexpected) in 0.024 (0.028) seconds
+Executed 8 tests, with 0 failures (0 unexpected) in 0.021 (0.023) seconds
+Executed 15 tests, with 0 failures (0 unexpected) in 1.561 (1.566) seconds
+Executed 10 tests, with 0 failures (0 unexpected) in 0.318 (0.325) seconds
+Executed 16 tests, with 0 failures (0 unexpected) in 0.154 (0.161) seconds
+T12 | 成功保存重读 | 周剩余70%、5小时20%，各自真实重置、响应后成功时间与账户作用域一致；普通文件无授权
+T12 | 登录后自动查询 | 无刷新操作，绑定完成后自动显示70%/20%，关闭登录弹层不撤销结果
+T12 | 新增前51、实际查询前50 | 绑定成功保留，请求0次，显示网络不达标，无法更新
+T12 | 查询前50分/49分/未知/取消 | 请求0次；账户保留；没有成功快照和时间
+T12 | 部分响应 | 周70%保留，5小时未知，两窗口无重置时间；不填余额或假0%
+T12 | 无有效窗口/身份错误/HTTP与解析失败 | 原快照及成功时间不变
+Executed 13 tests, with 0 failures (0 unexpected) in 0.080 (0.085) seconds
+Executed 17 tests, with 0 failures (0 unexpected) in 0.020 (0.026) seconds
+Executed 14 tests, with 0 failures (0 unexpected) in 0.093 (0.099) seconds
+Executed 21 tests, with 0 failures (0 unexpected) in 0.037 (0.044) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 0.009 (0.009) seconds
+Executed 196 tests, with 0 failures (0 unexpected) in 4.444 (4.521) seconds
+Executed 196 tests, with 0 failures (0 unexpected) in 4.444 (4.522) seconds
+** TEST SUCCEEDED **
+
+深色页面
+Executed 3 tests, with 0 failures (0 unexpected) in 28.952 (28.954) seconds
+Executed 3 tests, with 0 failures (0 unexpected) in 28.952 (28.955) seconds
+Executed 3 tests, with 0 failures (0 unexpected) in 28.952 (28.955) seconds
+** TEST SUCCEEDED **
+
+浅色页面
+Executed 2 tests, with 0 failures (0 unexpected) in 20.544 (20.545) seconds
+Executed 2 tests, with 0 failures (0 unexpected) in 20.544 (20.546) seconds
+Executed 2 tests, with 0 failures (0 unexpected) in 20.544 (20.547) seconds
+** TEST SUCCEEDED **
+
+
+最终T12真机专项（新增30天真实结构回归）
+T12 | 查询未完成 | 阶段：保存成功快照
+T12 | 查询未完成 | 阶段：读取本机授权
+T12 | 查询未完成 | 阶段：核对授权作用域
+T12 | 查询未完成 | 阶段：保存成功快照
+T12 | 成功保存重读 | 周剩余70%、5小时20%，各自真实重置、响应后成功时间与账户作用域一致；普通文件无授权
+T12 | 登录后自动查询 | 无刷新操作，绑定完成后自动显示70%/20%，关闭登录弹层不撤销结果
+T12 | 查询未完成 | 阶段：查询前网络检查
+T12 | 新增前51、实际查询前50 | 绑定成功保留，请求0次，显示网络不达标，无法更新
+T12 | 查询未完成 | 阶段：查询前网络检查
+T12 | 查询未完成 | 阶段：查询前网络检查
+T12 | 查询未完成 | 阶段：查询前网络检查
+T12 | 查询未完成 | 阶段：查询前网络检查
+T12 | 查询前50分/49分/未知/取消 | 请求0次；账户保留；没有成功快照和时间
+T12 | 部分响应 | 周70%保留，5小时未知，两窗口无重置时间；不填余额或假0%
+T12 | 查询未完成 | 阶段：检查有效额度
+T12 | 真实结构回归（脱敏固定输入） | 2592000秒/已用0；不改名为周或5小时，不生成成功快照
+T12 | 查询未完成 | 阶段：检查有效额度
+T12 | 查询未完成 | 阶段：核对返回身份
+T12 | 查询未完成 | 阶段：核对HTTP响应
+T12 | 查询未完成 | 阶段：核对HTTP响应
+T12 | 查询未完成 | 阶段：核对HTTP响应
+T12 | 查询未完成 | 阶段：核对HTTP响应
+T12 | 查询未完成 | 阶段：核对HTTP响应
+T12 | 查询未完成 | 阶段：核对返回身份
+T12 | 查询未完成 | 阶段：核对HTTP响应
+T12 | 查询未完成 | 阶段：核对HTTP响应
+T12 | 查询未完成 | 阶段：核对返回身份
+T12 | 查询未完成 | 阶段：核对返回身份
+T12 | 无有效窗口/身份错误/HTTP与解析失败 | 原快照及成功时间不变
+Executed 14 tests, with 0 failures (0 unexpected) in 0.095 (0.100) seconds
+Executed 14 tests, with 0 failures (0 unexpected) in 0.095 (0.101) seconds
+Executed 14 tests, with 0 failures (0 unexpected) in 0.095 (0.102) seconds
+** TEST SUCCEEDED **

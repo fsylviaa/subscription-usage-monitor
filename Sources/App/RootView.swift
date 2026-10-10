@@ -18,6 +18,7 @@ struct RootView: View {
             NavigationStack {
                 QuotaView(accounts: connection.accounts, loading: connection.loadingAccounts,
                           loadFailed: connection.accountLoadFailed, canConnect: connection.canConnect,
+                          updatingID: connection.quotaUpdatingID, quotaFailure: connection.quotaFailure,
                           connect: { connection.begin() })
             }
             .tabItem {

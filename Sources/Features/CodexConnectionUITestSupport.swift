@@ -8,6 +8,16 @@ import Foundation
 enum CodexConnectionUITestSupport {
     static func makeFlow() -> CodexConnectionFlow {
         let arguments = ProcessInfo.processInfo.arguments
+        // Hosted unit tests assemble their own isolated dependencies. Do not let
+        // the host scene silently query or change the user's real account.
+        if NSClassFromString("XCTestCase") != nil {
+            return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
+                authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+        }
+        if let marker = arguments.firstIndex(of: "--t12-isolated-ui") {
+            let scenario = arguments.indices.contains(marker + 1) ? arguments[marker + 1] : "success"
+            return completionFlow(scenario: scenario, arguments: arguments, includeQuota: true)
+        }
         if arguments.contains(where: { $0.hasPrefix("--t10-live") }) {
             return isolatedLiveFlow(arguments: arguments, task: "T10")
         }
@@ -67,7 +77,7 @@ enum CodexConnectionUITestSupport {
         func remove(transactionID: UUID) { }
     }
 
-    private static func completionFlow(scenario: String, arguments: [String]) -> CodexConnectionFlow {
+    private static func completionFlow(scenario: String, arguments: [String], includeQuota: Bool = false) -> CodexConnectionFlow {
         let runID: UUID
         if let marker = arguments.firstIndex(of: "--t08-run-id"),
            arguments.indices.contains(marker + 1), let supplied = UUID(uuidString: arguments[marker + 1]) {
@@ -81,7 +91,19 @@ enum CodexConnectionUITestSupport {
         if arguments.contains("--t08-reset-storage") {
             try? FileManager.default.removeItem(at: directory)
         }
-        let completer = FixtureCompleter(scenario: scenario)
+        let completer = FixtureCompleter(scenario: includeQuota ? "success" : scenario)
+        let store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
+        let updater: CodexQuotaService? = includeQuota ? CodexQuotaService(store: store,
+            loadCredential: { _ in
+                let package = CodexIdentityVerifier.CredentialPackage(credentialVersion: 1,
+                    issuer: CodexIdentityVerifier.issuer, clientID: CodexDeviceAuthorization.clientID,
+                    subject: "fixture-subject", remoteUserID: "isolated-ui-user",
+                    scope: .init(remoteAccountID: "isolated-ui-account", kind: .personal),
+                    tokens: .init(accessToken: "fixture-access", refreshToken: "fixture-refresh", idToken: "fixture-id",
+                                  obtainedAt: Date(), expiresAt: nil))
+                return .init(data: try JSONEncoder().encode(package))
+            }, transport: QuotaFixtureTransport(partial: scenario == "partial"),
+            checkNetwork: { scenario == "blocked" ? .blocked(score: 50) : .allowed(score: 51) }) : nil
         return CodexConnectionFlow(
             checkNetwork: { .allowed(score: 51) },
             authorizer: FixtureAuthorizer(fails: false, pollInterval: 1),
@@ -90,6 +112,7 @@ enum CodexConnectionUITestSupport {
             verifier: FixtureVerifier(fails: scenario == "verification-failure"),
             bindings: FixtureBindings(fileURL: directory.appendingPathComponent("accounts.json")),
             pending: FixturePending(),
+            quotaUpdater: updater,
             copyCode: { _, _ in },
             openURL: { url in
                 guard url == CodexDeviceAuthorization.verificationURL else { return false }
@@ -97,6 +120,18 @@ enum CodexConnectionUITestSupport {
                 return true
             }
         )
+    }
+
+    private struct QuotaFixtureTransport: CodexDeviceAuthorizationTransport {
+        let partial: Bool
+        func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+            // Make sheet dismissal overlap the query to exercise task separation.
+            try await Task.sleep(for: .milliseconds(500))
+            let partialBody = #"{"account_id":"isolated-ui-account","rate_limit":{"primary_window":{"limit_window_seconds":604800,"used_percent":30}}}"#
+            let completeBody = #"{"account_id":"isolated-ui-account","rate_limit":{"primary_window":{"limit_window_seconds":18000,"used_percent":80,"reset_at":1791669600},"secondary_window":{"limit_window_seconds":604800,"used_percent":30,"reset_at":1792144800}}}"#
+            return (Data((partial ? partialBody : completeBody).utf8),
+                    HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: ["Content-Type": "application/json"])!)
+        }
     }
 
     private actor FixtureCompleter: CodexLoginCompleting {

@@ -5,6 +5,8 @@ struct QuotaView: View {
     var loading = false
     var loadFailed = false
     var canConnect = true
+    var updatingID: UUID?
+    var quotaFailure: String?
     var connect: () -> Void = {}
     var body: some View {
         Group {
@@ -19,8 +21,23 @@ struct QuotaView: View {
                         Text(account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户")
                             .privacySensitive()
                             .accessibilityIdentifier("quota.accountIdentity")
-                        Text("尚未获取额度").foregroundStyle(.secondary)
-                            .accessibilityIdentifier("quota.notFetched")
+                        if let snapshot = account.quotaSnapshot {
+                            quotaWindow(snapshot.weekly, title: "周额度", id: "weekly")
+                            quotaWindow(snapshot.fiveHours, title: "5 小时额度", id: "fiveHours")
+                            Text("更新于 \(Self.dateText(snapshot.observedAt))")
+                                .font(.footnote).foregroundStyle(.secondary)
+                                .accessibilityIdentifier("quota.updatedAt")
+                        } else {
+                            Text("尚未获取额度").foregroundStyle(.secondary)
+                                .accessibilityIdentifier("quota.notFetched")
+                        }
+                        if updatingID == account.id {
+                            ProgressView("正在更新")
+                                .accessibilityIdentifier("quota.updating")
+                        } else if let quotaFailure {
+                            Text(quotaFailure).font(.footnote).foregroundStyle(.secondary)
+                                .accessibilityIdentifier("quota.failure")
+                        }
                     }
                     .padding(.vertical, 8)
                 }
@@ -60,4 +77,31 @@ struct QuotaView: View {
             }
         }
     }
+
+    private func quotaWindow(_ value: QuotaWindowSnapshot, title: String, id: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(title)
+                Spacer()
+                Text(Self.amountText(value.amount)).fontWeight(.semibold)
+                    .accessibilityIdentifier("quota.\(id).remaining")
+            }
+            Text(value.resetsAt.map { "预计重置于 \(Self.dateText($0))" } ?? "未提供重置时间")
+                .font(.footnote).foregroundStyle(.secondary)
+                .accessibilityIdentifier("quota.\(id).reset")
+        }
+    }
+
+    static func amountText(_ amount: QuotaAmount) -> String {
+        switch amount {
+        case .unknown: "未知"
+        case .unlimited: "不限量"
+        case let .limited(value): "剩余 \(value.remaining.formatted(.number.precision(.fractionLength(0...2))))%"
+        }
+    }
+
+    static func dateText(_ date: Date) -> String {
+        date.formatted(.dateTime.month().day().hour().minute())
+    }
+
 }

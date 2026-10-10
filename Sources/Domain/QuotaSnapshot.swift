@@ -1,7 +1,7 @@
 import Foundation
 
 /// A measured percentage, never a guessed default or a clamped invalid response.
-struct QuotaPercentage: Equatable, Sendable {
+struct QuotaPercentage: Codable, Equatable, Sendable {
     let used: Double
 
     init(used: Double) throws {
@@ -9,6 +9,13 @@ struct QuotaPercentage: Equatable, Sendable {
             throw QuotaInterpretationError.invalidPercentage
         }
         self.used = used
+    }
+
+    private enum CodingKeys: String, CodingKey { case used }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        try self.init(used: container.decode(Double.self, forKey: .used))
     }
 
     var remaining: Double { 100 - used }
@@ -23,7 +30,7 @@ enum QuotaInterpretationError: Error, Equatable {
     case ambiguousWindow
 }
 
-enum QuotaAmount: Equatable, Sendable {
+enum QuotaAmount: Codable, Equatable, Sendable {
     case unknown
     case limited(QuotaPercentage)
     /// Only for explicit, verified unlimited semantics; absence never means unlimited.
@@ -51,7 +58,7 @@ struct QuotaProgress: Equatable, Sendable {
     let remainingFraction: Double
 }
 
-enum QuotaWindow: Int, Equatable, Sendable {
+enum QuotaWindow: Int, Codable, Equatable, Sendable {
     case fiveHours = 18_000
     case weekly = 604_800
 }
@@ -60,7 +67,7 @@ enum QuotaUnit: Equatable, Sendable {
     case percent
 }
 
-struct QuotaWindowSnapshot: Equatable, Sendable {
+struct QuotaWindowSnapshot: Codable, Equatable, Sendable {
     let window: QuotaWindow
     let amount: QuotaAmount
     let resetsAt: Date?
@@ -74,9 +81,9 @@ struct QuotaWindowSnapshot: Equatable, Sendable {
     }
 }
 
-/// Pure interpretation result. T12 will connect successful results to storage.
+/// A quota observation persisted only after a gated, successful query.
 /// Identity comes from the verified request context, not an untrusted response label.
-struct CodexQuotaSnapshot: Equatable, Sendable {
+struct CodexQuotaSnapshot: Codable, Equatable, Sendable {
     let accountID: UUID
     let provider: ProviderID
     let product: ProductID

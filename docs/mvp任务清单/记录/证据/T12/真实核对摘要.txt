@@ -1,0 +1,17 @@
+T12 真实核对摘要：2026-10-10 15:54:28 Asia/Shanghai
+结论：真实周/5小时成功查询未通过；平台只返回30天窗口。
+以下仅摘取去敏日志，原始响应、身份、出口与凭据不入档。
+
+T12 | 出口查询 | HTTP 200；HTML=false
+T12 | 指定评分 | HTTP 200；HTML=false
+T12 | 真实网络门控 | 允许，分数57.0
+T12 | 真实响应 | HTTP 200
+T12 | 响应字段结构 | rate_limit:__NSDictionaryI
+T12 | 响应字段结构 | rate_limits:missing
+T12 | 响应字段结构 | additional_rate_limits:NSNull
+T12 | 响应字段结构 | plan_type:NSTaggedPointerString
+T12 | 主窗口数值 | primary_window.limit_window_seconds=2592000
+T12 | 主窗口数值 | primary_window.used_percent=0
+T12 | 主窗口数值 | primary_window.reset_at=1794210869
+T12 | 主窗口结构 | secondary_window:缺失/null
+T12 | 查询未完成 | 阶段：检查有效额度

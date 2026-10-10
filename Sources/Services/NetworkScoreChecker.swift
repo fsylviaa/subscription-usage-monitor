@@ -136,7 +136,7 @@ struct NetworkScoreChecker: Sendable {
 
 /// Isolated from browser/login cookies, credentials and disk caches. URLSession's async
 /// request is cancelled with its parent task; redirecting to a different source is refused.
-private final class URLSessionNetworkScoreTransport: NSObject, NetworkScoreTransport,
+final class URLSessionNetworkScoreTransport: NSObject, NetworkScoreTransport,
     URLSessionTaskDelegate, @unchecked Sendable {
     private let session: URLSession
 

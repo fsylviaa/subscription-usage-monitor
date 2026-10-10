@@ -31,10 +31,10 @@ app/
 ├── Sources/
 │   ├── App/                      App 入口与根页面
 │   ├── Features/                 额度、设置基础页与后续页面
-│   ├── Domain/                   账户身份、未获取额度状态；后续额度窗口
+│   ├── Domain/                   账户身份、额度状态及两窗口成功快照
 │   ├── Providers/Codex/          Codex 设备码申请；后续登录领回与额度解析
 │   ├── Services/                 指定网络评分；后续协调与系统能力
-│   ├── Storage/                  账户元数据文件与授权安全存储；后续快照
+│   ├── Storage/                  账户元数据与成功快照文件、授权安全存储
 │   └── Shared/                   后续 App 与组件共享的非敏感结果
 ├── Resources/
 │   └── Assets.xcassets/          当前资源目录
@@ -54,7 +54,7 @@ app/
 | `Sources/Features/` | 额度、账户、设置、教程等页面及直接相关展示逻辑 | 已有 `QuotaView.swift`、`SettingsView.swift`；待接入动作禁用；后续页面调用业务能力，不自行管理授权秘密 |
 | `Sources/Domain/` | 公共账户数据、额度语义及必要接口 | T04 已有 ConnectedAccount、AccountScope 和 AccountQuotaState；T11 加独立额度窗口，不依赖具体页面或 Codex 实现 |
 | `Sources/Providers/Codex/` | Codex 连接、请求构建、响应解析与平台差异 | T07–T14 逐项添加；当前不建其他平台实现或完整多平台框架 |
-| `Sources/Services/` | 网络检查、连接及刷新协调、系统提醒等共用流程 | T06 已有 NetworkScoreChecker；T07 连接已调用；查询由 T12 及对应后续任务接入 |
+| `Sources/Services/` | 网络检查、连接及刷新协调、系统提醒等共用流程 | T06 已有 NetworkScoreChecker；T07 连接已调用；T12 首次查询已调用，其他触发由后续任务接入 |
 | `Sources/Storage/` | 本机账户元数据、最近成功快照与钥匙串访问 | T04 已有 AccountStore，按数组顺序保存账户；T05 已有 CredentialVault，正式/临时授权以独立 Keychain 命名空间存取，普通数据与授权秘密分开保存 |
 | `Sources/Shared/` | App 和小组件都需要的纯展示数据、必要格式化与非敏感快照约定 | T32 实现实际共享；不放密码、令牌、登录流程或钥匙串访问 |
 | `Resources/` | 图片、颜色、图标和实际采用代码的许可资料 | T01 仅建立必要资源位置，不做正式品牌设计；实际引入第三方代码时补对应许可 |

@@ -22,6 +22,10 @@ final class CodexConnectionFlow: ObservableObject {
     @Published private(set) var accounts: [ConnectedAccount] = []
     @Published private(set) var loadingAccounts = false
     @Published private(set) var accountLoadFailed = false
+    @Published private(set) var quotaUpdatingID: UUID?
+    @Published private(set) var quotaFailure: String?
+    private let quotaUpdater: (any CodexQuotaUpdating)?
+    private var quotaWork: Task<Void, Never>?
     private let completer: (any CodexLoginCompleting)?
     private let verifier: (any CodexIdentityVerifying)?
     private let bindings: (any CodexAccountBinding)?
@@ -48,9 +52,12 @@ final class CodexConnectionFlow: ObservableObject {
 
     static func live() -> CodexConnectionFlow {
         do {
+            let accounts = try AccountStore.applicationStore()
+            let vault = CredentialVault.applicationVault()
+            let updater = CodexQuotaService(store: accounts, loadCredential: { try await vault.load(for: .credential($0)) })
             let flow = CodexConnectionFlow(completer: CodexLoginClient(), verifier: CodexIdentityVerifier(),
-                                           bindings: try CodexAccountBindingStore.applicationStore(),
-                                           pending: CodexPendingLoginStore())
+                                           bindings: CodexAccountBindingStore(accountStore: accounts, vault: vault),
+                                           pending: CodexPendingLoginStore(), quotaUpdater: updater)
             flow.loadingAccounts = true
             return flow
         } catch {
@@ -81,6 +88,11 @@ final class CodexConnectionFlow: ObservableObject {
         } catch {
             accountLoadFailed = true
             return
+        }
+        // T12 also completes the first query for an existing T08 binding on
+        // upgrade/relaunch. Regular foreground refresh remains a later task.
+        if let account = accounts.first, account.quotaState == .notFetched {
+            startInitialQuota(for: account)
         }
         // A committed account wins over leftover temporary data after a crash.
         // T10 only binds the first account; it never reconnects an existing one.
@@ -198,6 +210,7 @@ final class CodexConnectionFlow: ObservableObject {
         verifier: (any CodexIdentityVerifying)? = nil,
         bindings: (any CodexAccountBinding)? = nil,
         pending: (any CodexPendingLoginStoring)? = nil,
+        quotaUpdater: (any CodexQuotaUpdating)? = nil,
         now: @escaping @Sendable () -> Date = { Date() },
         copyCode: @escaping @MainActor (String, Date) -> Void = { code, deadline in
             UIPasteboard.general.setItems([[UIPasteboard.typeAutomatic: code]],
@@ -211,6 +224,7 @@ final class CodexConnectionFlow: ObservableObject {
         self.verifier = verifier
         self.bindings = bindings
         self.pending = pending
+        self.quotaUpdater = quotaUpdater
         self.checkNetwork = checkNetwork
         self.authorizer = authorizer
         self.transactions = transactions
@@ -494,6 +508,7 @@ final class CodexConnectionFlow: ObservableObject {
                 try? await removePending()
                 state = .idle
                 isPresented = false
+                startInitialQuota(for: account)
             } catch {
                 guard isCurrent(attempt) else {
                     // A non-cooperative pending write may have finished after cancel.
@@ -523,6 +538,30 @@ final class CodexConnectionFlow: ObservableObject {
             }
         }
     }
+
+    /// Separate from the login task: dismissing a successful login sheet cannot
+    /// cancel its newly started quota query or turn query failure into login failure.
+    private func startInitialQuota(for account: ConnectedAccount) {
+        guard let quotaUpdater, quotaWork == nil else { return }
+        quotaUpdatingID = account.id
+        quotaFailure = nil
+        quotaWork = Task { [weak self] in
+            guard let self else { return }
+            defer { quotaUpdatingID = nil; quotaWork = nil }
+            do {
+                let updated = try await quotaUpdater.update(account)
+                if let index = accounts.firstIndex(where: { $0.id == updated.id && $0.generation == updated.generation }) {
+                    accounts[index] = updated
+                }
+            } catch is CancellationError {
+                // Cancellation never becomes a successful observation.
+            } catch {
+                quotaFailure = (error as? CodexQuotaError)?.message ?? "刷新失败"
+            }
+        }
+    }
+
+    func waitForInitialQuota() async { await quotaWork?.value }
 
     private func waitUntilActive(_ authorization: CodexDeviceAuthorization, attempt: UUID) async throws {
         while !isActive {

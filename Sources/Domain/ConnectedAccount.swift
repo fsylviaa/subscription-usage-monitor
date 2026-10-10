@@ -11,6 +11,7 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
     var scope: AccountScope
     var credentialRef: UUID
     var generation: UInt64
+    var quotaSnapshot: CodexQuotaSnapshot?
     var quotaState: AccountQuotaState
 
     init(
@@ -23,7 +24,8 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
         scope: AccountScope,
         credentialRef: UUID,
         generation: UInt64 = 0,
-        quotaState: AccountQuotaState = .notFetched
+        quotaState: AccountQuotaState = .notFetched,
+        quotaSnapshot: CodexQuotaSnapshot? = nil
     ) {
         self.id = id
         self.provider = provider
@@ -35,6 +37,7 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
         self.credentialRef = credentialRef
         self.generation = generation
         self.quotaState = quotaState
+        self.quotaSnapshot = quotaSnapshot
     }
 }
 

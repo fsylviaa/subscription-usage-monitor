@@ -37,3 +37,7 @@ T10 新增 `CodexLoginInterruptionTests` 15 项与 `CodexLoginTransactionRecover
 
 
 T11 的 `CodexUsageParserTests` 使用源码内人工 JSON、`example.invalid` 账户和固定时间，纯解析五类验收输入，并覆盖非法数值／类型、冲突账户、窗口歧义和额外字段；领域明确不限量不产生百分比。没有网络、文件写入、Keychain 或正式账户访问。专项复验可只运行 `CodexUsageParserTests`；测试代码只编入测试目标，不增加 App 验收页面。实际输入输出和运行数量见 [T11 验收](../docs/mvp任务清单/记录/T11-验收.md)。
+
+T12 的 `CodexQuotaServiceTests` 覆盖首次自动查询、响应后成功时间、网络门控、缺失字段、失败保留、取消、身份变化、旧文件兼容及快照保存读回；默认使用人工 JSON 与独立目录。`CodexQuotaUITests` 使用 DEBUG `--t12-isolated-ui` 的 success／partial／blocked 场景及唯一 `--t08-run-id`，无网络、无正式账户或钥匙串访问。hosted 单元测试的 App 主场景自动使用空隔离流程，阻止启动副作用。
+
+`CodexQuotaLiveTests` 仅在 `T12_LIVE_QUERY=1` 时读取本 iPhone App 正式登录，执行真实 T06 检查和 usage 主请求，并将成功快照写回同一账户；不读桌面授权，不续期或修改凭据。传输记录器只在内存中对照同次平台响应，日志仅输出数值、窗口、时间、HTTP 状态与固定阶段，不输出身份和秘密。`T12_LIVE_REOPEN=1` 才运行普通真实页面重开检查。默认不启用这两项；实际证据见 [T12 验收](../docs/mvp任务清单/记录/T12-验收.md)。

@@ -186,7 +186,7 @@ struct CodexIdentityVerifier: CodexIdentityVerifying {
             && value.unicodeScalars.allSatisfy { !CharacterSet.whitespacesAndNewlines.contains($0) && !CharacterSet.controlCharacters.contains($0) }
     }
 
-    private struct CredentialPackage: Encodable {
+    struct CredentialPackage: Codable {
         let credentialVersion: Int
         let issuer: String
         let clientID: String
@@ -196,7 +196,7 @@ struct CodexIdentityVerifier: CodexIdentityVerifying {
         let tokens: CodexTokenResponse
     }
 
-    private struct UsageIdentity: Decodable {
+    struct UsageIdentity: Decodable {
         let accountID: String
         let userID: String?
         let email: String?
