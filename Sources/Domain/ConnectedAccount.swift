@@ -14,6 +14,9 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
     var generation: UInt64
     var subscription: AccountSubscription?
     var quotaSnapshot: CodexQuotaSnapshot?
+    var source: Source?
+    enum Source: String, Codable, Sendable { case demo }
+    var isDemo: Bool { source == .demo }
     var quotaState: AccountQuotaState
 
     init(
@@ -29,8 +32,10 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
         quotaState: AccountQuotaState = .notFetched,
         quotaSnapshot: CodexQuotaSnapshot? = nil,
         subscription: AccountSubscription? = nil,
-        loginTransactionID: UUID? = nil
+        loginTransactionID: UUID? = nil,
+        source: Source? = nil
     ) {
+        self.source = source
         self.loginTransactionID = loginTransactionID
         self.id = id
         self.provider = provider

@@ -5,6 +5,13 @@ protocol AccountOrdering: Sendable {
     func reorder(_ ids: [UUID]) async throws
 }
 
+protocol DemoAccountManaging: Sendable {
+    func demoModeEnabled() async throws -> Bool
+    func setDemoMode(_ enabled: Bool) async throws -> [ConnectedAccount]
+    func addDemo(now: Date) async throws -> ConnectedAccount
+    func refreshDemo(_ account: ConnectedAccount, now: Date) async throws -> ConnectedAccount
+}
+
 protocol CodexAccountBinding: Sendable {
     func load() async throws -> [ConnectedAccount]
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount
@@ -20,7 +27,7 @@ extension CodexAccountBinding {
 /// Accepts the verifier's result type only. Raw tokens and decoded claims never
 /// enter the account store through this boundary.
 @MainActor
-final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering {
+final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, DemoAccountManaging {
     enum BindingError: Error, Equatable {
         case credentialCleanupFailed
     }
@@ -46,6 +53,13 @@ final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering {
 
     func reorder(_ ids: [UUID]) async throws {
         try await accountStore.reorder(ids)
+    }
+
+    func demoModeEnabled() async throws -> Bool { try await accountStore.demoModeEnabled() }
+    func setDemoMode(_ enabled: Bool) async throws -> [ConnectedAccount] { try await accountStore.setDemoMode(enabled) }
+    func addDemo(now: Date) async throws -> ConnectedAccount { try await accountStore.addDemo(now: now) }
+    func refreshDemo(_ account: ConnectedAccount, now: Date) async throws -> ConnectedAccount {
+        try await accountStore.refreshDemo(account, now: now)
     }
 
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount {

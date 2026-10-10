@@ -35,6 +35,52 @@ final class CodexConnectionFlow: ObservableObject {
     @Published private(set) var accountLoadFailed = false
     @Published private(set) var reorderingAccounts = false
     @Published private(set) var accountOrderFailed = false
+    @Published private(set) var demoEnabled = false
+    @Published private(set) var managingAccounts = false
+    @Published var accountActionFailure: String?
+    var canManageAccounts: Bool {
+        !loadingAccounts && !accountLoadFailed && !restoringLogin && !reorderingAccounts && !managingAccounts && !isPresented
+    }
+
+    @discardableResult
+    func setDemoMode(_ enabled: Bool) -> Task<Void, Never>? {
+        guard canManageAccounts, let manager = bindings as? any DemoAccountManaging else { return nil }
+        managingAccounts = true
+        return Task {
+            defer { managingAccounts = false }
+            do {
+                if !enabled { await cancelDemoQuota() }
+                accounts = try await manager.setDemoMode(enabled)
+                demoEnabled = enabled
+                discardRemovedFeedback()
+            } catch { accountActionFailure = "操作未完成，请重试" }
+        }
+    }
+
+    private func cancelDemoQuota() async {
+        queuedQuota.removeAll { $0.account.isDemo }
+        if let id = quotaUpdatingID, accounts.contains(where: { $0.id == id && $0.isDemo }) {
+            quotaWork?.cancel()
+            await quotaWork?.value
+        }
+    }
+
+    private func discardRemovedFeedback() {
+        let ids = Set(accounts.map(\.id))
+        quotaFailures = quotaFailures.filter { ids.contains($0.key) }
+        if let id = quotaFailureID, !ids.contains(id) { quotaFailureID = nil; quotaFailure = nil }
+    }
+
+    @discardableResult
+    func addDemoAccount() -> Task<Void, Never>? {
+        guard demoEnabled, canConnect, let manager = bindings as? any DemoAccountManaging else { return nil }
+        managingAccounts = true
+        return Task {
+            defer { managingAccounts = false }
+            do { accounts.append(try await manager.addDemo(now: now())) }
+            catch { accountActionFailure = "添加失败，请重试" }
+        }
+    }
     @Published private(set) var quotaUpdatingID: UUID?
     @Published private(set) var quotaFailure: String?
     @Published private(set) var quotaFailureID: UUID?
@@ -88,11 +134,11 @@ final class CodexConnectionFlow: ObservableObject {
         }
     }
 
-    var canConnect: Bool { !loadingAccounts && !accountLoadFailed && !restoringLogin && !reorderingAccounts && quotaUpdatingID == nil }
+    var canConnect: Bool { !loadingAccounts && !accountLoadFailed && !restoringLogin && !reorderingAccounts && !managingAccounts && quotaUpdatingID == nil }
 
     var canReorderAccounts: Bool {
         accounts.count > 1 && bindings is any AccountOrdering && !loadingAccounts
-            && !accountLoadFailed && !restoringLogin && !reorderingAccounts && !isPresented
+            && !accountLoadFailed && !restoringLogin && !reorderingAccounts && !managingAccounts && !isPresented
             && state == .idle
     }
 
@@ -138,6 +184,7 @@ final class CodexConnectionFlow: ObservableObject {
         defer { loadingAccounts = false; restoringLogin = false }
         do {
             accounts = try await bindings.load()
+            demoEnabled = try await (bindings as? any DemoAccountManaging)?.demoModeEnabled() ?? false
             accountLoadFailed = false
             // An existing account is readable before pending login/Keychain
             // recovery finishes. New connections stay gated independently until
@@ -297,6 +344,7 @@ final class CodexConnectionFlow: ObservableObject {
 
     func showPlatformPicker() {
         guard canConnect, state == .idle, !isPresented else { return }
+        if demoEnabled { addDemoAccount(); return }
         state = .choosingPlatform
         isPresented = true
     }
@@ -667,7 +715,13 @@ final class CodexConnectionFlow: ObservableObject {
                 }
             }
             do {
-                let updated = try await quotaUpdater.update(account)
+                let updated: ConnectedAccount
+                if account.isDemo, let manager = bindings as? any DemoAccountManaging {
+                    try await Task.sleep(for: .milliseconds(350))
+                    updated = try await manager.refreshDemo(account, now: now())
+                } else {
+                    updated = try await quotaUpdater.update(account)
+                }
                 quotaFailures.removeValue(forKey: account.id)
                 if let index = accounts.firstIndex(where: { $0.id == updated.id && $0.generation == updated.generation }) {
                     accounts[index] = updated

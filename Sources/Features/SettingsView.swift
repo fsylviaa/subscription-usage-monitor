@@ -8,6 +8,9 @@ struct SettingsView: View {
     var orderFailed = false
     var move: (IndexSet, Int) -> Void = { _, _ in }
     var dismissOrderFailure: () -> Void = {}
+    var demoEnabled = false
+    var canManage = true
+    var setDemoMode: (Bool) -> Void = { _ in }
     var body: some View {
         Form {
             Section("账户") {
@@ -59,6 +62,13 @@ struct SettingsView: View {
                 pendingAction("帮助与说明", systemImage: "questionmark.circle", identifier: "settings.help")
                 pendingAction("隐私说明", systemImage: "hand.raised", identifier: "settings.privacy")
                 pendingAction("开源许可", systemImage: "info.circle", identifier: "settings.licenses")
+            }
+            Section {
+                Toggle("演示模式", isOn: Binding(get: { demoEnabled }, set: setDemoMode))
+                    .disabled(!canManage)
+                    .accessibilityIdentifier("settings.demo")
+            } footer: {
+                Text("开启后可添加演示账户，关闭时清除全部演示账户。")
             }
         }
         .navigationTitle("设置")

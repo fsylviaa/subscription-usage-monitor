@@ -18,6 +18,7 @@ actor AccountStore {
         let schemaVersion: Int
         /// Array position is the single source of list order; no competing displayOrder field.
         var accounts: [ConnectedAccount]
+        var demoEnabled: Bool?
     }
 
     private let fileURL: URL
@@ -37,12 +38,14 @@ actor AccountStore {
         return AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
     }
 
-    func load() throws -> [ConnectedAccount] {
+    func load() throws -> [ConnectedAccount] { try readDocument().accounts }
+
+    private func readDocument() throws -> Document {
         let data: Data
         do {
             data = try Data(contentsOf: fileURL)
         } catch CocoaError.fileReadNoSuchFile {
-            return []
+            return Document(schemaVersion: 1, accounts: [], demoEnabled: false)
         }
 
         let document = try JSONDecoder().decode(Document.self, from: data)
@@ -50,7 +53,7 @@ actor AccountStore {
             throw StoreError.unsupportedSchemaVersion(document.schemaVersion)
         }
         try validate(document.accounts)
-        return document.accounts
+        return document
     }
 
     /// This is local-ID integrity, not email deduplication; successful-login merging belongs to T18/T20.
@@ -189,11 +192,58 @@ actor AccountStore {
         }
     }
 
-    private func commit(_ accounts: [ConnectedAccount]) throws {
+    func demoModeEnabled() throws -> Bool { try readDocument().demoEnabled ?? false }
+
+    func setDemoMode(_ enabled: Bool) throws -> [ConnectedAccount] {
+        let accounts = try load().filter { enabled || !$0.isDemo }
+        // Mode and cleanup commit together: a crash cannot leave disabled samples behind.
+        try commit(accounts, demoEnabled: enabled)
+        return accounts
+    }
+
+    func addDemo(now: Date) throws -> ConnectedAccount {
+        guard try demoModeEnabled() else { throw StoreError.accountNotFound }
+        let id = UUID()
+        let suffix = id.uuidString.prefix(6).lowercased()
+        var account = ConnectedAccount(id: id, verifiedEmail: "demo-\(suffix)@example.invalid",
+            scope: .init(remoteAccountID: "demo-\(id)", kind: .personal), credentialRef: UUID(), source: .demo)
+        let count = try load().filter(\.isDemo).count
+        account = try demoSnapshot(account, now: now, used: Double((count * 17 + 13) % 80))
+        try append(account)
+        return account
+    }
+
+    func refreshDemo(_ expected: ConnectedAccount, now: Date) throws -> ConnectedAccount {
+        try Task.checkCancellation()
+        guard expected.isDemo, try demoModeEnabled(),
+              let account = try load().first(where: { $0.id == expected.id && $0.isDemo }) else {
+            throw StoreError.accountNotFound
+        }
+        let used = ((account.quotaSnapshot?.weekly.amount.usedPercent ?? 0) + 7).truncatingRemainder(dividingBy: 95)
+        let updated = try demoSnapshot(account, now: now, used: used)
+        try update(updated)
+        return updated
+    }
+
+    private func demoSnapshot(_ account: ConnectedAccount, now: Date, used: Double) throws -> ConnectedAccount {
+        var result = account
+        result.subscription = .init(planType: "Plus", observedAt: now)
+        result.quotaState = .available
+        result.quotaSnapshot = CodexQuotaSnapshot(accountID: account.id, provider: account.provider,
+            product: account.product, scope: account.scope, generation: account.generation,
+            planType: "Plus", observedAt: now,
+            weekly: .init(window: .weekly, amount: .limited(try .init(used: used)),
+                resetsAt: now.addingTimeInterval(4 * 86400), observedAt: now),
+            fiveHours: .init(window: .fiveHours, amount: .limited(try .init(used: (used + 23).truncatingRemainder(dividingBy: 100))),
+                resetsAt: now.addingTimeInterval(3 * 3600), observedAt: now))
+        return result
+    }
+
+    private func commit(_ accounts: [ConnectedAccount], demoEnabled: Bool? = nil) throws {
         try validate(accounts)
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
-        let data = try encoder.encode(Document(schemaVersion: 1, accounts: accounts))
+        let data = try encoder.encode(Document(schemaVersion: 1, accounts: accounts, demoEnabled: try demoEnabled ?? demoModeEnabled()))
         try FileManager.default.createDirectory(
             at: fileURL.deletingLastPathComponent(),
             withIntermediateDirectories: true

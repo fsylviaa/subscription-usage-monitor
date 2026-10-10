@@ -40,7 +40,9 @@ struct RootView: View {
                              connect: { connection.showPlatformPicker() },
                              canReorder: connection.canReorderAccounts, orderFailed: connection.accountOrderFailed,
                              move: { connection.moveAccounts(from: $0, to: $1) },
-                             dismissOrderFailure: { connection.dismissAccountOrderFailure() })
+                             dismissOrderFailure: { connection.dismissAccountOrderFailure() },
+                             demoEnabled: connection.demoEnabled, canManage: connection.canManageAccounts,
+                             setDemoMode: { connection.setDemoMode($0) })
             }
             .tag(Tab.settings).toolbar(.hidden, for: .tabBar)
         }
@@ -52,6 +54,10 @@ struct RootView: View {
             .padding(.top, 6).padding(.bottom, 4)
             .background(DashboardStyle.background.ignoresSafeArea(edges: .bottom))
         }
+        .alert("操作未完成", isPresented: Binding(get: { connection.accountActionFailure != nil },
+            set: { if !$0 { connection.accountActionFailure = nil } })) {
+            Button("好", role: .cancel) { connection.accountActionFailure = nil }
+        } message: { Text(connection.accountActionFailure ?? "请重试") }
         .tint(DashboardStyle.text)
         .task {
             connection.setActive(scenePhase == .active)

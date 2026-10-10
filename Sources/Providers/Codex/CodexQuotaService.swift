@@ -41,6 +41,7 @@ struct CodexQuotaService: CodexQuotaUpdating {
         var stage = "读取本机授权"
         do {
             try Task.checkCancellation()
+            guard !account.isDemo else { throw CodexQuotaError.failed }
             guard var credential = try await loadCredential(account.credentialRef) else {
                 throw CodexQuotaError.failed
             }

@@ -232,6 +232,53 @@ final class AccountStoreTests: XCTestCase {
         XCTAssertEqual(restored, [accountA, accountB])
     }
 
+    func testT57DemoAdditionRefreshAndAtomicClearPreserveRealAccounts() async throws {
+        let url = try isolatedFileURL()
+        let store = AccountStore(fileURL: url)
+        let realA = makeAccountA(), realB = makeAccountB()
+        try await store.append(realA)
+        try await store.append(realB)
+        _ = try await store.setDemoMode(true)
+        let a = try await store.addDemo(now: .now)
+        let b = try await store.addDemo(now: .now)
+        XCTAssertTrue(a.isDemo && b.isDemo)
+        XCTAssertNotEqual(a.verifiedEmail, b.verifiedEmail)
+        XCTAssertNotEqual(a.quotaSnapshot?.weekly.amount, b.quotaSnapshot?.weekly.amount)
+        try await store.reorder([b.id, realB.id, a.id, realA.id])
+        let refreshed = try await store.refreshDemo(a, now: .now.addingTimeInterval(5))
+        XCTAssertNotEqual(a.quotaSnapshot, refreshed.quotaSnapshot)
+        let beforeClear = try await AccountStore(fileURL: url).load()
+        XCTAssertEqual(beforeClear, [b, realB, refreshed, realA])
+        let mode = try await AccountStore(fileURL: url).demoModeEnabled()
+        XCTAssertTrue(mode)
+        let after = try await store.setDemoMode(false)
+        XCTAssertEqual(after, [realB, realA])
+        let reopened = try await AccountStore(fileURL: url).load()
+        XCTAssertEqual(reopened, after)
+        let off = try await AccountStore(fileURL: url).demoModeEnabled()
+        XCTAssertFalse(off)
+        do { _ = try await store.refreshDemo(a, now: .now); XCTFail("Deleted sample must not return") } catch {}
+        do { _ = try await store.addDemo(now: .now); XCTFail("Disabled mode must reject samples") } catch {}
+        _ = try await store.setDemoMode(true)
+        let next = try await store.addDemo(now: .now)
+        XCTAssertNotEqual(next.id, a.id)
+        do { _ = try await store.refreshDemo(realA, now: .now); XCTFail("Real account must not be simulated") } catch {}
+    }
+
+    func testT57LegacyFileDefaultsToRealAccountsAndDemoDisabled() async throws {
+        let url = try isolatedFileURL()
+        let store = AccountStore(fileURL: url)
+        try await store.append(makeAccountA())
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])
+        json.removeValue(forKey: "demoEnabled")
+        try JSONSerialization.data(withJSONObject: json).write(to: url)
+        let loaded = try await store.load()
+        XCTAssertEqual(loaded, [makeAccountA()])
+        XCTAssertFalse(loaded[0].isDemo)
+        let enabled = try await store.demoModeEnabled()
+        XCTAssertFalse(enabled)
+    }
+
     private func isolatedFileURL() throws -> URL {
         let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent("T04-\(UUID().uuidString)", isDirectory: true)

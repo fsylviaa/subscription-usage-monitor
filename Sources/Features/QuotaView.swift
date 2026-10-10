@@ -168,6 +168,7 @@ private struct QuotaAccountCard: View {
                     } else {
                         planTitle
                     }
+                    if account.isDemo { Text("演示").font(.caption2).foregroundStyle(DashboardStyle.secondary) }
                     Text(account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户")
                         .font(.system(size: emailSize)).foregroundStyle(DashboardStyle.secondary)
                         .fixedSize(horizontal: false, vertical: true).privacySensitive()
