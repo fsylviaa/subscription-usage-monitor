@@ -112,6 +112,31 @@ final class LaunchTests: XCTestCase {
     }
 
     @MainActor
+    func testT17LongDemoListDragFirstToBottomAndReopen() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        app.launch()
+        defer { app.terminate() }
+        app.buttons["tab.settings"].tap()
+        app.switches["settings.demo"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        app.buttons["tab.quota"].tap()
+        for _ in 1...6 { app.buttons["quota.toolbarConnect"].tap() }
+        let list = app.collectionViews["quota.list"]
+        let identity = app.staticTexts.matching(identifier: "quota.accountIdentity").firstMatch.label
+        let cell = app.cells.containing(.staticText, identifier: identity).firstMatch
+        cell.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.65))
+            .press(forDuration: 0.7, thenDragTo: list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.98)),
+                   withVelocity: .slow, thenHoldForDuration: 3)
+        list.swipeUp(); list.swipeUp()
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").allElementsBoundByIndex.last?.label, identity)
+        app.terminate(); app.launch()
+        XCTAssertTrue(app.collectionViews["quota.list"].waitForExistence(timeout: 5))
+        app.collectionViews["quota.list"].swipeUp(); app.collectionViews["quota.list"].swipeUp()
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").allElementsBoundByIndex.last?.label, identity)
+    }
+
+    @MainActor
     func testManualDarkQuotaDetailsAndMenu() {
         continueAfterFailure = false
         let app = XCUIApplication()

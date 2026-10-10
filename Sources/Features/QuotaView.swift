@@ -344,7 +344,7 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 12
         section.contentInsets = .init(top: 12, leading: 16, bottom: 24, trailing: 16)
-        let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewCompositionalLayout(section: section))
+        let view = UICollectionView(frame: .zero, collectionViewLayout: QuotaReorderLayout(section: section))
         view.backgroundColor = .clear
         view.alwaysBounceVertical = true
         view.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "quota")
@@ -401,17 +401,21 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
             switch gesture.state {
             case .began:
                 guard parent.canMove, let index = view.indexPathForItem(at: gesture.location(in: view)) else { return }
+                (view.collectionViewLayout as? QuotaReorderLayout)?.beginMovement(at: index)
                 dragging = view.beginInteractiveMovementForItem(at: index)
+                if !dragging { (view.collectionViewLayout as? QuotaReorderLayout)?.finishMovement() }
                 if dragging { UIImpactFeedbackGenerator(style: .light).impactOccurred() }
             case .changed:
                 if dragging { view.updateInteractiveMovementTargetPosition(gesture.location(in: view)) }
             case .ended:
                 if dragging { view.endInteractiveMovement() }
                 dragging = false
+                (view.collectionViewLayout as? QuotaReorderLayout)?.finishMovement()
                 reconcileAfterMovement()
             default:
                 if dragging { view.cancelInteractiveMovement() }
                 dragging = false
+                (view.collectionViewLayout as? QuotaReorderLayout)?.finishMovement()
                 reconcileAfterMovement()
             }
         }
@@ -425,5 +429,59 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
                 collection?.reloadData()
             }
         }
+    }
+}
+
+
+/// Keep crossing boundaries in content coordinates for the whole gesture. Using
+/// the newly displaced cell frames makes unequal-height cards swap back and forth.
+struct QuotaReorderPosition {
+    let source: Int
+    let centers: [CGFloat]
+    private(set) var destination: Int
+    private let margin: CGFloat = 6
+
+    init(source: Int, centers: [CGFloat]) {
+        self.source = source
+        self.centers = centers
+        self.destination = source
+    }
+
+    mutating func update(y: CGFloat) -> Int {
+        guard y.isFinite, centers.indices.contains(source) else { return destination }
+        while destination < centers.count - 1 {
+            let boundary = centers[destination < source ? destination : destination + 1]
+            guard y > boundary + margin else { break }
+            destination += 1
+        }
+        while destination > 0 {
+            let boundary = centers[destination > source ? destination : destination - 1]
+            guard y < boundary - margin else { break }
+            destination -= 1
+        }
+        return destination
+    }
+}
+
+final class QuotaReorderLayout: UICollectionViewCompositionalLayout {
+    private(set) var movement: QuotaReorderPosition?
+
+    func beginMovement(at index: IndexPath) {
+        guard let collectionView, index.section == 0 else { return }
+        let count = collectionView.numberOfItems(inSection: 0)
+        let centers = (0..<count).compactMap {
+            layoutAttributesForItem(at: IndexPath(item: $0, section: 0))?.center.y
+        }
+        guard centers.count == count, centers.indices.contains(index.item) else { return }
+        movement = QuotaReorderPosition(source: index.item, centers: centers)
+    }
+
+    func finishMovement() { movement = nil }
+
+    override func targetIndexPath(forInteractivelyMovingItem previousIndexPath: IndexPath,
+                                  withPosition position: CGPoint) -> IndexPath {
+        guard movement != nil else { return previousIndexPath }
+        let destination = movement!.update(y: position.y)
+        return IndexPath(item: destination, section: previousIndexPath.section)
     }
 }

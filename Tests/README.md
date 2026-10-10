@@ -76,3 +76,10 @@ T16 连接入口修正：`CodexConnectionFlowTests` 验证未选平台零网络�
 `CodexAccountBindingStoreTests` 的 `testT18…` 使用真实隔离 Keychain／文件和固定验证结果，覆盖重复更新与移动后位置、成功重开、新凭据及作用域查询、取消／核验失败、凭据及文件写入失败、同作用域查询失败保留旧值旧时间、身份或作用域变化清空旧值、邮箱大小写、演示隔离、旧凭据清理失败重试以及历史重复行合并。
 
 `CodexQuotaUITests/testT18DuplicateLoginKeepsPositionAndCountAfterReopenAndCancel` 使用 Debug `--t16-isolated-ui duplicate --t16-run-id <UUID>`：先添加 A/B，再以新授权连接 A，检查只两条原位置、重开一致、取消不改数据。固定样例与正式账户隔离，不把模拟额度作为真实五小时核对；本人真实重复登录按 [T18 记录](../docs/mvp任务清单/记录/T18-验收.md)另验。
+
+
+## T17 异高卡片连续换位回归
+
+`RootViewTests/testT17UnequalHeightUIKitMovementHoldsThenReversesWithoutOscillation` 在隔离窗口中承载无额度短卡与两张演示高卡，重放七个停留位置各 30 次 ±0.5 点移动，核对稳定目标及实际布局，再验证下移、连续跨项、主动反向、取消不保存和松手仅保存最终位置。另两项 `testT17StableBoundaries…`、`testT17CrossingDeadband…` 覆盖等高／异高／大高度差与边界微动；测试不查询真实余额。
+
+页面回归沿用 `testT17DragOrderAcrossPagesReopenAndAppend`、`testT17FailedDragRetainsOrderAndRetrySaves`、`testLongDemoListScrollAndDragToTop`，新增 `testT17LongDemoListDragFirstToBottomAndReopen` 验证反向边缘滚动和重开。结果见 [T17 修复记录](../docs/mvp任务清单/记录/T17-验收.md)。
