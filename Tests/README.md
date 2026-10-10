@@ -83,3 +83,10 @@ T16 连接入口修正：`CodexConnectionFlowTests` 验证未选平台零网络�
 `RootViewTests/testT17UnequalHeightUIKitMovementHoldsThenReversesWithoutOscillation` 在隔离窗口中承载无额度短卡与两张演示高卡，重放七个停留位置各 30 次 ±0.5 点移动，核对稳定目标及实际布局，再验证下移、连续跨项、主动反向、取消不保存和松手仅保存最终位置。另两项 `testT17StableBoundaries…`、`testT17CrossingDeadband…` 覆盖等高／异高／大高度差与边界微动；测试不查询真实余额。
 
 页面回归沿用 `testT17DragOrderAcrossPagesReopenAndAppend`、`testT17FailedDragRetainsOrderAndRetrySaves`、`testLongDemoListScrollAndDragToTop`，新增 `testT17LongDemoListDragFirstToBottomAndReopen` 验证反向边缘滚动和重开。结果见 [T17 修复记录](../docs/mvp任务清单/记录/T17-验收.md)。
+
+
+## T22 迟到结果保护
+
+`StaleAccountResultTests` 使用明确的开始／释放闸门，刻意让请求不配合取消：先挂起旧结果，完成取消、删除或新连接，再释放旧结果。七项测试覆盖迟到登录、旧额度覆盖新连接、删除后查询、删除清理中断时的续期／核验、重复添加清理中断时的续期／核验、取消刷新，以及页面删除无需等待旧请求。续期的响应与核验两个提交阶段分别检查。
+
+每项重新创建文件 reader 和独立 Keychain reader，逐字段比较未操作 C 的身份、顺序、额度及成功时间。全部使用随机 `T22.tests.UUID` 命名空间、example.invalid 人工身份、固定时钟及假 HTTP 传输，不查询真实额度、不读取正式授权；不会因真实五小时核对延期而默认启用任何 live 测试。页面回归沿用现有隔离添加／重复连接／演示管理入口；Release 没有新增测试入口。

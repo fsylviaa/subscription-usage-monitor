@@ -67,8 +67,8 @@ final class CodexConnectionFlow: ObservableObject {
         previous?.cancel()
         return Task {
             defer { managingAccounts = false }
-            await previous?.value
             do {
+                // Persist deletion before a non-cooperative request can finish.
                 try await remover.removeAccount(id)
                 accounts.removeAll { $0.id == id }
                 discardRemovedFeedback()
@@ -141,7 +141,7 @@ final class CodexConnectionFlow: ObservableObject {
             let accounts = try AccountStore.applicationStore()
             let vault = CredentialVault.applicationVault()
             let updater = CodexQuotaService(store: accounts, loadCredential: { try await vault.load(for: .credential($0)) },
-                renewal: CodexCredentialRenewal(vault: vault))
+                renewal: CodexCredentialRenewal(vault: vault, store: accounts))
             let flow = CodexConnectionFlow(completer: CodexLoginClient(), verifier: CodexIdentityVerifier(),
                                            bindings: CodexAccountBindingStore(accountStore: accounts, vault: vault),
                                            pending: CodexPendingLoginStore(), quotaUpdater: updater)
@@ -764,6 +764,9 @@ final class CodexConnectionFlow: ObservableObject {
             } catch is CancellationError {
                 // Cancellation never becomes a successful observation.
             } catch {
+                // A superseded/deleted request must not publish failure against a new binding.
+                guard accounts.contains(where: { $0.id == account.id && $0.generation == account.generation
+                    && $0.credentialRef == account.credentialRef && $0.deletionPending != true }) else { return }
                 // A validated plan can have been saved despite a quota failure.
                 if let saved = try? await bindings?.load(),
                    let updated = saved.first(where: { $0.id == account.id && $0.generation == account.generation

@@ -188,7 +188,7 @@ final class CodexCredentialRenewalTests: XCTestCase {
             let f = try await fixture()
             let client = RenewalClientStub()
             if failSave { f.keychain.failUpdate(after: 3) }
-            let first = CodexCredentialRenewal(vault: f.vault, client: client, now: { Self.instant }, verify: { tokens, _ in
+            let first = CodexCredentialRenewal(vault: f.vault, store: f.store, client: client, now: { Self.instant }, verify: { tokens, _ in
                 if !failSave { throw URLError(.timedOut) }
                 return tokens
             })
@@ -340,7 +340,7 @@ final class CodexCredentialRenewalTests: XCTestCase {
         return .init(account: account, store: store, vault: vault, original: payload, url: url, service: service, keychain: keychain)
     }
     private func manager(_ f: Fixture, client: any CodexTokenRenewing) -> CodexCredentialRenewal {
-        CodexCredentialRenewal(vault: f.vault, client: client, now: { Self.instant }, verify: { tokens, _ in tokens })
+        CodexCredentialRenewal(vault: f.vault, store: f.store, client: client, now: { Self.instant }, verify: { tokens, _ in tokens })
     }
     private func updater(_ f: Fixture, renewal: any CodexCredentialPreparing,
                          transport: RenewalUsageTransport = .init(), gate: RenewalNetworkGate = .init([.allowed(score: 51)])) -> CodexQuotaService {
@@ -438,7 +438,7 @@ final class CodexCredentialRenewalLiveTests: XCTestCase {
         let priorPackage = try CodexCredentialRenewal.package(before, for: account)
         let checker = NetworkScoreChecker()
         let updater = CodexQuotaService(store: store, loadCredential: { try await vault.load(for: .credential($0)) },
-            renewal: CodexCredentialRenewal(vault: vault), checkNetwork: {
+            renewal: CodexCredentialRenewal(vault: vault, store: store), checkNetwork: {
                 let result = await checker.check()
                 switch result {
                 case let .allowed(score): print("T14 | 真实网络 | 允许，评分\(score)")

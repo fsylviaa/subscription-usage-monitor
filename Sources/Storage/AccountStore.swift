@@ -1,9 +1,16 @@
 import Foundation
 
+/// One executor for account files and Keychain commits. No network work runs here.
+@globalActor
+actor AccountPersistenceActor {
+    static let shared = AccountPersistenceActor()
+}
+
 /// One instance per App, assembled at the App boundary when login is connected.
 /// Each mutation reads the last committed file, then replaces the whole document atomically.
 /// Methods have no suspension points, so read-modify-write stays serialized by this actor.
-actor AccountStore {
+@AccountPersistenceActor
+final class AccountStore {
     enum StoreError: Error, Equatable {
         case unsupportedSchemaVersion(Int)
         case duplicateLocalID
@@ -24,11 +31,11 @@ actor AccountStore {
     private let fileURL: URL
 
     /// Explicit URL keeps test data isolated from the App's real account directory.
-    init(fileURL: URL) {
+    nonisolated init(fileURL: URL) {
         self.fileURL = fileURL
     }
 
-    static func applicationStore() throws -> AccountStore {
+    nonisolated static func applicationStore() throws -> AccountStore {
         let directory = try FileManager.default.url(
             for: .applicationSupportDirectory,
             in: .userDomainMask,
@@ -147,10 +154,7 @@ actor AccountStore {
             throw StoreError.accountNotFound
         }
         let current = accounts[index]
-        guard current.deletionPending != true, current.provider == expected.provider, current.product == expected.product,
-              current.generation == expected.generation, current.scope == expected.scope,
-              current.credentialRef == expected.credentialRef,
-              current.remoteUserID == expected.remoteUserID, current.verifiedEmail == expected.verifiedEmail,
+        guard Self.isCurrentBinding(current, expected),
               current.quotaSnapshot.map({ $0.observedAt <= snapshot.observedAt }) ?? true else {
             throw StoreError.staleQuotaContext
         }
@@ -159,6 +163,23 @@ actor AccountStore {
         try Task.checkCancellation()
         try commit(accounts)
         return accounts[index]
+    }
+
+    private static func isCurrentBinding(_ current: ConnectedAccount, _ expected: ConnectedAccount) -> Bool {
+        current.deletionPending != true && current.provider == expected.provider && current.product == expected.product
+            && current.generation == expected.generation && current.scope == expected.scope
+            && current.credentialRef == expected.credentialRef && current.remoteUserID == expected.remoteUserID
+            && current.verifiedEmail == expected.verifiedEmail
+    }
+
+    /// Identity/version/deletion check and Keychain CAS execute without suspension.
+    /// A failed cleanup may leave an old credential physically present; it still cannot renew.
+    func replaceCredential(_ expectedPayload: CredentialPayload, with replacement: CredentialPayload,
+                           for expected: ConnectedAccount, vault: CredentialVault) throws -> Bool {
+        guard let current = try load().first(where: { $0.id == expected.id }),
+              Self.isCurrentBinding(current, expected) else { throw StoreError.staleQuotaContext }
+        return try vault.replace(ifMatching: expectedPayload, with: replacement,
+                                 for: .credential(expected.credentialRef))
     }
 
     enum QuotaObservation: Sendable {
@@ -177,10 +198,7 @@ actor AccountStore {
             throw StoreError.accountNotFound
         }
         var current = accounts[index]
-        guard current.deletionPending != true, current.provider == expected.provider, current.product == expected.product,
-              current.generation == expected.generation, current.scope == expected.scope,
-              current.credentialRef == expected.credentialRef,
-              current.remoteUserID == expected.remoteUserID, current.verifiedEmail == expected.verifiedEmail,
+        guard Self.isCurrentBinding(current, expected),
               current.subscription.map({ $0.observedAt <= subscription.observedAt }) ?? true,
               current.quotaSnapshot.map({ $0.observedAt <= subscription.observedAt }) ?? true else {
             throw StoreError.staleQuotaContext

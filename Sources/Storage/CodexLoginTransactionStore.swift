@@ -21,18 +21,28 @@ extension CodexLoginTransactionStoring {
 /// the authorization with an ID-only tombstone before intermediate secrets are removed.
 actor CodexLoginTransactionStore: CodexLoginTransactionStoring {
     private let vault: CredentialVault
-    private let entry = CredentialVault.Entry.loginTransaction(
+    private static let slot = CredentialVault.Entry.loginTransaction(
         UUID(uuidString: "2BCEFFDE-7DC2-4F6A-89B0-020023689458")!
     )
+
+    private var entry: CredentialVault.Entry { Self.slot }
 
     init(vault: CredentialVault = .applicationVault()) {
         self.vault = vault
     }
 
+    /// Used inside the same persistence turn as a verified binding commit.
+    @AccountPersistenceActor
+    static func isCancelled(_ transactionID: UUID, vault: CredentialVault) throws -> Bool {
+        guard let payload = try vault.load(for: slot) else { return false }
+        if case let .cancelled(id) = try Self.decode(payload) { return id == transactionID }
+        return false
+    }
+
     func save(_ authorization: CodexDeviceAuthorization) async throws {
         try Task.checkCancellation()
         let current = try await vault.load(for: entry)
-        if let current, case let .cancelled(id) = try decode(current), id == authorization.transactionID {
+        if let current, case let .cancelled(id) = try Self.decode(current), id == authorization.transactionID {
             throw CancellationError()
         }
         let data = try JSONEncoder().encode(authorization)
@@ -46,7 +56,7 @@ actor CodexLoginTransactionStore: CodexLoginTransactionStoring {
 
     func load() async throws -> CodexDeviceAuthorization? {
         guard let payload = try await vault.load(for: entry) else { return nil }
-        switch try decode(payload) {
+        switch try Self.decode(payload) {
         case let .authorization(authorization): return authorization
         case .cancelled: return nil
         }
@@ -54,7 +64,7 @@ actor CodexLoginTransactionStore: CodexLoginTransactionStoring {
 
     func loadCancelledTransactionID() async throws -> UUID? {
         guard let payload = try await vault.load(for: entry) else { return nil }
-        if case let .cancelled(id) = try decode(payload) { return id }
+        if case let .cancelled(id) = try Self.decode(payload) { return id }
         return nil
     }
 
@@ -64,7 +74,7 @@ actor CodexLoginTransactionStore: CodexLoginTransactionStoring {
         while true {
             let payload = try await vault.load(for: entry)
             if let payload {
-                let current = try decode(payload)
+                let current = try Self.decode(payload)
                 guard current.transactionID == transactionID else { return }
                 if case .cancelled = current { return }
             }
@@ -80,7 +90,7 @@ actor CodexLoginTransactionStore: CodexLoginTransactionStoring {
     /// decodable authorization or cancellation written meanwhile is preserved.
     func discardInvalidRecord() async throws {
         guard let payload = try await vault.load(for: entry) else { return }
-        do { _ = try decode(payload) }
+        do { _ = try Self.decode(payload) }
         catch {
             try await vault.remove(ifMatching: payload, for: entry)
         }
@@ -88,7 +98,7 @@ actor CodexLoginTransactionStore: CodexLoginTransactionStoring {
 
     func remove(transactionID: UUID) async throws {
         guard let payload = try await vault.load(for: entry) else { return }
-        guard try decode(payload).transactionID == transactionID else { return }
+        guard try Self.decode(payload).transactionID == transactionID else { return }
         try await vault.remove(ifMatching: payload, for: entry)
     }
 
@@ -108,7 +118,7 @@ actor CodexLoginTransactionStore: CodexLoginTransactionStoring {
         }
     }
 
-    private func decode(_ payload: CredentialPayload) throws -> Record {
+    nonisolated private static func decode(_ payload: CredentialPayload) throws -> Record {
         if let cancelled = try? JSONDecoder().decode(CancellationRecord.self, from: payload.data) {
             guard cancelled.version == 1 else { throw CodexLoginError.failed }
             return .cancelled(cancelled.cancelledTransactionID)

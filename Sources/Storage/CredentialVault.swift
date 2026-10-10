@@ -17,7 +17,8 @@ struct CredentialPayload: Sendable, Equatable, CustomStringConvertible, CustomDe
 
 /// One shared instance per App. Calls have no suspension points while touching Keychain.
 /// No account metadata, file storage, logging, or automatic deletion on read failure.
-actor CredentialVault {
+@AccountPersistenceActor
+final class CredentialVault {
     enum Entry: Sendable {
         case credential(UUID)
         case loginTransaction(UUID)
@@ -46,12 +47,12 @@ actor CredentialVault {
     private let client: any KeychainClient
 
     /// Tests supply a unique service and never access the production namespace.
-    init(service: String, client: any KeychainClient = SystemKeychainClient()) {
+    nonisolated init(service: String, client: any KeychainClient = SystemKeychainClient()) {
         self.service = service
         self.client = client
     }
 
-    static func applicationVault() -> CredentialVault {
+    nonisolated static func applicationVault() -> CredentialVault {
         CredentialVault(service: "com.iceflying.SubscriptionUsage.authorization")
     }
 

@@ -105,12 +105,21 @@ final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, Demo
 
     func save(_ login: CodexVerifiedLogin, transactionID: UUID) async throws -> ConnectedAccount {
         try Task.checkCancellation()
-        let existing = try await load()
-        // A committed login can survive a crash before temporary cleanup.
-        if let committed = existing.first(where: { $0.loginTransactionID == transactionID }) {
+        _ = try await load()
+        let committed = try await commit(login, transactionID: transactionID)
+        await cleanupRetiredCredentials(committed)
+        return (try? await accountStore.load().first { $0.id == committed.id }) ?? committed
+    }
+
+    /// Commit verified identity and its credential in one persistence turn.
+    @AccountPersistenceActor
+    private func commit(_ login: CodexVerifiedLogin, transactionID: UUID) throws -> ConnectedAccount {
+        try Task.checkCancellation()
+        let existing = try accountStore.load()
+        if let committed = existing.first(where: { $0.loginTransactionID == transactionID && $0.deletionPending != true }) {
             return committed
         }
-        try Task.checkCancellation()
+        guard try !CodexLoginTransactionStore.isCancelled(transactionID, vault: vault) else { throw CancellationError() }
 
         let account = ConnectedAccount(
             remoteUserID: login.remoteUserID,
@@ -120,25 +129,22 @@ final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, Demo
             loginTransactionID: transactionID
         )
         let entry = CredentialVault.Entry.credential(account.credentialRef)
-        try await vault.save(login.credentials, for: entry)
+        try vault.save(login.credentials, for: entry)
         let committed: ConnectedAccount
         do {
             try Task.checkCancellation()
-            committed = try await accountStore.commitLogin(account)
+            committed = try accountStore.commitLogin(account)
         } catch {
             // This random reference belongs only to this attempted binding. Never
             // delete or replace an established account or a different payload.
             do {
-                try await vault.remove(ifMatching: login.credentials, for: entry)
+                try vault.remove(ifMatching: login.credentials, for: entry)
             } catch {
                 throw BindingError.credentialCleanupFailed
             }
             throw error
         }
-        // Do not check cancellation after commit: the account is already durable.
-        // The coordinator can dismiss UI, but must retain this successful binding.
-        await cleanupRetiredCredentials(committed)
-        // Best-effort cleanup cannot change the outcome of an already committed login.
-        return (try? await accountStore.load().first { $0.id == committed.id }) ?? committed
+        // Cancellation after the atomic commit cannot undo a successful login.
+        return committed
     }
 }

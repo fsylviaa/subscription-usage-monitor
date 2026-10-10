@@ -78,6 +78,7 @@ protocol CodexCredentialPreparing: Sendable {
 actor CodexCredentialRenewal: CodexCredentialPreparing {
     typealias Package = CodexIdentityVerifier.CredentialPackage
     private let vault: CredentialVault
+    private let store: AccountStore
     private let client: any CodexTokenRenewing
     private let verify: @Sendable (CodexTokenResponse, Package) async throws -> CodexTokenResponse
     private let now: @Sendable () -> Date
@@ -86,13 +87,13 @@ actor CodexCredentialRenewal: CodexCredentialPreparing {
     // never resend the grant. A restart still sees the durable no-replay marker.
     private var received: [UUID: (expected: CredentialPayload, candidate: CredentialPayload)] = [:]
 
-    init(vault: CredentialVault,
+    init(vault: CredentialVault, store: AccountStore,
          client: any CodexTokenRenewing = CodexTokenRenewalClient(),
          now: @escaping @Sendable () -> Date = { Date() },
          verify: @escaping @Sendable (CodexTokenResponse, Package) async throws -> CodexTokenResponse = {
              try await CodexIdentityVerifier().verifyRenewal($0, replacing: $1)
          }) {
-        self.vault = vault; self.client = client; self.now = now; self.verify = verify
+        self.vault = vault; self.store = store; self.client = client; self.now = now; self.verify = verify
     }
 
     func credential(for account: ConnectedAccount, rejected: CredentialPayload? = nil) async throws -> CredentialPayload {
@@ -127,7 +128,7 @@ actor CodexCredentialRenewal: CodexCredentialPreparing {
         guard var payload = try await vault.load(for: entry) else { throw CodexQuotaError.failed }
         if let pending = received[ref] {
             if payload == pending.expected {
-                guard try await vault.replace(ifMatching: payload, with: pending.candidate, for: entry) else {
+                guard try await store.replaceCredential(payload, with: pending.candidate, for: account, vault: vault) else {
                     throw CodexQuotaError.failed
                 }
                 payload = pending.candidate
@@ -143,7 +144,7 @@ actor CodexCredentialRenewal: CodexCredentialPreparing {
             package.renewal = .init(id: UUID(), startedAt: now(),
                 trigger: nearExpiry ? .expiry : .unauthorized, received: nil)
             let marker = try Self.encode(package)
-            guard try await vault.replace(ifMatching: payload, with: marker, for: entry) else {
+            guard try await store.replaceCredential(payload, with: marker, for: account, vault: vault) else {
                 throw CodexQuotaError.failed
             }
             payload = marker
@@ -153,7 +154,7 @@ actor CodexCredentialRenewal: CodexCredentialPreparing {
             package.renewal?.received = tokens
             let candidate = try Self.encode(package)
             received[ref] = (expected: marker, candidate: candidate)
-            guard try await vault.replace(ifMatching: marker, with: candidate, for: entry) else {
+            guard try await store.replaceCredential(marker, with: candidate, for: account, vault: vault) else {
                 received[ref] = nil
                 throw CodexQuotaError.failed
             }
@@ -173,7 +174,7 @@ actor CodexCredentialRenewal: CodexCredentialPreparing {
             .init(startedAt: attempt.startedAt, completedAt: now(), previousExpiry: previousExpiry, trigger: attempt.trigger)
         ]).suffix(2))
         let committed = try Self.encode(package)
-        guard try await vault.replace(ifMatching: payload, with: committed, for: entry) else {
+        guard try await store.replaceCredential(payload, with: committed, for: account, vault: vault) else {
             throw CodexQuotaError.failed
         }
         return committed
