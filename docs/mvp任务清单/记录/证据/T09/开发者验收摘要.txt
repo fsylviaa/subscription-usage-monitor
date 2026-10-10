@@ -1,4 +1,4 @@
-T09 开发者验收摘要 — 2026-10-10（Asia/Shanghai）
+T09 开发者阶段验收摘要（092c9a6；最终结果见真实收口摘要.txt）— 2026-10-10（Asia/Shanghai）
 
 环境：Xcode 26.6；iPhone 11 / iOS 26.5；iPhone 17 Pro / iOS 26.5 模拟器。
 
