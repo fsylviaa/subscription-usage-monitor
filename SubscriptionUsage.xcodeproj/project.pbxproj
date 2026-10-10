@@ -5,6 +5,27 @@
 	};
 	"objectVersion" = "56";
 	"objects" = {
+		"A030000000000000000000011" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "QuotaView.swift";
+			"sourceTree" = "<group>";
+		};
+		"A030000000000000000000012" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A030000000000000000000011";
+		};
+		"A030000000000000000000021" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "SettingsView.swift";
+			"sourceTree" = "<group>";
+		};
+		"A030000000000000000000022" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A030000000000000000000021";
+		};
+
 		"3362B8F6FEB9187AF06C2973" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -50,6 +71,8 @@
 			"isa" = "PBXGroup";
 			"children" = (
 				"F3D75B4B8AA038D86CC6B29B",
+				"A030000000000000000000021",
+				"A030000000000000000000011",
 			);
 			"path" = "Features";
 			"sourceTree" = "<group>";
@@ -517,6 +540,8 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
 			"files" = (
+				"A030000000000000000000022",
+				"A030000000000000000000012",
 				"0868E870EDC42183AF777E36",
 				"4232F2B2369A337E80CBEE0B",
 			);

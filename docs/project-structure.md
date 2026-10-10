@@ -1,8 +1,8 @@
 # 工程结构与依赖
 
-T01 的基础脚手架说明，更新于 2026-10-10。运行步骤见[根 README](../README.md)，实际验证与待验事项见[T01 验收记录](mvp任务清单/记录/T01-验收.md)。任务状态以[项目进度](项目进度.md)为准。
+T01–T03 的工程与页面基础说明，更新于 2026-10-10。运行步骤见[根 README](../README.md)，实际验证与待验事项见[T01 验收记录](mvp任务清单/记录/T01-验收.md)。任务状态以[项目进度](项目进度.md)为准。
 
-当前工程只包含 SwiftUI 空壳页面和测试入口，启动及测试的实际结果以验收记录为准。登录、额度查询、账户管理、小组件、通知与后台更新均在后续对应任务接入；下文的目录分工不表示这些功能已经实现。
+当前工程包含“额度／设置”两页导航、额度空态、禁用的待接入操作和测试入口，启动及测试的实际结果以验收记录为准。登录、额度查询、账户管理、小组件、通知与后台更新均在后续对应任务接入；下文的目录分工不表示这些功能已经实现。
 
 ## 工程入口与配置
 
@@ -30,7 +30,7 @@ app/
 ├── Config/                       本机开发团队的可选配置入口
 ├── Sources/
 │   ├── App/                      App 入口与根页面
-│   ├── Features/                 后续各功能页面
+│   ├── Features/                 额度、设置基础页与后续页面
 │   ├── Domain/                   后续公共业务数据与必要接口
 │   ├── Providers/Codex/          后续 Codex 登录、请求与解析
 │   ├── Services/                 后续共用流程与系统能力
@@ -50,8 +50,8 @@ app/
 |---|---|---|
 | `Config/Signing.xcconfig` | App 的 Debug/Release 读取可选的本机开发团队 | 实际团队保存在被 Git 忽略的 `Signing.local.xcconfig`；不保存账户、证书或私钥；文件缺少时模拟器仍可用 |
 | `Sources/App/SubscriptionUsageApp.swift` | SwiftUI 的 `@main` 入口，打开根页面 | 后续在此组装必要依赖、连接 App 生命周期，不直接承担平台解析 |
-| `Sources/App/RootView.swift` | T01 的简洁空壳页面 | T03 起接入实际页面；当前不显示样例账户或伪造额度 |
-| `Sources/Features/` | 额度、账户、设置、教程等页面及直接相关展示逻辑 | T03 及后续页面任务添加；页面调用业务能力，不自行管理授权秘密 |
+| `Sources/App/RootView.swift` | 底部额度／设置导航，各页独立 NavigationStack | 当前不显示样例账户或伪造额度；后续按任务接入流程 |
+| `Sources/Features/` | 额度、账户、设置、教程等页面及直接相关展示逻辑 | 已有 `QuotaView.swift`、`SettingsView.swift`；待接入动作禁用；后续页面调用业务能力，不自行管理授权秘密 |
 | `Sources/Domain/` | 公共账户数据、额度语义及必要接口 | T04、T11 起添加；不依赖具体页面或 Codex 实现 |
 | `Sources/Providers/Codex/` | Codex 连接、请求构建、响应解析与平台差异 | T07–T14 逐项添加；当前不建其他平台实现或完整多平台框架 |
 | `Sources/Services/` | 网络检查、连接及刷新协调、系统提醒等共用流程 | T06 及对应后续任务接入；按实际需要添加，不预建通用框架 |
@@ -59,14 +59,14 @@ app/
 | `Sources/Shared/` | App 和小组件都需要的纯展示数据、必要格式化与非敏感快照约定 | T32 实现实际共享；不放密码、令牌、登录流程或钥匙串访问 |
 | `Resources/` | 图片、颜色、图标和实际采用代码的许可资料 | T01 仅建立必要资源位置，不做正式品牌设计；实际引入第三方代码时补对应许可 |
 | `Tests/Unit/RootViewTests.swift` | 用 App 承载的单元测试检查根视图加载与布局 | 后续单元及隔离集成测试放 `Tests/Unit/`；需要时建立 `Tests/Fixtures/` 保存去敏固定样例、`Tests/TestSupport/` 保存测试替身 |
-| `Tests/UI/LaunchTests.swift` | 通过测试运行器检查首次启动和退出后重启 | 后续界面测试放 `Tests/UI/`；测试入口不作为产品页面或用户设置 |
+| `Tests/UI/LaunchTests.swift` | 通过测试运行器检查启动、页面往返、操作禁用、顶部同排与重启 | 后续界面测试放 `Tests/UI/`；测试入口不作为产品页面或用户设置 |
 | `docs/` | 已确认需求、原研究证据、任务说明和验收结果 | 保留已有资料及历史；新增功能随对应任务更新进度和证据 |
 
 未来小组件文件落在根目录 `Widgets/`，当前不创建此目录、扩展 target 或组件配置。T32/T33 根据实际共享和显示需求建立相关能力；小组件只读取必要结果，不依赖主 App 页面、登录流程或钥匙串。
 
 ## 各部分如何协作
 
-T01 仅建立 `App → 根页面` 的实际调用。后续依次增加以下简单分工，不要求拆成多个 Swift Package：
+T03 已建立 `App → RootView → 各自 NavigationStack → QuotaView / SettingsView` 的实际调用；系统语义背景、文字和已有浅深 AccentColor 共同提供基础外观。后续依次增加以下简单分工，不要求拆成多个 Swift Package：
 
 - App 入口负责组装页面、业务流程、平台接入和存储，避免页面自行创建整套依赖。
 - 页面调用必要业务能力，以 Domain 中的数据表达账户和额度；Domain 不反向引用界面或平台实现。
@@ -81,7 +81,7 @@ T01 仅建立 `App → 根页面` 的实际调用。后续依次增加以下简�
 
 | 名称 | 当前用途 | 来源及版本方式 |
 |---|---|---|
-| SwiftUI | App 生命周期、窗口和空壳页面 | Apple iOS SDK，随 Xcode 提供 |
+| SwiftUI | App 生命周期、窗口、TabView / NavigationStack、无账户页和设置 Form | Apple iOS SDK，随 Xcode 提供 |
 | UIKit | 根页面使用系统背景色；单元测试通过 `UIHostingController` 加载和布局 SwiftUI 根视图 | Apple iOS SDK，随 Xcode 提供 |
 | Foundation | SwiftUI 与测试所依赖的系统基础类型及运行支持 | Apple iOS SDK，随 Xcode 提供；当前没有网络请求或持久化流程 |
 | XCTest / XCUITest | 单元测试与 UI 启动检查 | Apple Xcode 测试框架，随 Xcode 提供；仅测试 targets 使用 |

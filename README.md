@@ -8,9 +8,9 @@
 
 在本项目的新对话里可直接说“开始 T02”等明确任务编号；执行者会检查前置、完成指定任务，并主动更新进度和 Git 存档。也可说“继续上次任务”“T01 我验收通过了”或描述发现的问题，具体含义见项目规则。
 
-## 开发与运行（T01／T02）
+## 开发与运行（T01–T03）
 
-工程入口：[SubscriptionUsage.xcodeproj](SubscriptionUsage.xcodeproj)。共享运行方案（Scheme）为 **SubscriptionUsage**，App 的临时显示名称为“订阅用量”。当前只有启动空壳和测试入口；功能进度见[项目进度](docs/项目进度.md)，目录、协作边界和依赖见[工程结构](docs/project-structure.md)。**当前无第三方库依赖**，不需要先安装包管理器、生成工程或登录 Codex。
+工程入口：[SubscriptionUsage.xcodeproj](SubscriptionUsage.xcodeproj)。共享运行方案（Scheme）为 **SubscriptionUsage**，App 的临时显示名称为“订阅用量”。当前可在“额度”和“设置”之间切换，额度页显示无账户状态；连接、刷新和设置子项暂时禁用，尚不能登录或查询额度。功能进度见[项目进度](docs/项目进度.md)，目录、协作边界和依赖见[工程结构](docs/project-structure.md)。**当前无第三方库依赖**，不需要先安装包管理器、生成工程或登录 Codex。
 
 ### 本次环境
 
@@ -22,8 +22,8 @@
 
 1. 打开本目录的 `SubscriptionUsage.xcodeproj`（可以双击，或在终端运行 `open SubscriptionUsage.xcodeproj`）。
 2. 顶部选择共享 Scheme **SubscriptionUsage**，运行设备选择 **iPhone 17 Pro（iOS 26.5）**。
-3. 按 **⌘R** 运行。预期模拟器出现“订阅用量”和“Codex 订阅额度”的简洁页面，没有样例账户或额度数字。
-4. 按 **⌘U** 执行检查。`SubscriptionUsageTests` 验证根视图加载与布局；`SubscriptionUsageUITests` 验证 App 启动和退出后重新启动。
+3. 按 **⌘R** 运行。预期模拟器出现“订阅额度”页面及底部“额度／设置”入口。无账户时显示“未连接账户”和禁用的“连接 Codex”，没有样例账户或额度数字。
+4. 按 **⌘U** 执行检查。`SubscriptionUsageTests` 验证根视图加载与布局；`SubscriptionUsageUITests` 验证页面往返、当前入口、未接入操作禁用、顶部操作排列及退出后重新启动。
 5. 关闭工程窗口后重新打开同一个工程，再按 **⌘R**；运行方案与必须配置均已保存到仓库。
 
 如果另一台 Mac 没有对应模拟器，在 Xcode 的运行设备列表中选择已安装的 iPhone 模拟器（iOS 17 或以上），或在 **Xcode → Settings → Components** 安装所需 iOS 模拟器运行环境。不同 Xcode 版本的界面可能略有区别，参见 [Apple 模拟器组件说明](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components)。切换 Xcode 的命令行工具方式见 [Apple 工具配置说明](https://developer.apple.com/documentation/xcode/configuring-command-line-tools-settings)；本项目命令用 `DEVELOPER_DIR` 只影响当前终端会话。
@@ -54,9 +54,17 @@ xcodebuild -project SubscriptionUsage.xcodeproj \
 
 复查不依赖已有构建缓存时，将 `-derivedDataPath` 改成一个全新目录，如 `build/FreshDerivedData`，重新构建并按上面步骤运行。`build/`、构建结果、Xcode 个人状态均不提交。后续测试样例的隔离规则见 [Tests/README.md](Tests/README.md)；实际执行记录见 [T01 验收](docs/mvp任务清单/记录/T01-验收.md)。
 
+### T03 页面复验
+
+1. 运行 App，查看“订阅额度”与无账户连接入口；标题右侧刷新、连接均为禁用状态。
+2. 点底部“设置”，再点“额度”，可反复切换；设置中的待接入功能不可操作。
+3. 切换模拟器或 iPhone 的系统浅深外观，再回到 App，两页应跟随变化。App 内不提供主题或刷新频率设置。
+
+本任务仅建立入口；实际登录从 T07 接入。模拟器证据及用户亲验状态见 [T03 验收](docs/mvp任务清单/记录/T03-验收.md)。手机需在 Xcode 再次按 ⌘R 安装本次版本后查看，T02 的安装验证不代表本次页面已在真机复验。
+
 ### 在自己的 iPhone 上运行（T02）
 
-工程入口与 Scheme 仍为 **SubscriptionUsage**。目标真机为 **iPhone 11 / iOS 26.5（23F77）**；当前页面仍显示“订阅用量”和“Codex 订阅额度”。2026-10-10 已通过 Xcode 安装／启动、手机桌面重开及停止真机调试后重开；用户亲验已通过，详细过程见 [T02 验收记录](docs/mvp任务清单/记录/T02-验收.md)。
+工程入口与 Scheme 仍为 **SubscriptionUsage**。目标真机为 **iPhone 11 / iOS 26.5（23F77）**；T02 验证时为两行标题空壳，当前页面随 T03 更新。2026-10-10 已通过 Xcode 安装／启动、手机桌面重开及停止真机调试后重开；用户亲验已通过，详细过程见 [T02 验收记录](docs/mvp任务清单/记录/T02-验收.md)。
 
 1. 用数据线将 iPhone 连接到 Mac 并解锁；如手机询问信任，由用户本人确认。
 2. 如尚未开启，在 iPhone 的 **设置 → 隐私与安全性 → 开发者模式** 开启，按提示重启，再确认开启并解锁。参见 [Apple 开发者模式说明](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)。

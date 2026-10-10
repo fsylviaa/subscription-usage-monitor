@@ -1,0 +1,31 @@
+T03 检查摘要 — 2026-10-10
+环境：Xcode 26.6 / iPhone 17 Pro Simulator / iOS 26.5
+数据：无账户，无真实网络调用，无样例额度。
+
+t03-xcode-test.log
+Test Case '-[SubscriptionUsageTests.RootViewTests testRootViewCanLoadAndLayOutInAppHost]' passed (0.021 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testNavigationEmptyStateAndUnavailableActions]' passed (21.332 seconds).
+** TEST SUCCEEDED **
+
+t03-xcode-retest.log
+Test Case '-[SubscriptionUsageTests.RootViewTests testRootViewCanLoadAndLayOutInAppHost]' passed (0.007 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testNavigationEmptyStateAndUnavailableActions]' passed (20.841 seconds).
+** TEST SUCCEEDED **
+
+t03-xcode-final.log
+Test Case '-[SubscriptionUsageTests.RootViewTests testRootViewCanLoadAndLayOutInAppHost]' passed (0.006 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testNavigationEmptyStateAndUnavailableActions]' passed (20.833 seconds).
+** TEST SUCCEEDED **
+
+t03-xcode-dark-final.log
+Test Case '-[SubscriptionUsageTests.RootViewTests testRootViewCanLoadAndLayOutInAppHost]' passed (0.006 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testNavigationEmptyStateAndUnavailableActions]' passed (20.876 seconds).
+** TEST SUCCEEDED **
+
+首轮测试后手动画面发现标题折叠，不能仅凭测试通过判断完整视觉通过。
+修复：使用原生导航标题，检查标题可命中、右侧按钮同排；设置和连接禁用文字采用系统次要色。
+最终人工检查：两页浅深可读、标签选中清楚、无其他平台/假额度/额外设置。
+系统外观：设置页回主屏幕后切深色，重新打开仍为设置且适配正确；深色切额度可用；前台恢复浅色立即适配。
+验收后模拟器恢复原浅色，额度页保持打开。
+用户亲验：未亲验；本轮未安装到真实 iPhone。
+独立只读复核：未发现范围越界、缺失工程引用或文档链接问题。
