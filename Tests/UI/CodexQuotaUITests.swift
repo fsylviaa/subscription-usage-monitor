@@ -2,6 +2,33 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT23AccessibilityLayoutUsesFullWidthIdentityAndSeparatesResetTime() {
+        for appearance in ["light", "dark"] {
+            for size in ["UICTContentSizeCategoryAccessibilityM", "UICTContentSizeCategoryAccessibilityXXXL"] {
+                let app = launchT23("limits", appearance: appearance, extra: ["-UIPreferredContentSizeCategoryName", size])
+                let card = app.otherElements.matching(identifier: "quota.card").element(boundBy: 0)
+                let identity = card.staticTexts["quota.accountIdentity"]
+                XCTAssertEqual(identity.frame.minX, card.frame.minX + 16, accuracy: 1)
+                XCTAssertEqual(card.buttons["quota.details"].frame.minX, identity.frame.minX, accuracy: 1)
+                for id in ["weekly", "fiveHours"] {
+                    let value = card.staticTexts["quota.\(id).remaining"]
+                    let bar = card.otherElements["quota.\(id).bar"]
+                    let reset = card.staticTexts["quota.\(id).reset"]
+                    XCTAssertLessThan(value.frame.maxY, bar.frame.minY)
+                    XCTAssertLessThan(bar.frame.maxY, reset.frame.minY)
+                    XCTAssertLessThanOrEqual(value.frame.maxX, card.frame.maxX - 15)
+                }
+                XCTAssertTrue(card.staticTexts["quota.fiveHours.remaining"].isHittable,
+                              "常见短套餐在最大字号下仍应直接看到两项余额")
+                screenshot(app, "T23-大字优化-\(size)-\(appearance)")
+                card.buttons["quota.menu"].tap()
+                XCTAssertTrue(app.buttons["删除账户"].waitForExistence(timeout: 3))
+                app.terminate()
+            }
+        }
+    }
+
+    @MainActor
     func testT23TwoCardsKeepPlanIdentityAndZeroFullPartialBarsInBothAppearances() {
         for appearance in ["light", "dark"] {
             let app = launchT23("limits", appearance: appearance)
@@ -76,10 +103,10 @@ final class CodexQuotaUITests: XCTestCase {
         screenshot(app, "T23-刷新失败保留旧值与时间")
     }
 
-    @MainActor private func launchT23(_ scenario: String, appearance: String) -> XCUIApplication {
+    @MainActor private func launchT23(_ scenario: String, appearance: String, extra: [String] = []) -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()
-        app.launchArguments = ["--t23-card-fixture", scenario, appearance]
+        app.launchArguments = ["--t23-card-fixture", scenario, appearance] + extra
         app.launch()
         XCTAssertTrue(app.staticTexts["card-2@example.invalid"].waitForExistence(timeout: 10))
         return app

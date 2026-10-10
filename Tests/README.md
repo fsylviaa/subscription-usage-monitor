@@ -96,3 +96,5 @@ T16 连接入口修正：`CodexConnectionFlowTests` 验证未选平台零网络�
 复用 T11 解析、T12 套餐／失败保护与已有缺窗口页面检查；新增三项 `CodexQuotaUITests/testT23…` 核验浅深双账户归属、0%／100%／70%／20% 的剩余标签与条形语义、动态套餐常显、未知／不限量无条形、Free 无占位，以及刷新失败保持旧值旧成功时间。
 
 `--t23-card-fixture limits|states light|dark` 仅 Debug，直接输入内存领域样例并使用独立外观偏好，不读写正式文件、Keychain 或网络。不限量仅验证渲染领域状态，不表示 Codex 接口已识别出不限量，更不能从 credits 或缺字段推导不限量。普通演示模式没有新增这些样例或入口。`--t12-isolated-ui t23-cached-failure` 复用原独立临时目录与假传输，第一次成功、后续请求失败；正式查询逻辑不变。真实双账户余额仍按用户要求延期。
+
+T23 大字号专项优化：`testT23AccessibilityLayoutUsesFullWidthIdentityAndSeparatesResetTime` 使用既有纯内存 `limits` 场景，在辅助字号最小／最大两档与浅深四种组合中检查套餐／身份使用完整内容宽度、重置时间在条形下方、两项余额可见及账户菜单可点击。普通字号沿用原两项卡片检查，并将其四张截图与 `c1a8999` 的同模拟器原图比较（仅排除系统状态栏时钟）。系统字号实时切换另外通过模拟器 `content_size` 验证，并恢复原值；不修改真实手机字号或添加产品设置。
