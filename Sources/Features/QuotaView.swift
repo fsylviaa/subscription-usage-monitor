@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Tokens and vectors from the project's read-only Figma source.
 enum DashboardStyle {
@@ -34,6 +35,9 @@ struct QuotaView: View {
     var connect: () -> Void = {}
     var retry: (UUID) -> Void = { _ in }
     var closeFeedback: () -> Void = {}
+    var canReorder = false
+    var savingOrder = false
+    var move: (IndexSet, Int) -> Void = { _, _ in }
     @ScaledMetric(relativeTo: .headline) private var titleSize = 18
 
     var body: some View {
@@ -71,8 +75,7 @@ struct QuotaView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                ScrollView {
-                    VStack(spacing: 12) {
+                VStack(spacing: 0) {
                         if showDashboardFeedback {
                             if updatingID != nil {
                                 HStack(spacing: 10) {
@@ -100,13 +103,12 @@ struct QuotaView: View {
                                 .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 14))
                             }
                         }
-                        ForEach(accounts) { account in
-                            QuotaAccountCard(account: account, updating: updatingID == account.id,
-                                             failed: failedAccountIDs.contains(account.id) || quotaFailureID == account.id)
-                        }
+                    ReorderableQuotaList(accounts: accounts, canMove: canReorder, saving: savingOrder, move: move) { account in
+                        QuotaAccountCard(account: account, updating: updatingID == account.id,
+                                         failed: failedAccountIDs.contains(account.id) || quotaFailureID == account.id)
                     }
-                    .padding(.horizontal, 16).padding(.top, 12).padding(.bottom, 24)
                 }
+
             }
         }
         .foregroundStyle(DashboardStyle.text)
@@ -291,5 +293,89 @@ struct DashboardButtonStyle: ButtonStyle {
             .background(secondary ? DashboardStyle.elevated : DashboardStyle.accent,
                         in: RoundedRectangle(cornerRadius: 14))
             .opacity(configuration.isPressed ? 0.7 : 1)
+    }
+}
+
+/// UIKit's interactive movement supplies long-press lifting, animated gaps and
+/// edge auto-scrolling without a visible reorder accessory or a second edit mode.
+private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
+    let accounts: [ConnectedAccount]
+    let canMove: Bool
+    let saving: Bool
+    let move: (IndexSet, Int) -> Void
+    @ViewBuilder let content: (ConnectedAccount) -> Content
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    func makeUIView(context: Context) -> UICollectionView {
+        let size = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(215))
+        let item = NSCollectionLayoutItem(layoutSize: size)
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: size, subitems: [item])
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = 12
+        section.contentInsets = .init(top: 12, leading: 16, bottom: 24, trailing: 16)
+        let view = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewCompositionalLayout(section: section))
+        view.backgroundColor = .clear
+        view.alwaysBounceVertical = true
+        view.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "quota")
+        view.dataSource = context.coordinator
+        view.delegate = context.coordinator
+        view.accessibilityIdentifier = "quota.list"
+        let gesture = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.press(_:)))
+        gesture.minimumPressDuration = 0.4
+        view.addGestureRecognizer(gesture)
+        context.coordinator.collection = view
+        return view
+    }
+
+    func updateUIView(_ view: UICollectionView, context: Context) {
+        let coordinator = context.coordinator
+        coordinator.parent = self
+        guard !coordinator.dragging, !saving else { return }
+        if coordinator.displayed != accounts {
+            coordinator.displayed = accounts
+            view.reloadData()
+        }
+    }
+
+    final class Coordinator: NSObject, UICollectionViewDataSource, UICollectionViewDelegate {
+        var parent: ReorderableQuotaList
+        var displayed: [ConnectedAccount]
+        var dragging = false
+        weak var collection: UICollectionView?
+        init(_ parent: ReorderableQuotaList) { self.parent = parent; displayed = parent.accounts }
+
+        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { displayed.count }
+        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "quota", for: indexPath)
+            let account = displayed[indexPath.item]
+            cell.contentConfiguration = UIHostingConfiguration { parent.content(account) }.margins(.all, 0)
+            cell.backgroundColor = .clear
+            return cell
+        }
+        func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool { parent.canMove }
+        func collectionView(_ collectionView: UICollectionView, moveItemAt source: IndexPath, to destination: IndexPath) {
+            guard source != destination else { return }
+            let account = displayed.remove(at: source.item)
+            displayed.insert(account, at: destination.item)
+            parent.move(IndexSet(integer: source.item), destination.item > source.item ? destination.item + 1 : destination.item)
+        }
+        @objc func press(_ gesture: UILongPressGestureRecognizer) {
+            guard let view = collection else { return }
+            switch gesture.state {
+            case .began:
+                guard parent.canMove, let index = view.indexPathForItem(at: gesture.location(in: view)) else { return }
+                dragging = view.beginInteractiveMovementForItem(at: index)
+                if dragging { UIImpactFeedbackGenerator(style: .light).impactOccurred() }
+            case .changed:
+                if dragging { view.updateInteractiveMovementTargetPosition(gesture.location(in: view)) }
+            case .ended:
+                if dragging { view.endInteractiveMovement() }
+                dragging = false
+            default:
+                if dragging { view.cancelInteractiveMovement() }
+                dragging = false
+            }
+        }
     }
 }

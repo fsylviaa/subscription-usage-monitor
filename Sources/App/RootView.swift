@@ -34,17 +34,14 @@ struct RootView: View {
                           showDashboardFeedback: connection.quotaFeedbackLocation == .dashboard && !connection.quotaFeedbackHidden,
                           connect: { connection.showPlatformPicker() },
                           retry: { connection.retryInitialQuota(for: $0) },
-                          closeFeedback: { connection.hideQuotaFeedback() })
+                          closeFeedback: { connection.hideQuotaFeedback() },
+                          canReorder: connection.canReorderAccounts, savingOrder: connection.reorderingAccounts,
+                          move: { connection.moveAccounts(from: $0, to: $1) })
             }
             .tag(Tab.quota).toolbar(.hidden, for: .tabBar)
 
             NavigationStack {
-                SettingsView(accounts: connection.accounts, canConnect: connection.canConnect,
-                             connect: { connection.showPlatformPicker() },
-                             canReorder: connection.canReorderAccounts, orderFailed: connection.accountOrderFailed,
-                             move: { connection.moveAccounts(from: $0, to: $1) },
-                             dismissOrderFailure: { connection.dismissAccountOrderFailure() },
-                             demoEnabled: connection.demoEnabled, canManage: connection.canManageAccounts,
+                SettingsView(demoEnabled: connection.demoEnabled, canManage: connection.canManageAccounts,
                              setDemoMode: { connection.setDemoMode($0) },
                              darkAppearance: appearance == "dark" || (appearance == "system" && systemColorScheme == .dark),
                              setDarkAppearance: { appearance = $0 ? "dark" : "light" })
@@ -58,6 +55,10 @@ struct RootView: View {
             }
             .padding(.top, 6).padding(.bottom, 4)
             .background(DashboardStyle.background.ignoresSafeArea(edges: .bottom))
+        }
+        .alert("排序未保存，请重试", isPresented: Binding(get: { connection.accountOrderFailed },
+            set: { if !$0 { connection.dismissAccountOrderFailure() } })) {
+            Button("好", role: .cancel) { connection.dismissAccountOrderFailure() }
         }
         .alert("操作未完成", isPresented: Binding(get: { connection.accountActionFailure != nil },
             set: { if !$0 { connection.accountActionFailure = nil } })) {

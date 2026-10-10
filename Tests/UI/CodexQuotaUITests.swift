@@ -9,17 +9,15 @@ final class CodexQuotaUITests: XCTestCase {
         app.launch()
         defer { app.terminate() }
         for index in 1...3 { addT17FixtureAccount(app, index: index) }
-        app.buttons["tab.settings"].tap()
-        app.buttons["settings.accounts"].tap()
         let original = (1...3).map { "account-\($0)@example.invalid" }
         XCTAssertTrue(app.staticTexts[original[2]].waitForExistence(timeout: 5))
         moveT17Row(app, email: original[2], before: original[1])
         let partial = [original[0], original[2], original[1]]
-        assertT17Order(app, identifier: "accounts.identity", expected: partial)
+        assertT17Order(app, identifier: "quota.accountIdentity", expected: partial)
         screenshot(app, "T17-三账户局部移动")
         moveT17Row(app, email: original[1], before: original[0])
         let expected = [original[1], original[0], original[2]]
-        assertT17Order(app, identifier: "accounts.identity", expected: expected)
+        assertT17Order(app, identifier: "quota.accountIdentity", expected: expected)
         app.buttons["tab.quota"].tap()
         assertT17Order(app, identifier: "quota.accountIdentity", expected: expected)
         XCTAssertEqual(app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label), ["剩余 35%", "剩余 80%", "剩余 35%"])
@@ -27,9 +25,7 @@ final class CodexQuotaUITests: XCTestCase {
         app.terminate(); app.launch()
         assertT17Order(app, identifier: "quota.accountIdentity", expected: expected)
         addT17FixtureAccount(app, index: 4)
-        app.buttons["tab.settings"].tap()
-        app.buttons["settings.accounts"].tap()
-        assertT17Order(app, identifier: "accounts.identity", expected: expected + ["account-4@example.invalid"])
+        assertT17Order(app, identifier: "quota.accountIdentity", expected: expected + ["account-4@example.invalid"])
         screenshot(app, "T17-排序后新增追加末尾")
     }
 
@@ -41,16 +37,14 @@ final class CodexQuotaUITests: XCTestCase {
         app.launch()
         defer { app.terminate() }
         for index in 1...2 { addT17FixtureAccount(app, index: index) }
-        app.buttons["tab.settings"].tap()
-        app.buttons["settings.accounts"].tap()
         let original = ["account-1@example.invalid", "account-2@example.invalid"]
         moveT17Row(app, email: original[1], before: original[0])
         XCTAssertTrue(app.alerts["排序未保存，请重试"].waitForExistence(timeout: 5))
         screenshot(app, "T17-保存失败提示")
         app.alerts.buttons["好"].tap()
-        assertT17Order(app, identifier: "accounts.identity", expected: original)
+        assertT17Order(app, identifier: "quota.accountIdentity", expected: original)
         moveT17Row(app, email: original[1], before: original[0])
-        assertT17Order(app, identifier: "accounts.identity", expected: original.reversed())
+        assertT17Order(app, identifier: "quota.accountIdentity", expected: original.reversed())
         app.terminate(); app.launch()
         assertT17Order(app, identifier: "quota.accountIdentity", expected: original.reversed())
     }
@@ -65,9 +59,7 @@ final class CodexQuotaUITests: XCTestCase {
         app.launch()
         defer { app.terminate() }
         XCTAssertTrue(app.staticTexts["quota.accountIdentity"].firstMatch.waitForExistence(timeout: 15))
-        app.buttons["tab.settings"].tap()
-        app.buttons["settings.accounts"].tap()
-        let rows = app.staticTexts.matching(identifier: "accounts.identity")
+        let rows = app.staticTexts.matching(identifier: "quota.accountIdentity")
         XCTAssertTrue(rows.firstMatch.waitForExistence(timeout: 5))
         let original = rows.allElementsBoundByIndex.map(\.label)
         guard original.count >= 2 else { throw XCTSkip("手机当前不足两个账户，真实排序待本人验收。") }
@@ -75,18 +67,16 @@ final class CodexQuotaUITests: XCTestCase {
         moveT17Row(app, email: last, before: original[0])
         let expected = [last] + original.dropLast()
         // Boolean assertions avoid printing real identity values to logs.
-        XCTAssertTrue(waitT17Order(app, identifier: "accounts.identity", expected: expected))
+        XCTAssertTrue(waitT17Order(app, identifier: "quota.accountIdentity", expected: expected))
         app.buttons["tab.quota"].tap()
         XCTAssertTrue(waitT17Order(app, identifier: "quota.accountIdentity", expected: expected))
         app.terminate(); app.launch()
         XCTAssertTrue(waitT17Order(app, identifier: "quota.accountIdentity", expected: expected))
-        app.buttons["tab.settings"].tap()
-        app.buttons["settings.accounts"].tap()
         let source = app.cells.containing(.staticText, identifier: last).firstMatch
         let target = app.cells.containing(.staticText, identifier: original[original.count - 2]).firstMatch
-        source.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.5))
+        source.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.65))
             .press(forDuration: 0.7, thenDragTo: target.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.95)))
-        XCTAssertTrue(waitT17Order(app, identifier: "accounts.identity", expected: original))
+        XCTAssertTrue(waitT17Order(app, identifier: "quota.accountIdentity", expected: original))
         app.terminate(); app.launch()
         XCTAssertTrue(waitT17Order(app, identifier: "quota.accountIdentity", expected: original))
         print("T17 | 真实账户末项置顶→跨页→重开→恢复原序 | 通过；未核对或输出真实额度与身份")
@@ -109,8 +99,8 @@ final class CodexQuotaUITests: XCTestCase {
         let source = app.cells.containing(.staticText, identifier: email).firstMatch
         let target = app.cells.containing(.staticText, identifier: other).firstMatch
         XCTAssertTrue(source.waitForExistence(timeout: 5))
-        source.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.5))
-            .press(forDuration: 0.7, thenDragTo: target.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.05)))
+        source.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.65))
+            .press(forDuration: 0.7, thenDragTo: target.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.35)))
     }
 
     @MainActor private func waitT17Order(_ app: XCUIApplication, identifier: String, expected: [String]) -> Bool {
@@ -147,10 +137,8 @@ final class CodexQuotaUITests: XCTestCase {
         for _ in 0..<4 { app.swipeUp() }
         XCTAssertTrue(app.staticTexts["account-6@example.invalid"].isHittable)
         screenshot(app, "T16-六账户滚动末尾")
-        app.buttons["tab.settings"].tap()
-        app.buttons["settings.accounts"].tap()
         XCTAssertTrue(app.staticTexts["account-6@example.invalid"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.staticTexts.matching(identifier: "accounts.identity").count, 6)
+        XCTAssertTrue(app.staticTexts["account-6@example.invalid"].isHittable)
         screenshot(app, "T16-六账户管理")
     }
 
@@ -176,10 +164,8 @@ final class CodexQuotaUITests: XCTestCase {
         XCTAssertEqual(identities.allElementsBoundByIndex.map(\.label), ["account-1@example.invalid", "account-2@example.invalid"])
         XCTAssertEqual(app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label), ["剩余 80%", "剩余 35%"])
         screenshot(app, "T16-两账户独立额度")
-        app.buttons["tab.settings"].tap()
-        app.buttons["settings.accounts"].tap()
-        XCTAssertTrue(app.buttons["accounts.connect"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.staticTexts.matching(identifier: "accounts.identity").allElementsBoundByIndex.map(\.label), ["account-1@example.invalid", "account-2@example.invalid"])
+        XCTAssertTrue(app.buttons["quota.toolbarConnect"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").allElementsBoundByIndex.map(\.label), ["account-1@example.invalid", "account-2@example.invalid"])
         screenshot(app, "T16-账户管理")
         app.terminate()
         app.launch()

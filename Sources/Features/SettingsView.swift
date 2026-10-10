@@ -1,13 +1,6 @@
 import SwiftUI
 
 struct SettingsView: View {
-    var accounts: [ConnectedAccount] = []
-    var canConnect = true
-    var connect: () -> Void = {}
-    var canReorder = false
-    var orderFailed = false
-    var move: (IndexSet, Int) -> Void = { _, _ in }
-    var dismissOrderFailure: () -> Void = {}
     var demoEnabled = false
     var canManage = true
     var setDemoMode: (Bool) -> Void = { _ in }
@@ -15,40 +8,6 @@ struct SettingsView: View {
     var setDarkAppearance: (Bool) -> Void = { _ in }
     var body: some View {
         Form {
-            Section("账户") {
-                NavigationLink {
-                    List {
-                        ForEach(accounts) { account in
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(account.verifiedEmail ?? "Codex 账户")
-                                    .accessibilityIdentifier("accounts.identity")
-                                Text(account.subscription.map { "Codex · \($0.planType)" } ?? "Codex")
-                                    .font(.subheadline).foregroundStyle(.secondary)
-                            }
-                            .padding(.vertical, 4)
-                            .moveDisabled(!canReorder)
-                        }
-                        .onMove(perform: move)
-                        Button("连接账号", systemImage: "plus", action: connect)
-                            .disabled(!canConnect).accessibilityIdentifier("accounts.connect")
-                    }
-                    .navigationTitle("账户管理")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .environment(\.editMode, .constant(.active))
-                    .alert("排序未保存，请重试", isPresented: Binding(
-                        get: { orderFailed }, set: { if !$0 { dismissOrderFailure() } }
-                    )) {
-                        Button("好", role: .cancel, action: dismissOrderFailure)
-                    }
-                } label: {
-                    Label("账户管理", systemImage: "person.crop.circle")
-                }
-                .accessibilityIdentifier("settings.accounts")
-                Button("连接账号", systemImage: "plus", action: connect)
-                    .accessibilityIdentifier("settings.connect")
-                    .disabled(!canConnect)
-            }
-
             Section("通用") {
                 Toggle("深色模式", isOn: Binding(get: { darkAppearance }, set: setDarkAppearance))
                     .accessibilityIdentifier("settings.darkAppearance")

@@ -19,7 +19,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         assertConnectedIdentity(in: app)
         saveFixtureScreenshot(app, name: "重开账户仍在")
         app.buttons["tab.settings"].tap()
-        XCTAssertTrue(app.buttons["settings.connect"].isEnabled)
+        XCTAssertFalse(app.buttons["settings.connect"].exists)
+            XCTAssertFalse(app.buttons["settings.accounts"].exists)
     }
 
     @MainActor

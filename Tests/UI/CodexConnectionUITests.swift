@@ -81,9 +81,7 @@ final class CodexConnectionUITests: XCTestCase {
     @MainActor
     func testCodeCopyAndCancelFromAllEntryPoints() {
         let app = launch("51")
-        for entry in ["quota.connect", "quota.toolbarConnect", "settings.connect", "accounts.connect"] {
-            if entry == "settings.connect" { app.buttons["tab.settings"].tap() }
-            if entry == "accounts.connect" { app.buttons["settings.accounts"].tap() }
+        for entry in ["quota.connect", "quota.toolbarConnect"] {
             app.buttons[entry].tap()
             XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
             app.buttons["platforms.codex"].tap()
@@ -99,7 +97,6 @@ final class CodexConnectionUITests: XCTestCase {
             saveFixtureScreenshot(app, name: entry)
             app.buttons["connection.cancel"].tap()
             XCTAssertTrue(app.buttons[entry].waitForExistence(timeout: 5))
-            if entry == "settings.connect" { XCTAssertTrue(app.buttons["tab.settings"].isSelected) }
         }
         app.buttons["tab.quota"].tap()
         XCTAssertTrue(app.staticTexts["未连接账户"].exists)

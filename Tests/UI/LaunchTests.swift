@@ -44,7 +44,8 @@ final class LaunchTests: XCTestCase {
                 XCTAssertTrue(action.exists, identifier)
                 XCTAssertFalse(action.isEnabled, identifier)
             }
-            XCTAssertTrue(app.buttons["settings.connect"].isEnabled)
+            XCTAssertFalse(app.buttons["settings.connect"].exists)
+            XCTAssertFalse(app.buttons["settings.accounts"].exists)
             let reminder = app.switches["settings.resetReminder"]
             XCTAssertTrue(reminder.exists)
             XCTAssertFalse(reminder.isEnabled)
