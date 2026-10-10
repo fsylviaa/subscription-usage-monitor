@@ -6,6 +6,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         let app = launch("success")
         defer { cleanUp(app) }
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
         assertNoAccountAppears(in: app, during: 2)
         app.buttons["connection.open"].tap() // Stub opener; no browser or network request.
@@ -25,6 +27,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         let app = launch("verification-failure")
         defer { cleanUp(app) }
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
         app.buttons["connection.open"].tap()
         XCTAssertTrue(app.staticTexts["登录未完成，请重试"].waitForExistence(timeout: 10))
@@ -44,6 +48,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         let app = launch("pending")
         defer { cleanUp(app) }
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
         app.buttons["connection.open"].tap()
         assertNoAccountAppears(in: app, during: 3)
@@ -69,6 +75,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         let app = launchRecovery("expired")
         defer { cleanUp(app) }
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         let code = app.staticTexts["connection.code"]
         XCTAssertTrue(code.waitForExistence(timeout: 5))
         XCTAssertEqual(code.label, "TEST-0001")
@@ -84,6 +92,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         let app = launchRecovery("cancel")
         defer { cleanUp(app) }
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["connection.code"].label, "TEST-0001")
         app.buttons["connection.cancel"].tap()
@@ -92,6 +102,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["connection.code"].exists)
         saveFixtureScreenshot(app, name: "取消返回原入口")
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         assertNewCodeAndComplete(in: app)
         saveFixtureScreenshot(app, name: "取消后新码成功")
     }
@@ -101,6 +113,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         let app = launchRestoration("pending")
         defer { cleanUp(app) }
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         let code = app.staticTexts["connection.code"]
         XCTAssertTrue(code.waitForExistence(timeout: 5))
         XCTAssertEqual(code.label, "TEST-0001")
@@ -122,6 +136,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         let app = launchRestoration("success")
         defer { cleanUp(app) }
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["connection.code"].label, "TEST-0001")
         app.terminate()
@@ -144,6 +160,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         let app = launchRestoration("pending")
         defer { cleanUp(app) }
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["connection.code"].label, "TEST-0001")
         app.buttons["connection.cancel"].tap()
@@ -155,6 +173,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["quota.accountIdentity"].exists)
         saveFixtureScreenshot(app, name: "取消重开不恢复")
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["connection.code"].label, "TEST-0002", "取消后可重新申请")
     }
@@ -174,6 +194,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         if !code.waitForExistence(timeout: 3) {
             XCTAssertTrue(app.buttons["quota.connect"].waitForExistence(timeout: 5))
             app.buttons["quota.connect"].tap()
+            XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+            app.buttons["platforms.codex"].tap()
         }
         XCTAssertTrue(code.waitForExistence(timeout: 45), "真实网络检查通过并取得有效待授权代码")
         let original = code.label
@@ -326,6 +348,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
         let app = launchRecovery(scenario)
         defer { cleanUp(app) }
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["connection.code"].label, "TEST-0001")
         app.buttons["connection.open"].tap()

@@ -51,7 +51,7 @@ struct QuotaView: View {
                 Button(action: connect) {
                     DesignIcon(name: "Link").frame(width: 44, height: 44)
                 }
-                .disabled(!canConnect).accessibilityLabel("连接 Codex")
+                .disabled(!canConnect).accessibilityLabel("连接账号")
                 .accessibilityIdentifier("quota.toolbarConnect")
             }
             .buttonStyle(.plain)
@@ -65,7 +65,7 @@ struct QuotaView: View {
                 ContentUnavailableView {
                     Label("未连接账户", systemImage: "link").accessibilityIdentifier("quota.empty")
                 } actions: {
-                    Button("连接 Codex", action: connect)
+                    Button("连接账号", action: connect)
                         .buttonStyle(DashboardButtonStyle())
                         .accessibilityIdentifier("quota.connect")
                 }

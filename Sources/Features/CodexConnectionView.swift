@@ -6,6 +6,7 @@ struct CodexConnectionView: View {
     @ScaledMetric(relativeTo: .headline) private var titleSize = 18
 
     private var title: String {
+        if flow.state == .choosingPlatform { return "连接账号" }
         if flow.state == .quota {
             return flow.quotaFailure == nil ? "正在获取额度" : "首次额度查询失败"
         }
@@ -22,7 +23,7 @@ struct CodexConnectionView: View {
                     Button(action: flow.cancel) {
                         DesignIcon(name: "Close").frame(width: 44, height: 44)
                     }
-                    .buttonStyle(.plain).accessibilityLabel(flow.state == .quota ? "关闭" : "取消")
+                    .buttonStyle(.plain).accessibilityLabel(flow.state == .quota || flow.state == .choosingPlatform ? "关闭" : "取消")
                     .accessibilityIdentifier("connection.cancel").disabled(flow.state == .saving)
                     Spacer()
                 }
@@ -31,6 +32,8 @@ struct CodexConnectionView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     switch flow.state {
+                    case .choosingPlatform:
+                        ConnectionPlatformGrid(select: { flow.selectPlatform($0) })
                     case .quota:
                         quotaContent
                     case .idle, .checking, .requesting, .verifying, .saving:
@@ -93,5 +96,39 @@ struct CodexConnectionView: View {
                 .accessibilityElement(children: .combine)
                 .accessibilityIdentifier("connection.quotaProgress")
         }
+    }
+}
+
+
+private struct ConnectionPlatformGrid: View {
+    let select: (ConnectionPlatform) -> Void
+    @ScaledMetric(relativeTo: .title) private var iconSize = 36
+
+    private var platforms: [ConnectionPlatform] {
+        #if DEBUG
+        // Layout-only overflow fixture; never registers a real extra provider.
+        if ProcessInfo.processInfo.arguments.contains("--t16-platform-grid-overflow") {
+            return Array(repeating: .codex, count: 30)
+        }
+        #endif
+        return ConnectionPlatform.allCases
+    }
+
+    var body: some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 3), spacing: 20) {
+            ForEach(platforms.indices, id: \.self) { index in
+                let platform = platforms[index]
+                Button { select(platform) } label: {
+                    DesignIcon(name: platform.iconName, size: min(iconSize, 56))
+                        .frame(maxWidth: .infinity, minHeight: max(88, min(iconSize, 56) + 32))
+                        .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 24))
+                        .contentShape(RoundedRectangle(cornerRadius: 24))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(platform.accessibilityName)
+                .accessibilityIdentifier(index == 0 ? "platforms.codex" : "platforms.fixture.\(index)")
+            }
+        }
+        .accessibilityIdentifier("platforms.grid")
     }
 }

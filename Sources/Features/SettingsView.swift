@@ -18,7 +18,7 @@ struct SettingsView: View {
                             }
                             .padding(.vertical, 4)
                         }
-                        Button("连接 Codex", systemImage: "plus", action: connect)
+                        Button("连接账号", systemImage: "plus", action: connect)
                             .disabled(!canConnect).accessibilityIdentifier("accounts.connect")
                     }
                     .navigationTitle("账户管理")
@@ -27,7 +27,7 @@ struct SettingsView: View {
                     Label("账户管理", systemImage: "person.crop.circle")
                 }
                 .accessibilityIdentifier("settings.accounts")
-                Button("连接 Codex", systemImage: "plus", action: connect)
+                Button("连接账号", systemImage: "plus", action: connect)
                     .accessibilityIdentifier("settings.connect")
                     .disabled(!canConnect)
             }

@@ -2,10 +2,20 @@ import Foundation
 import SwiftUI
 import UIKit
 
+/// The selectable products and their icons; adding a product also requires its
+/// explicit connection route below. No unavailable products are advertised.
+enum ConnectionPlatform: CaseIterable {
+    case codex
+
+    var iconName: String { switch self { case .codex: "Codex" } }
+    var accessibilityName: String { switch self { case .codex: "Codex" } }
+}
+
 @MainActor
 final class CodexConnectionFlow: ObservableObject {
     enum State: Equatable {
         case idle
+        case choosingPlatform
         case checking
         case requesting
         case verifying
@@ -251,10 +261,24 @@ final class CodexConnectionFlow: ObservableObject {
         self.openURL = openURL
     }
 
+    func showPlatformPicker() {
+        guard canConnect, state == .idle, !isPresented else { return }
+        state = .choosingPlatform
+        isPresented = true
+    }
+
+    @discardableResult
+    func selectPlatform(_ platform: ConnectionPlatform) -> Task<Void, Never>? {
+        guard isPresented, state == .choosingPlatform else { return nil }
+        switch platform {
+        case .codex: return begin()
+        }
+    }
+
     @discardableResult
     func begin() -> Task<Void, Never>? {
         guard !loadingAccounts, !accountLoadFailed, !restoringLogin,
-              (quotaUpdatingID == nil || recovery != nil), state == .idle || isFailure else { return nil }
+              (quotaUpdatingID == nil || recovery != nil), state == .idle || state == .choosingPlatform || isFailure else { return nil }
         let previousWork = work
         let previousCompletion = completionWork
         let previousCleanup = cleanupWork

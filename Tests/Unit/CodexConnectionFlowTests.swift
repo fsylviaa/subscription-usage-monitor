@@ -7,6 +7,61 @@ import XCTest
 final class CodexConnectionFlowTests: XCTestCase {
     private let start = Date(timeIntervalSince1970: 1_790_000_000)
 
+    func testT16OpeningAndClosingPlatformPickerDoesNotCheckNetworkOrStartLogin() async throws {
+        let authorization = try fixture()
+        let authorizer = FlowAuthorizerStub(authorization)
+        let transactions = FlowTransactionStub()
+        let scores = FlowScoreStub([.allowed(score: 51)])
+        let flow = makeFlow(authorization, authorizer: authorizer, store: transactions,
+                            checkNetwork: { await scores.next() })
+        flow.showPlatformPicker()
+        flow.showPlatformPicker()
+        XCTAssertEqual(flow.state, .choosingPlatform)
+        XCTAssertTrue(flow.isPresented)
+        flow.cancel()
+        XCTAssertEqual(flow.state, .idle)
+        XCTAssertFalse(flow.isPresented)
+        XCTAssertNil(flow.selectPlatform(.codex), "关闭后迟到的图标点击不能发起登录")
+        let checks = await scores.count
+        let requests = await authorizer.requestCount
+        let saves = await transactions.saveCount
+        XCTAssertEqual(checks, 0)
+        XCTAssertEqual(requests, 0)
+        XCTAssertEqual(saves, 0)
+        XCTAssertTrue(flow.accounts.isEmpty)
+    }
+
+    func testT16PlatformSelectionStartsExactlyOneGatedLogin() async throws {
+        let authorization = try fixture()
+        let authorizer = FlowAuthorizerStub(authorization)
+        let scores = FlowScoreStub([.allowed(score: 51)])
+        let flow = makeFlow(authorization, authorizer: authorizer, checkNetwork: { await scores.next() })
+        flow.showPlatformPicker()
+        let work = try XCTUnwrap(flow.selectPlatform(.codex))
+        XCTAssertNil(flow.selectPlatform(.codex))
+        flow.showPlatformPicker()
+        XCTAssertEqual(flow.state, .checking)
+        await work.value
+        XCTAssertEqual(flow.state, .code(authorization))
+        let checks = await scores.count
+        let requests = await authorizer.requestCount
+        XCTAssertEqual(checks, 1)
+        XCTAssertEqual(requests, 1)
+        flow.cancel()
+    }
+
+    func testT16SelectionStillBlocksLowNetworkScoreBeforeAuthorization() async throws {
+        let authorization = try fixture()
+        let authorizer = FlowAuthorizerStub(authorization)
+        let flow = makeFlow(authorization, authorizer: authorizer, checkNetwork: { .blocked(score: 50) })
+        flow.showPlatformPicker()
+        try await XCTUnwrap(flow.selectPlatform(.codex)).value
+        XCTAssertEqual(flow.state, .failure("网络不达标，无法连接"))
+        let requests = await authorizer.requestCount
+        XCTAssertEqual(requests, 0)
+        flow.cancel()
+    }
+
     func test50BlocksBeforeRequestingOrOpeningAuthorization() async throws {
         let authorization = try fixture()
         let authorizer = FlowAuthorizerStub(authorization)

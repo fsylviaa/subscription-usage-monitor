@@ -6,6 +6,7 @@ struct RootView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private enum Tab: Hashable { case quota, settings }
     @State private var selection: Tab = .quota
+    @State private var connectionDetent: PresentationDetent = .height(250)
 
     init(connection: CodexConnectionFlow = CodexConnectionFlow.live()) {
         _connection = StateObject(wrappedValue: connection)
@@ -13,6 +14,7 @@ struct RootView: View {
 
     private var connectionDetents: Set<PresentationDetent> {
         if dynamicTypeSize.isAccessibilitySize { return [.large] }
+        if connection.state == .choosingPlatform { return [.height(250), .large] }
         if case .code = connection.state { return [.large] }
         if case .quota = connection.state { return [.height(310), .large] }
         return [.medium, .large]
@@ -27,14 +29,14 @@ struct RootView: View {
                           quotaFailureID: connection.quotaFailureID,
                           failedAccountIDs: Set(connection.quotaFailures.keys),
                           showDashboardFeedback: connection.quotaFeedbackLocation == .dashboard && !connection.quotaFeedbackHidden,
-                          connect: { connection.begin() },
+                          connect: { connection.showPlatformPicker() },
                           retry: { connection.retryInitialQuota(for: $0) },
                           closeFeedback: { connection.hideQuotaFeedback() })
             }
             .tag(Tab.quota).toolbar(.hidden, for: .tabBar)
 
             NavigationStack {
-                SettingsView(accounts: connection.accounts, canConnect: connection.canConnect, connect: { connection.begin() })
+                SettingsView(accounts: connection.accounts, canConnect: connection.canConnect, connect: { connection.showPlatformPicker() })
             }
             .tag(Tab.settings).toolbar(.hidden, for: .tabBar)
         }
@@ -54,11 +56,26 @@ struct RootView: View {
         .onChange(of: scenePhase) { _, phase in connection.setActive(phase == .active) }
         .sheet(isPresented: $connection.isPresented, onDismiss: { connection.cancel() }) {
             CodexConnectionView(flow: connection)
-                .presentationDetents(connectionDetents)
+                .presentationDetents(connectionDetents, selection: $connectionDetent)
+                .presentationContentInteraction(.resizes)
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(28)
                 .presentationBackground(DashboardStyle.card)
                 .interactiveDismissDisabled(connection.state == .saving)
+                .onChange(of: connection.state, initial: true) { _, _ in
+                    connectionDetent = initialConnectionDetent
+                }
+                .onChange(of: dynamicTypeSize) { _, _ in connectionDetent = initialConnectionDetent }
+        }
+    }
+
+    private var initialConnectionDetent: PresentationDetent {
+        if dynamicTypeSize.isAccessibilitySize { return .large }
+        switch connection.state {
+        case .choosingPlatform: return .height(250)
+        case .code: return .large
+        case .quota: return .height(310)
+        default: return .medium
         }
     }
 

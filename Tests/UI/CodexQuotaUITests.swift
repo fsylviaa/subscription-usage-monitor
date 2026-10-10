@@ -9,6 +9,8 @@ final class CodexQuotaUITests: XCTestCase {
         defer { app.terminate() }
         for index in 1...6 {
             app.buttons[index == 1 ? "quota.connect" : "quota.toolbarConnect"].tap()
+            XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+            app.buttons["platforms.codex"].tap()
             XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
             app.buttons["connection.open"].tap()
             XCTAssertTrue(app.buttons["quota.toolbarConnect"].waitForExistence(timeout: 10))
@@ -36,6 +38,8 @@ final class CodexQuotaUITests: XCTestCase {
             let connect = app.buttons[index == 1 ? "quota.connect" : "quota.toolbarConnect"]
             XCTAssertTrue(connect.waitForExistence(timeout: 5))
             connect.tap()
+            XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+            app.buttons["platforms.codex"].tap()
             XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
             app.buttons["connection.open"].tap()
             XCTAssertTrue(app.staticTexts["account-\(index)@example.invalid"].waitForExistence(timeout: 10))
@@ -65,10 +69,14 @@ final class CodexQuotaUITests: XCTestCase {
         app.launch()
         defer { app.terminate() }
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
         app.buttons["connection.open"].tap()
         XCTAssertTrue(app.staticTexts["quota.weekly.remaining"].waitForExistence(timeout: 10))
         app.buttons["quota.toolbarConnect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
         app.buttons["connection.open"].tap()
         XCTAssertTrue(app.buttons["connection.quotaClose"].waitForExistence(timeout: 10))
@@ -378,6 +386,8 @@ final class CodexQuotaUITests: XCTestCase {
     @MainActor private func completeFixtureLogin(_ app: XCUIApplication) {
         XCTAssertTrue(app.buttons["quota.connect"].waitForExistence(timeout: 10))
         app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
         app.buttons["connection.open"].tap()
     }

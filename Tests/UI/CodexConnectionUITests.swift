@@ -2,11 +2,91 @@ import XCTest
 
 final class CodexConnectionUITests: XCTestCase {
     @MainActor
+    func testT16RealPickerOpensAndClosesWithoutStartingLogin() throws {
+        guard ProcessInfo.processInfo.environment["T16_LIVE_PICKER"] == "1" else {
+            throw XCTSkip("仅显式检查普通真机入口，不点平台、不申请登录、不拍真实账户截图。")
+        }
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = []
+        app.launch()
+        let connect = app.buttons["quota.toolbarConnect"]
+        XCTAssertTrue(connect.waitForExistence(timeout: 10))
+        connect.tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        let title = app.staticTexts["connection.title"]
+        XCTAssertEqual(title.label, "连接账号")
+        XCTAssertGreaterThan(title.frame.minY, app.frame.height * 0.55)
+        title.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            .press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.15)))
+        XCTAssertLessThan(title.frame.minY, app.frame.height * 0.3)
+        XCTAssertFalse(app.staticTexts["connection.code"].exists)
+        app.buttons["connection.cancel"].tap()
+        XCTAssertTrue(connect.waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testT16PlatformPickerStartsCompactExpandsAndReopensCompact() {
+        let app = launch("51")
+        defer { app.terminate() }
+        app.buttons["quota.toolbarConnect"].tap()
+        let title = app.staticTexts["connection.title"]
+        let icon = app.buttons["platforms.codex"]
+        XCTAssertTrue(icon.waitForExistence(timeout: 5))
+        XCTAssertEqual(title.label, "连接账号")
+        XCTAssertGreaterThan(title.frame.minY, app.frame.height * 0.55)
+        XCTAssertEqual(icon.label, "Codex", "纯图标仍应有读屏名称")
+        XCTAssertFalse(app.staticTexts["Codex"].exists)
+        XCTAssertFalse(app.staticTexts["GPT"].exists)
+        XCTAssertFalse(app.staticTexts["connection.code"].exists)
+        XCTAssertFalse(app.otherElements["connection.progress"].exists)
+        saveFixtureScreenshot(app, name: "T16-平台选择-初始")
+        title.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            .press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.15)))
+        XCTAssertTrue(icon.isHittable)
+        XCTAssertLessThan(title.frame.minY, app.frame.height * 0.3)
+        saveFixtureScreenshot(app, name: "T16-平台选择-展开")
+        app.buttons["connection.cancel"].tap()
+        XCTAssertTrue(app.buttons["quota.toolbarConnect"].waitForExistence(timeout: 5))
+        app.buttons["quota.toolbarConnect"].tap()
+        XCTAssertTrue(icon.waitForExistence(timeout: 5))
+        XCTAssertGreaterThan(title.frame.minY, app.frame.height * 0.55)
+        icon.tap()
+        XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
+        app.buttons["connection.cancel"].tap()
+    }
+
+    @MainActor
+    func testT16ExpandedPickerScrollsOverflowBelowFixedHeader() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--t07-isolated-ui", "51", "--t16-platform-grid-overflow"]
+        app.launch()
+        defer { app.terminate() }
+        app.buttons["quota.toolbarConnect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        let title = app.staticTexts["connection.title"]
+        title.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            .press(forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.15)))
+        XCTAssertLessThan(title.frame.minY, app.frame.height * 0.3)
+        let headerY = title.frame.minY
+        for _ in 0..<4 { app.scrollViews.firstMatch.swipeUp() }
+        XCTAssertTrue(app.buttons["platforms.fixture.29"].isHittable)
+        XCTAssertEqual(title.frame.minY, headerY, accuracy: 3)
+        XCTAssertTrue(app.buttons["connection.cancel"].isHittable)
+        saveFixtureScreenshot(app, name: "T16-平台选择-隔离溢出滚动")
+        app.buttons["connection.cancel"].tap()
+    }
+
+    @MainActor
     func testCodeCopyAndCancelFromAllEntryPoints() {
         let app = launch("51")
-        for entry in ["quota.connect", "quota.toolbarConnect", "settings.connect"] {
+        for entry in ["quota.connect", "quota.toolbarConnect", "settings.connect", "accounts.connect"] {
             if entry == "settings.connect" { app.buttons["tab.settings"].tap() }
+            if entry == "accounts.connect" { app.buttons["settings.accounts"].tap() }
             app.buttons[entry].tap()
+            XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+            app.buttons["platforms.codex"].tap()
             XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
             XCTAssertEqual(app.staticTexts["connection.code"].label, "TEST-CODE")
             let copy = app.buttons["connection.copy"]
@@ -32,6 +112,8 @@ final class CodexConnectionUITests: XCTestCase {
                                     ("request-failure", "登录未完成，请重试")] {
             let app = launch(scenario)
             app.buttons["quota.connect"].tap()
+            XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+            app.buttons["platforms.codex"].tap()
             XCTAssertTrue(app.staticTexts[message].waitForExistence(timeout: 5))
             XCTAssertFalse(app.staticTexts["connection.code"].exists)
             XCTAssertFalse(app.buttons["connection.open"].exists)
@@ -48,6 +130,8 @@ final class CodexConnectionUITests: XCTestCase {
     func testCancelSlowCheckDoesNotReopenConnection() {
         let app = launch("slow")
         app.buttons["quota.toolbarConnect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.staticTexts["连接中…"].waitForExistence(timeout: 5))
         app.buttons["connection.cancel"].tap()
         XCTAssertTrue(app.staticTexts["未连接账户"].waitForExistence(timeout: 5))

@@ -58,3 +58,5 @@ T15 在 `CodexQuotaServiceTests` 中增加 6 项具名启动恢复检查：登�
 `CodexAccountBindingStoreTests` 覆盖独立凭据追加、提交后恢复防重复、不同登录并发、连续六次完整连接、B 失败保持 A、取消 B、B 登录中断恢复，以及多个未获取账户重开依次补齐且后续成功不清除前序失败。用随机目录和钥匙串 service，服务端身份与数值全为样例；真实存储、查询解析与流程代码照常执行。
 
 `--t16-isolated-ui success|failure --t16-run-id <UUID>` 仅 Debug 生效，使用同一 UUID 可重开对应隔离场景。UI 检查两列表顺序、两账户不同值、失败账户归属、六账户滚动及重开；不触达正式账户或网络。`T12_LIVE_REOPEN=1` 的已有普通真实重开检查可另行确认原正式账户未受影响，不代替真实双账户验收，也不补做已延期的五小时真实查询。
+
+T16 连接入口修正：`CodexConnectionFlowTests` 验证未选平台零网络／零登录申请、选择后单次门控和低分阻止。`CodexConnectionUITests` 验证短弹层、上拉吸附、重开复位、四个入口及原登录失败／取消；`--t16-platform-grid-overflow` 仅 Debug 生成重复图标以验证网格溢出和固定标题，不代表接入其他平台，Release 不包含此参数。`T16_LIVE_PICKER=1` 才执行普通真机弹窗检查，只开合与上拉，不选择平台、不拍真实账户截图，也不补做延期的真实额度核验。
