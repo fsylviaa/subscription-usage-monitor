@@ -384,7 +384,7 @@ final class CodexQuotaServiceTests: XCTestCase {
         await flow.loadAccounts()
         await flow.waitForInitialQuota()
         XCTAssertEqual(flow.accounts.first?.subscription?.planType, "New Official Plan")
-        XCTAssertEqual(flow.quotaFailure, "获取失败")
+        XCTAssertEqual(flow.quotaFailure, "刷新失败")
         XCTAssertNil(flow.accounts.first?.quotaSnapshot)
         let saved = try await setup.store.load()
         XCTAssertEqual(saved, flow.accounts)
@@ -496,7 +496,7 @@ final class CodexQuotaServiceTests: XCTestCase {
         flow.retryInitialQuota(for: setup.account.id)
         await flow.waitForInitialQuota()
         XCTAssertFalse(flow.quotaFeedbackHidden, "新一轮失败重新显示反馈")
-        XCTAssertEqual(flow.quotaFailure, "获取失败")
+        XCTAssertEqual(flow.quotaFailure, "刷新失败")
         var requests = await transport.requests
         XCTAssertTrue(requests.isEmpty, "低分和未知均不发额度请求")
         flow.retryInitialQuota(for: setup.account.id)
@@ -533,12 +533,12 @@ final class CodexQuotaServiceTests: XCTestCase {
         let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(), bindings: binding, quotaUpdater: updater)
         await flow.loadAccounts()
         await flow.waitForInitialQuota()
-        XCTAssertEqual(flow.quotaFailure, "获取失败")
+        XCTAssertEqual(flow.quotaFailure, "刷新失败")
         XCTAssertEqual(flow.accounts, [original])
         let reopened = CodexConnectionFlow(transactions: QuotaTestTransactions(), bindings: binding, quotaUpdater: updater)
         await reopened.loadAccounts()
         await reopened.waitForInitialQuota()
-        XCTAssertEqual(reopened.quotaFailure, "获取失败")
+        XCTAssertEqual(reopened.quotaFailure, "刷新失败")
         XCTAssertEqual(reopened.accounts, [original])
         XCTAssertNil(reopened.accounts.first?.quotaSnapshot)
         XCTAssertFalse(reopened.isPresented)
@@ -565,7 +565,7 @@ final class CodexQuotaServiceTests: XCTestCase {
             quotaUpdater: try service(setup, transport: transport))
         await flow.loadAccounts()
         await flow.waitForInitialQuota()
-        XCTAssertEqual(flow.quotaFailure, "获取失败")
+        XCTAssertEqual(flow.quotaFailure, "刷新失败")
         XCTAssertEqual(flow.accounts.first?.subscription?.planType, "New Official Plan")
         XCTAssertNil(flow.accounts.first?.quotaSnapshot)
         flow.retryInitialQuota(for: setup.account.id)
@@ -668,7 +668,7 @@ final class CodexQuotaServiceTests: XCTestCase {
         XCTAssertEqual(flow.quotaUpdatingID, setup.account.id)
         await release.open()
         await flow.waitForInitialQuota()
-        XCTAssertEqual(flow.quotaFailure, "获取失败")
+        XCTAssertEqual(flow.quotaFailure, "刷新失败")
         XCTAssertEqual(flow.accounts, [setup.account])
         let requests = await transport.requests.count
         XCTAssertEqual(requests, 0)
@@ -1122,6 +1122,66 @@ final class CodexQuotaServiceTests: XCTestCase {
         await all.waitForInitialQuota()
         let allChecks = await held.checks
         XCTAssertTrue(allChecks.values.allSatisfy { $0 == 1 })
+    }
+
+    func testT29ClosedFailureDoesNotReturnAfterUnrelatedSuccessButNewAttemptCanFail() async throws {
+        let (flow, fixture) = try await batch("partial")
+        let ids = flow.accounts.map(\.id)
+        flow.refreshQuota(for: ids[1])
+        await flow.waitForInitialQuota()
+        let old = flow.accounts[1]
+        XCTAssertEqual(flow.quotaFailure, "刷新失败")
+        flow.hideQuotaFeedback()
+        flow.refreshQuota(for: ids[0])
+        await flow.waitForInitialQuota()
+        XCTAssertNil(flow.quotaFailureID, "已关闭的B失败不能被A成功带回来")
+        XCTAssertEqual(flow.accounts[1], old)
+        flow.refreshQuota(for: ids[1])
+        await flow.waitForInitialQuota()
+        XCTAssertNil(flow.quotaFailure)
+        let checks = await fixture.checks
+        XCTAssertEqual(checks[ids[0]], 1)
+        XCTAssertEqual(checks[ids[1]], 2)
+
+        let (blocked, _) = try await batch("blocked")
+        blocked.refreshAllQuota(manually: false)
+        await blocked.waitForInitialQuota()
+        blocked.hideQuotaFeedback()
+        blocked.refreshAllQuota(manually: false)
+        await blocked.waitForInitialQuota()
+        XCTAssertFalse(blocked.quotaFeedbackHidden)
+        XCTAssertEqual(blocked.quotaFailure, "网络不达标，无法更新")
+    }
+
+    func testT29UnrelatedSuccessPreservesOriginalAllFailureRetryScope() async throws {
+        let (flow, fixture) = try await batch("partial")
+        let ids = flow.accounts.map(\.id)
+        flow.refreshAllQuota()
+        await flow.waitForInitialQuota()
+        flow.refreshQuota(for: ids[0])
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.quotaFailureID, ids[1])
+        flow.retryDashboardQuota(for: ids[1])
+        XCTAssertEqual(flow.visibleQuotaUpdatingIDs, Set(ids))
+        await flow.waitForInitialQuota()
+        XCTAssertNil(flow.quotaFailure)
+        let checks = await fixture.checks
+        XCTAssertEqual(checks[ids[0]], 3)
+        XCTAssertEqual(checks[ids[1]], 2)
+    }
+
+    func testT29SingleFailureRetryOnlyTouchesItsAccountAndRechecks() async throws {
+        let (flow, fixture) = try await batch("partial")
+        let old = flow.accounts
+        flow.refreshQuota(for: old[1].id)
+        await flow.waitForInitialQuota()
+        flow.retryDashboardQuota(for: old[1].id)
+        XCTAssertEqual(flow.visibleQuotaUpdatingIDs, [old[1].id])
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.accounts[0], old[0])
+        XCTAssertNil(flow.quotaFailure)
+        let checks = await fixture.checks
+        XCTAssertEqual(checks, [old[1].id: 2])
     }
 
     private typealias Setup = (store: AccountStore, account: ConnectedAccount, url: URL)

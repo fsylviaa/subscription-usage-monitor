@@ -124,6 +124,8 @@ final class CodexConnectionFlow: ObservableObject {
     private var quotaRequests: [QuotaKey: QuotaRequest] = [:]
     private var quotaQueue: [QuotaKey] = []
     private var refreshTargets: [ConnectedAccount] = []
+    private var hiddenQuotaFailures: Set<UUID> = []
+    private var failureScopes: [UUID: [UUID]] = [:]
     @Published private(set) var restoringLogin = false
     private let completer: (any CodexLoginCompleting)?
     private let verifier: (any CodexIdentityVerifying)?
@@ -776,6 +778,7 @@ final class CodexConnectionFlow: ObservableObject {
     func hideQuotaFeedback() {
         guard quotaUpdatingID == nil else { return }
         quotaFeedbackHidden = true
+        hiddenQuotaFailures.formUnion(quotaFailures.keys)
     }
 
     private func startInitialQuota(for account: ConnectedAccount, location: QuotaFeedbackLocation = .dashboard) {
@@ -794,6 +797,10 @@ final class CodexConnectionFlow: ObservableObject {
         }
         for account in targets {
             let key = QuotaKey(account)
+            hiddenQuotaFailures.remove(account.id)
+            if quotaRequests[key] == nil || manually {
+                failureScopes[account.id] = targets.map(\.id)
+            }
             if !refreshTargets.contains(where: { QuotaKey($0) == key }) { refreshTargets.append(account) }
             if manually { manualQuotaIDs.insert(account.id) }
             if quotaRequests[key] != nil {
@@ -847,12 +854,13 @@ final class CodexConnectionFlow: ObservableObject {
         if failures.contains(where: { quotaFailures[$0.id] == "网络不达标，无法更新" }) {
             message = "网络不达标，无法更新"
         }
-        if failureID == nil, !isPresented, let failed = accounts.first(where: { quotaFailures[$0.id] != nil }) {
+        if failureID == nil, !isPresented, let failed = accounts.first(where: { quotaFailures[$0.id] != nil && !hiddenQuotaFailures.contains($0.id) }) {
             failureID = failed.id
             message = quotaFailures[failed.id]
-            batchQuotaIDs = [failed.id]
+            batchQuotaIDs = failureScopes[failed.id] ?? [failed.id]
         }
         quotaFailureID = failureID
+        if let failureID { batchQuotaIDs = failureScopes[failureID] ?? [failureID] }
         if quotaFailure != message { quotaFailure = message }
         if !isPresented { quotaFeedbackLocation = .dashboard }
         manualQuotaIDs = []
@@ -904,7 +912,7 @@ final class CodexConnectionFlow: ObservableObject {
             guard accounts.contains(where: { QuotaKey($0) == QuotaKey(account) }) else { return }
             quotaFailure = (error as? CodexQuotaError) == .networkBlocked
                 ? "网络不达标，无法更新"
-                : (account.quotaState == .notFetched && !manualQuotaInProgress ? "获取失败" : "刷新失败")
+                : (account.quotaState == .notFetched && location == .connection ? "获取失败" : "刷新失败")
             quotaFailureID = account.id
             quotaFailures[account.id] = quotaFailure
         }

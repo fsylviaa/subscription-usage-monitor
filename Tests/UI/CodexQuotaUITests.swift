@@ -2,6 +2,30 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT29CloseCollapsesLayoutAndTabReturnKeepsItClosedUntilNewFailure() {
+        let app = launchD60("blocked")
+        defer { app.terminate() }
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        let originalY = cards.element(boundBy: 0).frame.minY
+        app.pullAllQuota()
+        XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 8))
+        let failureY = cards.element(boundBy: 0).frame.minY
+        XCTAssertGreaterThan(failureY, originalY)
+        app.buttons["quota.closeFeedback"].tap()
+        XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+        XCTAssertEqual(cards.element(boundBy: 0).frame.minY, originalY, accuracy: 1)
+        app.buttons["tab.settings"].tap()
+        app.buttons["tab.quota"].tap()
+        XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+        XCTAssertEqual(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 90%")
+        screenshot(app, "T29-关闭后返回列表无占位")
+        app.pullAllQuota()
+        XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 8))
+        XCTAssertEqual(app.staticTexts["quota.failure"].label, "网络不达标，无法更新")
+        screenshot(app, "T29-新一轮失败再次显示")
+    }
+
+    @MainActor
     func testT28ManualCardJoinsAutomaticRequestWithoutSpinningOtherCard() {
         let app = launchD60("ui-staggered", extra: ["--t27-lifecycle"])
         defer { app.terminate() }
