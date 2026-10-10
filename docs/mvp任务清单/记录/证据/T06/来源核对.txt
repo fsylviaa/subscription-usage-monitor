@@ -1,0 +1,18 @@
+T06 指定来源核对，2026-10-10
+页面：https://ip.net.coffee/claude/
+脚本：https://ip.net.coffee/claude/claude-page.js?v=20260916a
+脚本 SHA256：910b7e2dea026150f4fcefec6c42613045ce932c47ac93b16487301b718b0ff9
+
+来源链（公开脚本行号）：
+311–323：claude.ai/cdn-cgi/trace，本次设备访问 Claude 的出口，无缓存、8 秒。
+866–870：ip.net.coffee/api/iprisk/{本次出口}，10 秒。
+893–908：trust_score、countryCode；页面关联请求时的 claudeIp，不以响应 ip 作为出口身份。
+154–161、194–209：10 个受限地区覆盖为 0；无出口或无评分显示未知。
+NET-05 对评分完整性更严格：缺失/无效评分保持未知，不能因地区覆盖而伪造有效 0 分。
+
+服务端评分按 CIDR 计算并缓存（公开脚本注释为 365 天），不代表每次实时重算。
+公开固定样例 1.1.1.1 返回 41 分、countryCode=au，响应 ip=1.1.1.2；这只验证公开协议，不是用户当前网络。
+
+用户明确指示直接访问页面后，Codex 内置浏览器实见 Claude AI 信任评分为 57、良好。
+该观测来自 Mac 浏览器，不作为手机 App 真实取分通过的证据，不记录用户出口地址。
+网络含义：当前设备的 Claude 出口评分，不能保证域名分流下与未来 Codex 出口相同。

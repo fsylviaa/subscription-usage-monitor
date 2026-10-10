@@ -8,7 +8,7 @@
 
 在本项目的新对话里可直接说“开始 T02”等明确任务编号；执行者会检查前置、完成指定任务，并主动更新进度和 Git 存档。也可说“继续上次任务”“T01 我验收通过了”或描述发现的问题，具体含义见项目规则。
 
-## 开发与运行（T01–T05）
+## 开发与运行（T01–T06）
 
 工程入口：[SubscriptionUsage.xcodeproj](SubscriptionUsage.xcodeproj)。共享运行方案（Scheme）为 **SubscriptionUsage**，App 的临时显示名称为“订阅用量”。当前可在“额度”和“设置”之间切换，额度页显示无账户状态；连接、刷新和设置子项暂时禁用，尚不能登录或查询额度。功能进度见[项目进度](docs/项目进度.md)，目录、协作边界和依赖见[工程结构](docs/project-structure.md)。**当前无第三方库依赖**，不需要先安装包管理器、生成工程或登录 Codex。
 
@@ -100,6 +100,14 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
 本次没有新页面，也还不能登录。由开发者使用虚构授权运行检查，你查看 [T05 验收结果](docs/mvp任务清单/记录/T05-验收.md)中的实际结果即可，无需自行排查 Xcode。后续登录与账户管理接好后，再验证真实手机操作。
 
 想自行复验时，在 Xcode 选择 **SubscriptionUsage** 和 **iPhone 17 Pro（iOS 26.5）** 后按 **⌘U**，或在测试列表只运行 `CredentialVaultTests`。成功应显示 **Test Succeeded**；查看每项测试名称及通过标记即可。实体手机也使用已有本机签名配置，需连接并解锁；测试只操作独立的虚构条目，不要求登录 Codex。
+
+### T06 做了什么、怎么验收
+
+**这一步让 App 在连接或查询前，判断指定网站的网络评分是否达标。** 使用 [Net.Coffee 的 Claude AI 信任评分](https://ip.net.coffee/claude/)，只有有效分数大于 50 才继续；49、50、无法取得评分和取消都不继续。不是普通连通性测试。
+
+本次仍没有新增操作页面。开发者先运行检查，再提供 [T06 验收结果](docs/mvp任务清单/记录/T06-验收.md)。你只需对照其中的真实取分摘要、固定结果表和 Xcode 通过报告，无需更换网络或制造故障。连接按钮从 T07 接入。
+
+开发者默认测试使用固定输入，不联网；真实取分另以 `T06_LIVE_NETWORK_CHECK=1` 显式启用 `NetworkScoreLiveTests`，只展示分数和继续/阻止结果。真实结果属于执行检查的设备，不能把电脑上的网页分数当作手机分数。
 
 ### 在自己的 iPhone 上运行（T02）
 

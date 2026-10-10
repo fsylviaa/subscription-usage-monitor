@@ -5,6 +5,36 @@
 	};
 	"objectVersion" = "56";
 	"objects" = {
+		"A06000000000000000000031" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "NetworkScoreLiveTests.swift";
+			"sourceTree" = "<group>";
+		};
+		"A06000000000000000000032" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A06000000000000000000031";
+		};
+		"A06000000000000000000021" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "NetworkScoreCheckerTests.swift";
+			"sourceTree" = "<group>";
+		};
+		"A06000000000000000000022" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A06000000000000000000021";
+		};
+		"A06000000000000000000011" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "NetworkScoreChecker.swift";
+			"sourceTree" = "<group>";
+		};
+		"A06000000000000000000012" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A06000000000000000000011";
+		};
 		"A05000000000000000000011" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -172,6 +202,7 @@
 		"EF972FBDF6EB970E6AA4CC4F" = {
 			"isa" = "PBXGroup";
 			"children" = (
+				"A06000000000000000000011",
 				"A0786A27B391A1797991F66E",
 			);
 			"path" = "Services";
@@ -250,6 +281,8 @@
 		"526E9B80F5C826824C672690" = {
 			"isa" = "PBXGroup";
 			"children" = (
+				"A06000000000000000000031",
+				"A06000000000000000000021",
 				"A04000000000000000000041",
 				"A05000000000000000000021",
 				"1DF5E0AD711BD84D4AC12F40",
@@ -612,6 +645,7 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
 			"files" = (
+				"A06000000000000000000012",
 				"A04000000000000000000032",
 				"A05000000000000000000012",
 				"A04000000000000000000022",
@@ -679,6 +713,8 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
 			"files" = (
+				"A06000000000000000000032",
+				"A06000000000000000000022",
 				"A04000000000000000000042",
 				"A05000000000000000000022",
 				"B70410B9B464B0A73168916A",

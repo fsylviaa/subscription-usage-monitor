@@ -1,8 +1,8 @@
 # 工程结构与依赖
 
-T01–T05 的工程、页面、账户与授权存储基础说明，更新于 2026-10-10。运行步骤见[根 README](../README.md)，实际验证与待验事项见[T01 验收记录](mvp任务清单/记录/T01-验收.md)。任务状态以[项目进度](项目进度.md)为准。
+T01–T06 的工程、页面、账户/授权存储与网络评分基础说明，更新于 2026-10-10。运行步骤见[根 README](../README.md)，实际验证与待验事项见[T01 验收记录](mvp任务清单/记录/T01-验收.md)。任务状态以[项目进度](项目进度.md)为准。
 
-当前工程包含“额度／设置”两页导航、额度空态、禁用的待接入操作、独立账户模型、文件存储、钥匙串存取和测试入口，启动及测试的实际结果以验收记录为准。登录、额度查询、账户管理、小组件、通知与后台更新均在后续对应任务接入；下文的目录分工不表示这些功能已经实现。
+当前工程包含“额度／设置”两页导航、额度空态、禁用的待接入操作、独立账户模型、文件存储、钥匙串存取、指定网络评分检查和测试入口，启动及测试的实际结果以验收记录为准。登录、额度查询、账户管理、小组件、通知与后台更新均在后续对应任务接入；下文的目录分工不表示这些功能已经实现。
 
 ## 工程入口与配置
 
@@ -33,7 +33,7 @@ app/
 │   ├── Features/                 额度、设置基础页与后续页面
 │   ├── Domain/                   账户身份、未获取额度状态；后续额度窗口
 │   ├── Providers/Codex/          后续 Codex 登录、请求与解析
-│   ├── Services/                 后续共用流程与系统能力
+│   ├── Services/                 指定网络评分；后续协调与系统能力
 │   ├── Storage/                  账户元数据文件与授权安全存储；后续快照
 │   └── Shared/                   后续 App 与组件共享的非敏感结果
 ├── Resources/
@@ -54,7 +54,7 @@ app/
 | `Sources/Features/` | 额度、账户、设置、教程等页面及直接相关展示逻辑 | 已有 `QuotaView.swift`、`SettingsView.swift`；待接入动作禁用；后续页面调用业务能力，不自行管理授权秘密 |
 | `Sources/Domain/` | 公共账户数据、额度语义及必要接口 | T04 已有 ConnectedAccount、AccountScope 和 AccountQuotaState；T11 加独立额度窗口，不依赖具体页面或 Codex 实现 |
 | `Sources/Providers/Codex/` | Codex 连接、请求构建、响应解析与平台差异 | T07–T14 逐项添加；当前不建其他平台实现或完整多平台框架 |
-| `Sources/Services/` | 网络检查、连接及刷新协调、系统提醒等共用流程 | T06 及对应后续任务接入；按实际需要添加，不预建通用框架 |
+| `Sources/Services/` | 网络检查、连接及刷新协调、系统提醒等共用流程 | T06 已有 NetworkScoreChecker；连接/刷新页面调用由 T07/T12 及对应后续任务接入 |
 | `Sources/Storage/` | 本机账户元数据、最近成功快照与钥匙串访问 | T04 已有 AccountStore，按数组顺序保存账户；T05 已有 CredentialVault，正式/临时授权以独立 Keychain 命名空间存取，普通数据与授权秘密分开保存 |
 | `Sources/Shared/` | App 和小组件都需要的纯展示数据、必要格式化与非敏感快照约定 | T32 实现实际共享；不放密码、令牌、登录流程或钥匙串访问 |
 | `Resources/` | 图片、颜色、图标和实际采用代码的许可资料 | T01 仅建立必要资源位置，不做正式品牌设计；实际引入第三方代码时补对应许可 |
@@ -85,7 +85,8 @@ T03 已建立 `App → RootView → 各自 NavigationStack → QuotaView / Setti
 |---|---|---|
 | SwiftUI | App 生命周期、窗口、TabView / NavigationStack、无账户页和设置 Form | Apple iOS SDK，随 Xcode 提供 |
 | UIKit | 根页面使用系统背景色；单元测试通过 `UIHostingController` 加载和布局 SwiftUI 根视图 | Apple iOS SDK，随 Xcode 提供 |
-| Foundation | 基础类型、Codable 账户文件、原子持久化及测试临时目录 | Apple iOS SDK，随 Xcode 提供；当前没有网络请求 |
+| Foundation | 基础类型、Codable、文件存储、URLSession 网络请求及响应解码 | Apple iOS SDK，随 Xcode 提供；T06 已使用 URLSession 请求指定评分链 |
+| Network | 校验指定来源返回的 IPv4/IPv6 地址格式 | Apple iOS SDK；不启用额外权限或持续网络监听 |
 | Security / Keychain | T05 本机授权保存、读取、更新、删除；正式与临时条目分离 | Apple iOS SDK，随 Xcode 提供；不启用 iCloud 或共享 Keychain group |
 | XCTest / XCUITest | 单元测试与 UI 启动检查 | Apple Xcode 测试框架，随 Xcode 提供；仅测试 targets 使用 |
 
@@ -97,7 +98,7 @@ App 与测试 targets 共用同一工程和共享 Scheme。测试代码、固定
 
 | 系统能力 | 用途 | 接入时机 |
 |---|---|---|
-| Foundation 的 URLSession 网络能力与响应解码 | 网络评分、Codex 请求与数据解析 | T06 及 T07–T14，随实际链路接入 |
+| Codex 请求与响应解码 | 平台登录、额度和授权续期 | T07–T14；T06 只实现指定评分链 |
 | 系统浏览器打开能力 | 打开 Codex 设备码确认页面，回 App 后继续原流程 | T07–T10；不预先引入登录 SDK、内嵌浏览器或浏览器扩展 |
 | BackgroundTasks | 以 30 分钟为目标、由 iOS 尽力调度的后台刷新 | T30/T31；不是持续运行或准点执行保证 |
 | App Groups | 在 App 与小组件之间保存必要非敏感快照 | T32，实际能力与配置在对应任务建立 |

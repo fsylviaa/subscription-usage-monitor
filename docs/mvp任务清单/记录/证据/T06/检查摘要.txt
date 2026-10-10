@@ -1,0 +1,115 @@
+T06 检查摘要
+日期：2026-10-10（Asia/Shanghai）
+环境：Xcode 26.6；iOS 26.5；模拟器 iPhone 17 Pro / 实体 iPhone 11
+数据：以下均为隔离固定输入；并非真实登录或真实取分
+
+模拟器：T06 21 项 + 既有 25 项
+Executed 10 tests, with 0 failures (0 unexpected) in 0.030 (0.032) seconds
+Executed 14 tests, with 0 failures (0 unexpected) in 0.065 (0.068) seconds
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests test49And50BlockFollowingOperation]' started.
+T06 | 固定评分 49 | 阻止；后续操作 0 次
+T06 | 固定评分 50 | 阻止；后续操作 0 次
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests test49And50BlockFollowingOperation]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests test51AllowsFollowingOperationExactlyOnce]' started.
+T06 | 固定评分 51 | 允许；后续操作 1 次
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests test51AllowsFollowingOperationExactlyOnce]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testAlreadyCancelledCheckMakesNoRequestOrFollowingOperation]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testAlreadyCancelledCheckMakesNoRequestOrFollowingOperation]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testCancellationDuringExitRequestStopsBeforeScoring]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testCancellationDuringExitRequestStopsBeforeScoring]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testDisconnectedTransportIsUnknownRatherThanLowScore]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testDisconnectedTransportIsUnknownRatherThanLowScore]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testEveryRetryFetchesFreshExitAndScoreInsteadOfReusingAllowedResult]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testEveryRetryFetchesFreshExitAndScoreInsteadOfReusingAllowedResult]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testFollowingOperationFailureIsPropagatedWithoutRetryingOperation]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testFollowingOperationFailureIsPropagatedWithoutRetryingOperation]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testHTMLChallengeAtEitherStageCannotBecomeValidResult]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testHTMLChallengeAtEitherStageCannotBecomeValidResult]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testIPv6ExitAddressIsAcceptedAndUsedForScoring]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testIPv6ExitAddressIsAcceptedAndUsedForScoring]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testLate51AfterCancellationCannotStartFollowingOperation]' started.
+T06 | 取消后迟到 51 分 | 保持取消；后续操作 0 次
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testLate51AfterCancellationCannotStartFollowingOperation]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testMissingInvalidTypeOutOfRangeAndMalformedScoresRemainUnknown]' started.
+T06 | 缺失、类型错误、越界及无效评分 | 保持未知；全部阻止
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testMissingInvalidTypeOutOfRangeAndMalformedScoresRemainUnknown]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testMissingMalformedAndAmbiguousExitAddressStopsBeforeScoreRequest]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testMissingMalformedAndAmbiguousExitAddressStopsBeforeScoreRequest]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testNon200ResponsesAtEitherStageAreUnavailable]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testNon200ResponsesAtEitherStageAreUnavailable]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testNonHTTPResponseCannotBecomeValidScore]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testNonHTTPResponseCannotBecomeValidScore]' passed (0.000 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRedirectedResponseAtEitherStageCannotSubstituteAnotherSource]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRedirectedResponseAtEitherStageCannotSubstituteAnotherSource]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRequestsUseSpecifiedSourcesCurrentExitAddressAndNoCache]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRequestsUseSpecifiedSourcesCurrentExitAddressAndNoCache]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRestrictedCountryWithoutValidScoreDoesNotInventZero]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRestrictedCountryWithoutValidScoreDoesNotInventZero]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testSpecifiedRestrictedCountriesMapValidScoreToZero]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testSpecifiedRestrictedCountriesMapValidScoreToZero]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testTimeoutAtEitherStageIsUnknownAndBlocksFollowingOperation]' started.
+T06 | 两阶段分别超时 | 保持未知；后续操作 0 次
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testTimeoutAtEitherStageIsUnknownAndBlocksFollowingOperation]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testTransportCancellationIsNotReportedAsScoreFailure]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testTransportCancellationIsNotReportedAsScoreFailure]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testValidScoresPreserveZeroFractionAndUpperBound]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testValidScoresPreserveZeroFractionAndUpperBound]' passed (0.001 seconds).
+Executed 21 tests, with 0 failures (0 unexpected) in 0.018 (0.022) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 0.005 (0.006) seconds
+Executed 46 tests, with 0 failures (0 unexpected) in 0.119 (0.129) seconds
+Executed 46 tests, with 0 failures (0 unexpected) in 0.119 (0.129) seconds
+** TEST SUCCEEDED **
+
+实体 iPhone：T06 专项 21 项
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests test49And50BlockFollowingOperation]' started.
+T06 | 固定评分 49 | 阻止；后续操作 0 次
+T06 | 固定评分 50 | 阻止；后续操作 0 次
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests test49And50BlockFollowingOperation]' passed (0.004 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests test51AllowsFollowingOperationExactlyOnce]' started.
+T06 | 固定评分 51 | 允许；后续操作 1 次
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests test51AllowsFollowingOperationExactlyOnce]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testAlreadyCancelledCheckMakesNoRequestOrFollowingOperation]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testAlreadyCancelledCheckMakesNoRequestOrFollowingOperation]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testCancellationDuringExitRequestStopsBeforeScoring]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testCancellationDuringExitRequestStopsBeforeScoring]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testDisconnectedTransportIsUnknownRatherThanLowScore]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testDisconnectedTransportIsUnknownRatherThanLowScore]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testEveryRetryFetchesFreshExitAndScoreInsteadOfReusingAllowedResult]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testEveryRetryFetchesFreshExitAndScoreInsteadOfReusingAllowedResult]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testFollowingOperationFailureIsPropagatedWithoutRetryingOperation]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testFollowingOperationFailureIsPropagatedWithoutRetryingOperation]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testHTMLChallengeAtEitherStageCannotBecomeValidResult]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testHTMLChallengeAtEitherStageCannotBecomeValidResult]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testIPv6ExitAddressIsAcceptedAndUsedForScoring]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testIPv6ExitAddressIsAcceptedAndUsedForScoring]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testLate51AfterCancellationCannotStartFollowingOperation]' started.
+T06 | 取消后迟到 51 分 | 保持取消；后续操作 0 次
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testLate51AfterCancellationCannotStartFollowingOperation]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testMissingInvalidTypeOutOfRangeAndMalformedScoresRemainUnknown]' started.
+T06 | 缺失、类型错误、越界及无效评分 | 保持未知；全部阻止
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testMissingInvalidTypeOutOfRangeAndMalformedScoresRemainUnknown]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testMissingMalformedAndAmbiguousExitAddressStopsBeforeScoreRequest]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testMissingMalformedAndAmbiguousExitAddressStopsBeforeScoreRequest]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testNon200ResponsesAtEitherStageAreUnavailable]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testNon200ResponsesAtEitherStageAreUnavailable]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testNonHTTPResponseCannotBecomeValidScore]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testNonHTTPResponseCannotBecomeValidScore]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRedirectedResponseAtEitherStageCannotSubstituteAnotherSource]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRedirectedResponseAtEitherStageCannotSubstituteAnotherSource]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRequestsUseSpecifiedSourcesCurrentExitAddressAndNoCache]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRequestsUseSpecifiedSourcesCurrentExitAddressAndNoCache]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRestrictedCountryWithoutValidScoreDoesNotInventZero]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRestrictedCountryWithoutValidScoreDoesNotInventZero]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testSpecifiedRestrictedCountriesMapValidScoreToZero]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testSpecifiedRestrictedCountriesMapValidScoreToZero]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testTimeoutAtEitherStageIsUnknownAndBlocksFollowingOperation]' started.
+T06 | 两阶段分别超时 | 保持未知；后续操作 0 次
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testTimeoutAtEitherStageIsUnknownAndBlocksFollowingOperation]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testTransportCancellationIsNotReportedAsScoreFailure]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testTransportCancellationIsNotReportedAsScoreFailure]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testValidScoresPreserveZeroFractionAndUpperBound]' started.
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testValidScoresPreserveZeroFractionAndUpperBound]' passed (0.002 seconds).
+Executed 21 tests, with 0 failures (0 unexpected) in 0.037 (0.043) seconds
+Executed 21 tests, with 0 failures (0 unexpected) in 0.037 (0.044) seconds
+Executed 21 tests, with 0 failures (0 unexpected) in 0.037 (0.046) seconds
+** TEST EXECUTE SUCCEEDED **
