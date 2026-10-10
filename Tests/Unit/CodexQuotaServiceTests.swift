@@ -1184,6 +1184,90 @@ final class CodexQuotaServiceTests: XCTestCase {
         XCTAssertEqual(checks, [old[1].id: 2])
     }
 
+    func testT30ColdBackgroundReadsCacheWithoutRestoringInteractiveLoginAndPersistsSuccess() async throws {
+        let fixture = T26BatchFixture(scenario: "success")
+        directories.append(fixture.directory)
+        let transactions = T30CountTransactions()
+        let flow = CodexConnectionFlow(transactions: transactions, bindings: fixture, quotaUpdater: fixture)
+        let scheduler = T30Scheduler()
+        let url = fixture.directory.appendingPathComponent("audit.json")
+        let coordinator = BackgroundQuotaRefresh(flow: flow, scheduler: scheduler, journalURL: url, now: { T26BatchFixture.newTime })
+        let result = await coordinator.execute(source: "debug", wasInBackground: true)
+        XCTAssertEqual(result, .init(total: 2, succeeded: 2, failed: 0, loaded: true))
+        let reads = await transactions.reads
+        XCTAssertEqual(reads, 0)
+        XCTAssertFalse(flow.isPresented)
+        XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+        let saved = try await fixture.load()
+        XCTAssertEqual(saved, flow.accounts)
+        XCTAssertTrue(saved.allSatisfy { $0.quotaSnapshot!.observedAt > T26BatchFixture.oldTime })
+        let events = try JSONDecoder().decode([BackgroundRefreshEvent].self, from: Data(contentsOf: url))
+        XCTAssertEqual(events.last?.kind, "finished")
+        XCTAssertEqual(events.last?.source, "debug")
+        XCTAssertEqual(events.last?.result, result)
+        XCTAssertEqual(scheduler.submissions, [T26BatchFixture.newTime.addingTimeInterval(1800)])
+        // Returning to foreground is a separate request even immediately afterward.
+        flow.sceneActivityChanged(true)
+        await flow.loadAccounts()
+        await flow.waitForInitialQuota()
+        let checks = await fixture.checks
+        XCTAssertTrue(checks.values.allSatisfy { $0 == 2 })
+    }
+
+    func testT30BackgroundScore50BlocksQueriesKeepsValuesAndSchedulesNextOpportunity() async throws {
+        let (flow, fixture) = try await batch("blocked")
+        let old = flow.accounts
+        let scheduler = T30Scheduler()
+        let coordinator = BackgroundQuotaRefresh(flow: flow, scheduler: scheduler,
+            journalURL: fixture.directory.appendingPathComponent("audit.json"))
+        let result = await coordinator.execute(source: "debug", wasInBackground: true)
+        XCTAssertEqual(result, .init(total: 2, succeeded: 0, failed: 2, loaded: true))
+        XCTAssertFalse(result.success)
+        XCTAssertEqual(flow.accounts, old)
+        let requests = await fixture.requests
+        XCTAssertTrue(requests.isEmpty)
+        XCTAssertFalse(flow.isPresented)
+        XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+        XCTAssertEqual(scheduler.submissions.count, 1)
+        XCTAssertEqual(coordinator.events.last?.successTimes, old.compactMap { $0.quotaSnapshot?.observedAt })
+    }
+
+    func testT30BackgroundAndForegroundShareInFlightRequests() async throws {
+        let (flow, fixture) = try await batch("cancel")
+        flow.refreshAllQuota(manually: false)
+        let work = Task { await flow.refreshQuotaInBackground() }
+        for _ in 0..<1000 {
+            if await fixture.checks.count == 2 { break }
+            try await Task.sleep(for: .milliseconds(2))
+        }
+        flow.refreshQuota(for: flow.accounts[0].id)
+        XCTAssertEqual(flow.visibleQuotaUpdatingIDs, [flow.accounts[0].id])
+        await fixture.release()
+        let result = await work.value
+        XCTAssertTrue(result.success)
+        let checks = await fixture.checks
+        XCTAssertTrue(checks.values.allSatisfy { $0 == 1 })
+    }
+
+    func testT30ScheduleUsesThirtyMinuteTargetWithoutPostponingExistingRequest() async throws {
+        let (flow, fixture) = try await batch("success")
+        let scheduler = T30Scheduler()
+        let coordinator = BackgroundQuotaRefresh(flow: flow, scheduler: scheduler,
+            journalURL: fixture.directory.appendingPathComponent("audit.json"), now: { T26BatchFixture.oldTime })
+        await coordinator.scheduleIfNeeded()
+        await coordinator.scheduleIfNeeded()
+        XCTAssertEqual(scheduler.submissions, [T26BatchFixture.oldTime.addingTimeInterval(1800)])
+        scheduler.pending = [] // The system consumed the previous request.
+        _ = await coordinator.execute(source: "system", wasInBackground: true)
+        XCTAssertEqual(scheduler.submissions.count, 2)
+        XCTAssertEqual(coordinator.events.last?.source, "system", "隔离源标记测试，不是自然执行证据")
+        let raw = try String(contentsOf: fixture.directory.appendingPathComponent("audit.json"), encoding: .utf8)
+        for forbidden in ["example.invalid", "credential", "token", "t26-account", "remainingPercent"] {
+            XCTAssertFalse(raw.contains(forbidden))
+        }
+        XCTAssertTrue(coordinator.journalWriteSucceeded)
+    }
+
     private typealias Setup = (store: AccountStore, account: ConnectedAccount, url: URL)
     private func setup(save: Bool = true) async throws -> Setup {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T12-test-\(UUID())")
@@ -1338,4 +1422,18 @@ private struct T27ExistingLoginBinding: CodexAccountBinding {
     let fixture: T26BatchFixture
     func load() async throws -> [ConnectedAccount] { try await fixture.load() }
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount { try await fixture.load()[0] }
+}
+
+@MainActor
+private final class T30Scheduler: BackgroundRefreshScheduling {
+    var pending: [Date] = []
+    var submissions: [Date] = []
+    func pendingTargets() async -> [Date] { pending }
+    func submit(earliest: Date) { submissions.append(earliest); pending = [earliest] }
+}
+private actor T30CountTransactions: CodexLoginTransactionStoring {
+    private(set) var reads = 0
+    func load() -> CodexDeviceAuthorization? { reads += 1; return nil }
+    func save(_ authorization: CodexDeviceAuthorization) { }
+    func remove(transactionID: UUID) { }
 }

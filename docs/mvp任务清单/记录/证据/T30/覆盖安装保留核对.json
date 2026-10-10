@@ -1,0 +1,8 @@
+{
+  "entireAccountFileIdenticalAfterInstall": true,
+  "identityOrderAndConnectionPreservedAfterNormalLaunch": true,
+  "beforeSha256": "6b0de7f13a75293daec4160f66abb154820d53256ff227b5bfecb2c5fa5e6b9d",
+  "installedSha256": "6b0de7f13a75293daec4160f66abb154820d53256ff227b5bfecb2c5fa5e6b9d",
+  "demoPreferencePreserved": true,
+  "realQuotaComparisonPerformed": false
+}

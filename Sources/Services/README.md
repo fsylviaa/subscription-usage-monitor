@@ -17,3 +17,11 @@ T06 的 `NetworkScoreChecker` 每次从当前设备请求指定来源，返回�
 **网络含义：** 这是同一设备、当次请求取得的指定网页评分。Claude 与后续 Codex 登录/查询域名可能被 VPN 按域名分流；不宣称已证明它们出口相同，或分数可以保证登录/查询成功。T07/T12 在实际操作前执行这一指定前置检查，并验证真实链路，不能拿电脑浏览器的分数代替手机检查。网页自身的服务端评分缓存周期由 Net.Coffee 管理，App 禁用的是本机 HTTP 缓存复用，不能承诺该来源底层数据实时重算。
 
 后续连接／刷新协调和提醒流程随对应任务逐项引入，不预建多平台框架。
+
+## 后台额度刷新（T30）
+
+`BackgroundQuotaRefresh.swift` 注册 BGAppRefreshTask、保留当前30分钟目标请求并记录调度／执行结果。App、前台和后台共用同一个 CodexConnectionFlow；冷后台启动只恢复账户缓存，不启动登录恢复。后台成功仍经过原网络检查、查询与持久保存。
+
+去敏观察文件为 App 容器 `Library/Application Support/BackgroundRefresh/events.json`，最多保留100条，不含邮箱、账户ID、凭据或余额；只记调度目标、实际起止、结果计数和原／新成功时间。`request`只说明申请，`debug`仅调试触发，普通系统回调为`system`。自然执行是否发生须核对实际started/finished记录，不能把scheduled当作执行。
+
+Debug隔离验收使用独立tmp/T30-debug，Release无测试参数或调试调用。T31将继续核验中断／失败恢复；T53收口自然后台证据。

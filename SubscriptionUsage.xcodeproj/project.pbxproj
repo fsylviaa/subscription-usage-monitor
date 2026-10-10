@@ -5,6 +5,9 @@
 	};
 	"objectVersion" = "56";
 	"objects" = {
+        "A30000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "BackgroundQuotaRefresh.swift"; "sourceTree" = "<group>"; };
+        "A30000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A30000000000000000000001"; };
+
         "A22000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "StaleAccountResultTests.swift"; "sourceTree" = "<group>"; };
         "A22000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A22000000000000000000001"; };
         "A14000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexCredentialRenewalTests.swift"; "sourceTree" = "<group>"; };
@@ -355,6 +358,7 @@
 			"isa" = "PBXGroup";
 			"children" = (
 				"A06000000000000000000011",
+                "A30000000000000000000001",
 				"A0786A27B391A1797991F66E",
 			);
 			"path" = "Services";
@@ -636,6 +640,7 @@
 				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
 				"TARGETED_DEVICE_FAMILY" = "1";
 				"PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsage";
+                "INFOPLIST_FILE" = "Config/Info.plist";
 				"ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" = "AccentColor";
 				"INFOPLIST_KEY_CFBundleDisplayName" = "订阅用量";
 				"INFOPLIST_KEY_LSApplicationCategoryType" = "public.app-category.utilities";
@@ -665,6 +670,7 @@
 				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
 				"TARGETED_DEVICE_FAMILY" = "1";
 				"PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsage";
+                "INFOPLIST_FILE" = "Config/Info.plist";
 				"ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" = "AccentColor";
 				"INFOPLIST_KEY_CFBundleDisplayName" = "订阅用量";
 				"INFOPLIST_KEY_LSApplicationCategoryType" = "public.app-category.utilities";
@@ -830,6 +836,7 @@
 				"A07000000000000000000022",
 				"A07000000000000000000012",
 				"A06000000000000000000012",
+                "A30000000000000000000002",
 				"A04000000000000000000032",
 				"A05000000000000000000012",
 				"A04000000000000000000022",

@@ -7,12 +7,14 @@ struct RootView: View {
     @StateObject private var connection: CodexConnectionFlow
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    private let onBackground: () -> Void
     private enum Tab: Hashable { case quota, settings }
     @State private var selection: Tab = .quota
     @State private var connectionDetent: PresentationDetent = .height(250)
     @State private var appearanceTransition = AppearanceTransition()
 
-    init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard) {
+    init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard, onBackground: @escaping () -> Void = {}) {
+        self.onBackground = onBackground
         _appearance = AppStorage(wrappedValue: "system", "appearance", store: preferences)
         _connection = StateObject(wrappedValue: connection)
     }
@@ -80,7 +82,10 @@ struct RootView: View {
             connection.sceneActivityChanged(scenePhase == .active)
             await connection.loadAccounts()
         }
-        .onChange(of: scenePhase) { _, phase in connection.sceneActivityChanged(phase == .active) }
+        .onChange(of: scenePhase) { _, phase in
+            connection.sceneActivityChanged(phase == .active)
+            if phase == .background { onBackground() }
+        }
         .sheet(isPresented: $connection.isPresented, onDismiss: { connection.cancel() }) {
             CodexConnectionView(flow: connection)
                 .presentationDetents(connectionDetents, selection: $connectionDetent)

@@ -54,6 +54,9 @@ struct QuotaView: View {
             HStack(spacing: 0) {
                 Text("订阅额度").font(.system(size: dynamicTypeSize.isAccessibilitySize ? min(titleSize, 28) : titleSize, weight: .semibold))
                     .accessibilityAddTraits(.isHeader).accessibilityIdentifier("quota.title")
+                    #if DEBUG
+                    .accessibilityValue(AppBackgroundRuntime.shared.debugSummary)
+                    #endif
                 Spacer(minLength: 12)
                 Button(action: connect) {
                     DesignIcon(name: "Link").frame(width: 44, height: 44)

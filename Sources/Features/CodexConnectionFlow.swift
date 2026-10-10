@@ -918,6 +918,38 @@ final class CodexConnectionFlow: ObservableObject {
         }
     }
 
+    /// Background launch reads trusted bindings only. It must never restore or
+    /// start an interactive login; the foreground keeps its own restoration.
+    func refreshQuotaInBackground() async -> BackgroundQuotaResult {
+        do {
+            if !cachedAccountsLoaded {
+                guard let bindings else { return .init(total: 0, succeeded: 0, failed: 0, loaded: false) }
+                let saved = try await bindings.load()
+                if !cachedAccountsLoaded {
+                    accounts = saved
+                    cachedAccountsLoaded = true
+                    loadingAccounts = false
+                    accountLoadFailed = false
+                }
+            }
+            try Task.checkCancellation()
+            let targets = accounts.filter { $0.deletionPending != true }
+            guard quotaUpdater != nil, !accountLoadFailed, !managingAccounts, !reorderingAccounts else {
+                return .init(total: targets.count, succeeded: 0, failed: targets.count, loaded: false)
+            }
+            enqueueQuota(targets, manually: false, location: .dashboard)
+            await waitForInitialQuota()
+            try Task.checkCancellation()
+            let current = targets.filter { target in accounts.contains { QuotaKey($0) == QuotaKey(target) } }
+            let failures = current.filter { quotaFailures[$0.id] != nil }.count
+            return .init(total: current.count, succeeded: current.count - failures, failed: failures, loaded: true)
+        } catch {
+            return .init(total: 0, succeeded: 0, failed: 0, loaded: false)
+        }
+    }
+
+    func interruptBackgroundQuota() { cancelRequests(where: { _ in true }) }
+
     func waitForInitialQuota() async {
         while let work = quotaRequests.values.compactMap(\.work).first { await work.value }
     }
