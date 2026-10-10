@@ -16,7 +16,7 @@ final class CodexLoginCompletionUITests: XCTestCase {
         app.launch() // Same unique run ID restores only this test's temporary account file.
         assertConnectedIdentity(in: app)
         saveFixtureScreenshot(app, name: "重开账户仍在")
-        app.tabBars.buttons["设置"].tap()
+        app.buttons["tab.settings"].tap()
         XCTAssertFalse(app.buttons["settings.connect"].isEnabled)
     }
 

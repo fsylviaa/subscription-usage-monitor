@@ -12,9 +12,9 @@ final class LaunchTests: XCTestCase {
         saveScreenshot(of: app, name: "额度")
 
         for _ in 0..<2 {
-            app.tabBars.buttons["设置"].tap()
+            app.buttons["tab.settings"].tap()
             XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
-            XCTAssertTrue(app.tabBars.buttons["设置"].isSelected)
+            XCTAssertTrue(app.buttons["tab.settings"].isSelected)
 
             for identifier in ["settings.widgetTutorial", "settings.help", "settings.privacy", "settings.licenses"] {
                 let action = app.buttons[identifier]
@@ -28,7 +28,7 @@ final class LaunchTests: XCTestCase {
             XCTAssertEqual(reminder.value as? String, "0")
             saveScreenshot(of: app, name: "设置")
 
-            app.tabBars.buttons["额度"].tap()
+            app.buttons["tab.quota"].tap()
             assertEmptyQuota(in: app)
         }
 
@@ -40,11 +40,11 @@ final class LaunchTests: XCTestCase {
 
     @MainActor
     private func assertEmptyQuota(in app: XCUIApplication) {
-        let title = app.navigationBars.staticTexts["订阅额度"]
+        let title = app.staticTexts["quota.title"]
         XCTAssertTrue(title.waitForExistence(timeout: 10))
         XCTAssertTrue(title.isHittable)
         XCTAssertTrue(app.staticTexts["未连接账户"].exists)
-        XCTAssertTrue(app.tabBars.buttons["额度"].isSelected)
+        XCTAssertTrue(app.buttons["tab.quota"].isSelected)
 
         let refresh = app.buttons["quota.refresh"]
         let toolbarConnect = app.buttons["quota.toolbarConnect"]

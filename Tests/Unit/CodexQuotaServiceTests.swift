@@ -175,7 +175,7 @@ final class CodexQuotaServiceTests: XCTestCase {
         XCTAssertNil(reopened.first?.quotaSnapshot)
     }
 
-    func testLoginCompletionAutomaticallyQueriesAfterBindingAndDismissal() async throws {
+    func testLoginCompletionQueriesInsideConnectionAndDismissesAfterSuccess() async throws {
         let setup = try await self.setup(save: false)
         let transport = QuotaTestTransport(data: Self.complete)
         let binding = QuotaTestBinding(account: setup.account, store: setup.store)
@@ -197,6 +197,34 @@ final class CodexQuotaServiceTests: XCTestCase {
         print("T12 | 登录后自动查询 | 无刷新操作，绑定完成后自动显示70%/20%，关闭登录弹层不撤销结果")
     }
 
+    func testClosingConnectionDuringFirstQueryKeepsBindingAndDoesNotReopenOnSuccess() async throws {
+        let setup = try await self.setup(save: false)
+        let gate = QuotaTestGate()
+        let transport = QuotaTestTransport(data: Self.complete, beforeResponse: { await gate.wait() })
+        let login = QuotaTestLogin(account: setup.account, payload: try payload(for: setup.account))
+        let flow = CodexConnectionFlow(checkNetwork: { .allowed(score: 51) }, authorizer: login,
+            transactions: QuotaTestTransactions(), completer: login, verifier: login,
+            bindings: QuotaTestBinding(account: setup.account, store: setup.store), pending: QuotaTestPending(),
+            quotaUpdater: try service(setup, transport: transport))
+        let started = expectation(description: "绑定后在原连接弹层查询")
+        let observation = flow.$quotaUpdatingID.sink { if $0 != nil { started.fulfill() } }
+        try await XCTUnwrap(flow.begin()).value
+        await fulfillment(of: [started], timeout: 5)
+        observation.cancel()
+        XCTAssertEqual(flow.state, .quota)
+        XCTAssertTrue(flow.isPresented)
+        XCTAssertEqual(flow.quotaFeedbackLocation, .connection)
+        flow.cancel()
+        await gate.open()
+        await flow.waitForInitialQuota()
+        XCTAssertFalse(flow.isPresented)
+        XCTAssertEqual(flow.state, .idle)
+        XCTAssertEqual(flow.accounts.first?.id, setup.account.id)
+        XCTAssertEqual(flow.accounts.first?.quotaSnapshot?.weekly.amount.remainingPercent, 70)
+        let saved = try await setup.store.load()
+        XCTAssertEqual(saved, flow.accounts)
+    }
+
     func testLoginGatePassesButQuotaGate50KeepsSuccessfulAccountWithSimpleMessage() async throws {
         let setup = try await self.setup(save: false)
         let transport = QuotaTestTransport(data: Self.complete)
@@ -212,7 +240,12 @@ final class CodexQuotaServiceTests: XCTestCase {
         await fulfillment(of: [finished], timeout: 5)
         observation.cancel()
         XCTAssertEqual(flow.quotaFailure, "网络不达标，无法更新")
+        XCTAssertTrue(flow.isPresented)
+        XCTAssertEqual(flow.state, .quota)
+        XCTAssertEqual(flow.quotaFeedbackLocation, .connection)
+        flow.cancel()
         XCTAssertFalse(flow.isPresented)
+        XCTAssertEqual(flow.quotaFailureID, setup.account.id)
         XCTAssertEqual(flow.accounts, [setup.account])
         let saved = try await setup.store.load()
         let count = await transport.requests.count
@@ -395,10 +428,16 @@ final class CodexQuotaServiceTests: XCTestCase {
         XCTAssertEqual(flow.quotaFailureID, setup.account.id)
         XCTAssertEqual(flow.accounts, [setup.account])
         flow.retryInitialQuota(for: UUID())
+        XCTAssertEqual(flow.quotaFeedbackLocation, .dashboard)
+        XCTAssertFalse(flow.isPresented)
+        flow.hideQuotaFeedback()
+        XCTAssertTrue(flow.quotaFeedbackHidden)
+        XCTAssertEqual(flow.quotaFailureID, setup.account.id, "关闭提示不得清除账户失败状态")
         var gateCount = await gates.count
         XCTAssertEqual(gateCount, 1, "错误账户不能触发重试")
         flow.retryInitialQuota(for: setup.account.id)
         await flow.waitForInitialQuota()
+        XCTAssertFalse(flow.quotaFeedbackHidden, "新一轮失败重新显示反馈")
         XCTAssertEqual(flow.quotaFailure, "获取失败")
         var requests = await transport.requests
         XCTAssertTrue(requests.isEmpty, "低分和未知均不发额度请求")

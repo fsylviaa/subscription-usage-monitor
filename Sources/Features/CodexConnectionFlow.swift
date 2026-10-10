@@ -10,6 +10,7 @@ final class CodexConnectionFlow: ObservableObject {
         case requesting
         case verifying
         case saving
+        case quota
         case code(CodexDeviceAuthorization)
         case failure(String)
     }
@@ -25,6 +26,9 @@ final class CodexConnectionFlow: ObservableObject {
     @Published private(set) var quotaUpdatingID: UUID?
     @Published private(set) var quotaFailure: String?
     @Published private(set) var quotaFailureID: UUID?
+    enum QuotaFeedbackLocation { case connection, dashboard }
+    @Published private(set) var quotaFeedbackLocation: QuotaFeedbackLocation = .dashboard
+    @Published private(set) var quotaFeedbackHidden = false
     private let quotaUpdater: (any CodexQuotaUpdating)?
     private var quotaWork: Task<Void, Never>?
     private let completer: (any CodexLoginCompleting)?
@@ -507,9 +511,13 @@ final class CodexConnectionFlow: ObservableObject {
                 self.authorization = nil
                 // A cleanup problem cannot turn a committed account into a failure.
                 try? await removePending()
-                state = .idle
-                isPresented = false
-                startInitialQuota(for: account)
+                if quotaUpdater != nil {
+                    state = .quota
+                    startInitialQuota(for: account, location: .connection)
+                } else {
+                    state = .idle
+                    isPresented = false
+                }
             } catch {
                 guard isCurrent(attempt) else {
                     // A non-cooperative pending write may have finished after cancel.
@@ -541,16 +549,23 @@ final class CodexConnectionFlow: ObservableObject {
     }
 
     /// First-fetch recovery only; this does not enable regular manual refresh.
-    func retryInitialQuota(for accountID: UUID) {
+    func retryInitialQuota(for accountID: UUID, location: QuotaFeedbackLocation = .dashboard) {
         guard quotaFailureID == accountID,
               let account = accounts.first(where: { $0.id == accountID }),
               account.quotaState == .notFetched else { return }
-        startInitialQuota(for: account)
+        startInitialQuota(for: account, location: location)
+    }
+
+    func hideQuotaFeedback() {
+        guard quotaUpdatingID == nil else { return }
+        quotaFeedbackHidden = true
     }
 
     /// Separate from login: dismissing its sheet cannot cancel the quota query.
-    private func startInitialQuota(for account: ConnectedAccount) {
+    private func startInitialQuota(for account: ConnectedAccount, location: QuotaFeedbackLocation = .dashboard) {
         guard let quotaUpdater, quotaWork == nil else { return }
+        quotaFeedbackLocation = location
+        quotaFeedbackHidden = false
         quotaUpdatingID = account.id
         quotaFailure = nil
         quotaFailureID = nil
@@ -561,6 +576,10 @@ final class CodexConnectionFlow: ObservableObject {
                 let updated = try await quotaUpdater.update(account)
                 if let index = accounts.firstIndex(where: { $0.id == updated.id && $0.generation == updated.generation }) {
                     accounts[index] = updated
+                }
+                if location == .connection, state == .quota {
+                    state = .idle
+                    isPresented = false
                 }
             } catch is CancellationError {
                 // Cancellation never becomes a successful observation.

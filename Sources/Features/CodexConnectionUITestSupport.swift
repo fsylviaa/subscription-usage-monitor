@@ -138,7 +138,9 @@ enum CodexConnectionUITestSupport {
             requests += 1
             if scenario == "retry-request" && requests == 1 { throw URLError(.timedOut) }
             let resolved: String
-            if scenario == "retry-plan" { resolved = requests == 1 ? "plan-only-failure" : "new-plan" }
+            if scenario == "retry-slow" { resolved = requests == 1 ? "plan-only-failure" : "slow-quota" }
+            else if scenario == "retry-twice" { resolved = requests <= 2 ? "plan-only-failure" : "new-plan" }
+            else if scenario == "retry-plan" { resolved = requests == 1 ? "plan-only-failure" : "new-plan" }
             else if scenario == "retry-free" { resolved = requests == 1 ? "plan-only-failure" : "free" }
             else { resolved = scenario }
             return try await QuotaFixtureTransport(scenario: resolved).data(for: request)
@@ -148,8 +150,8 @@ enum CodexConnectionUITestSupport {
     private struct QuotaFixtureTransport: CodexDeviceAuthorizationTransport {
         let scenario: String
         func data(for request: URLRequest) async throws -> (Data, URLResponse) {
-            // Make sheet dismissal overlap the query to exercise task separation.
-            try await Task.sleep(for: .milliseconds(500))
+            // Keep the query visibly in flight to exercise sheet lifecycle.
+            try await Task.sleep(for: .milliseconds(scenario == "slow-quota" ? 4_000 : 500))
             let partialBody = #"{"account_id":"isolated-ui-account","plan_type":"Plus","rate_limit":{"primary_window":{"limit_window_seconds":604800,"used_percent":30}}}"#
             let completeBody = #"{"account_id":"isolated-ui-account","plan_type":"Plus","rate_limit":{"primary_window":{"limit_window_seconds":18000,"used_percent":80,"reset_at":1791669600},"secondary_window":{"limit_window_seconds":604800,"used_percent":30,"reset_at":1792144800}}}"#
             let freeBody = #"{"account_id":"isolated-ui-account","plan_type":"Free","rate_limit":{"primary_window":{"limit_window_seconds":2592000,"used_percent":0},"secondary_window":null}}"#
