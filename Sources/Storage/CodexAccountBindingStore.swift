@@ -56,7 +56,20 @@ final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, Demo
         for account in try await accountStore.load() where account.deletionPending == true {
             try await removeAccount(account.id)
         }
+        for account in try await accountStore.load() { await cleanupRetiredCredentials(account) }
         return try await accountStore.load()
+    }
+
+    private func cleanupRetiredCredentials(_ account: ConnectedAccount) async {
+        guard let refs = account.retiredCredentialRefs, !refs.isEmpty else { return }
+        do {
+            for ref in refs where ref != account.credentialRef {
+                try await vault.remove(for: .credential(ref))
+            }
+            try await accountStore.finishCredentialCleanup(refs, accountID: account.id)
+        } catch {
+            // The new connection is already durable. Retry cleanup on the next load.
+        }
     }
 
     func removeAccount(_ id: UUID) async throws {
@@ -68,7 +81,9 @@ final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, Demo
                 try await vault.remove(for: .loginTransaction(transactionID))
                 try await transactions.remove(transactionID: transactionID)
             }
-            try await vault.remove(for: .credential(account.credentialRef))
+            for ref in (account.retiredCredentialRefs ?? []) + [account.credentialRef] {
+                try await vault.remove(for: .credential(ref))
+            }
         }
         try await accountStore.finishDeletion(id)
     }
@@ -90,7 +105,7 @@ final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, Demo
 
     func save(_ login: CodexVerifiedLogin, transactionID: UUID) async throws -> ConnectedAccount {
         try Task.checkCancellation()
-        let existing = try await accountStore.load()
+        let existing = try await load()
         // A committed login can survive a crash before temporary cleanup.
         if let committed = existing.first(where: { $0.loginTransactionID == transactionID }) {
             return committed
@@ -106,9 +121,10 @@ final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, Demo
         )
         let entry = CredentialVault.Entry.credential(account.credentialRef)
         try await vault.save(login.credentials, for: entry)
+        let committed: ConnectedAccount
         do {
             try Task.checkCancellation()
-            try await accountStore.appendUnlessCancelled(account)
+            committed = try await accountStore.commitLogin(account)
         } catch {
             // This random reference belongs only to this attempted binding. Never
             // delete or replace an established account or a different payload.
@@ -121,6 +137,8 @@ final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, Demo
         }
         // Do not check cancellation after commit: the account is already durable.
         // The coordinator can dismiss UI, but must retain this successful binding.
-        return account
+        await cleanupRetiredCredentials(committed)
+        // Best-effort cleanup cannot change the outcome of an already committed login.
+        return (try? await accountStore.load().first { $0.id == committed.id }) ?? committed
     }
 }

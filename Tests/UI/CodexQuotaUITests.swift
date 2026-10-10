@@ -143,6 +143,38 @@ final class CodexQuotaUITests: XCTestCase {
     }
 
     @MainActor
+    func testT18DuplicateLoginKeepsPositionAndCountAfterReopenAndCancel() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--t16-isolated-ui", "duplicate", "--t16-run-id", UUID().uuidString]
+        app.launch()
+        defer { app.terminate() }
+        for index in 1...3 {
+            let connect = app.buttons[index == 1 ? "quota.connect" : "quota.toolbarConnect"]
+            XCTAssertTrue(connect.waitForExistence(timeout: 5))
+            connect.tap()
+            XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+            app.buttons["platforms.codex"].tap()
+            XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
+            app.buttons["connection.open"].tap()
+            XCTAssertTrue(app.staticTexts[index == 3 ? "剩余 55%" : "account-\(index)@example.invalid"].waitForExistence(timeout: 10))
+        }
+        let identities = app.staticTexts.matching(identifier: "quota.accountIdentity")
+        let expected = ["account-1@example.invalid", "account-2@example.invalid"]
+        XCTAssertEqual(identities.allElementsBoundByIndex.map(\.label), expected)
+        screenshot(app, "T18-重复成功保留两行原位置")
+        app.terminate(); app.launch()
+        XCTAssertTrue(app.staticTexts["剩余 55%"].waitForExistence(timeout: 10))
+        XCTAssertEqual(identities.allElementsBoundByIndex.map(\.label), expected)
+        app.buttons["quota.toolbarConnect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
+        XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
+        app.buttons["connection.cancel"].tap()
+        XCTAssertEqual(identities.allElementsBoundByIndex.map(\.label), expected)
+        XCTAssertTrue(app.staticTexts["剩余 55%"].exists)
+    }
+
+    @MainActor
     func testT16TwoAccountAdditionManagementAndReopen() {
         let app = XCUIApplication()
         app.launchArguments = ["--t16-isolated-ui", "success", "--t16-run-id", UUID().uuidString]

@@ -646,6 +646,7 @@ final class CodexConnectionFlow: ObservableObject {
                 recovery = nil
                 state = .saving
                 let account = try await bindings.save(verified, transactionID: authorization.transactionID)
+                accounts.removeAll { $0.id != account.id && $0.hasSameConnectionEmail(as: account) }
                 if let index = accounts.firstIndex(where: { $0.id == account.id }) {
                     accounts[index] = account
                 } else {

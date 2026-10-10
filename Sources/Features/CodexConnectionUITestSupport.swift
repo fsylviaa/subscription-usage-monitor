@@ -41,7 +41,8 @@ enum CodexConnectionUITestSupport {
                 arguments.indices.contains($0 + 1) ? UUID(uuidString: arguments[$0 + 1]) : nil
             } ?? UUID()
             let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T16-ui-\(runID)")
-            return T16MultiAccountFixture(directory: directory, failSecond: scenario == "failure")
+            return T16MultiAccountFixture(directory: directory, failSecond: scenario == "failure",
+                duplicateMode: scenario == "duplicate" ? "same" : nil)
                 .makeFlow(orderingFailsOnce: scenario == "order-failure")
         }
         if let marker = arguments.firstIndex(of: "--t12-isolated-ui") {
@@ -534,12 +535,12 @@ final class T16MultiAccountFixture {
     let updater: CodexQuotaService
     let directory: URL
 
-    init(directory: URL, failSecond: Bool = false) {
+    init(directory: URL, failSecond: Bool = false, duplicateMode: String? = nil) {
         self.directory = directory
         store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
         vault = CredentialVault(service: "T16.fixture.\(directory.lastPathComponent)")
         bindings = CodexAccountBindingStore(accountStore: store, vault: vault)
-        server = T16MultiAccountServer(store: store, failSecond: failSecond)
+        server = T16MultiAccountServer(store: store, failSecond: failSecond, duplicateMode: duplicateMode)
         let vault = vault
         updater = CodexQuotaService(store: store, loadCredential: { try await vault.load(for: .credential($0)) },
             transport: server, checkNetwork: { .allowed(score: 51) })
@@ -570,7 +571,11 @@ actor T16MultiAccountServer: CodexDeviceAuthorizing, CodexLoginCompleting, Codex
     let failSecond: Bool
     private var opened = false
     private(set) var requests: [URLRequest] = []
-    init(store: AccountStore, failSecond: Bool) { self.store = store; self.failSecond = failSecond }
+    private var duplicateMode: String?
+    init(store: AccountStore, failSecond: Bool, duplicateMode: String? = nil) {
+        self.store = store; self.failSecond = failSecond; self.duplicateMode = duplicateMode
+    }
+    func setDuplicateMode(_ mode: String) { duplicateMode = mode }
     func openWebsite() { opened = true }
     func requestAuthorization() async throws -> CodexDeviceAuthorization {
         opened = false
@@ -586,22 +591,30 @@ actor T16MultiAccountServer: CodexDeviceAuthorizing, CodexLoginCompleting, Codex
     }
     func verify(_ tokens: CodexTokenResponse) async throws -> CodexVerifiedLogin {
         let index = tokens.accessToken
-        let scope = AccountScope(remoteAccountID: "t16-\(index)", kind: .personal)
+        let duplicate = duplicateMode != nil && index == "3"
+        if duplicate && duplicateMode == "verify-failure" { throw CodexLoginError.failed }
+        let identity = duplicate ? "1" : index
+        let scopeIndex = duplicate && duplicateMode != "scope" ? "1" : index
+        let scope = AccountScope(remoteAccountID: "t16-\(scopeIndex)", kind: .personal)
         let package = CodexIdentityVerifier.CredentialPackage(credentialVersion: 1,
             issuer: CodexIdentityVerifier.issuer, clientID: CodexDeviceAuthorization.clientID,
-            subject: "fixture-subject-\(index)", remoteUserID: "t16-user-\(index)", scope: scope, tokens: tokens)
-        return .fixture(remoteUserID: package.remoteUserID, email: "account-\(index)@example.invalid", scope: scope,
+            subject: "fixture-subject-\(identity)", remoteUserID: "t16-user-\(identity)", scope: scope, tokens: tokens)
+        return .fixture(remoteUserID: package.remoteUserID, email: "account-\(identity)@example.invalid", scope: scope,
             credentials: CredentialPayload(data: try JSONEncoder().encode(package)))
     }
     func data(for request: URLRequest) async throws -> (Data, URLResponse) {
         requests.append(request)
         let scope = request.value(forHTTPHeaderField: "ChatGPT-Account-Id") ?? ""
         let token = request.value(forHTTPHeaderField: "Authorization") ?? ""
-        guard let index = Int(scope.replacingOccurrences(of: "t16-", with: "")), token == "Bearer \(index)" else {
+        guard let index = Int(token.replacingOccurrences(of: "Bearer ", with: "")) else { throw CodexQuotaError.failed }
+        let duplicate = duplicateMode != nil && index == 3
+        let scopeIndex = duplicate && duplicateMode != "scope" ? 1 : index
+        guard scope == "t16-\(scopeIndex)" else {
             throw CodexQuotaError.failed
         }
         if failSecond && index == 2 { throw URLError(.notConnectedToInternet) }
-        let used = index == 1 ? 20 : 65
+        if duplicate && (duplicateMode == "quota-failure" || duplicateMode == "scope") { throw URLError(.notConnectedToInternet) }
+        let used = duplicate ? 45 : (index == 1 ? 20 : 65)
         let body = """
         {"account_id":"\(scope)","plan_type":"Plus","rate_limit":{"primary_window":{"limit_window_seconds":18000,"used_percent":\(used + 10),"reset_at":1800010000},"secondary_window":{"limit_window_seconds":604800,"used_percent":\(used),"reset_at":1800500000}}}
         """

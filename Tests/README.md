@@ -69,3 +69,10 @@ T16 连接入口修正：`CodexConnectionFlowTests` 验证未选平台零网络�
 页面复用 `--t16-isolated-ui success --t16-run-id <UUID>`；`order-failure` 只在这一隔离入口的首次排序注入保存失败，以验证保留旧序和再次拖动恢复。`testT17DragOrderAcrossPagesReopenAndAppend` 与 `testT17FailedDragRetainsOrderAndRetrySaves` 验证原生把手、两页一致、重开及追加。
 
 `T17_LIVE_ORDER=1` 才执行 `testT17RealAccountOrderPersistsAndOriginalOrderIsRestored`，只移动本机已保存的真实账户、比较页面身份顺序与重开，再恢复原顺序；不核对真实余额，不输出真实身份或主动导出真实截图。手机不足两个账户则明确跳过，不记通过。延期的五小时真实查询仍等多账户增删就绪。
+
+
+## T18 添加入口重复连接验收
+
+`CodexAccountBindingStoreTests` 的 `testT18…` 使用真实隔离 Keychain／文件和固定验证结果，覆盖重复更新与移动后位置、成功重开、新凭据及作用域查询、取消／核验失败、凭据及文件写入失败、同作用域查询失败保留旧值旧时间、身份或作用域变化清空旧值、邮箱大小写、演示隔离、旧凭据清理失败重试以及历史重复行合并。
+
+`CodexQuotaUITests/testT18DuplicateLoginKeepsPositionAndCountAfterReopenAndCancel` 使用 Debug `--t16-isolated-ui duplicate --t16-run-id <UUID>`：先添加 A/B，再以新授权连接 A，检查只两条原位置、重开一致、取消不改数据。固定样例与正式账户隔离，不把模拟额度作为真实五小时核对；本人真实重复登录按 [T18 记录](../docs/mvp任务清单/记录/T18-验收.md)另验。

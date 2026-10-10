@@ -405,6 +405,222 @@ final class CodexAccountBindingStoreTests: XCTestCase {
         XCTAssertTrue(flow.canReorderAccounts)
     }
 
+    func testT18DuplicateUsesLatestCredentialKeepsMovedPositionAndReopens() async throws {
+        let f = multiFixture()
+        let flow = f.makeFlow()
+        await flow.loadAccounts()
+        for _ in 0..<2 { try await addAccount(flow) }
+        let original = flow.accounts
+        try await XCTUnwrap(flow.moveAccounts(from: IndexSet(integer: 1), to: 0)).value
+        // Repeat B in its moved first position using a freshly verified login.
+        let tokens = try await f.server.exchange(.init(code: "2", verifier: String(repeating: "v", count: 43)))
+        let login = try await f.server.verify(tokens)
+        let updated = try await f.bindings.save(login)
+        XCTAssertEqual(updated.id, original[1].id)
+        XCTAssertEqual(updated.generation, original[1].generation + 1)
+        XCTAssertNotEqual(updated.credentialRef, original[1].credentialRef)
+        XCTAssertEqual(updated.quotaSnapshot?.observedAt, original[1].quotaSnapshot?.observedAt)
+        let reopened = f.makeFlow()
+        await reopened.loadAccounts()
+        XCTAssertEqual(reopened.accounts, [updated, original[0]])
+        let newCredential = try await f.vault.load(for: .credential(updated.credentialRef))
+        let oldCredential = try await f.vault.load(for: .credential(original[1].credentialRef))
+        XCTAssertTrue(newCredential == login.credentials)
+        XCTAssertNil(oldCredential)
+    }
+
+    func testT18FullDuplicateFlowQueriesNewCredentialAndKeepsTwoRows() async throws {
+        let f = multiFixture()
+        let flow = f.makeFlow()
+        await flow.loadAccounts()
+        for _ in 0..<2 { try await addAccount(flow) }
+        let original = flow.accounts
+        await f.server.setDuplicateMode("same")
+        try await repeatFirst(flow)
+        XCTAssertEqual(flow.accounts.map(\.id), original.map(\.id))
+        XCTAssertEqual(flow.accounts[1], original[1])
+        XCTAssertEqual(flow.accounts[0].quotaSnapshot?.weekly.amount.remainingPercent, 55)
+        let requests = await f.server.requests
+        XCTAssertEqual(requests.last?.value(forHTTPHeaderField: "Authorization"), "Bearer 3")
+        XCTAssertEqual(requests.last?.value(forHTTPHeaderField: "ChatGPT-Account-Id"), "t16-1")
+        let reopened = f.makeFlow()
+        await reopened.loadAccounts()
+        XCTAssertEqual(reopened.accounts, flow.accounts)
+    }
+
+    func testT18DuplicateQuotaFailurePreservesMeasurementAndOriginalSuccessTime() async throws {
+        let f = multiFixture()
+        let flow = f.makeFlow()
+        await flow.loadAccounts()
+        for _ in 0..<2 { try await addAccount(flow) }
+        let original = flow.accounts
+        await f.server.setDuplicateMode("quota-failure")
+        try await repeatFirst(flow, fails: true)
+        let updated = flow.accounts[0]
+        XCTAssertEqual(flow.accounts.map(\.id), original.map(\.id))
+        XCTAssertEqual(flow.accounts[1], original[1])
+        XCTAssertEqual(updated.quotaSnapshot?.weekly, original[0].quotaSnapshot?.weekly)
+        XCTAssertEqual(updated.quotaSnapshot?.fiveHours, original[0].quotaSnapshot?.fiveHours)
+        XCTAssertEqual(updated.quotaSnapshot?.observedAt, original[0].quotaSnapshot?.observedAt)
+        XCTAssertEqual(updated.subscription, original[0].subscription)
+        XCTAssertEqual(updated.quotaSnapshot?.generation, updated.generation)
+        XCTAssertEqual(flow.quotaFailureID, updated.id)
+        let saved = try await f.store.load()
+        XCTAssertEqual(saved, flow.accounts)
+    }
+
+    func testT18SameEmailNewScopeDropsOldQuotaAndQueriesNewScope() async throws {
+        let f = multiFixture()
+        let flow = f.makeFlow()
+        await flow.loadAccounts()
+        for _ in 0..<2 { try await addAccount(flow) }
+        let original = flow.accounts
+        await f.server.setDuplicateMode("scope")
+        try await repeatFirst(flow, fails: true)
+        XCTAssertEqual(flow.accounts.map(\.id), original.map(\.id))
+        XCTAssertEqual(flow.accounts[1], original[1])
+        XCTAssertEqual(flow.accounts[0].scope.remoteAccountID, "t16-3")
+        XCTAssertNil(flow.accounts[0].quotaSnapshot)
+        XCTAssertNil(flow.accounts[0].subscription)
+        XCTAssertEqual(flow.accounts[0].quotaState, .notFetched)
+        let requests = await f.server.requests
+        XCTAssertEqual(requests.last?.value(forHTTPHeaderField: "ChatGPT-Account-Id"), "t16-3")
+        XCTAssertEqual(requests.last?.value(forHTTPHeaderField: "Authorization"), "Bearer 3")
+    }
+
+    func testT18CancelledOrUnverifiedDuplicateLeavesOriginalAccountsAndCredentials() async throws {
+        let f = multiFixture()
+        let flow = f.makeFlow()
+        await flow.loadAccounts()
+        for _ in 0..<2 { try await addAccount(flow) }
+        let original = flow.accounts
+        let credential = try await f.vault.load(for: .credential(original[0].credentialRef))
+        await f.server.setDuplicateMode("verify-failure")
+        try await XCTUnwrap(flow.begin()).value
+        flow.cancel()
+        XCTAssertEqual(flow.accounts, original)
+        try await XCTUnwrap(flow.begin()).value
+        await flow.openWebsite()
+        try await waitUntil { if case .failure = flow.state { return true }; return false }
+        XCTAssertEqual(flow.accounts, original)
+        let saved = try await f.store.load()
+        let after = try await f.vault.load(for: .credential(original[0].credentialRef))
+        XCTAssertEqual(saved, original)
+        XCTAssertTrue(after == credential)
+    }
+
+    func testT18CancellationAfterNewCredentialSavePreservesOldFileAndCredential() async throws {
+        let f = try isolatedFixture()
+        let login = verifiedLogin()
+        let original = try await f.binding.save(login)
+        let bytes = try Data(contentsOf: f.fileURL)
+        f.client.afterSuccessfulAdd = { withUnsafeCurrentTask { $0?.cancel() } }
+        let task = Task { try await f.binding.save(self.verifiedLogin()) }
+        do { _ = try await task.value; XCTFail("取消不能替换") } catch { XCTAssertTrue(error is CancellationError) }
+        XCTAssertEqual(try Data(contentsOf: f.fileURL), bytes)
+        let credential = try await f.vault.load(for: .credential(original.credentialRef))
+        XCTAssertTrue(credential == login.credentials)
+    }
+
+    func testT18EmailCaseMergesButChangedUserClearsQuotaAndDemoNeverMerges() async throws {
+        let f = multiFixture()
+        let flow = f.makeFlow()
+        await flow.loadAccounts()
+        try await addAccount(flow)
+        let original = flow.accounts[0]
+        let login = CodexVerifiedLogin.fixture(remoteUserID: "different-user",
+            email: "ACCOUNT-1@EXAMPLE.INVALID", scope: original.scope,
+            credentials: CredentialPayload(data: Data("test-only-new-credential".utf8)))
+        let updated = try await f.bindings.save(login)
+        XCTAssertEqual(updated.id, original.id)
+        XCTAssertNil(updated.quotaSnapshot)
+        XCTAssertNil(updated.subscription)
+        _ = try await f.store.setDemoMode(true)
+        var demo = try await f.store.addDemo(now: Date())
+        demo.verifiedEmail = login.email
+        try await f.store.update(demo)
+        _ = try await f.bindings.save(login)
+        let saved = try await f.store.load()
+        XCTAssertEqual(saved.count, 2)
+        XCTAssertEqual(saved[1], demo)
+    }
+
+    func testT18CleanupFailureKeepsNewConnectionAndRetriesOnReopen() async throws {
+        let f = try isolatedFixture(deleteStatus: errSecNotAvailable)
+        let original = try await f.binding.save(verifiedLogin())
+        let login = verifiedLogin()
+        let updated = try await f.binding.save(login)
+        XCTAssertEqual(updated.id, original.id)
+        XCTAssertEqual(updated.retiredCredentialRefs, [original.credentialRef])
+        let reopened = CodexAccountBindingStore(accountStore: f.accounts, vault: CredentialVault(service: f.service))
+        let saved = try await reopened.load()
+        XCTAssertNil(saved[0].retiredCredentialRefs)
+        let old = try await f.vault.load(for: .credential(original.credentialRef))
+        let current = try await f.vault.load(for: .credential(updated.credentialRef))
+        XCTAssertNil(old)
+        XCTAssertTrue(current == login.credentials)
+    }
+
+    func testT18CredentialWriteFailureKeepsEstablishedBinding() async throws {
+        let f = try isolatedFixture()
+        let login = verifiedLogin()
+        let original = try await f.binding.save(login)
+        let broken = CodexAccountBindingStore(accountStore: f.accounts,
+            vault: CredentialVault(service: f.service,
+                client: BindingKeychainClient(addStatus: errSecNotAvailable, deleteStatus: nil)))
+        do { _ = try await broken.save(verifiedLogin()); XCTFail("保存失败不能替换") } catch { }
+        let accounts = try await f.accounts.load()
+        let credential = try await f.vault.load(for: .credential(original.credentialRef))
+        XCTAssertEqual(accounts, [original])
+        XCTAssertTrue(credential == login.credentials)
+    }
+
+    func testT18AccountWriteFailureRollsBackNewCredentialAndKeepsEstablishedBinding() async throws {
+        let f = try isolatedFixture()
+        let login = verifiedLogin()
+        let original = try await f.binding.save(login)
+        let backup = f.fileURL.appendingPathExtension("backup")
+        f.client.afterSuccessfulAdd = {
+            try? FileManager.default.moveItem(at: f.fileURL, to: backup)
+            try? FileManager.default.createDirectory(at: f.fileURL, withIntermediateDirectories: false)
+        }
+        do { _ = try await f.binding.save(verifiedLogin()); XCTFail("保存失败不能替换") } catch { }
+        try FileManager.default.removeItem(at: f.fileURL)
+        try FileManager.default.moveItem(at: backup, to: f.fileURL)
+        let accounts = try await f.accounts.load()
+        let credential = try await f.vault.load(for: .credential(original.credentialRef))
+        XCTAssertEqual(accounts, [original])
+        XCTAssertTrue(credential == login.credentials)
+        let remaining = f.client.successfulQueries.filter { SystemKeychainClient().copyMatching($0).0 == errSecSuccess }
+        XCTAssertEqual(remaining.count, 1)
+    }
+
+    func testT18ExistingDuplicateRowsCollapseAtFirstPositionWithoutChangingOtherAccount() async throws {
+        let f = try isolatedFixture()
+        let original = try await f.binding.save(verifiedLogin())
+        let other = try await f.binding.save(verifiedLogin(email: "other@example.invalid"))
+        let duplicate = ConnectedAccount(remoteUserID: original.remoteUserID, verifiedEmail: original.verifiedEmail,
+            scope: original.scope, credentialRef: UUID())
+        try await f.vault.save(verifiedLogin().credentials, for: .credential(duplicate.credentialRef))
+        try await f.accounts.append(duplicate)
+        let updated = try await f.binding.save(verifiedLogin())
+        let accounts = try await f.binding.load()
+        XCTAssertEqual(accounts, [updated, other])
+        XCTAssertEqual(updated.id, original.id)
+        let duplicateCredential = try await f.vault.load(for: .credential(duplicate.credentialRef))
+        XCTAssertNil(duplicateCredential)
+    }
+
+    private func repeatFirst(_ flow: CodexConnectionFlow, fails: Bool = false) async throws {
+        let generation = flow.accounts[0].generation
+        try await XCTUnwrap(flow.begin()).value
+        await flow.openWebsite()
+        try await waitUntil {
+            flow.accounts[0].generation > generation && flow.quotaUpdatingID == nil
+                && (fails ? flow.quotaFailureID == flow.accounts[0].id : flow.state == .idle)
+        }
+    }
+
     private func multiFixture(failSecond: Bool = false) -> T16MultiAccountFixture {
         let fixture = T16MultiAccountFixture(directory: FileManager.default.temporaryDirectory
             .appendingPathComponent("T16-unit-\(UUID())"), failSecond: failSecond)

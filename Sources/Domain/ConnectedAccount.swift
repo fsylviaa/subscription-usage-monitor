@@ -11,6 +11,8 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
     var scope: AccountScope
     var credentialRef: UUID
     var loginTransactionID: UUID?
+    /// Retired Keychain references remain durable until cleanup succeeds.
+    var retiredCredentialRefs: [UUID]?
     var generation: UInt64
     var subscription: AccountSubscription?
     var quotaSnapshot: CodexQuotaSnapshot?
@@ -50,6 +52,12 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
         self.quotaState = quotaState
         self.quotaSnapshot = quotaSnapshot
         self.subscription = subscription
+    }
+    func hasSameConnectionEmail(as other: ConnectedAccount) -> Bool {
+        guard !isDemo, !other.isDemo, provider == other.provider, product == other.product,
+              let email = verifiedEmail, let otherEmail = other.verifiedEmail,
+              !email.isEmpty, !otherEmail.isEmpty else { return false }
+        return email.caseInsensitiveCompare(otherEmail) == .orderedSame
     }
 }
 

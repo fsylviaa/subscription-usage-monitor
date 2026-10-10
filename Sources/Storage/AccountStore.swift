@@ -56,7 +56,7 @@ actor AccountStore {
         return document
     }
 
-    /// This is local-ID integrity, not email deduplication; successful-login merging belongs to T18/T20.
+    /// Raw metadata append is retained for isolated setup; verified login uses commitLogin.
     func append(_ account: ConnectedAccount) throws {
         var accounts = try load()
         accounts.append(account)
@@ -70,6 +70,61 @@ actor AccountStore {
         var accounts = try load()
         accounts.append(account)
         try Task.checkCancellation()
+        try commit(accounts)
+    }
+
+    /// Called only after a verified login's fresh credential has been saved.
+    /// Email matching and replacement share one actor turn and one atomic write.
+    func commitLogin(_ incoming: ConnectedAccount) throws -> ConnectedAccount {
+        try Task.checkCancellation()
+        var accounts = try load()
+        let matches = accounts.filter { $0.hasSameConnectionEmail(as: incoming) }
+        guard let previous = matches.first else {
+            accounts.append(incoming)
+            try Task.checkCancellation()
+            try commit(accounts)
+            return incoming
+        }
+        guard matches.allSatisfy({ $0.deletionPending != true }), previous.generation < UInt64.max else {
+            throw StoreError.staleQuotaContext
+        }
+        var replacement = previous
+        replacement.remoteUserID = incoming.remoteUserID
+        replacement.verifiedEmail = incoming.verifiedEmail
+        replacement.scope = incoming.scope
+        replacement.credentialRef = incoming.credentialRef
+        replacement.loginTransactionID = incoming.loginTransactionID
+        replacement.generation += 1
+        replacement.retiredCredentialRefs = Array(Set(matches.flatMap {
+            ($0.retiredCredentialRefs ?? []) + [$0.credentialRef]
+        })).filter { $0 != incoming.credentialRef }
+        let sameIdentity = previous.remoteUserID != nil
+            && previous.remoteUserID == incoming.remoteUserID && previous.scope == incoming.scope
+        if sameIdentity, let snapshot = previous.quotaSnapshot {
+            // Rebind only the local generation; measurement and success time stay exact.
+            replacement.quotaSnapshot = CodexQuotaSnapshot(accountID: previous.id,
+                provider: previous.provider, product: previous.product, scope: incoming.scope,
+                generation: replacement.generation, planType: snapshot.planType,
+                observedAt: snapshot.observedAt, weekly: snapshot.weekly, fiveHours: snapshot.fiveHours)
+        } else if !sameIdentity {
+            replacement.subscription = nil
+            replacement.quotaSnapshot = nil
+            replacement.quotaState = .notFetched
+        }
+        accounts = accounts.compactMap { account in
+            if account.id == previous.id { return replacement }
+            return account.hasSameConnectionEmail(as: incoming) ? nil : account
+        }
+        try Task.checkCancellation()
+        try commit(accounts)
+        return replacement
+    }
+
+    func finishCredentialCleanup(_ refs: [UUID], accountID: UUID) throws {
+        var accounts = try load()
+        guard let index = accounts.firstIndex(where: { $0.id == accountID }) else { return }
+        let remaining = (accounts[index].retiredCredentialRefs ?? []).filter { !refs.contains($0) }
+        accounts[index].retiredCredentialRefs = remaining.isEmpty ? nil : remaining
         try commit(accounts)
     }
 
