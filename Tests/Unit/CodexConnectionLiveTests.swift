@@ -6,6 +6,125 @@ import XCTest
 /// No screen or authorization body is attached, no account/token is created.
 @MainActor
 final class CodexConnectionLiveTests: XCTestCase {
+    func testT10IsolatedSavedIdentityAndCleanup() async throws {
+        let environment = ProcessInfo.processInfo.environment
+        guard environment["T10_LIVE_SAVED_ACCOUNT"] == "1" else {
+            throw XCTSkip("T10 独立真实登录需本人官网确认后显式核验。")
+        }
+        let context = try t10Context(environment)
+        let original = try await officialSnapshot()
+        let accounts = try await context.accounts.load()
+        guard accounts.count == 1, let account = accounts.first,
+              let payload = try await context.vault.load(for: .credential(account.credentialRef)) else {
+            XCTFail("T10 独立真实登录尚未保存一条账户，不能用原有账户代替。")
+            return
+        }
+        struct Package: Decodable { let tokens: CodexTokenResponse }
+        let package = try JSONDecoder().decode(Package.self, from: payload.data)
+        let verified = try await CodexIdentityVerifier().verify(package.tokens)
+        guard verified.email == account.verifiedEmail,
+              verified.remoteUserID == account.remoteUserID,
+              verified.scope == account.scope,
+              account.quotaState == .notFetched else {
+            XCTFail("T10 真实身份重核验与独立保存记录不一致。")
+            return
+        }
+        let active = try await context.transactions.load()
+        let cancelled = try await context.transactions.loadCancelledTransactionID()
+        XCTAssertTrue(active == nil && cancelled == nil, "完成后原事务已清理，不会恢复或重复创建")
+        let reopened = try await AccountStore(fileURL: context.directory.appendingPathComponent("accounts.json")).load()
+        XCTAssertTrue(reopened == accounts, "重开存储后仅有同一条真实账户；不打印身份")
+        if environment["T10_LIVE_CLEANUP"] == "1" {
+            try await cleanUpT10(context)
+            let credential = try await context.vault.load(for: .credential(account.credentialRef))
+            XCTAssertTrue(credential == nil, "本次独立验收授权已精确删除")
+        }
+        try await assertOfficialSnapshot(original)
+        print("T10 | 真实保存与恢复收口 | 一条账户身份、签名、作用域及授权核验通过；事务已清除；原正式账户和授权未变；不输出身份和秘密")
+    }
+
+    func testT10CleanupIsolatedRun() async throws {
+        let environment = ProcessInfo.processInfo.environment
+        guard environment["T10_LIVE_CLEANUP_ONLY"] == "1" else {
+            throw XCTSkip("仅显式清理指定 T10 独立验收编号；不删除正式账户。")
+        }
+        let context = try t10Context(environment)
+        let original = try await officialSnapshot()
+        try await cleanUpT10(context)
+        let accounts = try await context.accounts.load()
+        let active = try await context.transactions.load()
+        let cancelled = try await context.transactions.loadCancelledTransactionID()
+        XCTAssertTrue(accounts.isEmpty && active == nil && cancelled == nil,
+                      "指定独立验收的账户和登录事务已清理")
+        try await assertOfficialSnapshot(original)
+        print("T10 | 精确清理 | 仅清理指定验收编号的账户、事务和授权；原正式账户、顺序、原状态及授权未变")
+    }
+
+    private struct T10Context {
+        let directory: URL
+        let accounts: AccountStore
+        let vault: CredentialVault
+        let transactions: CodexLoginTransactionStore
+        let pending: CodexPendingLoginStore
+    }
+
+    private func t10Context(_ environment: [String: String]) throws -> T10Context {
+        guard let rawID = environment["T10_LIVE_RUN_ID"], let runID = UUID(uuidString: rawID),
+              rawID.uppercased() == runID.uuidString else {
+            throw NSError(domain: "T10LiveAcceptance", code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "T10 真实验收需要有效独立编号；未访问账户。"])
+        }
+        let directory = try FileManager.default.url(for: .applicationSupportDirectory,
+            in: .userDomainMask, appropriateFor: nil, create: true)
+            .appendingPathComponent("T10-live-\(runID.uuidString)", isDirectory: true)
+        let vault = CredentialVault(service: "T10.live.\(runID.uuidString)")
+        return T10Context(directory: directory,
+            accounts: AccountStore(fileURL: directory.appendingPathComponent("accounts.json")),
+            vault: vault, transactions: CodexLoginTransactionStore(vault: vault),
+            pending: CodexPendingLoginStore(vault: vault))
+    }
+
+    private func cleanUpT10(_ context: T10Context) async throws {
+        if let authorization = try await context.transactions.load() {
+            try await context.transactions.cancel(transactionID: authorization.transactionID)
+            try await context.pending.remove(transactionID: authorization.transactionID)
+            try await context.transactions.remove(transactionID: authorization.transactionID)
+        }
+        if let cancelledID = try await context.transactions.loadCancelledTransactionID() {
+            try await context.pending.remove(transactionID: cancelledID)
+            try await context.transactions.remove(transactionID: cancelledID)
+        }
+        for account in try await context.accounts.load() {
+            if let credential = try await context.vault.load(for: .credential(account.credentialRef)) {
+                try await context.vault.remove(ifMatching: credential, for: .credential(account.credentialRef))
+            }
+        }
+        if FileManager.default.fileExists(atPath: context.directory.path) {
+            try FileManager.default.removeItem(at: context.directory)
+        }
+    }
+
+    private struct OfficialSnapshot {
+        let accounts: [ConnectedAccount]
+        let credentials: [UUID: CredentialPayload]
+    }
+
+    private func officialSnapshot() async throws -> OfficialSnapshot {
+        let accounts = try await AccountStore.applicationStore().load()
+        let vault = CredentialVault.applicationVault()
+        var credentials: [UUID: CredentialPayload] = [:]
+        for account in accounts {
+            credentials[account.credentialRef] = try await vault.load(for: .credential(account.credentialRef))
+        }
+        return OfficialSnapshot(accounts: accounts, credentials: credentials)
+    }
+
+    private func assertOfficialSnapshot(_ original: OfficialSnapshot) async throws {
+        let after = try await officialSnapshot()
+        XCTAssertTrue(after.accounts == original.accounts, "正式账户、顺序和原状态未变；不打印身份")
+        XCTAssertTrue(after.credentials == original.credentials, "正式账户授权完整保留")
+    }
+
     func testT09RealCancellationPreservesSavedAccountAndAllowsFreshCode() async throws {
         guard ProcessInfo.processInfo.environment["T09_LIVE_CANCEL"] == "1" else {
             throw XCTSkip("T09 真实取消复测需显式开启，默认不联网。")

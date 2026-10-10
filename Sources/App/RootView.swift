@@ -31,7 +31,10 @@ struct RootView: View {
                 Label("设置", systemImage: "gearshape")
             }
         }
-        .task { await connection.loadAccounts() }
+        .task {
+            connection.setActive(scenePhase == .active)
+            await connection.loadAccounts()
+        }
         .onChange(of: scenePhase) { _, phase in connection.setActive(phase == .active) }
         .sheet(isPresented: $connection.isPresented, onDismiss: { connection.cancel() }) {
             CodexConnectionView(flow: connection)

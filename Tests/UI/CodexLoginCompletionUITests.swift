@@ -97,6 +97,147 @@ final class CodexLoginCompletionUITests: XCTestCase {
     }
 
     @MainActor
+    func testT10WaitingCodeSurvivesBackgroundAndRelaunch() {
+        let app = launchRestoration("pending")
+        defer { cleanUp(app) }
+        app.buttons["quota.connect"].tap()
+        let code = app.staticTexts["connection.code"]
+        XCTAssertTrue(code.waitForExistence(timeout: 5))
+        XCTAssertEqual(code.label, "TEST-0001")
+        app.buttons["connection.open"].tap() // Fixture only; no external website.
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(code.waitForExistence(timeout: 5))
+        XCTAssertEqual(code.label, "TEST-0001", "回到前台保持原申请")
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(code.waitForExistence(timeout: 10), "进程重开后自动显示原流程")
+        XCTAssertEqual(code.label, "TEST-0001", "重开没有重新申请")
+        XCTAssertFalse(app.staticTexts["quota.accountIdentity"].exists)
+        saveFixtureScreenshot(app, name: "重开继续原代码")
+    }
+
+    @MainActor
+    func testT10ReopeningAfterConfirmationCompletesOriginalLoginAutomatically() {
+        let app = launchRestoration("success")
+        defer { cleanUp(app) }
+        app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["connection.code"].label, "TEST-0001")
+        app.terminate()
+        // This controls the isolated server response only. No product action is
+        // needed after launch, and fixture success requires the original code.
+        app.launchArguments += ["--t10-complete-on-reopen"]
+        app.launch()
+        assertConnectedIdentity(in: app)
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").count, 1)
+        saveFixtureScreenshot(app, name: "重开自动完成一条账户")
+        app.terminate()
+        app.launch()
+        assertConnectedIdentity(in: app)
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").count, 1)
+        XCTAssertFalse(app.buttons["connection.cancel"].exists)
+    }
+
+    @MainActor
+    func testT10CancelledLoginDoesNotRestoreOnRelaunch() {
+        let app = launchRestoration("pending")
+        defer { cleanUp(app) }
+        app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["connection.code"].label, "TEST-0001")
+        app.buttons["connection.cancel"].tap()
+        XCTAssertTrue(app.buttons["quota.connect"].waitForExistence(timeout: 5))
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.buttons["quota.connect"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["connection.code"].exists)
+        XCTAssertFalse(app.staticTexts["quota.accountIdentity"].exists)
+        saveFixtureScreenshot(app, name: "取消重开不恢复")
+        app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["connection.code"].label, "TEST-0002", "取消后可重新申请")
+    }
+
+    @MainActor
+    func testRealT10PendingCodeSurvivesWebsiteReturnAndRelaunch() throws {
+        let environment = ProcessInfo.processInfo.environment
+        guard environment["T10_LIVE_PENDING_REOPEN"] == "1" else {
+            throw XCTSkip("仅显式准备 T10 真实待授权往返；官网私密确认仍由本人完成。")
+        }
+        continueAfterFailure = false
+        let runID = try t10LiveRunID(environment)
+        let app = XCUIApplication()
+        app.launchArguments = ["--t10-live-ui", "--t10-live-run-id", runID.uuidString]
+        app.launch()
+        let code = app.staticTexts["connection.code"]
+        if !code.waitForExistence(timeout: 3) {
+            XCTAssertTrue(app.buttons["quota.connect"].waitForExistence(timeout: 5))
+            app.buttons["quota.connect"].tap()
+        }
+        XCTAssertTrue(code.waitForExistence(timeout: 45), "真实网络检查通过并取得有效待授权代码")
+        let original = code.label
+        XCTAssertTrue(!original.isEmpty && !original.hasPrefix("TEST-"), "使用真实待授权代码；不打印内容")
+        app.buttons["connection.open"].tap()
+        XCTAssertTrue(app.wait(for: .runningBackground, timeout: 5)
+            || app.state == .runningBackgroundSuspended, "默认浏览器已接管官网打开")
+        app.activate()
+        XCTAssertTrue(code.waitForExistence(timeout: 15), "官网返回后自动继续等待")
+        XCTAssertTrue(code.label == original, "官网返回保持原代码；不打印内容")
+        XCTAssertFalse(app.staticTexts["quota.accountIdentity"].exists)
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(code.waitForExistence(timeout: 15), "退出重开后恢复真实待授权事务")
+        XCTAssertTrue(code.label == original, "退出重开保持原代码；不打印内容")
+        XCTAssertFalse(app.staticTexts["quota.accountIdentity"].exists)
+        if environment["T10_LIVE_KEEP_PENDING"] != "1" {
+            app.buttons["connection.cancel"].tap()
+            XCTAssertTrue(app.buttons["quota.connect"].waitForExistence(timeout: 5))
+            app.terminate()
+            app.launch()
+            XCTAssertTrue(app.buttons["quota.connect"].waitForExistence(timeout: 5))
+            XCTAssertFalse(code.exists)
+        }
+        print("T10 | 真实待授权往返与进程重开 | 默认浏览器返回及退出重开均恢复原代码，没有假成功；不记录代码、身份或截图")
+    }
+
+    @MainActor
+    func testRealT10IsolatedAccountSurvivesRelaunch() throws {
+        let environment = ProcessInfo.processInfo.environment
+        guard environment["T10_LIVE_REOPEN"] == "1" else {
+            throw XCTSkip("仅本人完成 T10 官网确认后显式核验独立账户；不附真实身份截图。")
+        }
+        continueAfterFailure = false
+        let runID = try t10LiveRunID(environment)
+        let app = XCUIApplication()
+        app.launchArguments = ["--t10-live-ui", "--t10-live-run-id", runID.uuidString]
+        app.launch()
+        let identity = app.staticTexts["quota.accountIdentity"]
+        XCTAssertTrue(identity.waitForExistence(timeout: 45), "自动恢复并取得真实账户")
+        let original = identity.label
+        XCTAssertTrue(original.contains("@") && !original.hasSuffix(".invalid"), "真实身份存在，非隔离样例")
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").count, 1)
+        XCTAssertTrue(app.staticTexts["quota.notFetched"].exists)
+        XCTAssertFalse(app.buttons["connection.cancel"].exists)
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(identity.waitForExistence(timeout: 10))
+        XCTAssertTrue(identity.label == original, "重开后身份一致；不打印邮箱")
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").count, 1)
+        XCTAssertTrue(app.staticTexts["quota.notFetched"].exists)
+        print("T10 | 真实独立账户重开 | 官网确认后自动取得一条真实账户，重开仍一条，尚未获取额度；不记录邮箱或截图")
+    }
+
+    private func t10LiveRunID(_ environment: [String: String]) throws -> UUID {
+        guard let rawID = environment["T10_LIVE_RUN_ID"], let runID = UUID(uuidString: rawID),
+              rawID.uppercased() == runID.uuidString else {
+            throw NSError(domain: "T10LiveAcceptance", code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "T10 真实验收需要有效的独立验收编号；未启动 App。"])
+        }
+        return runID
+    }
+
+    @MainActor
     func testRealSavedAccountSurvivesRelaunch() throws {
         guard ProcessInfo.processInfo.environment["T08_LIVE_REOPEN"] == "1" else {
             throw XCTSkip("仅在用户官网确认后显式核验真实账户重开；不附真实身份截图。")
@@ -171,6 +312,16 @@ final class CodexLoginCompletionUITests: XCTestCase {
     }
 
     @MainActor
+    private func launchRestoration(_ scenario: String) -> XCUIApplication {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--t10-isolated-ui", scenario, "--t10-run-id", UUID().uuidString]
+        app.launch()
+        XCTAssertTrue(app.buttons["quota.connect"].waitForExistence(timeout: 5))
+        return app
+    }
+
+    @MainActor
     private func assertFailedLoginCanRetry(scenario: String, screenshotName: String) {
         let app = launchRecovery(scenario)
         defer { cleanUp(app) }
@@ -229,7 +380,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
     private func saveFixtureScreenshot(_ app: XCUIApplication, name: String) {
         // Only TEST codes and example.invalid identities can occur in these launch modes.
         let attachment = XCTAttachment(screenshot: app.screenshot())
-        let task = app.launchArguments.contains("--t09-isolated-ui") ? "T09" : "T08"
+        let task = app.launchArguments.contains("--t10-isolated-ui") ? "T10"
+            : app.launchArguments.contains("--t09-isolated-ui") ? "T09" : "T08"
         attachment.name = "\(task)-隔离-\(name)"
         attachment.lifetime = .keepAlways
         add(attachment)
@@ -238,7 +390,8 @@ final class CodexLoginCompletionUITests: XCTestCase {
     @MainActor
     private func cleanUp(_ app: XCUIApplication) {
         app.terminate()
-        let reset = app.launchArguments.contains("--t09-isolated-ui") ? "--t09-reset-storage" : "--t08-reset-storage"
+        let reset = app.launchArguments.contains("--t10-isolated-ui") ? "--t10-reset-storage"
+            : app.launchArguments.contains("--t09-isolated-ui") ? "--t09-reset-storage" : "--t08-reset-storage"
         app.launchArguments += [reset]
         app.launch()
         XCTAssertTrue(app.buttons["quota.connect"].waitForExistence(timeout: 5))

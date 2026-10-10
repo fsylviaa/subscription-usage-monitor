@@ -30,13 +30,16 @@ final class CodexConnectionFlow: ObservableObject {
     private var isActive = true
     private var expiryWork: Task<Void, Never>?
     private var cleanupWork: Task<Void, Never>?
-    // In-process recovery only. Persistent interruption recovery belongs to T10.
+    private var startupWork: Task<Void, Never>?
+    private var needsPersistentRestore = false
+    private var interruptedCompletion = false
     private enum Recovery {
         case polling(CodexDeviceAuthorization)
+        case code(CodexDeviceAuthorization, CodexAuthorizationCode)
         case tokens(CodexDeviceAuthorization, CodexTokenResponse)
         var authorization: CodexDeviceAuthorization {
             switch self {
-            case let .polling(value), let .tokens(value, _): return value
+            case let .polling(value), let .code(value, _), let .tokens(value, _): return value
             }
         }
     }
@@ -59,17 +62,123 @@ final class CodexConnectionFlow: ObservableObject {
 
     var canConnect: Bool { accounts.isEmpty && !loadingAccounts && !accountLoadFailed }
 
+    /// RootView can appear more than once; restoration is one serialized operation.
     func loadAccounts() async {
+        if let startupWork { await startupWork.value; return }
+        let task = Task { [weak self] in await self?.loadAndRestore() }
+        startupWork = Task { await task.value }
+        await startupWork?.value
+    }
+
+    private func loadAndRestore() async {
         guard let bindings else { return }
         loadingAccounts = true
+        let attempt = generation
         defer { loadingAccounts = false }
         do {
             accounts = try await bindings.load()
             accountLoadFailed = false
-        } catch { accountLoadFailed = true }
+        } catch {
+            accountLoadFailed = true
+            return
+        }
+        // A committed account wins over leftover temporary data after a crash.
+        // T10 only binds the first account; it never reconnects an existing one.
+        do {
+            needsPersistentRestore = true
+            let found = try await readPersistedRecovery()
+            guard found, accounts.isEmpty else { return }
+            loadingAccounts = false
+            await begin()?.value
+        } catch {
+            guard generation == attempt, !Task.isCancelled, accounts.isEmpty else { return }
+            isPresented = true
+            state = .failure("登录未完成，请重试")
+        }
     }
 
-    func setActive(_ active: Bool) { isActive = active }
+    private func readPersistedRecovery() async throws -> Bool {
+        let attempt = generation
+        let saved: CodexDeviceAuthorization?
+        do {
+            if let cancelledID = try await transactions.loadCancelledTransactionID() {
+                try await checkRestoration(attempt, transactionID: cancelledID)
+                pendingID = cancelledID
+                try await removePending()
+                needsPersistentRestore = false
+                return false
+            }
+            saved = try await transactions.load()
+        } catch CodexLoginError.failed {
+            // An undecodable header cannot safely resume. Discard only that
+            // invalid fixed slot; temporary Keychain availability is retryable.
+            try await transactions.discardInvalidRecord()
+            needsPersistentRestore = false
+            throw CodexLoginError.failed
+        }
+        try await checkRestoration(attempt, transactionID: saved?.transactionID)
+        guard let saved else {
+            needsPersistentRestore = false
+            return false
+        }
+        pendingID = saved.transactionID
+        if !accounts.isEmpty {
+            try await removePending()
+            needsPersistentRestore = false
+            return false
+        }
+        let phase: CodexPendingLoginState?
+        do {
+            phase = try await pending?.load(transactionID: saved.transactionID)
+        } catch CodexLoginError.failed {
+            try await removePending()
+            needsPersistentRestore = false
+            throw CodexLoginError.failed
+        }
+        try await checkRestoration(attempt, transactionID: saved.transactionID)
+        guard !saved.isExpired(at: now()) else {
+            try await removePending()
+            needsPersistentRestore = false
+            throw CodexLoginError.failed
+        }
+        switch phase {
+        case nil: recovery = .polling(saved)
+        case let .codeReady(code): recovery = .code(saved, code)
+        case let .tokensReady(tokens): recovery = .tokens(saved, tokens)
+        case .exchangeStarted:
+            try await removePending()
+            needsPersistentRestore = false
+            throw CodexLoginError.failed
+        }
+        authorization = saved
+        needsPersistentRestore = false
+        return true
+    }
+
+    private func checkRestoration(_ attempt: UUID, transactionID: UUID?) async throws {
+        guard generation == attempt, !Task.isCancelled else {
+            // Cancel may arrive before a suspended read reveals its transaction ID.
+            // Invalidate that exact late result before allowing another attempt.
+            if let transactionID {
+                try await transactions.cancel(transactionID: transactionID)
+                try await pending?.remove(transactionID: transactionID)
+                try await transactions.remove(transactionID: transactionID)
+            }
+            needsPersistentRestore = false
+            throw CancellationError()
+        }
+    }
+
+    func setActive(_ active: Bool) {
+        let returned = active && !isActive
+        isActive = active
+        if !active { interruptedCompletion = true }
+        guard returned else { return }
+        expireIfNeeded()
+        // The existing task wakes at its next safe stage. Only a recoverable
+        // interrupted failure needs a fresh gate; foreground events never fork it.
+        if isFailure, recovery != nil { begin() }
+    }
 
     private let checkNetwork: @Sendable () async -> NetworkScoreResult
     private let authorizer: any CodexDeviceAuthorizing
@@ -133,6 +242,8 @@ final class CodexConnectionFlow: ObservableObject {
             await previousCleanup?.value
             guard isCurrent(attempt) else { return }
             do {
+                if needsPersistentRestore { _ = try await readPersistedRecovery() }
+                guard isCurrent(attempt) else { return }
                 if recovery?.authorization.isExpired(at: now()) == true { recovery = nil }
                 if recovery == nil {
                     authorization = nil
@@ -178,8 +289,10 @@ final class CodexConnectionFlow: ObservableObject {
                 activate(.polling(authorization), attempt: attempt)
             } catch {
                 guard isCurrent(attempt) else { return }
-                recovery = nil
-                try? await removePending()
+                if !needsPersistentRestore {
+                    recovery = nil
+                    try? await removePending()
+                }
                 guard isCurrent(attempt) else { return }
                 state = .failure("登录未完成，请重试")
             }
@@ -189,9 +302,52 @@ final class CodexConnectionFlow: ObservableObject {
 
     func cancel() {
         guard state != .saving else { return }
+        if needsPersistentRestore, pendingID == nil {
+            cancelUnresolvedRecovery()
+            return
+        }
         invalidate()
         state = .idle
         isPresented = false
+    }
+
+    /// A failed Keychain read may hide the ID of an existing transaction. Resolve
+    /// and cancel it before dismissing, so a later launch cannot resurrect it.
+    private func cancelUnresolvedRecovery() {
+        let previousWork = work
+        let previousCompletion = completionWork
+        let previousCleanup = cleanupWork
+        generation = UUID()
+        let attempt = generation
+        work?.cancel()
+        completionWork?.cancel()
+        expiryWork?.cancel()
+        recovery = nil
+        authorization = nil
+        copied = false
+        browserFailed = false
+        state = .checking
+        isPresented = true
+        cleanupWork = Task { [weak self] in
+            await previousWork?.value
+            await previousCompletion?.value
+            await previousCleanup?.value
+            guard let self else { return }
+            do {
+                let cancelledID = try await transactions.loadCancelledTransactionID()
+                let saved = try await transactions.load()
+                pendingID = cancelledID ?? saved?.transactionID
+                try await removePending()
+                needsPersistentRestore = false
+                guard generation == attempt else { return }
+                state = .idle
+                isPresented = false
+            } catch {
+                guard generation == attempt else { return }
+                // Do not claim cancellation is durable while its storage is unreadable.
+                state = .failure("登录未完成，请重试")
+            }
+        }
     }
 
     /// Invalidate first, then join old writes before removing their exact IDs.
@@ -210,11 +366,14 @@ final class CodexConnectionFlow: ObservableObject {
         let previousCompletion = completionWork
         let previousCleanup = cleanupWork
         cleanupWork = Task { [weak self] in
+            guard let self else { return }
+            // Make cancellation durable before waiting on a non-cooperative request.
+            try? await transactions.cancel(transactionID: id)
             await previousWork?.value
             await previousCompletion?.value
             await previousCleanup?.value
-            guard let self else { return }
             do {
+                try await transactions.cancel(transactionID: id)
                 try await pending?.remove(transactionID: id)
                 try await transactions.remove(transactionID: id)
                 if pendingID == id { pendingID = nil }
@@ -224,6 +383,7 @@ final class CodexConnectionFlow: ObservableObject {
 
     private func removePending() async throws {
         guard let id = pendingID else { return }
+        try await transactions.cancel(transactionID: id)
         try await pending?.remove(transactionID: id)
         try await transactions.remove(transactionID: id)
         if pendingID == id { pendingID = nil }
@@ -255,7 +415,7 @@ final class CodexConnectionFlow: ObservableObject {
         recovery = phase
         switch phase {
         case .polling: state = .code(authorization)
-        case .tokens: state = .verifying
+        case .code, .tokens: state = .verifying
         }
         armExpiry(authorization, attempt: attempt)
         startCompleting(phase, attempt: attempt)
@@ -275,30 +435,40 @@ final class CodexConnectionFlow: ObservableObject {
     private func startCompleting(_ initial: Recovery, attempt: UUID) {
         guard let completer, let verifier, let bindings, let pending else { return }
         let authorization = initial.authorization
+        interruptedCompletion = false
         completionWork = Task { [weak self] in
             guard let self else { return }
             // Non-nil only at stages that can be retried without replaying a code.
             var safeRecovery: Recovery? = initial
             do {
                 var tokens: CodexTokenResponse?
+                var code: CodexAuthorizationCode?
                 if case let .tokens(_, saved) = initial { tokens = saved }
-                while tokens == nil, isCurrent(attempt) {
-                    guard !authorization.isExpired(at: now()) else { throw CodexLoginError.failed }
-                    if !isActive {
-                        try await Task.sleep(for: .seconds(1))
-                        continue
-                    }
-                    guard let code = try await completer.poll(authorization) else {
+                if case let .code(_, saved) = initial { code = saved }
+                while tokens == nil, code == nil, isCurrent(attempt) {
+                    try await waitUntilActive(authorization, attempt: attempt)
+                    guard let received = try await completer.poll(authorization) else {
                         try await Task.sleep(for: .seconds(authorization.pollInterval))
                         continue
                     }
                     guard isCurrent(attempt), !authorization.isExpired(at: now()) else { throw CancellationError() }
-                    // Once a one-time code is received, a failed/uncertain exchange
-                    // must restart authorization. Never poll or exchange it again.
+                    // A received code is recoverable only after this durable write.
                     safeRecovery = nil
                     recovery = nil
+                    try await pending.saveCode(received, transactionID: authorization.transactionID)
+                    try Task.checkCancellation()
+                    code = received
+                    safeRecovery = .code(authorization, received)
+                    recovery = safeRecovery
                     state = .verifying
-                    try await pending.saveCode(code, transactionID: authorization.transactionID)
+                }
+                if let code, tokens == nil {
+                    try await waitUntilActive(authorization, attempt: attempt)
+                    // Persist uncertainty BEFORE sending the single-use exchange.
+                    // A crash after this marker must never send the same code twice.
+                    safeRecovery = nil
+                    recovery = nil
+                    try await pending.markExchangeStarted(transactionID: authorization.transactionID)
                     try Task.checkCancellation()
                     let received = try await completer.exchange(code)
                     try Task.checkCancellation()
@@ -307,10 +477,12 @@ final class CodexConnectionFlow: ObservableObject {
                     try Task.checkCancellation()
                     tokens = received
                     safeRecovery = .tokens(authorization, received)
+                    recovery = safeRecovery
                 }
                 guard let tokens, isCurrent(attempt) else { throw CancellationError() }
+                try await waitUntilActive(authorization, attempt: attempt)
                 let verified = try await verifier.verify(tokens)
-                guard isCurrent(attempt), !authorization.isExpired(at: now()) else { throw CancellationError() }
+                try await waitUntilActive(authorization, attempt: attempt)
                 safeRecovery = nil
                 recovery = nil
                 state = .saving
@@ -330,7 +502,7 @@ final class CodexConnectionFlow: ObservableObject {
                 }
                 let failure = error as? CodexLoginError
                 let canResume = !authorization.isExpired(at: now())
-                    && (failure == .retryable || failure == .networkBlocked)
+                    && (failure == .retryable || failure == .networkBlocked || error is CancellationError)
                 if canResume, let safeRecovery {
                     recovery = safeRecovery
                 } else {
@@ -345,8 +517,19 @@ final class CodexConnectionFlow: ObservableObject {
                 browserFailed = false
                 state = .failure(failure == .networkBlocked
                     ? "网络不达标，无法连接" : "登录未完成，请重试")
+                if canResume, recovery != nil, interruptedCompletion, isActive {
+                    begin()
+                }
             }
         }
+    }
+
+    private func waitUntilActive(_ authorization: CodexDeviceAuthorization, attempt: UUID) async throws {
+        while !isActive {
+            guard isCurrent(attempt), !authorization.isExpired(at: now()) else { throw CancellationError() }
+            try await Task.sleep(for: .seconds(1))
+        }
+        guard isCurrent(attempt), !authorization.isExpired(at: now()) else { throw CancellationError() }
     }
 
     private var isFailure: Bool {

@@ -16,15 +16,21 @@ App 接入时组装一个共享 actor 实例，串行执行无挂起点的读改
 
 `CredentialPayload` 是整包二进制容器，不实现 Codable，普通账户文件仍只保留 UUID 引用。打印、调试描述和反射隐藏包内容；错误只含内部类别或系统状态码。后续 Codex 适配器负责整包编码/解码并保留真实返回的 token、版本、时间和身份绑定；调用方不得记录 `.data` 或原始认证响应。T08 已由 Codex 适配器固定本次协议字段，不把存储成功当作身份验证成功。
 
-T08 已接入核验后提交和当前流程取消清理；完整到期、中断恢复及账户移除重试由对应后续任务接入。测试使用随机专属 service 与虚构标记，退出时逐条删除测试项，不枚举或清空用户钥匙串。
+T08 已接入核验后提交；T09/T10 已接入到期、取消清理和登录中断恢复，账户移除重试仍留对应后续任务。测试使用随机专属 service 与虚构标记，退出时逐条删除测试项，不枚举或清空用户钥匙串。
 
 可访问性依据：[Apple Keychain 可访问性](https://developer.apple.com/documentation/security/ksecattraccessibleafterfirstunlockthisdeviceonly)与[条目属性](https://developer.apple.com/documentation/security/item-attribute-keys-and-values)。实际检查范围见 [T05 验收](../../docs/mvp任务清单/记录/T05-验收.md)。
 
 
 ## T07 临时设备码事务
 
-`CodexLoginTransactionStore` 将单个当前连接事务整包存入临时 Keychain 固定槽位；包内有独立 transactionID、平台／产品、公共 clientID、设备码、展示码、轮询间隔、原始开始和截止。普通文件不保存秘密。固定槽位便于后续 T10 恢复；本次仅保存并保留原期限，没有实现退出后自动恢复。
+`CodexLoginTransactionStore` 将单个当前连接事务整包存入临时 Keychain 固定槽位；包内有独立 transactionID、平台／产品、公共 clientID、设备码、展示码、轮询间隔、原始开始和截止。普通文件不保存秘密。T10 已接入固定槽读取和退出后恢复，始终保留原开始时间与期限。
 
-取消按事务 ID 清理；读取后删除还通过 `CredentialVault.remove(ifMatching:for:)` 在同一 actor 无挂起地比较和移除，避免旧取消删掉新包。清理失败保留引用，下一次申请前重试；不删除正式授权或账户。T09/T10 后续补完整登录失败和恢复编排。
+取消按事务 ID 清理；读取后删除还通过 `CredentialVault.remove(ifMatching:for:)` 在同一 actor 无挂起地比较和移除，避免旧取消删掉新包。清理失败保留引用，下一次申请前重试；不删除正式授权或账户。T09/T10 已接入登录失败和恢复编排。
 
-T08 的 `CodexAccountBindingStore` 仅接受已验证登录结果；先保存本 App 的独立凭据条目，再在账户 actor 内原子提交首账户。失败只回滚本次新引用，不修改已有账户；取消在提交前检查，提交后保持已保存事实。`CodexPendingLoginStore` 临时保存授权码及未核验令牌，正常完成/取消清理。中断恢复属于 T10；系统拒绝删除时不声称已清除。
+T08 的 `CodexAccountBindingStore` 仅接受已验证登录结果；先保存本 App 的独立凭据条目，再在账户 actor 内原子提交首账户。失败只回滚本次新引用，不修改已有账户；取消在提交前检查，提交后保持已保存事实。`CodexPendingLoginStore` 临时保存授权码及未核验令牌，正常完成/取消清理。T10 读取具名阶段恢复；系统拒绝删除时不声称已清除。
+
+## T10 持久恢复与取消
+
+待领取状态由原设备事务表示；`CodexPendingLoginStore` 的 version 1 包含 transactionID 和 `codeReady`、`exchangeStarted`、`tokensReady` 三个阶段。真正发送一次性兑换前先原子写入 exchangeStarted 并删除持久代码；只有 codeReady 可以交换，tokensReady 只做核验。T09 旧 codeReceived 没有兑换开始标记，因此一律按结果不明清理重试，旧完整 tokensReceived 可核验。
+
+取消先写不含秘密的 ID tombstone，再等待旧写入结束并精确清理。初次保存前已取消的同 ID 不能迟到复活；旧取消不覆盖新 ID。条件替换只在同一 vault actor 内比较、写入，登录入口自身合并重复恢复。永久损坏的阶段按事务清理；固定槽仅在当前包确实不可解码时条件移除，系统暂不可用保留重试。已有正式账户优先于未清理的临时事务，避免崩溃收尾重复保存。

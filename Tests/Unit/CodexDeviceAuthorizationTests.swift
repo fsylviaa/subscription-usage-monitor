@@ -319,3 +319,304 @@ private final class DeviceAuthorizationClock: @unchecked Sendable {
         lock.withLock { values.count > 1 ? values.removeFirst() : values[0] }
     }
 }
+
+
+/// These recovery checks use isolated Keychain services and synthetic material only.
+@MainActor
+final class CodexLoginTransactionRecoveryTests: XCTestCase {
+    private let start = Date(timeIntervalSince1970: 1_790_000_000)
+
+    func testFreshStoresRestoreOriginalWaitingAuthorizationAndDeadline() async throws {
+        let scope = isolatedScope()
+        let authorization = try authorization(id: scope.idA)
+        try await CodexLoginTransactionStore(vault: scope.writer).save(authorization)
+        let reader = CodexLoginTransactionStore(vault: scope.reader)
+        let restored = try await reader.load()
+        let pending = try await CodexPendingLoginStore(vault: scope.reader).load(transactionID: scope.idA)
+        XCTAssertTrue(restored == authorization)
+        XCTAssertEqual(restored?.startedAt, start)
+        XCTAssertEqual(restored?.expiresAt, start.addingTimeInterval(900))
+        XCTAssertNil(pending)
+        print("T10 | 等待阶段重建存储 | 原事务、原代码及原截止时间一致")
+    }
+
+    func testSavedCodeRestoresBeforeAnyExchange() async throws {
+        let scope = isolatedScope()
+        let authorization = try authorization(id: scope.idA)
+        let code = code()
+        try await CodexLoginTransactionStore(vault: scope.writer).save(authorization)
+        try await CodexPendingLoginStore(vault: scope.writer).saveCode(code, transactionID: scope.idA)
+        let restored = try await CodexPendingLoginStore(vault: scope.reader).load(transactionID: scope.idA)
+        guard case let .codeReady(saved) = restored else { return XCTFail("可恢复阶段应为已收到代码") }
+        XCTAssertTrue(saved.code == code.code && saved.verifier == code.verifier)
+        let original = try await CodexLoginTransactionStore(vault: scope.reader).load()
+        XCTAssertEqual(original?.expiresAt, authorization.expiresAt)
+        print("T10 | 已收到可交换代码后重建存储 | 恢复原代码；原期限不延长")
+    }
+
+    func testExchangeMarkerReplacesCodeBeforeRequestAndPreventsSecondStart() async throws {
+        let scope = isolatedScope()
+        let store = CodexPendingLoginStore(vault: scope.writer)
+        try await store.saveCode(code(), transactionID: scope.idA)
+        try await store.markExchangeStarted(transactionID: scope.idA)
+        let restored = try await CodexPendingLoginStore(vault: scope.reader).load(transactionID: scope.idA)
+        guard case .exchangeStarted = restored else { return XCTFail("应持久保留兑换结果不明阶段") }
+        let raw = try await scope.reader.load(for: .loginTransaction(scope.idA))
+        let text = String(decoding: try XCTUnwrap(raw).data, as: UTF8.self)
+        XCTAssertFalse(text.contains(code().code))
+        XCTAssertFalse(text.contains(code().verifier))
+        do { try await store.markExchangeStarted(transactionID: scope.idA); XCTFail("不得重复开始兑换") }
+        catch { XCTAssertTrue(error as? CodexLoginError == .failed) }
+        print("T10 | 发兑换请求前持久标记 | 不保留可重放代码；重开识别结果不明")
+    }
+
+    func testTwoStoresSharingVaultCannotBothStartTheSameExchange() async throws {
+        let scope = isolatedScope()
+        let first = CodexPendingLoginStore(vault: scope.writer)
+        let second = CodexPendingLoginStore(vault: scope.writer)
+        try await first.saveCode(code(), transactionID: scope.idA)
+        async let firstResult = Self.attemptMarker(first, id: scope.idA)
+        async let secondResult = Self.attemptMarker(second, id: scope.idA)
+        let results = await [firstResult, secondResult]
+        XCTAssertEqual(results.filter { $0 }.count, 1)
+    }
+
+    func testSavedTokensRestoreWithoutCodeAndRemainIsolatedByTransaction() async throws {
+        let scope = isolatedScope()
+        let tokens = tokens()
+        let writer = CodexPendingLoginStore(vault: scope.writer)
+        try await writer.saveTokens(tokens, transactionID: scope.idA)
+        try await writer.saveCode(code(), transactionID: scope.idB)
+        let reader = CodexPendingLoginStore(vault: scope.reader)
+        let restored = try await reader.load(transactionID: scope.idA)
+        guard case let .tokensReady(saved) = restored else { return XCTFail("应恢复待验证令牌") }
+        XCTAssertTrue(saved.accessToken == tokens.accessToken && saved.refreshToken == tokens.refreshToken
+                      && saved.idToken == tokens.idToken)
+        XCTAssertEqual(saved.obtainedAt, tokens.obtainedAt)
+        XCTAssertEqual(saved.expiresAt, tokens.expiresAt)
+        try await writer.remove(transactionID: scope.idA)
+        let remaining = try await reader.load(transactionID: scope.idB)
+        guard case .codeReady = remaining else { return XCTFail("精确清理不能误删另一事务") }
+        print("T10 | 已有令牌重建存储及精确清理 | 原令牌可核验；另一事务保持")
+    }
+
+    func testLegacyCodeIsConservativelyUnknownWhileLegacyTokensCanRestore() async throws {
+        let scope = isolatedScope()
+        let oldCode = LegacyPending(phase: "codeReceived", code: code(), tokens: nil)
+        try await scope.writer.save(CredentialPayload(data: JSONEncoder().encode(oldCode)), for: .loginTransaction(scope.idA))
+        let reader = CodexPendingLoginStore(vault: scope.reader)
+        let restoredCode = try await reader.load(transactionID: scope.idA)
+        guard case .exchangeStarted = restoredCode else { return XCTFail("旧版本代码可能已消费，绝不能重放") }
+        let oldTokens = LegacyPending(phase: "tokensReceived", code: nil, tokens: tokens())
+        try await scope.writer.save(CredentialPayload(data: JSONEncoder().encode(oldTokens)), for: .loginTransaction(scope.idA))
+        let restoredTokens = try await reader.load(transactionID: scope.idA)
+        guard case .tokensReady = restoredTokens else { return XCTFail("旧版本完整令牌可继续核验") }
+        print("T10 | 旧版本中断材料 | 旧代码按结果不明处理；完整令牌可恢复")
+    }
+
+    func testPendingVersionAndTransactionMismatchAreRejectedWithoutDeletion() async throws {
+        let scope = isolatedScope()
+        let writer = CodexPendingLoginStore(vault: scope.writer)
+        try await writer.saveCode(code(), transactionID: scope.idA)
+        let payload = try await scope.writer.load(for: .loginTransaction(scope.idA))
+        let original = try XCTUnwrap(JSONSerialization.jsonObject(with: XCTUnwrap(payload).data) as? [String: Any])
+        for (key, value) in [("version", 2 as Any), ("transactionID", scope.idB.uuidString), ("phase", "not-supported")] {
+            var changed = original
+            changed[key] = value
+            let invalid = CredentialPayload(data: try JSONSerialization.data(withJSONObject: changed))
+            try await scope.writer.save(invalid, for: .loginTransaction(scope.idA))
+            do { _ = try await writer.load(transactionID: scope.idA); XCTFail("不可信阶段不得恢复") }
+            catch { XCTAssertTrue(error as? CodexLoginError == .failed) }
+            let retained = try await scope.reader.load(for: .loginTransaction(scope.idA))
+            XCTAssertTrue(retained == invalid)
+        }
+    }
+
+    func testCancellationTombstonePreventsRecoveryEvenIfPendingCleanupHasNotRun() async throws {
+        let scope = isolatedScope()
+        let authorization = try authorization(id: scope.idA)
+        let transactions = CodexLoginTransactionStore(vault: scope.writer)
+        try await transactions.save(authorization)
+        try await CodexPendingLoginStore(vault: scope.writer).saveTokens(tokens(), transactionID: scope.idA)
+        try await transactions.cancel(transactionID: scope.idA)
+        let reader = CodexLoginTransactionStore(vault: scope.reader)
+        let restored = try await reader.load()
+        let cancelledID = try await reader.loadCancelledTransactionID()
+        XCTAssertNil(restored)
+        XCTAssertEqual(cancelledID, scope.idA)
+        let raw = try await scope.reader.load(for: scope.activeEntry)
+        let text = String(decoding: try XCTUnwrap(raw).data, as: UTF8.self)
+        XCTAssertFalse(text.contains(authorization.userCode))
+        XCTAssertFalse(text.contains(authorization.deviceAuthID))
+        let pending = try await CodexPendingLoginStore(vault: scope.reader).load(transactionID: scope.idA)
+        guard case .tokensReady = pending else { return XCTFail("本场景刻意保留待清理材料") }
+        try await reader.remove(transactionID: scope.idA)
+        let marker = try await reader.loadCancelledTransactionID()
+        XCTAssertNil(marker)
+        print("T10 | 取消后中断清理再重建存储 | 取消标记阻止恢复；可按原 ID 继续清理")
+    }
+
+    func testOldCancellationAndCleanupPreserveReplacementAndFormalCredential() async throws {
+        let scope = isolatedScope()
+        let old = try authorization(id: scope.idA)
+        let replacement = try authorization(id: scope.idB)
+        let formal = CredentialPayload(data: Data("synthetic-formal-package".utf8))
+        try await scope.writer.save(formal, for: .credential(scope.idA))
+        let store = CodexLoginTransactionStore(vault: scope.writer)
+        try await store.save(old)
+        try await store.cancel(transactionID: scope.idA)
+        try await store.save(replacement)
+        try await store.cancel(transactionID: scope.idA)
+        try await store.remove(transactionID: scope.idA)
+        let restored = try await CodexLoginTransactionStore(vault: scope.reader).load()
+        let credential = try await scope.reader.load(for: .credential(scope.idA))
+        XCTAssertTrue(restored == replacement)
+        XCTAssertTrue(credential == formal)
+        print("T10 | 旧取消回写与清理 | 新事务及正式授权不变")
+    }
+
+    func testCancelBeforeInitialSaveBlocksLateSameTransactionButAllowsNewAttempt() async throws {
+        let scope = isolatedScope()
+        let store = CodexLoginTransactionStore(vault: scope.writer)
+        try await store.cancel(transactionID: scope.idA)
+        let cancellation = try await CodexLoginTransactionStore(vault: scope.reader).loadCancelledTransactionID()
+        XCTAssertEqual(cancellation, scope.idA)
+        do {
+            try await store.save(authorization(id: scope.idA))
+            XCTFail("取消前尚未保存的旧事务也不得迟到写回")
+        } catch { XCTAssertTrue(error is CancellationError) }
+        let recovered = try await CodexLoginTransactionStore(vault: scope.reader).load()
+        XCTAssertNil(recovered)
+        let fresh = try authorization(id: scope.idB)
+        try await store.save(fresh)
+        let restored = try await CodexLoginTransactionStore(vault: scope.reader).load()
+        XCTAssertTrue(restored == fresh)
+        print("T10 | 初次保存前取消 | 迟到旧事务不能复活；新尝试可保存")
+    }
+
+    func testConcurrentInitialSaveAndCancellationAlwaysLeaveCancelledTransaction() async throws {
+        let scope = isolatedScope()
+        let store = CodexLoginTransactionStore(vault: scope.writer)
+        let authorization = try authorization(id: scope.idA)
+        async let saved = Self.attemptSave(store, authorization: authorization)
+        try await store.cancel(transactionID: scope.idA)
+        _ = await saved
+        let restored = try await CodexLoginTransactionStore(vault: scope.reader).load()
+        let cancelled = try await CodexLoginTransactionStore(vault: scope.reader).loadCancelledTransactionID()
+        XCTAssertNil(restored)
+        XCTAssertEqual(cancelled, scope.idA)
+    }
+
+    func testStaleConditionalReplacementCannotOverwriteNewerPackage() async throws {
+        let scope = isolatedScope()
+        let old = CredentialPayload(data: Data("synthetic-old".utf8))
+        let replacement = CredentialPayload(data: Data("synthetic-new".utf8))
+        let tombstone = CredentialPayload(data: Data("synthetic-cancelled".utf8))
+        try await scope.writer.save(old, for: scope.activeEntry)
+        let captured = try await scope.writer.load(for: scope.activeEntry)
+        try await scope.writer.save(replacement, for: scope.activeEntry)
+        let wrote = try await scope.writer.replace(ifMatching: XCTUnwrap(captured), with: tombstone, for: scope.activeEntry)
+        let retained = try await scope.reader.load(for: scope.activeEntry)
+        XCTAssertFalse(wrote)
+        XCTAssertTrue(retained == replacement)
+    }
+
+    func testInvalidStoredAuthorizationReturnsSanitizedFailureAndPreservesMaterial() async throws {
+        let scope = isolatedScope()
+        let payload = CredentialPayload(data: Data("synthetic-invalid-sensitive-record".utf8))
+        try await scope.writer.save(payload, for: scope.activeEntry)
+        do { _ = try await CodexLoginTransactionStore(vault: scope.reader).load(); XCTFail("损坏事务不能恢复") }
+        catch { XCTAssertTrue(error as? CodexLoginError == .failed) }
+        let retained = try await scope.reader.load(for: scope.activeEntry)
+        XCTAssertTrue(retained == payload)
+    }
+
+    func testMalformedFixedSlotCanBeDiscardedAndReplacedByFreshAuthorization() async throws {
+        let scope = isolatedScope()
+        try await scope.writer.save(CredentialPayload(data: Data("synthetic-invalid-record".utf8)), for: scope.activeEntry)
+        let store = CodexLoginTransactionStore(vault: scope.writer)
+        try await store.discardInvalidRecord()
+        let removed = try await scope.reader.load(for: scope.activeEntry)
+        XCTAssertNil(removed)
+        let fresh = try authorization(id: scope.idB)
+        try await store.save(fresh)
+        let restored = try await CodexLoginTransactionStore(vault: scope.reader).load()
+        XCTAssertTrue(restored == fresh)
+        print("T10 | 固定槽损坏后清理重试 | 只丢弃坏包；新登录可安全保存")
+    }
+
+    func testDiscardInvalidRecordNeverRemovesValidAuthorizationOrCancellation() async throws {
+        let scope = isolatedScope()
+        let store = CodexLoginTransactionStore(vault: scope.writer)
+        let valid = try authorization(id: scope.idA)
+        try await store.save(valid)
+        try await store.discardInvalidRecord()
+        let restored = try await store.load()
+        XCTAssertTrue(restored == valid)
+        try await store.cancel(transactionID: scope.idA)
+        try await store.discardInvalidRecord()
+        let cancelled = try await store.loadCancelledTransactionID()
+        XCTAssertEqual(cancelled, scope.idA)
+    }
+
+    func testPendingRepresentationsDoNotExposeIntermediateSecrets() throws {
+        let states: [CodexPendingLoginState] = [.codeReady(code()), .exchangeStarted, .tokensReady(tokens())]
+        for state in states {
+            let representations = [String(describing: state), String(reflecting: state)]
+            for text in representations {
+                XCTAssertFalse(text.contains(code().code))
+                XCTAssertFalse(text.contains(tokens().accessToken))
+            }
+            XCTAssertTrue(Mirror(reflecting: state).children.isEmpty)
+        }
+    }
+
+    private func authorization(id: UUID) throws -> CodexDeviceAuthorization {
+        try CodexDeviceAuthorization(transactionID: id, deviceAuthID: "synthetic-device", userCode: "TEST-1010",
+                                     pollInterval: 5, startedAt: start)
+    }
+    private func code() -> CodexAuthorizationCode {
+        CodexAuthorizationCode(code: "synthetic-one-time-code", verifier: String(repeating: "v", count: 43))
+    }
+    private func tokens() -> CodexTokenResponse {
+        CodexTokenResponse(accessToken: "synthetic-access-token", refreshToken: "synthetic-refresh-token",
+                           idToken: "synthetic-id-token", obtainedAt: start.addingTimeInterval(30),
+                           expiresAt: start.addingTimeInterval(3600))
+    }
+    private nonisolated static func attemptMarker(_ store: CodexPendingLoginStore, id: UUID) async -> Bool {
+        do { try await store.markExchangeStarted(transactionID: id); return true }
+        catch { return false }
+    }
+    private nonisolated static func attemptSave(_ store: CodexLoginTransactionStore,
+                                              authorization: CodexDeviceAuthorization) async -> Bool {
+        do { try await store.save(authorization); return true }
+        catch { return false }
+    }
+    private func isolatedScope() -> RecoveryStorageScope {
+        let scope = RecoveryStorageScope()
+        addTeardownBlock {
+            for entry in [scope.activeEntry, .loginTransaction(scope.idA), .loginTransaction(scope.idB), .credential(scope.idA)] {
+                try await scope.writer.remove(for: entry)
+            }
+        }
+        return scope
+    }
+    private struct LegacyPending: Encodable {
+        let phase: String
+        let code: CodexAuthorizationCode?
+        let tokens: CodexTokenResponse?
+    }
+}
+
+private struct RecoveryStorageScope: Sendable {
+    let idA = UUID()
+    let idB = UUID()
+    let writer: CredentialVault
+    let reader: CredentialVault
+    let activeEntry = CredentialVault.Entry.loginTransaction(UUID(uuidString: "2BCEFFDE-7DC2-4F6A-89B0-020023689458")!)
+    init() {
+        let service = "com.iceflying.SubscriptionUsage.tests.T10.storage.\(UUID().uuidString)"
+        writer = CredentialVault(service: service)
+        reader = CredentialVault(service: service)
+    }
+}

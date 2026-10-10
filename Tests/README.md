@@ -29,3 +29,8 @@ T09 的 `CodexLoginRecoveryTests` 10 项覆盖安全恢复、重新评分、交�
 真实检查必须显式开启：`T09_LIVE_CANCEL=1` 运行 `testT09RealCancellationPreservesSavedAccountAndAllowsFreshCode`，使用真实网络评分和官方设备码、独立临时存储，正式账户/授权仅布尔比较，未提交官网确认。用户本人完成再次官网确认时使用 DEBUG 参数 `--t09-live-ui --t09-live-run-id <规范 UUID>`；全部生产核验照常，账户路径为 App 临时目录 `T09-live-UUID/accounts.json`，Keychain 基础 service 为 `T09.live.UUID`。错误参数不回退正式存储。
 
 真实重开需 `T09_LIVE_REOPEN=1` 与 `T09_LIVE_RUN_ID=<相同 UUID>`；真实保存核验需 `T09_LIVE_SAVED_ACCOUNT=1`，只读该独立账户并请求官方核验；再设 `T09_LIVE_CLEANUP=1` 则在核验通过后精确删除本次独立账户及凭据。先跑页面重开，再核验/清理，最后无参数普通启动恢复正式账户。两项均不记录真实身份截图、一次性代码或 token。
+
+
+T10 新增 `CodexLoginInterruptionTests` 15 项与 `CodexLoginTransactionRecoveryTests` 16 项：使用真实独立 Keychain 重建 reader，覆盖三个安全阶段、不明兑换、到期、坏阶段、取消迟到读取／写入、正式账户残留、重复返回、网络门控与后台暂停。默认不联网。新增三项 `testT10...` UI 测试使用 `--t10-isolated-ui` 和 `--t10-run-id`，专属 Application Support/T10-ui-UUID 与 T10.ui.UUID；结束以 `--t10-reset-storage` 精确清理。
+
+真实 T10 使用 DEBUG 参数 `--t10-live-ui --t10-live-run-id <规范 UUID>`，目录 Application Support/T10-live-UUID，基础 service T10.live.UUID。`testRealT10PendingCodeSurvivesWebsiteReturnAndRelaunch` 需 `T10_LIVE_PENDING_REOPEN=1` 与 `T10_LIVE_RUN_ID`，真实评分通过后申请并验证官网返回／退出重开保留原代码；默认取消收尾，设 `T10_LIVE_KEEP_PENDING=1` 可留给本人确认。后续 `testRealT10IsolatedAccountSurvivesRelaunch` 需 `T10_LIVE_REOPEN=1`；`testT10IsolatedSavedIdentityAndCleanup` 需 `T10_LIVE_SAVED_ACCOUNT=1`，可加 `T10_LIVE_CLEANUP=1`；仅清理指定验收用 `testT10CleanupIsolatedRun` 与 `T10_LIVE_CLEANUP_ONLY=1`。均使用相同 UUID，原正式账户／授权只作布尔核对，不输出真实身份或秘密，不导出真实截图。

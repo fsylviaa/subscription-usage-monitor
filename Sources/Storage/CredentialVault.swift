@@ -102,6 +102,16 @@ actor CredentialVault {
         try remove(for: entry)
     }
 
+    /// The comparison and replacement run on this vault without suspension. A
+    /// stage marker or cancellation must never overwrite a newer package.
+    @discardableResult
+    func replace(ifMatching expected: CredentialPayload?, with replacement: CredentialPayload,
+                 for entry: Entry) throws -> Bool {
+        guard try load(for: entry) == expected else { return false }
+        try save(replacement, for: entry)
+        return true
+    }
+
     private func query(for entry: Entry) -> [String: Any] {
         [
             kSecClass as String: kSecClassGenericPassword,

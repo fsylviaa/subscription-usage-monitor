@@ -8,6 +8,13 @@ import Foundation
 enum CodexConnectionUITestSupport {
     static func makeFlow() -> CodexConnectionFlow {
         let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains(where: { $0.hasPrefix("--t10-live") }) {
+            return isolatedLiveFlow(arguments: arguments, task: "T10")
+        }
+        if let marker = arguments.firstIndex(of: "--t10-isolated-ui") {
+            let scenario = arguments.indices.contains(marker + 1) ? arguments[marker + 1] : "pending"
+            return restorationFlow(scenario: scenario, arguments: arguments)
+        }
         if arguments.contains(where: { $0.hasPrefix("--t09-live") }) {
             return isolatedLiveFlow(arguments: arguments)
         }
@@ -148,13 +155,16 @@ enum CodexConnectionUITestSupport {
         func remove(transactionID: UUID) { }
     }
 
-    private static func isolatedLiveFlow(arguments: [String]) -> CodexConnectionFlow {
-        let liveFlag = "--t09-live-ui"
-        let runIDFlag = "--t09-live-run-id"
+    private static func isolatedLiveFlow(arguments: [String], task: String = "T09") -> CodexConnectionFlow {
+        let prefix = "--\(task.lowercased())-live"
+        let liveFlag = "\(prefix)-ui"
+        let runIDFlag = "\(prefix)-run-id"
         let permittedFlags = Set([liveFlag, runIDFlag])
         guard arguments.filter({ $0 == liveFlag }).count == 1,
               arguments.filter({ $0 == runIDFlag }).count == 1,
-              arguments.filter({ $0.hasPrefix("--t09-live") }).allSatisfy(permittedFlags.contains),
+              arguments.filter({ $0.hasPrefix(prefix) }).allSatisfy(permittedFlags.contains),
+              !arguments.contains(where: { $0.hasPrefix(task == "T10" ? "--t09" : "--t10") }),
+              !arguments.contains("--t10-isolated-ui"),
               !arguments.contains("--t09-isolated-ui"),
               !arguments.contains("--t08-isolated-ui"),
               !arguments.contains("--t07-isolated-ui"),
@@ -173,10 +183,21 @@ enum CodexConnectionUITestSupport {
 
         // Only a validated, caller-supplied canonical UUID selects this storage.
         // Reuse that UUID to reopen this run; remove its exact items after review.
-        let directory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("T09-live-\(runID.uuidString)", isDirectory: true)
+        let root: URL
+        if task == "T10" {
+            guard let support = try? FileManager.default.url(for: .applicationSupportDirectory,
+                in: .userDomainMask, appropriateFor: nil, create: true) else {
+                return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
+                                           authorizer: FixtureAuthorizer(fails: true),
+                                           transactions: FixtureTransactions())
+            }
+            root = support
+        } else {
+            root = FileManager.default.temporaryDirectory
+        }
+        let directory = root.appendingPathComponent("\(task)-live-\(runID.uuidString)", isDirectory: true)
         let accounts = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
-        let vault = CredentialVault(service: "T09.live.\(runID.uuidString)")
+        let vault = CredentialVault(service: "\(task).live.\(runID.uuidString)")
         return CodexConnectionFlow(
             checkNetwork: { await NetworkScoreChecker().check() },
             authorizer: CodexDeviceAuthorizationClient(),
@@ -186,6 +207,123 @@ enum CodexConnectionUITestSupport {
             bindings: CodexAccountBindingStore(accountStore: accounts, vault: vault),
             pending: CodexPendingLoginStore(vault: vault)
         )
+    }
+
+    private static func restorationFlow(scenario: String, arguments: [String]) -> CodexConnectionFlow {
+        guard let marker = arguments.firstIndex(of: "--t10-run-id"),
+              arguments.indices.contains(marker + 1),
+              let runID = UUID(uuidString: arguments[marker + 1]),
+              let support = try? FileManager.default.url(for: .applicationSupportDirectory,
+                in: .userDomainMask, appropriateFor: nil, create: true) else {
+            return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
+                                       authorizer: FixtureAuthorizer(fails: true),
+                                       transactions: FixtureTransactions())
+        }
+        let directory = support.appendingPathComponent("T10-ui-\(runID.uuidString)", isDirectory: true)
+        let vault = CredentialVault(service: "T10.ui.\(runID.uuidString)")
+        let transactions = CodexLoginTransactionStore(vault: vault)
+        let pending = CodexPendingLoginStore(vault: vault)
+        let accounts = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
+        let fixture = RestorationFixture(directory: directory,
+            completes: scenario == "success" && arguments.contains("--t10-complete-on-reopen"))
+        return CodexConnectionFlow(
+            checkNetwork: { .allowed(score: 51) },
+            authorizer: fixture,
+            transactions: transactions,
+            completer: fixture,
+            verifier: FixtureVerifier(fails: false),
+            bindings: RestorationBindings(directory: directory, accounts: accounts, vault: vault,
+                transactions: transactions, pending: pending,
+                bindings: CodexAccountBindingStore(accountStore: accounts, vault: vault),
+                reset: arguments.contains("--t10-reset-storage")),
+            pending: pending,
+            copyCode: { _, _ in },
+            openURL: { $0 == CodexDeviceAuthorization.verificationURL }
+        )
+    }
+
+    /// Uses the production stores with an isolated vault. Only the server and
+    /// identity are fixtures, so a process restart exercises actual persistence.
+    private actor RestorationBindings: CodexAccountBinding {
+        private let directory: URL
+        private let accounts: AccountStore
+        private let vault: CredentialVault
+        private let transactions: CodexLoginTransactionStore
+        private let pending: CodexPendingLoginStore
+        private let bindings: CodexAccountBindingStore
+        private var reset: Bool
+
+        init(directory: URL, accounts: AccountStore, vault: CredentialVault,
+             transactions: CodexLoginTransactionStore, pending: CodexPendingLoginStore,
+             bindings: CodexAccountBindingStore, reset: Bool) {
+            self.directory = directory
+            self.accounts = accounts
+            self.vault = vault
+            self.transactions = transactions
+            self.pending = pending
+            self.bindings = bindings
+            self.reset = reset
+        }
+
+        func load() async throws -> [ConnectedAccount] {
+            if reset {
+                if let authorization = try await transactions.load() {
+                    try await transactions.cancel(transactionID: authorization.transactionID)
+                    try await pending.remove(transactionID: authorization.transactionID)
+                    try await transactions.remove(transactionID: authorization.transactionID)
+                }
+                if let cancelledID = try await transactions.loadCancelledTransactionID() {
+                    try await pending.remove(transactionID: cancelledID)
+                    try await transactions.remove(transactionID: cancelledID)
+                }
+                for account in try await accounts.load() {
+                    try await vault.remove(for: .credential(account.credentialRef))
+                }
+                if FileManager.default.fileExists(atPath: directory.path) {
+                    try FileManager.default.removeItem(at: directory)
+                }
+                reset = false
+            }
+            return try await bindings.load()
+        }
+
+        func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount {
+            try await bindings.save(login)
+        }
+    }
+
+    private actor RestorationFixture: CodexDeviceAuthorizing, CodexLoginCompleting {
+        let directory: URL
+        let completes: Bool
+
+        init(directory: URL, completes: Bool) {
+            self.directory = directory
+            self.completes = completes
+        }
+
+        func requestAuthorization() throws -> CodexDeviceAuthorization {
+            let counterURL = directory.appendingPathComponent("request-count.json")
+            let oldCount = (try? JSONDecoder().decode(Int.self, from: Data(contentsOf: counterURL))) ?? 0
+            let requestCount = oldCount + 1
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            try JSONEncoder().encode(requestCount).write(to: counterURL, options: .atomic)
+            return try CodexDeviceAuthorization(deviceAuthID: "isolated-t10-request-\(requestCount)",
+                userCode: String(format: "TEST-%04d", requestCount), pollInterval: 1, startedAt: Date())
+        }
+
+        func poll(_ authorization: CodexDeviceAuthorization) async throws -> CodexAuthorizationCode? {
+            try await Task.sleep(for: .milliseconds(150))
+            guard completes else { return nil }
+            // Success is possible only by restoring the original request.
+            guard authorization.userCode == "TEST-0001" else { throw CodexLoginError.failed }
+            return CodexAuthorizationCode(code: "isolated-t10-code", verifier: String(repeating: "A", count: 43))
+        }
+
+        func exchange(_ code: CodexAuthorizationCode) async throws -> CodexTokenResponse {
+            try await Task.sleep(for: .milliseconds(150))
+            return CodexTokenResponse(accessToken: "isolated-t10-access", refreshToken: "isolated-t10-refresh",
+                                      idToken: "isolated-t10-id", obtainedAt: Date(), expiresAt: nil)
+        }
     }
 
     private static func recoveryFlow(scenario: String, arguments: [String]) -> CodexConnectionFlow {
