@@ -147,7 +147,7 @@ final class CodexIdentityVerifierTests: XCTestCase {
         let signer = try SyntheticJWTSigner()
         let input = try tokens(signer)
         for (network, expected) in [(NetworkScoreResult.blocked(score: 50), CodexLoginError.networkBlocked),
-                                     (.blocked(score: 0), .networkBlocked), (.unavailable(.timeout), .failed)] {
+                                     (.blocked(score: 0), .networkBlocked), (.unavailable(.timeout), .retryable)] {
             let transport = IdentityTransportStub(jwks: signer.jwks)
             await assertFailure(input, transport: transport, gate: .init(network), expected: expected)
             let requests = await transport.requests
@@ -179,12 +179,53 @@ final class CodexIdentityVerifierTests: XCTestCase {
     func testRedirectedFailedOversizedAndNonJSONServerResponsesNeverVerify() async throws {
         let signer = try SyntheticJWTSigner()
         let input = try tokens(signer)
-        for status in [301, 400, 401, 403, 429, 500] {
+        for status in [301, 400, 401, 403, 404, 410] {
             await assertFailure(input, transport: .init(jwks: signer.jwks, usageStatus: status))
         }
         await assertFailure(input, transport: .init(jwks: signer.jwks, usageURL: URL(string: "https://other.invalid")!))
         await assertFailure(input, transport: .init(jwks: signer.jwks, usage: Data(repeating: 65, count: 256 * 1024 + 1)))
         await assertFailure(input, transport: .init(jwks: Data("<html>synthetic</html>".utf8)))
+    }
+
+    func testTemporaryKeyAndIdentityServiceFailuresCanRetryVerification() async throws {
+        let signer = try SyntheticJWTSigner()
+        let input = try tokens(signer)
+        for status in [429, 500, 503, 599] {
+            let keys = IdentityTransportStub(jwks: Data(), jwksStatus: status)
+            await assertFailure(input, transport: keys, expected: .retryable)
+            let keyRequests = await keys.requests
+            XCTAssertEqual(keyRequests.count, 1, "公钥服务失败后不能跳过验签请求账户")
+
+            await assertFailure(input, transport: .init(jwks: signer.jwks, usage: Data(), usageStatus: status),
+                                expected: .retryable)
+        }
+        await assertFailure(input, transport: .init(jwks: signer.jwks, usageStatus: 503,
+            usageURL: URL(string: "https://unexpected.invalid/usage")!))
+        print("T09 | 身份核验暂时不可用 | 允许重试；不会跳过签名、来源或账户核对")
+    }
+
+    func testTransportFailuresCanRetryBothVerificationRequestsWithoutSurfacingDetails() async throws {
+        let signer = try SyntheticJWTSigner()
+        let input = try tokens(signer)
+        for code in [URLError.timedOut, .notConnectedToInternet, .networkConnectionLost] {
+            let failure = URLError(code) as NSError
+            await assertFailure(input, transport: .init(jwks: signer.jwks, jwksError: failure), expected: .retryable)
+            await assertFailure(input, transport: .init(jwks: signer.jwks, usageError: failure), expected: .retryable)
+        }
+        let unknown = NSError(domain: "synthetic-sensitive-domain", code: 1,
+                              userInfo: [NSLocalizedDescriptionKey: "synthetic-sensitive-description"])
+        await assertFailure(input, transport: .init(jwks: signer.jwks, usageError: unknown))
+    }
+
+    func testTransportCancellationDoesNotBecomeRecoverableVerificationFailure() async throws {
+        let signer = try SyntheticJWTSigner()
+        let input = try tokens(signer)
+        let cancelled = URLError(.cancelled) as NSError
+        for transport in [IdentityTransportStub(jwks: signer.jwks, jwksError: cancelled),
+                          IdentityTransportStub(jwks: signer.jwks, usageError: cancelled)] {
+            do { _ = try await verifier(transport).verify(input); XCTFail("取消后不能绑定") }
+            catch { XCTAssertTrue(error is CancellationError) }
+        }
     }
 
     func testCancelledVerificationRejectsLateServerIdentityResponse() async throws {
@@ -252,19 +293,25 @@ private actor IdentityTransportStub: CodexDeviceAuthorizationTransport {
     let usageStatus: Int
     let usageURL: URL
     let holdUsage: Bool
+    let jwksStatus: Int
+    let jwksError: NSError?
+    let usageError: NSError?
     private(set) var requests: [URLRequest] = []
     private var usageStarted = false
     private var startWaiter: CheckedContinuation<Void, Never>?
     private var usageWaiter: CheckedContinuation<Void, Never>?
 
     init(jwks: Data, usage: Data = Data("{\"account_id\":\"account-synthetic\",\"user_id\":\"user-synthetic\",\"rate_limit\":{\"primary_window\":{\"used_percent\":22}}}".utf8),
-         usageStatus: Int = 200, usageURL: URL = CodexIdentityVerifier.usageURL, holdUsage: Bool = false) {
+         usageStatus: Int = 200, usageURL: URL = CodexIdentityVerifier.usageURL, holdUsage: Bool = false,
+         jwksStatus: Int = 200, jwksError: NSError? = nil, usageError: NSError? = nil) {
         self.jwks = jwks; self.usage = usage; self.usageStatus = usageStatus; self.usageURL = usageURL
         self.holdUsage = holdUsage
+        self.jwksStatus = jwksStatus; self.jwksError = jwksError; self.usageError = usageError
     }
     func data(for request: URLRequest) async throws -> (Data, URLResponse) {
         requests.append(request)
         let isKeys = request.url == CodexIdentityVerifier.jwksURL
+        if let error = isKeys ? jwksError : usageError { throw error }
         if !isKeys && holdUsage {
             usageStarted = true
             startWaiter?.resume(); startWaiter = nil
@@ -272,7 +319,7 @@ private actor IdentityTransportStub: CodexDeviceAuthorizationTransport {
         }
         return (isKeys ? jwks : usage,
                 HTTPURLResponse(url: isKeys ? CodexIdentityVerifier.jwksURL : usageURL,
-                                statusCode: isKeys ? 200 : usageStatus, httpVersion: nil,
+                                statusCode: isKeys ? jwksStatus : usageStatus, httpVersion: nil,
                                 headerFields: ["Content-Type": "application/json"])!)
     }
     func waitForUsage() async {

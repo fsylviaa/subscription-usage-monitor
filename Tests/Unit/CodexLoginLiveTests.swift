@@ -5,6 +5,51 @@ import XCTest
 /// this iPhone App's own binding and verifies it against the official server.
 @MainActor
 final class CodexLoginLiveTests: XCTestCase {
+    func testT09IsolatedSavedIdentityAndCleanup() async throws {
+        let environment = ProcessInfo.processInfo.environment
+        guard environment["T09_LIVE_SAVED_ACCOUNT"] == "1" else {
+            throw XCTSkip("T09 独立真实登录需本人官网确认后显式核验。")
+        }
+        guard let rawID = environment["T09_LIVE_RUN_ID"], let runID = UUID(uuidString: rawID),
+              rawID.uppercased() == runID.uuidString else {
+            XCTFail("T09 缺少有效独立验收编号。")
+            return
+        }
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T09-live-\(runID.uuidString)")
+        let store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
+        let vault = CredentialVault(service: "T09.live.\(runID.uuidString)")
+        let accounts = try await store.load()
+        guard accounts.count == 1, let account = accounts.first,
+              let payload = try await vault.load(for: .credential(account.credentialRef)) else {
+            XCTFail("T09 独立真实登录尚未保存，不能用原有账户代替。")
+            return
+        }
+        struct Package: Decodable { let tokens: CodexTokenResponse }
+        let package = try JSONDecoder().decode(Package.self, from: payload.data)
+        let verified = try await CodexIdentityVerifier().verify(package.tokens)
+        guard verified.email == account.verifiedEmail, verified.remoteUserID == account.remoteUserID,
+              verified.scope == account.scope, account.quotaState == .notFetched else {
+            XCTFail("T09 真实身份重核验与独立保存记录不一致。")
+            return
+        }
+        let slot = CredentialVault.Entry.loginTransaction(UUID(uuidString: "2BCEFFDE-7DC2-4F6A-89B0-020023689458")!)
+        let transaction = try await vault.load(for: slot)
+        XCTAssertNil(transaction, "成功后设备事务已清理")
+        if environment["T09_LIVE_CLEANUP"] == "1" {
+            // Exact items in this caller-selected test namespace only.
+            if let transaction,
+               let authorization = try? JSONDecoder().decode(CodexDeviceAuthorization.self, from: transaction.data) {
+                try await vault.remove(for: .loginTransaction(authorization.transactionID))
+            }
+            try await vault.remove(for: slot)
+            try await vault.remove(ifMatching: payload, for: .credential(account.credentialRef))
+            try FileManager.default.removeItem(at: directory)
+            let credential = try await vault.load(for: .credential(account.credentialRef))
+            XCTAssertNil(credential, "本次独立验收授权已精确删除")
+        }
+        print("T09 | 取消后再次真实登录 | 已保存账户的签名、身份、作用域及授权重新核验通过；仍为尚未获取额度；不输出身份和秘密")
+    }
+
     func testRealSavedIdentityCredentialAndReopen() async throws {
         guard ProcessInfo.processInfo.environment["T08_LIVE_SAVED_ACCOUNT"] == "1" else {
             throw XCTSkip("真实账户需用户本人在官网确认后显式验收；普通测试不联网。")

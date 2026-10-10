@@ -107,6 +107,7 @@ struct CodexIdentityVerifier: CodexIdentityVerifying {
             case let .allowed(score) where score.isFinite && score > 50: break
             case .blocked: throw CodexLoginError.networkBlocked
             case .cancelled: throw CancellationError()
+            case .unavailable: throw CodexLoginError.retryable
             default: throw CodexLoginError.failed
             }
             stage = "服务端作用域请求"
@@ -140,6 +141,7 @@ struct CodexIdentityVerifier: CodexIdentityVerifying {
             print("T08 | 身份核验未通过 | 阶段：\(stage)")
             #endif
             if let failure = error as? CodexLoginError { throw failure }
+            if error is URLError { throw CodexLoginError.retryable }
             // Never surface server bodies, token claims, decoder descriptions or Sec errors.
             throw CodexLoginError.failed
         }
@@ -155,8 +157,13 @@ struct CodexIdentityVerifier: CodexIdentityVerifying {
         if let accountID { request.setValue(accountID, forHTTPHeaderField: "ChatGPT-Account-Id") }
         let (data, response) = try await transport.data(for: request)
         try Task.checkCancellation()
-        guard let http = response as? HTTPURLResponse, http.url == url,
-              (200...299).contains(http.statusCode), !data.isEmpty, data.count <= 256 * 1024,
+        guard let http = response as? HTTPURLResponse, http.url == url else {
+            throw CodexLoginError.failed
+        }
+        if http.statusCode == 429 || (500...599).contains(http.statusCode) {
+            throw CodexLoginError.retryable
+        }
+        guard (200...299).contains(http.statusCode), !data.isEmpty, data.count <= 256 * 1024,
               http.mimeType?.lowercased().contains("html") != true else {
             throw CodexLoginError.failed
         }

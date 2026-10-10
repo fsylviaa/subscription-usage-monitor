@@ -22,3 +22,10 @@ T06 的 `NetworkScoreCheckerTests` 用隔离传输替身检查临界分数、未
 T07 的 `CodexDeviceAuthorizationTests` 和 `CodexConnectionFlowTests` 各 17 项，默认不联网；涵盖协议、临时 Keychain、评分门槛、保存／取消交错、到期、主动复制及官网打开。`CodexConnectionUITests` 的常规 3 项使用显式 Debug 启动参数，仅显示 `TEST-CODE`，覆盖三个入口和简短结果。截图只收集固定样例；正式产品没有场景选择器。
 
 真实检查单列：`CodexConnectionLiveTests` 仅在测试环境 `T07_LIVE_CONNECTION=1` 时运行，从设备当前网络按指定来源取分；只有 >50 才实际申请代码、核对真实剪贴板和系统 HTTPS 打开。代码只进随机测试 service 临时条目，结束精确删除；不打印代码或保存真实截图。`testRealDefaultBrowserHasOfficialPage` 仅在 `T07_LIVE_BROWSER_VERIFY=1` 时只读核对当前前台浏览器的官方域名和登录／设备确认内容，不指定浏览器，不填写或提交账户资料。普通 ⌘U 跳过以上真实检查。
+
+
+T09 的 `CodexLoginRecoveryTests` 10 项覆盖安全恢复、重新评分、交换不重放、到期清理、取消迟到和旧账户保护；协议及身份测试增加 7 项内部失败分类。`CodexLoginCompletionUITests` 增加 4 项固定场景，显示 TEST-0001/0002 与 example.invalid，使用独立临时目录，无正式场景选择器。到期场景仅把测试代码设为 6 秒，正式协议期限不变。
+
+真实检查必须显式开启：`T09_LIVE_CANCEL=1` 运行 `testT09RealCancellationPreservesSavedAccountAndAllowsFreshCode`，使用真实网络评分和官方设备码、独立临时存储，正式账户/授权仅布尔比较，未提交官网确认。用户本人完成再次官网确认时使用 DEBUG 参数 `--t09-live-ui --t09-live-run-id <规范 UUID>`；全部生产核验照常，账户路径为 App 临时目录 `T09-live-UUID/accounts.json`，Keychain 基础 service 为 `T09.live.UUID`。错误参数不回退正式存储。
+
+真实重开需 `T09_LIVE_REOPEN=1` 与 `T09_LIVE_RUN_ID=<相同 UUID>`；真实保存核验需 `T09_LIVE_SAVED_ACCOUNT=1`，只读该独立账户并请求官方核验；再设 `T09_LIVE_CLEANUP=1` 则在核验通过后精确删除本次独立账户及凭据。先跑页面重开，再核验/清理，最后无参数普通启动恢复正式账户。两项均不记录真实身份截图、一次性代码或 token。

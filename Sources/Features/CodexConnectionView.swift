@@ -56,14 +56,7 @@ struct CodexConnectionView: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                     }
-                    .task(id: authorization.transactionID) {
-                        let remaining = authorization.expiresAt.timeIntervalSinceNow
-                        if remaining > 0 {
-                            try? await Task.sleep(for: .seconds(remaining))
-                        }
-                        guard !Task.isCancelled else { return }
-                        flow.expireIfNeeded()
-                    }
+
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

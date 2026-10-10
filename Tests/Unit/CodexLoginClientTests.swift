@@ -42,8 +42,40 @@ final class CodexLoginClientTests: XCTestCase {
             await assertPollFails(.init(body: pollBody(verifier: value)))
         }
         for body in ["{}", "[]", "not-json"] { await assertPollFails(.init(body: body)) }
-        for status in [302, 400, 401, 429, 500] {
+        for status in [302, 400, 401, 410, 422] {
             await assertPollFails(.init(body: pollBody(), status: status))
+        }
+    }
+
+    func testPendingStatusDoesNotInventDenialSemanticsFromErrorBody() async throws {
+        for status in [403, 404] {
+            let result = try await client(.init(body: "{\"error\":\"access_denied\"}", status: status))
+                .poll(authorization())
+            XCTAssertNil(result, "官网轮询协议以 403／404 表示等待，不推测未约定的正文语义")
+        }
+    }
+
+    func testPollTemporaryServiceAndTransportFailuresRemainRetryable() async {
+        for status in [429, 500, 503, 599] {
+            await assertPollFails(.init(body: "<html>unavailable</html>", status: status,
+                                       contentType: "text/html"), expected: .retryable)
+        }
+        for code in [URLError.timedOut, .notConnectedToInternet, .networkConnectionLost] {
+            await assertPollFails(.init(body: "", error: URLError(code) as NSError), expected: .retryable)
+        }
+        await assertPollFails(.init(body: "", status: 503,
+            responseURL: URL(string: "https://unexpected.invalid/token")!))
+        print("T09 | 等待授权时暂时失败 | 可重试原有效事务；错误来源仍拒绝")
+    }
+
+    func testTransportCancellationIsNotConvertedIntoRetryableFailure() async throws {
+        for exchange in [false, true] {
+            let service = client(.init(body: "", error: URLError(.cancelled) as NSError))
+            do {
+                if exchange { _ = try await service.exchange(.init(code: "synthetic-code", verifier: verifier)) }
+                else { _ = try await service.poll(authorization()) }
+                XCTFail("传输取消必须结束当前操作")
+            } catch { XCTAssertTrue(error is CancellationError) }
         }
     }
 
@@ -105,6 +137,21 @@ final class CodexLoginClientTests: XCTestCase {
         print("T08 | 错误去敏 | 仅保留简短内部失败，不透出服务端正文或授权内容")
     }
 
+    func testExchangeFailureNeverAutomaticallyReplaysAuthorizationCode() async {
+        let failures = [LoginTransportStub(body: "", status: 503),
+                        LoginTransportStub(body: "", status: 429),
+                        LoginTransportStub(body: "", error: URLError(.timedOut) as NSError)]
+        for transport in failures {
+            await assertExchangeFails(transport, expected: .retryable)
+            let requests = await transport.requests
+            XCTAssertEqual(requests.count, 1, "交换可能已经消耗授权码，协议层不能自行重放")
+        }
+        for status in [400, 401, 403, 404] {
+            await assertExchangeFails(.init(body: "{\"error\":\"access_denied\"}", status: status))
+        }
+        print("T09 | 交换失败 | 不盲目重复使用授权码，错误正文不外露")
+    }
+
     func testCancellationDiscardsLateExchangeResponse() async {
         let transport = LoginTransportStub(body: tokenBody(), suspended: true)
         let service = client(transport)
@@ -150,17 +197,17 @@ final class CodexLoginClientTests: XCTestCase {
         "{\"access_token\":\"\(access)\",\"refresh_token\":\"\(refresh)\",\"id_token\":\"\(id)\",\"token_type\":\"\(type)\",\"expires_in\":\(expiry)}"
     }
 
-    private func assertPollFails(_ transport: LoginTransportStub) async {
+    private func assertPollFails(_ transport: LoginTransportStub, expected: CodexLoginError = .failed) async {
         do { _ = try await client(transport).poll(authorization()); XCTFail("无效授权结果不能继续") }
-        catch { XCTAssertEqual(error as? CodexLoginError, .failed) }
+        catch { XCTAssertEqual(error as? CodexLoginError, expected) }
     }
 
-    private func assertExchangeFails(_ transport: LoginTransportStub) async {
+    private func assertExchangeFails(_ transport: LoginTransportStub, expected: CodexLoginError = .failed) async {
         do {
             _ = try await client(transport).exchange(.init(code: "synthetic-code", verifier: verifier))
             XCTFail("失败响应不能生成令牌包")
         } catch {
-            XCTAssertEqual(error as? CodexLoginError, .failed)
+            XCTAssertEqual(error as? CodexLoginError, expected)
             XCTAssertFalse(String(reflecting: error).contains("synthetic"))
         }
     }

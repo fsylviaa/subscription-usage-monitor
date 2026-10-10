@@ -2,7 +2,7 @@ import Foundation
 import CryptoKit
 
 /// Never log the server response or a decoding error: both may contain login secrets.
-enum CodexLoginError: Error, Equatable { case failed, networkBlocked }
+enum CodexLoginError: Error, Equatable { case failed, networkBlocked, retryable }
 
 struct CodexTokenResponse: Codable, Sendable, CustomStringConvertible, CustomDebugStringConvertible, CustomReflectable {
     let accessToken: String
@@ -100,13 +100,26 @@ struct CodexLoginClient: CodexLoginCompleting {
             try Task.checkCancellation()
             let (data, response) = try await transport.data(for: request)
             try Task.checkCancellation()
-            guard let http = response as? HTTPURLResponse, http.url == request.url,
-                  data.count <= 256 * 1024, http.mimeType?.contains("html") != true else {
+            guard let http = response as? HTTPURLResponse, http.url == request.url else {
                 throw CodexLoginError.failed
+            }
+            if http.statusCode == 429 || (500...599).contains(http.statusCode) {
+                throw CodexLoginError.retryable
+            }
+            // The official poll protocol treats 403/404 as pending by status alone.
+            // Validate a successful payload before decoding; never interpret error bodies.
+            if http.statusCode == 200 {
+                guard data.count <= 256 * 1024, http.mimeType?.lowercased().contains("html") != true else {
+                    throw CodexLoginError.failed
+                }
             }
             return (data, http.statusCode)
         } catch {
-            if Task.isCancelled || error is CancellationError { throw CancellationError() }
+            if Task.isCancelled || error is CancellationError || (error as? URLError)?.code == .cancelled {
+                throw CancellationError()
+            }
+            if let failure = error as? CodexLoginError { throw failure }
+            if error is URLError { throw CodexLoginError.retryable }
             throw CodexLoginError.failed
         }
     }

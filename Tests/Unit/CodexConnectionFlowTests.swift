@@ -201,7 +201,7 @@ final class CodexConnectionFlowTests: XCTestCase {
         XCTAssertEqual(copies, 0)
         XCTAssertEqual(opens, 0)
         let saved = await store.current
-        XCTAssertEqual(saved?.expiresAt, authorization.expiresAt)
+        XCTAssertNil(saved, "到期流程结束后清除短期事务")
         print("T07 | 保存期间到期 | 不显示或使用到期代码，不延长期限")
     }
 
