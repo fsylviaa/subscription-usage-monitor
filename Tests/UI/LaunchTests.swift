@@ -16,11 +16,12 @@ final class LaunchTests: XCTestCase {
             XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
             XCTAssertTrue(app.tabBars.buttons["设置"].isSelected)
 
-            for identifier in ["settings.connect", "settings.widgetTutorial", "settings.help", "settings.privacy", "settings.licenses"] {
+            for identifier in ["settings.widgetTutorial", "settings.help", "settings.privacy", "settings.licenses"] {
                 let action = app.buttons[identifier]
                 XCTAssertTrue(action.exists, identifier)
                 XCTAssertFalse(action.isEnabled, identifier)
             }
+            XCTAssertTrue(app.buttons["settings.connect"].isEnabled)
             let reminder = app.switches["settings.resetReminder"]
             XCTAssertTrue(reminder.exists)
             XCTAssertFalse(reminder.isEnabled)
@@ -47,10 +48,12 @@ final class LaunchTests: XCTestCase {
 
         let refresh = app.buttons["quota.refresh"]
         let toolbarConnect = app.buttons["quota.toolbarConnect"]
-        for action in [refresh, toolbarConnect, app.buttons["quota.connect"]] {
+        for action in [refresh] {
             XCTAssertTrue(action.exists)
             XCTAssertFalse(action.isEnabled)
         }
+        XCTAssertTrue(toolbarConnect.isEnabled)
+        XCTAssertTrue(app.buttons["quota.connect"].isEnabled)
         // 顶部两个操作位于标题右侧同一行。
         XCTAssertGreaterThan(refresh.frame.minX, title.frame.maxX)
         XCTAssertGreaterThan(toolbarConnect.frame.minX, refresh.frame.minX)

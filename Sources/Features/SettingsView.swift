@@ -1,10 +1,12 @@
 import SwiftUI
 
 struct SettingsView: View {
+    var connect: () -> Void = {}
     var body: some View {
         Form {
             Section("账户") {
-                pendingAction("连接 Codex", systemImage: "plus", identifier: "settings.connect")
+                Button("连接 Codex", systemImage: "plus", action: connect)
+                    .accessibilityIdentifier("settings.connect")
             }
 
             Section("通用") {

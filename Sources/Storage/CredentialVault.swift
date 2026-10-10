@@ -95,6 +95,13 @@ actor CredentialVault {
         if status != errSecItemNotFound { try check(status) }
     }
 
+    /// Compare and remove without suspending between the read and delete. A cancelled
+    /// transaction must not delete a replacement written by a newer attempt.
+    func remove(ifMatching expected: CredentialPayload, for entry: Entry) throws {
+        guard try load(for: entry) == expected else { return }
+        try remove(for: entry)
+    }
+
     private func query(for entry: Entry) -> [String: Any] {
         [
             kSecClass as String: kSecClassGenericPassword,

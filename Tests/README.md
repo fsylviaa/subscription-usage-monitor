@@ -17,3 +17,8 @@ T05 的 `CredentialVaultTests` 为每项测试生成唯一 Keychain service 与 
 
 
 T06 的 `NetworkScoreCheckerTests` 用隔离传输替身检查临界分数、未知、HTTP 失败、取消迟到及每次重取，不访问真实网站或账户。`NetworkScoreLiveTests` 默认跳过，仅在测试进程环境 `T06_LIVE_NETWORK_CHECK=1` 时从执行设备访问指定评分链；只输出最终分数及允许/阻止，不输出出口地址、请求 URL 或响应原文。开发者将实际设备结果单列，不能用固定输入通过冒充真实取分。
+
+
+T07 的 `CodexDeviceAuthorizationTests` 和 `CodexConnectionFlowTests` 各 17 项，默认不联网；涵盖协议、临时 Keychain、评分门槛、保存／取消交错、到期、主动复制及官网打开。`CodexConnectionUITests` 的常规 3 项使用显式 Debug 启动参数，仅显示 `TEST-CODE`，覆盖三个入口和简短结果。截图只收集固定样例；正式产品没有场景选择器。
+
+真实检查单列：`CodexConnectionLiveTests` 仅在测试环境 `T07_LIVE_CONNECTION=1` 时运行，从设备当前网络按指定来源取分；只有 >50 才实际申请代码、核对真实剪贴板和系统 HTTPS 打开。代码只进随机测试 service 临时条目，结束精确删除；不打印代码或保存真实截图。`testRealDefaultBrowserHasOfficialPage` 仅在 `T07_LIVE_BROWSER_VERIFY=1` 时只读核对当前前台浏览器的官方域名和登录／设备确认内容，不指定浏览器，不填写或提交账户资料。普通 ⌘U 跳过以上真实检查。

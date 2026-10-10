@@ -1,0 +1,154 @@
+T07 开发者验收摘要 — 2026-10-10
+环境：Xcode 26.6；真实 iPhone 11 / iOS 26.5；模拟器 iPhone 17 Pro / iOS 26.5。
+实际结果：真机80项功能 + 3项最终UI + 1项真实申请复制打开 + 1项官网实见均通过。
+真实有效评分57，使用原T06检查；未输出真实代码/设备ID/出口IP/邮箱。
+用户亲验：未亲验。T08 未开始，无正式账户或额度。
+先前模拟器78项单元与4项浅色UI通过；新增2项回归已纳入真机80项。
+深色初轮操作测试通过但视觉未通过，白底白字已修复；本文采用修复后的深色截图和报告。
+Release构建通过；二进制无 --t07-isolated-ui / isolated-ui-transaction / TEST-CODE。
+正常入口于14:09在手机无测试参数启动；默认不自动申请代码。
+
+最终真机功能检查
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testCorruptFilesAreReportedAndNeverOverwrittenByAppend]' passed (0.013 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testDuplicateLocalIDsInSavedDocumentCannotBeLoadedOrOverwritten]' passed (0.006 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testMissingFileReturnsEmptyWithoutCreatingAccountData]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testNewStoreRestoresBothAccountIdentitiesAndAppendOrder]' passed (0.005 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testNotFetchedSurvivesReloadWithoutQuotaValuesTimesOrSecretsOnDisk]' passed (0.004 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testRejectedMutationsLeaveCommittedFileUnchanged]' passed (0.006 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testReorderingPersistsWithoutChangingEitherAccount]' passed (0.011 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testUnavailableStoragePathFailsAndCommittedAccountsCanBeRecovered]' passed (0.007 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testUnsupportedSchemaIsReportedAndNeverOverwrittenByAppend]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testUpdatingAChangesOnlyItsMetadataAndKeepsItsPosition]' passed (0.007 seconds).
+Executed 10 tests, with 0 failures (0 unexpected) in 0.065 (0.068) seconds
+T07 | 固定评分 50 | 网络不达标；申请 0 次、打开 0 次
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests test50BlocksBeforeRequestingOrOpeningAuthorization]' passed (0.002 seconds).
+T07 | 固定评分 51 | 自动进入代码步骤；申请 1 次，事务已保存
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests test51AutomaticallyRequestsExactlyOnceAndSavesBeforeShowingCode]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testAlreadyExpiredResponseIsNotSavedOrDisplayed]' passed (0.002 seconds).
+T07 | 保存期间到期 | 不显示或使用到期代码，不延长期限
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testAuthorizationExpiringWhileSaveIsSuspendedIsNeverDisplayed]' passed (0.002 seconds).
+T07 | 官网往返与复制、随后原期限到期 | 不延长期限，不继续使用到期代码
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testBrowserAndCopyDoNotExtendDeadlineAndExpiredCodeCannotBeUsed]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testCancellingDuringSaveRemovesLateTransaction]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testCancellingRequestRejectsLateCodeWithoutSavingIt]' passed (0.001 seconds).
+T07 | 慢检查期间取消，随后返回 51 | 返回原页；迟到结果不申请代码
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testCancellingSlowCheckRejectsLate51WithoutRequestingCode]' passed (0.001 seconds).
+T07 | 主动复制固定测试代码 | 内容一致，保留原始到期时间；未自动复制
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testCopyRequiresUserActionAndPreservesOriginalExpiry]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testFailedBrowserOpeningStaysPendingAndCanRetry]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testLateBrowserResultAfterCancellationCannotRestoreSheetOrFailure]' passed (0.001 seconds).
+T07 | 保存期间取消并立即重试 | 先完成旧清理，再申请；仅保留新事务
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testNewAttemptWaitsForCancelledSaveAndKeepsOnlyNewTransaction]' passed (0.107 seconds).
+T07 | 打开官网 | 官方 HTTPS 设备页，不拼接代码，不显示连接成功
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testOpenUsesOfficialHTTPSURLWithoutCodeAndDoesNotCompleteLogin]' passed (0.002 seconds).
+T07 | 申请代码失败 | 登录未完成；无代码、无有效账户
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testRequestFailureDoesNotDisplayCodeOrSaveTransaction]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testRetryPerformsFreshNetworkCheck]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testStorageFailurePreventsPresentingOrCopyingCode]' passed (0.002 seconds).
+T07 | 评分未知 | 简短失败；不报低分，不申请代码
+Test Case '-[SubscriptionUsageTests.CodexConnectionFlowTests testUnknownScoreUsesBriefFailureAndDoesNotInventLowScore]' passed (0.002 seconds).
+Executed 17 tests, with 0 failures (0 unexpected) in 0.133 (0.139) seconds
+T07 | 读取旧包后新包写入再取消 | 条件清理保留新包
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testAtomicConditionalDeleteRechecksCurrentPackageAfterReplacement]' passed (0.020 seconds).
+T07 | 申请取消 | 未开始的不请求；已开始的迟到结果丢弃
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testCancellationBeforeRequestDoesNotSendAndLateSuccessIsDiscarded]' passed (0.003 seconds).
+T07 | 缺失、无效或冲突代码 | 简短失败，无有效事务
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testEmptyMalformedAndConflictingCodesAreRejected]' passed (0.004 seconds).
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testHTTPFailuresDoNotBecomePendingOrRevealBody]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testMissingInvalidAndUnsafeIntervalsAreRejected]' passed (0.003 seconds).
+T07 | 旧事务取消及当前事务清理 | 新事务不被误删，正式授权不变
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testOldTransactionCancellationCannotDeleteReplacementOrFormalCredential]' passed (0.010 seconds).
+T07 | 原始期限 | 从申请开始计时；编码读回不延长
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testOriginalDeadlineStartsBeforeRequestAndSurvivesEncoding]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testPersistedMetadataAndExpiryTamperingAreRejected]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testRedirectedNonHTTPEmptyHTMLAndOversizedResponsesAreRejected]' passed (0.002 seconds).
+T07 | 申请设备码 | 仅请求官方地址，不轮询、不保存账户
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testRequestUsesPinnedOfficialEndpointAndOnlyPublicClientID]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testResponseArrivingAfterOriginalDeadlineIsRejected]' passed (0.001 seconds).
+T07 | 隐私检查 | 无浏览器 Cookie；事务描述与反射不含代码
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testSessionAndRepresentationsDoNotRetainCookiesOrRevealCodes]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testStringAndIntegerIntervalAndBothUserCodeNamesAreAccepted]' passed (0.002 seconds).
+T07 | 临时钥匙串保存后读回 | 事务匹配，原期限不延长
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testTransactionKeychainRoundTripPreservesOriginalIdentityAndDeadline]' passed (0.005 seconds).
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testTransportCancelledErrorRemainsCancellation]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testTransportErrorsAreSanitized]' passed (0.001 seconds).
+T07 | 打开地址 | 固定 OpenAI 官方 HTTPS 页面，不拼接或预填代码
+Test Case '-[SubscriptionUsageTests.CodexDeviceAuthorizationTests testVerificationURLIsOfficialAndNeverContainsOrTrustsAResponseCodeURL]' passed (0.002 seconds).
+Executed 17 tests, with 0 failures (0 unexpected) in 0.059 (0.064) seconds
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testActualKeychainAttributesUseLocalOnlyProtectionWithoutSync]' passed (0.007 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testDescriptionsAndReflectionNeverExposePayload]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testEmptySaveIsRejectedWithoutChangingExistingOrMissingEntries]' passed (0.005 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFailedDeleteKeepsEntriesAndAccountFileAndCanBeRetried]' passed (0.014 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFailedFirstSaveDoesNotCreateAnEmptyItem]' passed (0.005 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFailedUpdateKeepsOldWholePackageOtherAccountAndAccountFile]' passed (0.053 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFormalAndTemporaryEntriesWithSameUUIDRemainIndependent]' passed (0.008 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testMissingEntryReturnsNilWithoutCreatingAnItem]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testNewVaultRestoresIndependentPackagesForAAndB]' passed (0.006 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testOtherReadFailureIsNotReportedAsMissingAndKeepsSavedPackage]' passed (0.004 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testRemovingAIsExactAndAlreadyAbsentRemovalIsSafe]' passed (0.006 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testReplacingAReplacesWholePackageAndPreservesB]' passed (0.009 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testSuccessfulReadWithoutUsablePayloadIsRejectedWithoutDeletion]' passed (0.005 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testTemporaryReadFailuresPreservePackagesAndOrdinaryAccountData]' passed (0.012 seconds).
+Executed 14 tests, with 0 failures (0 unexpected) in 0.138 (0.144) seconds
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests test49And50BlockFollowingOperation]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests test51AllowsFollowingOperationExactlyOnce]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testAlreadyCancelledCheckMakesNoRequestOrFollowingOperation]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testCancellationDuringExitRequestStopsBeforeScoring]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testDisconnectedTransportIsUnknownRatherThanLowScore]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testEveryRetryFetchesFreshExitAndScoreInsteadOfReusingAllowedResult]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testFollowingOperationFailureIsPropagatedWithoutRetryingOperation]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testHTMLChallengeAtEitherStageCannotBecomeValidResult]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testIPv6ExitAddressIsAcceptedAndUsedForScoring]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testLate51AfterCancellationCannotStartFollowingOperation]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testMissingInvalidTypeOutOfRangeAndMalformedScoresRemainUnknown]' passed (0.004 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testMissingMalformedAndAmbiguousExitAddressStopsBeforeScoreRequest]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testNon200ResponsesAtEitherStageAreUnavailable]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testNonHTTPResponseCannotBecomeValidScore]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRedirectedResponseAtEitherStageCannotSubstituteAnotherSource]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRequestsUseSpecifiedSourcesCurrentExitAddressAndNoCache]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testRestrictedCountryWithoutValidScoreDoesNotInventZero]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testSpecifiedRestrictedCountriesMapValidScoreToZero]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testTimeoutAtEitherStageIsUnknownAndBlocksFollowingOperation]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testTransportCancellationIsNotReportedAsScoreFailure]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.NetworkScoreCheckerTests testValidScoresPreserveZeroFractionAndUpperBound]' passed (0.002 seconds).
+Executed 21 tests, with 0 failures (0 unexpected) in 0.039 (0.046) seconds
+Test Case '-[SubscriptionUsageTests.RootViewTests testRootViewCanLoadAndLayOutInAppHost]' passed (0.010 seconds).
+Executed 1 test, with 0 failures (0 unexpected) in 0.010 (0.011) seconds
+Executed 80 tests, with 0 failures (0 unexpected) in 0.445 (0.475) seconds
+Executed 80 tests, with 0 failures (0 unexpected) in 0.445 (0.476) seconds
+** TEST EXECUTE SUCCEEDED **
+
+真实申请、复制、系统默认打开
+T07 | 真实网络 | 有效评分 57.0，允许申请
+T07 | 真实代码 | 已申请并安全暂存；主动复制内容一致（不记录代码）
+T07 | 真实官网 | 已调用系统默认HTTPS打开；网页实际到达另行核对
+Test Case '-[SubscriptionUsageTests.CodexConnectionLiveTests testRealGateCodeClipboardAndDefaultBrowserDispatch]' passed (3.424 seconds).
+Executed 1 test, with 0 failures (0 unexpected) in 3.424 (3.425) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 3.424 (3.425) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 3.424 (3.426) seconds
+** TEST EXECUTE SUCCEEDED **
+
+真实默认浏览器官方页面实见
+T07 | 真机默认浏览器实见 | OpenAI 官方域名和登录/设备确认页面已显示；未输入或提交账户资料
+Test Case '-[SubscriptionUsageUITests.CodexConnectionUITests testRealDefaultBrowserHasOfficialPage]' passed (1.017 seconds).
+Executed 1 test, with 0 failures (0 unexpected) in 1.017 (1.019) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 1.017 (1.020) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 1.017 (1.021) seconds
+** TEST EXECUTE SUCCEEDED **
+
+最终真机页面检查（样式修复后）
+Test Case '-[SubscriptionUsageUITests.CodexConnectionUITests testCancelSlowCheckDoesNotReopenConnection]' passed (15.614 seconds).
+Test Case '-[SubscriptionUsageUITests.CodexConnectionUITests testCodeCopyAndCancelFromAllEntryPoints]' passed (29.533 seconds).
+Test Case '-[SubscriptionUsageUITests.CodexConnectionUITests testLowUnknownAndRequestFailureShowBriefResults]' passed (34.427 seconds).
+Executed 3 tests, with 0 failures (0 unexpected) in 79.573 (79.584) seconds
+Executed 3 tests, with 0 failures (0 unexpected) in 79.573 (79.588) seconds
+Executed 3 tests, with 0 failures (0 unexpected) in 79.573 (79.594) seconds
+** TEST SUCCEEDED **
+
+修复后深色模拟器页面检查
+Test Case '-[SubscriptionUsageUITests.CodexConnectionUITests testCodeCopyAndCancelFromAllEntryPoints]' passed (23.369 seconds).
+Test Case '-[SubscriptionUsageUITests.CodexConnectionUITests testLowUnknownAndRequestFailureShowBriefResults]' passed (31.692 seconds).
+Executed 2 tests, with 0 failures (0 unexpected) in 55.061 (55.063) seconds
+Executed 2 tests, with 0 failures (0 unexpected) in 55.061 (55.064) seconds
+Executed 2 tests, with 0 failures (0 unexpected) in 55.061 (55.065) seconds
+** TEST SUCCEEDED **

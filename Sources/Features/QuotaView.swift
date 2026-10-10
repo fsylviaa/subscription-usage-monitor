@@ -1,20 +1,20 @@
 import SwiftUI
 
 struct QuotaView: View {
+    var connect: () -> Void = {}
     var body: some View {
         ContentUnavailableView {
             Label("未连接账户", systemImage: "link")
                 .accessibilityIdentifier("quota.empty")
         } actions: {
             Button {
-                // T07 接入网络检查与真实登录后开放。
+                connect()
             } label: {
                 Text("连接 Codex")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color(.systemBackground))
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
-            .disabled(true)
             .accessibilityIdentifier("quota.connect")
         }
         .background(Color(.systemGroupedBackground))
@@ -29,9 +29,8 @@ struct QuotaView: View {
                 .accessibilityIdentifier("quota.refresh")
 
                 Button("连接 Codex", systemImage: "link") {
-                    // T07 接入网络检查与真实登录后开放。
+                    connect()
                 }
-                .disabled(true)
                 .accessibilityIdentifier("quota.toolbarConnect")
             }
         }

@@ -19,3 +19,10 @@ App 接入时组装一个共享 actor 实例，串行执行无挂起点的读改
 临时事务的到期、一次消费、验证后提交、登录取消及账户移除重试编排均由对应后续任务接入；本次仅提供分离的存取/删除能力。测试使用随机专属 service 与虚构标记，退出时逐条删除测试项，不枚举或清空用户钥匙串。
 
 可访问性依据：[Apple Keychain 可访问性](https://developer.apple.com/documentation/security/ksecattraccessibleafterfirstunlockthisdeviceonly)与[条目属性](https://developer.apple.com/documentation/security/item-attribute-keys-and-values)。实际检查范围见 [T05 验收](../../docs/mvp任务清单/记录/T05-验收.md)。
+
+
+## T07 临时设备码事务
+
+`CodexLoginTransactionStore` 将单个当前连接事务整包存入临时 Keychain 固定槽位；包内有独立 transactionID、平台／产品、公共 clientID、设备码、展示码、轮询间隔、原始开始和截止。普通文件不保存秘密。固定槽位便于后续 T10 恢复；本次仅保存并保留原期限，没有实现退出后自动恢复。
+
+取消按事务 ID 清理；读取后删除还通过 `CredentialVault.remove(ifMatching:for:)` 在同一 actor 无挂起地比较和移除，避免旧取消删掉新包。清理失败保留引用，下一次申请前重试；不删除正式授权或账户。T09/T10 后续补完整登录失败和恢复编排。

@@ -1,0 +1,28 @@
+T07 设备码协议核对，2026-10-10
+
+官方固定快照：165299214855c2e48facf9bb3bc3c0fc277ee639
+https://github.com/openai/codex/blob/165299214855c2e48facf9bb3bc3c0fc277ee639/codex-rs/login/src/device_code_auth.rs
+https://github.com/openai/codex/blob/165299214855c2e48facf9bb3bc3c0fc277ee639/codex-rs/login/src/auth/manager.rs
+官方说明：https://learn.chatgpt.com/docs/auth
+
+T07 使用的协议：
+POST https://auth.openai.com/api/accounts/deviceauth/usercode
+Content-Type: application/json
+请求仅为公开 client_id；不发送已有账号令牌或浏览器 Cookie。
+响应使用 device_auth_id、user_code（兼容 usercode）、interval（字符串或整数）。
+固定官网：https://auth.openai.com/codex/device
+没有证据支持完整含码 URL；不拼接自动填码参数，不把任意服务端地址交给系统。
+官方客户端最多等15分钟；本 App 从申请开始保存原截止，不把浏览器返回当重新计时。
+此客户端截止不代表服务端保证保留15分钟。
+
+手机正式路径先调用 T06；仅有效分>50实际申请，低分/未知/取消均不申请。
+临时包包含事务ID、平台、产品、公开clientID、代码、间隔、原始开始与截止，整包入临时Keychain槽位。
+不轮询、不换token、不验证身份、不保存正式账户、不查询额度（属于后续任务）。
+系统 UIApplication.open(url, options: [:]) 尊重默认打开行为；不指定或探测安装浏览器。
+测试核对前台浏览器仅属于验收工具，不打入产品。
+
+敏感信息处理：
+只在用户点复制后写入剪贴板，localOnly且设置原始到期；产品不主动读取剪贴板。
+打印、调试描述与反射不显示代码，网络响应正文不输出。
+本目录图片只含固定隔离样例 TEST-CODE，没有真实代码、邮箱或令牌。
+未修改Figma、未引入第三方库或参考项目源码。
