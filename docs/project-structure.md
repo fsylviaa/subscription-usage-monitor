@@ -48,7 +48,7 @@ app/
 
 | 位置 | 负责什么 | 后续落点与边界 |
 |---|---|---|
-| `Config/Signing.xcconfig` | App 的 Debug/Release 读取可选的本机开发团队 | 实际团队保存在被 Git 忽略的 `Signing.local.xcconfig`；不保存账户、证书或私钥；文件缺少时模拟器仍可用 |
+| `Config/Signing.xcconfig` | App 与两个测试 target 的 Debug/Release 共用可选本机开发团队 | 实际团队保存在被 Git 忽略的 `Signing.local.xcconfig`；不保存账户、证书或私钥；文件缺少时模拟器仍可用 |
 | `Sources/App/SubscriptionUsageApp.swift` | SwiftUI 的 `@main` 入口，打开根页面 | 后续在此组装必要依赖、连接 App 生命周期，不直接承担平台解析 |
 | `Sources/App/RootView.swift` | 底部额度／设置导航，各页独立 NavigationStack | 当前不显示样例账户或伪造额度；后续按任务接入流程 |
 | `Sources/Features/` | 额度、账户、设置、教程等页面及直接相关展示逻辑 | 已有 `QuotaView.swift`、`SettingsView.swift`；待接入动作禁用；后续页面调用业务能力，不自行管理授权秘密 |

@@ -463,6 +463,7 @@
 		};
 		"431F226BD8B344E05B177FD2" = {
 			"isa" = "XCBuildConfiguration";
+			"baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E";
 			"buildSettings" = {
 				"CODE_SIGN_STYLE" = "Automatic";
 				"CURRENT_PROJECT_VERSION" = "1";
@@ -487,6 +488,7 @@
 		};
 		"2B5BA518B56BFFF492DB836F" = {
 			"isa" = "XCBuildConfiguration";
+			"baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E";
 			"buildSettings" = {
 				"CODE_SIGN_STYLE" = "Automatic";
 				"CURRENT_PROJECT_VERSION" = "1";
@@ -520,6 +522,7 @@
 		};
 		"F8A38335325F6B60B821FB18" = {
 			"isa" = "XCBuildConfiguration";
+			"baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E";
 			"buildSettings" = {
 				"CODE_SIGN_STYLE" = "Automatic";
 				"CURRENT_PROJECT_VERSION" = "1";
@@ -543,6 +546,7 @@
 		};
 		"47AB09F738116BB2ACFB5BA4" = {
 			"isa" = "XCBuildConfiguration";
+			"baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E";
 			"buildSettings" = {
 				"CODE_SIGN_STYLE" = "Automatic";
 				"CURRENT_PROJECT_VERSION" = "1";

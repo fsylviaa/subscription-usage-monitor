@@ -62,11 +62,28 @@ xcodebuild -project SubscriptionUsage.xcodeproj \
 
 本任务仅建立入口；实际登录从 T07 接入。模拟器证据及用户亲验状态见 [T03 验收](docs/mvp任务清单/记录/T03-验收.md)。手机需在 Xcode 再次按 ⌘R 安装本次版本后查看，T02 的安装验证不代表本次页面已在真机复验。
 
-### T04 账户保存复验
+### T04 做了什么、怎么验收
 
-本次是供后续登录使用的底层能力，没有新增账户页面。普通账户文件保存身份、平台／产品、查询作用域、凭据引用、generation 和列表顺序；尚未获取额度时只保留空状态，文件中没有登录令牌或伪造额度。当前页面仍为 T03 的无账户入口。
+**这一步让 App 能记住账户和排列顺序。** 例如以后添加两个账户 A、B，App 要记住它们；把 B 移到前面，要记住新顺序；修改 A，不能弄乱 B。
 
-在 Xcode 按 **⌘U**，查看 `AccountStoreTests` 的结果；固定输入 A／B 和实际输出见 [T04 验收](docs/mvp任务清单/记录/T04-验收.md)。测试在每次独立的临时目录读写，不访问真实账户目录、钥匙串或网络。可只运行这一组：
+现在还没接上登录和账户列表，所以打开 App **不会出现新页面，也还不能添加账户**。这一项由开发者用两个虚构账户运行检查，你查看[T04 验收结果](docs/mvp任务清单/记录/T04-验收.md)即可：
+
+| 我们检查什么 | 应该得到的结果 |
+|---|---|
+| 保存 A、B，再重新读取 | 两个都在，仍是 A、B |
+| 改成 B、A，再重新读取 | 记住 B 在前的新顺序 |
+| 只改 A | B 不变 |
+| 还没查到额度 | 不凭空显示额度数字或更新时间 |
+
+**你不需要操作 Xcode 才能验收这一步。** 真正的手机操作验收会在登录、账户列表和排序功能接好后进行，届时再添加自己的账户、调整顺序、关掉重开。
+
+如果想亲自看自动检查运行（可选）：
+
+1. 在 Xcode 顶部设备位置选 **iPhone 17 Pro 模拟器**，按 **⌘U**。
+2. 等它自动结束，看到 **Test Succeeded**（测试通过）就是成功；不用在 App 里寻找测试按钮。
+3. 若选连接的实体 iPhone，则先解锁并保持连接。App 和两个测试程序现已共用本机签名配置；仍需此 Mac 已按 T02 配好签名。
+
+开发者只运行 T04 存储检查时使用以下命令；它使用临时测试数据，不访问真实账户、钥匙串或网络：
 
 ```sh
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
@@ -75,8 +92,6 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
   -derivedDataPath build/DerivedData -parallel-testing-enabled NO \
   -only-testing:SubscriptionUsageTests/AccountStoreTests test
 ```
-
-页面排序与真实多账户操作分别由 T16/T17 及后续任务接入；本次没有执行这些页面或真账户验收。
 
 ### 在自己的 iPhone 上运行（T02）
 
@@ -92,7 +107,7 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
 
 这是 Xcode 的开发安装，受实际开发签名有效期限制，不代表永久安装或分发版本。T02 只验证 App 本体；未添加小组件、App Group 或发布配置。若尚无可用团队，先完成账户登录；不通过撤销现有证书来尝试修复。
 
-开发者保存签名配置：将团队 ID 写入被忽略的 `Config/Signing.local.xcconfig`（`DEVELOPMENT_TEAM = 自己的团队ID`），由 `Config/Signing.xcconfig` 读取。若在 Xcode 选团队时写回了工程，提交前移除工程内覆盖本机文件的团队字段；实际团队、账户资料和签名秘密不入 Git。缺少本机文件仍可运行模拟器，真机需重新配置自己的团队。
+开发者保存签名配置：将团队 ID 写入被忽略的 `Config/Signing.local.xcconfig`（`DEVELOPMENT_TEAM = 自己的团队ID`），由 `Config/Signing.xcconfig` 供 App 和两个测试程序的 Debug/Release 配置共同读取。若在 Xcode 选团队时写回了工程，提交前移除工程内覆盖本机文件的团队字段；实际团队、账户资料和签名秘密不入 Git。缺少本机文件仍可运行模拟器，真机需重新配置自己的团队。
 
 ## 已明确的目标
 

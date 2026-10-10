@@ -1,0 +1,41 @@
+T04 用户反馈修复检查 — 2026-10-10
+原问题：用户在 Xcode 的实体 iPhone 目标按 Command+U，出现 Build Failed。
+实际报错（Issue Navigator）：
+Signing for "SubscriptionUsageUITests" requires a development team.
+Signing for "SubscriptionUsageTests" requires a development team.
+
+修复：两个测试 target 的 Debug/Release 共四处接入与 App 相同的 Signing.xcconfig。
+未复制本机团队值或签名秘密；账户业务代码未变。
+
+模拟器复验：iPhone 17 Pro / iOS 26.5；11 项单元测试。
+结果包：build/T04-feedback-simulator.xcresult；完整日志 /private/tmp/t04-feedback-simulator.log。
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testCorruptFilesAreReportedAndNeverOverwrittenByAppend]' passed (0.005 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testDuplicateLocalIDsInSavedDocumentCannotBeLoadedOrOverwritten]' passed (0.005 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testMissingFileReturnsEmptyWithoutCreatingAccountData]' passed (0.001 seconds).
+T04 | 保存 A、B 后新建读取实例 | A,B | 身份与顺序按完整记录核对
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testNewStoreRestoresBothAccountIdentitiesAndAppendOrder]' passed (0.002 seconds).
+T04 | 保存尚未获取额度 | notFetched | 磁盘无额度百分比、重置/成功时间、授权秘密字段
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testNotFetchedSurvivesReloadWithoutQuotaValuesTimesOrSecretsOnDisk]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testRejectedMutationsLeaveCommittedFileUnchanged]' passed (0.003 seconds).
+T04 | 将 A、B 移为 B、A 后新建读取实例 | B,A | 两账户完整记录未变
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testReorderingPersistsWithoutChangingEitherAccount]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testUnavailableStoragePathFailsAndCommittedAccountsCanBeRecovered]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testUnsupportedSchemaIsReportedAndNeverOverwrittenByAppend]' passed (0.001 seconds).
+T04 | 只修改 A 的身份与作用域 | A 已更新,B | B 完整记录未变
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testUpdatingAChangesOnlyItsMetadataAndKeepsItsPosition]' passed (0.002 seconds).
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.026 (0.028) seconds
+Test Case '-[SubscriptionUsageTests.RootViewTests testRootViewCanLoadAndLayOutInAppHost]' passed (0.005 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.005 (0.006) seconds
+	 Executed 11 tests, with 0 failures (0 unexpected) in 0.031 (0.035) seconds
+	 Executed 11 tests, with 0 failures (0 unexpected) in 0.031 (0.035) seconds
+** TEST SUCCEEDED **
+
+实体 iPhone 复验：
+- 通过 Xcode 当前 SubscriptionUsage 方案、当前实体 iPhone 目标实际按 Command+U。
+- 初次运行停在 Unlock iPhone to Continue；用户回复“已解锁”后自动继续。
+- 设备：iPhone 11 / iOS 26.5（23F77）；使用隔离的虚构测试账户，不代表真实 Codex 登录。
+- Xcode 测试报告显示：12 passed · Test plan with 2 test targets。
+- xcresulttool summary：result=Passed, totalTestCount=12, passedTests=12, failedTests=0, skippedTests=0。
+- 组成：10 项账户存储 + 1 项根页面 + 1 项页面操作/重启；本次没有修改测试断言或账户业务代码。
+- 原始报告位于本机 Xcode DerivedData 的 Logs/Test/Test-SubscriptionUsage-2026.10.10_13-16-24-+0800.xcresult；去敏通过数量保存于本摘要。
+- 配置与文档经独立只读复核；四处配置准确，无阻断问题。
