@@ -1,8 +1,8 @@
 # 工程结构与依赖
 
-T01–T04 的工程、页面与账户存储基础说明，更新于 2026-10-10。运行步骤见[根 README](../README.md)，实际验证与待验事项见[T01 验收记录](mvp任务清单/记录/T01-验收.md)。任务状态以[项目进度](项目进度.md)为准。
+T01–T05 的工程、页面、账户与授权存储基础说明，更新于 2026-10-10。运行步骤见[根 README](../README.md)，实际验证与待验事项见[T01 验收记录](mvp任务清单/记录/T01-验收.md)。任务状态以[项目进度](项目进度.md)为准。
 
-当前工程包含“额度／设置”两页导航、额度空态、禁用的待接入操作、独立账户模型与文件存储和测试入口，启动及测试的实际结果以验收记录为准。登录、额度查询、账户管理、小组件、通知与后台更新均在后续对应任务接入；下文的目录分工不表示这些功能已经实现。
+当前工程包含“额度／设置”两页导航、额度空态、禁用的待接入操作、独立账户模型、文件存储、钥匙串存取和测试入口，启动及测试的实际结果以验收记录为准。登录、额度查询、账户管理、小组件、通知与后台更新均在后续对应任务接入；下文的目录分工不表示这些功能已经实现。
 
 ## 工程入口与配置
 
@@ -34,7 +34,7 @@ app/
 │   ├── Domain/                   账户身份、未获取额度状态；后续额度窗口
 │   ├── Providers/Codex/          后续 Codex 登录、请求与解析
 │   ├── Services/                 后续共用流程与系统能力
-│   ├── Storage/                  账户元数据文件；后续快照与安全存储
+│   ├── Storage/                  账户元数据文件与授权安全存储；后续快照
 │   └── Shared/                   后续 App 与组件共享的非敏感结果
 ├── Resources/
 │   └── Assets.xcassets/          当前资源目录
@@ -55,11 +55,12 @@ app/
 | `Sources/Domain/` | 公共账户数据、额度语义及必要接口 | T04 已有 ConnectedAccount、AccountScope 和 AccountQuotaState；T11 加独立额度窗口，不依赖具体页面或 Codex 实现 |
 | `Sources/Providers/Codex/` | Codex 连接、请求构建、响应解析与平台差异 | T07–T14 逐项添加；当前不建其他平台实现或完整多平台框架 |
 | `Sources/Services/` | 网络检查、连接及刷新协调、系统提醒等共用流程 | T06 及对应后续任务接入；按实际需要添加，不预建通用框架 |
-| `Sources/Storage/` | 本机账户元数据、最近成功快照与钥匙串访问 | T04 已有 AccountStore，按数组顺序保存账户；T05 接入钥匙串，普通数据与授权秘密分开保存 |
+| `Sources/Storage/` | 本机账户元数据、最近成功快照与钥匙串访问 | T04 已有 AccountStore，按数组顺序保存账户；T05 已有 CredentialVault，正式/临时授权以独立 Keychain 命名空间存取，普通数据与授权秘密分开保存 |
 | `Sources/Shared/` | App 和小组件都需要的纯展示数据、必要格式化与非敏感快照约定 | T32 实现实际共享；不放密码、令牌、登录流程或钥匙串访问 |
 | `Resources/` | 图片、颜色、图标和实际采用代码的许可资料 | T01 仅建立必要资源位置，不做正式品牌设计；实际引入第三方代码时补对应许可 |
 | `Tests/Unit/RootViewTests.swift` | 用 App 承载的单元测试检查根视图加载与布局 | 后续单元及隔离集成测试放 `Tests/Unit/`；需要时建立 `Tests/Fixtures/` 保存去敏固定样例、`Tests/TestSupport/` 保存测试替身 |
 | `Tests/Unit/AccountStoreTests.swift` | 账户与顺序持久化、重建读取、单账户更新、未获取状态及存储失败保护 | 每次使用独立临时目录和人工账户，不访问真实存储或钥匙串 |
+| `Tests/Unit/CredentialVaultTests.swift` | 授权隔离、重建读取、整包替换、删除与失败恢复 | 随机独立 Keychain service，运行时虚构授权，不访问真实账户；结束逐条清理 |
 | `Tests/UI/LaunchTests.swift` | 通过测试运行器检查启动、页面往返、操作禁用、顶部同排与重启 | 后续界面测试放 `Tests/UI/`；测试入口不作为产品页面或用户设置 |
 | `docs/` | 已确认需求、原研究证据、任务说明和验收结果 | 保留已有资料及历史；新增功能随对应任务更新进度和证据 |
 
@@ -67,7 +68,7 @@ app/
 
 ## 各部分如何协作
 
-T03 已建立 `App → RootView → 各自 NavigationStack → QuotaView / SettingsView` 的实际调用；系统语义背景、文字和已有浅深 AccentColor 共同提供基础外观。T04 新增独立的 Domain 与 Storage 能力，尚未接到页面；后续依次增加以下简单分工，不要求拆成多个 Swift Package：
+T03 已建立 `App → RootView → 各自 NavigationStack → QuotaView / SettingsView` 的实际调用；系统语义背景、文字和已有浅深 AccentColor 共同提供基础外观。T04/T05 新增独立的 Domain、账户文件与授权 Storage 能力，尚未接到页面；后续依次增加以下简单分工，不要求拆成多个 Swift Package：
 
 - App 入口负责组装页面、业务流程、平台接入和存储，避免页面自行创建整套依赖。
 - 页面调用必要业务能力，以 Domain 中的数据表达账户和额度；Domain 不反向引用界面或平台实现。
@@ -85,6 +86,7 @@ T03 已建立 `App → RootView → 各自 NavigationStack → QuotaView / Setti
 | SwiftUI | App 生命周期、窗口、TabView / NavigationStack、无账户页和设置 Form | Apple iOS SDK，随 Xcode 提供 |
 | UIKit | 根页面使用系统背景色；单元测试通过 `UIHostingController` 加载和布局 SwiftUI 根视图 | Apple iOS SDK，随 Xcode 提供 |
 | Foundation | 基础类型、Codable 账户文件、原子持久化及测试临时目录 | Apple iOS SDK，随 Xcode 提供；当前没有网络请求 |
+| Security / Keychain | T05 本机授权保存、读取、更新、删除；正式与临时条目分离 | Apple iOS SDK，随 Xcode 提供；不启用 iCloud 或共享 Keychain group |
 | XCTest / XCUITest | 单元测试与 UI 启动检查 | Apple Xcode 测试框架，随 Xcode 提供；仅测试 targets 使用 |
 
 App 与测试 targets 共用同一工程和共享 Scheme。测试代码、固定样例与替身留在 `Tests/`，不加入 App 的产品资源；需要固定输入时只使用去敏或人工构造数据，不读取真实账户或覆盖真实快照。样例文件如需由测试读取，应加入测试 target 的资源，不加入主 App target。
@@ -96,7 +98,6 @@ App 与测试 targets 共用同一工程和共享 Scheme。测试代码、固定
 | 系统能力 | 用途 | 接入时机 |
 |---|---|---|
 | Foundation 的 URLSession 网络能力与响应解码 | 网络评分、Codex 请求与数据解析 | T06 及 T07–T14，随实际链路接入 |
-| Security / Keychain | 本机安全保存、更新和移除授权凭据 | T05 起 |
 | 系统浏览器打开能力 | 打开 Codex 设备码确认页面，回 App 后继续原流程 | T07–T10；不预先引入登录 SDK、内嵌浏览器或浏览器扩展 |
 | BackgroundTasks | 以 30 分钟为目标、由 iOS 尽力调度的后台刷新 | T30/T31；不是持续运行或准点执行保证 |
 | App Groups | 在 App 与小组件之间保存必要非敏感快照 | T32，实际能力与配置在对应任务建立 |

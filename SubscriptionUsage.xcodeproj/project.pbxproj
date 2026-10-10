@@ -5,6 +5,27 @@
 	};
 	"objectVersion" = "56";
 	"objects" = {
+		"A05000000000000000000011" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "CredentialVault.swift";
+			"sourceTree" = "<group>";
+		};
+		"A05000000000000000000012" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A05000000000000000000011";
+		};
+		"A05000000000000000000021" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "CredentialVaultTests.swift";
+			"sourceTree" = "<group>";
+		};
+		"A05000000000000000000022" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A05000000000000000000021";
+		};
+
 		"A04000000000000000000011" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -180,6 +201,7 @@
 			"isa" = "PBXGroup";
 			"children" = (
 				"A04000000000000000000031",
+				"A05000000000000000000011",
 				"A4616617039740D1ABBB7E3E",
 			);
 			"path" = "Storage";
@@ -229,6 +251,7 @@
 			"isa" = "PBXGroup";
 			"children" = (
 				"A04000000000000000000041",
+				"A05000000000000000000021",
 				"1DF5E0AD711BD84D4AC12F40",
 			);
 			"path" = "Unit";
@@ -590,6 +613,7 @@
 			"buildActionMask" = "2147483647";
 			"files" = (
 				"A04000000000000000000032",
+				"A05000000000000000000012",
 				"A04000000000000000000022",
 				"A04000000000000000000012",
 				"A030000000000000000000022",
@@ -656,6 +680,7 @@
 			"buildActionMask" = "2147483647";
 			"files" = (
 				"A04000000000000000000042",
+				"A05000000000000000000022",
 				"B70410B9B464B0A73168916A",
 			);
 			"runOnlyForDeploymentPostprocessing" = "0";

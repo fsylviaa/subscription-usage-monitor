@@ -8,7 +8,7 @@
 
 在本项目的新对话里可直接说“开始 T02”等明确任务编号；执行者会检查前置、完成指定任务，并主动更新进度和 Git 存档。也可说“继续上次任务”“T01 我验收通过了”或描述发现的问题，具体含义见项目规则。
 
-## 开发与运行（T01–T04）
+## 开发与运行（T01–T05）
 
 工程入口：[SubscriptionUsage.xcodeproj](SubscriptionUsage.xcodeproj)。共享运行方案（Scheme）为 **SubscriptionUsage**，App 的临时显示名称为“订阅用量”。当前可在“额度”和“设置”之间切换，额度页显示无账户状态；连接、刷新和设置子项暂时禁用，尚不能登录或查询额度。功能进度见[项目进度](docs/项目进度.md)，目录、协作边界和依赖见[工程结构](docs/project-structure.md)。**当前无第三方库依赖**，不需要先安装包管理器、生成工程或登录 Codex。
 
@@ -23,7 +23,7 @@
 1. 打开本目录的 `SubscriptionUsage.xcodeproj`（可以双击，或在终端运行 `open SubscriptionUsage.xcodeproj`）。
 2. 顶部选择共享 Scheme **SubscriptionUsage**，运行设备选择 **iPhone 17 Pro（iOS 26.5）**。
 3. 按 **⌘R** 运行。预期模拟器出现“订阅额度”页面及底部“额度／设置”入口。无账户时显示“未连接账户”和禁用的“连接 Codex”，没有样例账户或额度数字。
-4. 按 **⌘U** 执行检查。`SubscriptionUsageTests` 验证根视图加载与布局，以及隔离账户数据的保存、重新读取和失败保护；`SubscriptionUsageUITests` 验证页面往返、当前入口、未接入操作禁用、顶部操作排列及退出后重新启动。
+4. 按 **⌘U** 执行检查。`SubscriptionUsageTests` 验证根视图加载与布局，以及隔离账户数据和测试授权的保存、重新读取和失败保护；`SubscriptionUsageUITests` 验证页面往返、当前入口、未接入操作禁用、顶部操作排列及退出后重新启动。
 5. 关闭工程窗口后重新打开同一个工程，再按 **⌘R**；运行方案与必须配置均已保存到仓库。
 
 如果另一台 Mac 没有对应模拟器，在 Xcode 的运行设备列表中选择已安装的 iPhone 模拟器（iOS 17 或以上），或在 **Xcode → Settings → Components** 安装所需 iOS 模拟器运行环境。不同 Xcode 版本的界面可能略有区别，参见 [Apple 模拟器组件说明](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components)。切换 Xcode 的命令行工具方式见 [Apple 工具配置说明](https://developer.apple.com/documentation/xcode/configuring-command-line-tools-settings)；本项目命令用 `DEVELOPER_DIR` 只影响当前终端会话。
@@ -92,6 +92,14 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
   -derivedDataPath build/DerivedData -parallel-testing-enabled NO \
   -only-testing:SubscriptionUsageTests/AccountStoreTests test
 ```
+
+### T05 做了什么、怎么验收
+
+**这一步让 App 安全记住各账户的登录授权。** 保存 A、B 后都能找回；只更新或删除 A，B 保持原样；暂时读不到时保留原资料，恢复后还能读取。
+
+本次没有新页面，也还不能登录。由开发者使用虚构授权运行检查，你查看 [T05 验收结果](docs/mvp任务清单/记录/T05-验收.md)中的实际结果即可，无需自行排查 Xcode。后续登录与账户管理接好后，再验证真实手机操作。
+
+想自行复验时，在 Xcode 选择 **SubscriptionUsage** 和 **iPhone 17 Pro（iOS 26.5）** 后按 **⌘U**，或在测试列表只运行 `CredentialVaultTests`。成功应显示 **Test Succeeded**；查看每项测试名称及通过标记即可。实体手机也使用已有本机签名配置，需连接并解锁；测试只操作独立的虚构条目，不要求登录 Codex。
 
 ### 在自己的 iPhone 上运行（T02）
 

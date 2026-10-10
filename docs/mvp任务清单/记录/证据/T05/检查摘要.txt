@@ -1,0 +1,55 @@
+T05 检查摘要
+日期：2026-10-10（Asia/Shanghai）
+数据：随机测试 service 与 UUID，运行时虚构授权；没有真实平台登录。
+
+模拟器：iPhone 17 Pro / iOS 26.5
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testActualKeychainAttributesUseLocalOnlyProtectionWithoutSync]' passed (0.005 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testDescriptionsAndReflectionNeverExposePayload]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testEmptySaveIsRejectedWithoutChangingExistingOrMissingEntries]' passed (0.004 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFailedDeleteKeepsEntriesAndAccountFileAndCanBeRetried]' passed (0.006 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFailedFirstSaveDoesNotCreateAnEmptyItem]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFailedUpdateKeepsOldWholePackageOtherAccountAndAccountFile]' passed (0.012 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFormalAndTemporaryEntriesWithSameUUIDRemainIndependent]' passed (0.006 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testMissingEntryReturnsNilWithoutCreatingAnItem]' passed (0.002 seconds).
+T05 | 保存 A、B 后新建读取实例 | A 存在且匹配；B 存在且匹配
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testNewVaultRestoresIndependentPackagesForAAndB]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testOtherReadFailureIsNotReportedAsMissingAndKeepsSavedPackage]' passed (0.002 seconds).
+T05 | 只删除 A 并重复删除 | A 不存在；B 存在且匹配
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testRemovingAIsExactAndAlreadyAbsentRemovalIsSafe]' passed (0.004 seconds).
+T05 | 只替换 A 的整份授权 | A 匹配新值；B 匹配原值
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testReplacingAReplacesWholePackageAndPreservesB]' passed (0.004 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testSuccessfulReadWithoutUsablePayloadIsRejectedWithoutDeletion]' passed (0.002 seconds).
+T05 | 暂时无法读取后恢复 | A、B 仍匹配；账户文件保持匹配
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testTemporaryReadFailuresPreservePackagesAndOrdinaryAccountData]' passed (0.006 seconds).
+Executed 14 tests, with 0 failures (0 unexpected) in 0.057 (0.060) seconds
+Executed 25 tests, with 0 failures (0 unexpected) in 0.086 (0.092) seconds
+Executed 25 tests, with 0 failures (0 unexpected) in 0.086 (0.092) seconds
+** TEST SUCCEEDED **
+
+真机：iPhone 11 / iOS 26.5
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testActualKeychainAttributesUseLocalOnlyProtectionWithoutSync]' passed (0.011 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testDescriptionsAndReflectionNeverExposePayload]' passed (0.004 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testEmptySaveIsRejectedWithoutChangingExistingOrMissingEntries]' passed (0.006 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFailedDeleteKeepsEntriesAndAccountFileAndCanBeRetried]' passed (0.012 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFailedFirstSaveDoesNotCreateAnEmptyItem]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFailedUpdateKeepsOldWholePackageOtherAccountAndAccountFile]' passed (0.012 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFormalAndTemporaryEntriesWithSameUUIDRemainIndependent]' passed (0.009 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testMissingEntryReturnsNilWithoutCreatingAnItem]' passed (0.002 seconds).
+T05 | 保存 A、B 后新建读取实例 | A 存在且匹配；B 存在且匹配
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testNewVaultRestoresIndependentPackagesForAAndB]' passed (0.008 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testOtherReadFailureIsNotReportedAsMissingAndKeepsSavedPackage]' passed (0.005 seconds).
+T05 | 只删除 A 并重复删除 | A 不存在；B 存在且匹配
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testRemovingAIsExactAndAlreadyAbsentRemovalIsSafe]' passed (0.064 seconds).
+T05 | 只替换 A 的整份授权 | A 匹配新值；B 匹配原值
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testReplacingAReplacesWholePackageAndPreservesB]' passed (0.008 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testSuccessfulReadWithoutUsablePayloadIsRejectedWithoutDeletion]' passed (0.005 seconds).
+T05 | 暂时无法读取后恢复 | A、B 仍匹配；账户文件保持匹配
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testTemporaryReadFailuresPreservePackagesAndOrdinaryAccountData]' passed (0.012 seconds).
+Executed 14 tests, with 0 failures (0 unexpected) in 0.160 (0.164) seconds
+Executed 25 tests, with 0 failures (0 unexpected) in 0.216 (0.226) seconds
+Executed 25 tests, with 0 failures (0 unexpected) in 0.216 (0.227) seconds
+** TEST SUCCEEDED **
+
+差异检查：git diff --check 通过；生产 Vault 无文件写入/日志，账户模型仅含 credentialRef。测试断言仅布尔匹配；两次完整日志未发现运行时授权原文标记。
+范围：故障通过系统调用包装器注入；新建读取实例不等于进程重启；未实测重启未首次解锁，不声称真实登录/授权续期通过。
+独立只读复核：实现与测试无 T05 范围内阻断问题。
