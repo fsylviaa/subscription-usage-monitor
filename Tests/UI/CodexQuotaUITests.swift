@@ -2,6 +2,90 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT23TwoCardsKeepPlanIdentityAndZeroFullPartialBarsInBothAppearances() {
+        for appearance in ["light", "dark"] {
+            let app = launchT23("limits", appearance: appearance)
+            let cards = app.otherElements.matching(identifier: "quota.card")
+            XCTAssertEqual(cards.count, 2)
+            let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
+            XCTAssertEqual(first.staticTexts["quota.accountIdentity"].label, "card-1@example.invalid")
+            XCTAssertEqual(second.staticTexts["quota.accountIdentity"].label, "card-2@example.invalid")
+            XCTAssertEqual(first.buttons["quota.details"].label, "Codex · Plus")
+            XCTAssertEqual(second.buttons["quota.details"].label, "Codex · Future Official Plan")
+            for (card, weekly, fiveHours) in [(first, 100, 0), (second, 70, 20)] {
+                for (id, remaining) in [("weekly", weekly), ("fiveHours", fiveHours)] {
+                    XCTAssertEqual(card.staticTexts["quota.\(id).remaining"].label, "剩余 \(remaining)%")
+                    XCTAssertEqual(card.otherElements["quota.\(id).bar"].value as? String,
+                                   "已用 \(100 - remaining)%，剩余 \(remaining)%")
+                    XCTAssertTrue(card.staticTexts["quota.\(id).remaining"].isHittable)
+                }
+            }
+            XCTAssertFalse(app.staticTexts["quota.updatedAt"].exists, "套餐名称必须在收起时可见")
+            let title = app.staticTexts["quota.title"].frame
+            for id in ["quota.refresh", "quota.toolbarConnect"] {
+                XCTAssertEqual(app.buttons[id].frame.midY, title.midY, accuracy: 4)
+            }
+            screenshot(app, "T23-双账户-满额耗尽70与20-\(appearance)")
+            app.terminate()
+        }
+    }
+
+    @MainActor
+    func testT23UnknownUnlimitedAndFreeHaveNoInventedBarsInBothAppearances() {
+        for appearance in ["light", "dark"] {
+            let app = launchT23("states", appearance: appearance)
+            let cards = app.otherElements.matching(identifier: "quota.card")
+            XCTAssertEqual(cards.count, 2)
+            let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
+            XCTAssertEqual(first.staticTexts["quota.weekly.remaining"].label, "未知")
+            XCTAssertEqual(first.staticTexts["quota.fiveHours.remaining"].label, "不限量")
+            XCTAssertFalse(app.otherElements["quota.weekly.bar"].exists)
+            XCTAssertFalse(app.otherElements["quota.fiveHours.bar"].exists)
+            XCTAssertEqual(second.staticTexts["quota.plan"].label, "Codex · Free")
+            XCTAssertEqual(second.staticTexts["quota.accountIdentity"].label, "card-2@example.invalid")
+            for id in ["quota.weekly.remaining", "quota.fiveHours.remaining", "quota.weekly.reset",
+                       "quota.fiveHours.reset", "quota.notFetched", "quota.accountStatus", "quota.updatedAt"] {
+                XCTAssertFalse(second.descendants(matching: .any)[id].exists, id)
+            }
+            XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+            screenshot(app, "T23-未知不限量与Free-\(appearance)")
+            app.terminate()
+        }
+    }
+
+    @MainActor
+    func testT23RefreshFailureKeepsVisiblePlanAmountsAndOriginalSuccessTime() {
+        let app = launch("t23-cached-failure")
+        defer { app.terminate() }
+        completeFixtureLogin(app)
+        assertSuccessfulCard(app)
+        openDetails(app)
+        let originalTime = app.staticTexts["quota.updatedAt"].label
+        app.buttons["quota.menu"].tap()
+        app.buttons["刷新额度"].tap()
+        XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 10))
+        XCTAssertEqual(app.staticTexts["quota.failure"].label, "刷新失败")
+        XCTAssertEqual(planLabel(app), "Codex · Plus")
+        XCTAssertEqual(app.staticTexts["quota.weekly.remaining"].label, "剩余 70%")
+        XCTAssertEqual(app.staticTexts["quota.fiveHours.remaining"].label, "剩余 20%")
+        // Reconfiguration can collapse details; reopen only if needed.
+        if !app.staticTexts["quota.updatedAt"].exists { openDetails(app) }
+        XCTAssertEqual(app.staticTexts["quota.updatedAt"].label, originalTime)
+        XCTAssertTrue(app.buttons["quota.retry"].exists)
+        XCTAssertFalse(app.buttons["重新登录"].exists)
+        screenshot(app, "T23-刷新失败保留旧值与时间")
+    }
+
+    @MainActor private func launchT23(_ scenario: String, appearance: String) -> XCUIApplication {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--t23-card-fixture", scenario, appearance]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["card-2@example.invalid"].waitForExistence(timeout: 10))
+        return app
+    }
+
+    @MainActor
     func testT17DragOrderAcrossPagesReopenAndAppend() {
         continueAfterFailure = false
         let app = XCUIApplication()
@@ -410,6 +494,10 @@ final class CodexQuotaUITests: XCTestCase {
         defer { app.terminate() }
         completeFixtureLogin(app)
         XCTAssertTrue(app.staticTexts["quota.weekly.remaining"].waitForExistence(timeout: 10))
+        // The card is published before the successful connection sheet finishes dismissing.
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
+                                                 object: app.staticTexts["connection.title"])
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed)
         XCTAssertEqual(planLabel(app), "Codex · Future Official Plan")
         XCTAssertTrue(app.buttons["quota.details"].isHittable)
         XCTAssertTrue(app.buttons["tab.settings"].isHittable)

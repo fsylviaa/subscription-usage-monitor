@@ -7,6 +7,12 @@ import Foundation
 @MainActor
 enum CodexConnectionUITestSupport {
     static var preferences: UserDefaults {
+        let args = ProcessInfo.processInfo.arguments
+        if let marker = args.firstIndex(of: "--t23-card-fixture"), args.indices.contains(marker + 2) {
+            let preferences = UserDefaults(suiteName: "T23-card-fixture")!
+            preferences.set(args[marker + 2], forKey: "appearance")
+            return preferences
+        }
         guard let id = managementRunID else { return .standard }
         return UserDefaults(suiteName: "ManagementUI-\(id)")!
     }
@@ -24,6 +30,11 @@ enum CodexConnectionUITestSupport {
         if NSClassFromString("XCTestCase") != nil {
             return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
                 authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+        }
+        if let marker = arguments.firstIndex(of: "--t23-card-fixture"), arguments.indices.contains(marker + 1) {
+            return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
+                authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions(),
+                bindings: T23CardFixture(scenario: arguments[marker + 1]))
         }
         if let id = managementRunID {
             let store = AccountStore(fileURL: FileManager.default.temporaryDirectory
@@ -90,6 +101,36 @@ enum CodexConnectionUITestSupport {
             transactions: FixtureTransactions(),
             openURL: { $0 == CodexDeviceAuthorization.verificationURL }
         )
+    }
+
+    /// UI-only boundary input. No disk, Keychain, network, or product demo entries.
+    /// Unlimited is supplied at the domain boundary; it is not inferred from Codex credits.
+    private struct T23CardFixture: CodexAccountBinding {
+        let scenario: String
+        func load() async throws -> [ConnectedAccount] {
+            let now = Date(timeIntervalSince1970: 1_791_590_400)
+            func account(_ index: Int, plan: String, weekly: QuotaAmount?, fiveHours: QuotaAmount?) -> ConnectedAccount {
+                var result = ConnectedAccount(verifiedEmail: "card-\(index)@example.invalid",
+                    scope: .init(remoteAccountID: "t23-\(index)", kind: .personal), credentialRef: UUID(),
+                    quotaState: weekly == nil ? .notApplicable : .available,
+                    subscription: .init(planType: plan, observedAt: now))
+                if let weekly, let fiveHours {
+                    result.quotaSnapshot = .init(accountID: result.id, provider: result.provider,
+                        product: result.product, scope: result.scope, generation: result.generation,
+                        planType: plan, observedAt: now,
+                        weekly: .init(window: .weekly, amount: weekly, resetsAt: nil, observedAt: now),
+                        fiveHours: .init(window: .fiveHours, amount: fiveHours, resetsAt: nil, observedAt: now))
+                }
+                return result
+            }
+            if scenario == "states" {
+                return [account(1, plan: "Pro", weekly: .unknown, fiveHours: .unlimited),
+                        account(2, plan: "Free", weekly: nil, fiveHours: nil)]
+            }
+            return [account(1, plan: "Plus", weekly: .limited(try .init(used: 0)), fiveHours: .limited(try .init(used: 100))),
+                    account(2, plan: "Future Official Plan", weekly: .limited(try .init(used: 30)), fiveHours: .limited(try .init(used: 80)))]
+        }
+        func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount { throw CodexLoginError.failed }
     }
 
     private struct FixtureAuthorizer: CodexDeviceAuthorizing {
@@ -182,6 +223,7 @@ enum CodexConnectionUITestSupport {
         }
         func data(for request: URLRequest) async throws -> (Data, URLResponse) {
             requests += 1
+            if scenario == "t23-cached-failure" && requests > 1 { throw URLError(.notConnectedToInternet) }
             if scenario == "retry-request" && requests == 1 { throw URLError(.timedOut) }
             let resolved: String
             if scenario == "retry-slow" { resolved = requests == 1 ? "plan-only-failure" : "slow-quota" }
