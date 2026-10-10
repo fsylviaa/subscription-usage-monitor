@@ -167,6 +167,44 @@ final class CodexQuotaLiveTests: XCTestCase {
         print("T13 | 受控失败→真实网络重试 | 2次检查、1次真实查询；无重登/重复账户，隔离保存重读一致，原数据不变")
     }
 
+    func testT15RealSavedAccountRestoresWithNetworkUnavailable() async throws {
+        guard ProcessInfo.processInfo.environment["T15_LIVE_RESTORE"] == "1" else {
+            throw XCTSkip("T15真实缓存检查需显式启用；不修改真实账户或授权。")
+        }
+        let store = try AccountStore.applicationStore()
+        let before = try await store.load()
+        guard !before.isEmpty, before.allSatisfy({ $0.subscription != nil && $0.quotaState != .notFetched }) else {
+            XCTFail("需要本App已保存的真实成功资料。")
+            return
+        }
+        let calls = T15ReadProbe()
+        let updater = CodexQuotaService(store: store, loadCredential: { _ in
+            await calls.credentialRead()
+            throw CodexLoginError.failed
+        }, checkNetwork: {
+            await calls.networkCheck()
+            return .unavailable(.transport)
+        })
+        for _ in 0..<2 {
+            let flow = CodexConnectionFlow(transactions: T13ReadOnlyTransactions(),
+                bindings: CodexAccountBindingStore(accountStore: try .applicationStore(), vault: .applicationVault()),
+                quotaUpdater: updater)
+            await flow.loadAccounts()
+            await flow.waitForInitialQuota()
+            XCTAssertTrue(flow.accounts == before, "真实身份、套餐、适用性、快照及原时间应完全相同")
+            XCTAssertFalse(flow.loadingAccounts)
+            XCTAssertFalse(flow.accountLoadFailed)
+            XCTAssertFalse(flow.isPresented)
+            XCTAssertNil(flow.quotaFailure)
+        }
+        let counts = await calls.counts()
+        XCTAssertEqual(counts.0, 0)
+        XCTAssertEqual(counts.1, 0)
+        let after = try await store.load()
+        XCTAssertTrue(after == before)
+        print("T15 | 真实手机资料+受控断网 | 两次新实例恢复完全一致；网络检查0、正式授权读取0、查询0；无写回/新成功时间")
+    }
+
     private static func time(_ date: Date) -> String {
         let formatter = ISO8601DateFormatter()
         formatter.timeZone = TimeZone(identifier: "Asia/Shanghai")!
@@ -249,4 +287,12 @@ private actor T13LiveRetryTransport: CodexDeviceAuthorizationTransport {
 private actor T13ReadOnlyTransactions: CodexLoginTransactionStoring {
     func save(_ authorization: CodexDeviceAuthorization) { }
     func remove(transactionID: UUID) { }
+}
+
+private actor T15ReadProbe {
+    private var checks = 0
+    private var credentials = 0
+    func networkCheck() { checks += 1 }
+    func credentialRead() { credentials += 1 }
+    func counts() -> (Int, Int) { (checks, credentials) }
 }

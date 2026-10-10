@@ -539,6 +539,164 @@ final class CodexQuotaServiceTests: XCTestCase {
 
     private static let free = Data(#"{"account_id":"quota-test-account","plan_type":"Free","rate_limit":{"primary_window":{"limit_window_seconds":2592000,"used_percent":0,"reset_at":1800500000},"secondary_window":null}}"#.utf8)
 
+    func testT15CachedContentIsReadyBeforePendingLoginReadCompletes() async throws {
+        let setup = try await self.setup()
+        let saved = try await service(setup, transport: QuotaTestTransport(data: Self.complete)).update(setup.account)
+        let bytes = try Data(contentsOf: setup.url)
+        let entered = expectation(description: "登录恢复读取已挂起")
+        let release = QuotaTestGate()
+        let transactions = T15DelayedTransactions(entered: { entered.fulfill() }, release: release)
+        let gates = QuotaRetryGates([.unavailable(.transport)])
+        let transport = QuotaTestTransport(data: Self.complete)
+        let reopenedStore = AccountStore(fileURL: setup.url)
+        let flow = CodexConnectionFlow(transactions: transactions,
+            bindings: QuotaTestBinding(account: saved, store: reopenedStore),
+            quotaUpdater: try service(setup, transport: transport, gate: { await gates.next() }))
+        let loading = Task { await flow.loadAccounts() }
+        await fulfillment(of: [entered], timeout: 5)
+        XCTAssertEqual(flow.accounts, [saved])
+        XCTAssertFalse(flow.loadingAccounts, "缓存不能被后续钥匙串读取挡在加载页后面")
+        XCTAssertFalse(flow.accountLoadFailed)
+        XCTAssertFalse(flow.isPresented)
+        XCTAssertNil(flow.quotaUpdatingID)
+        let checks = await gates.count
+        let requests = await transport.requests.count
+        XCTAssertEqual(checks, 0)
+        XCTAssertEqual(requests, 0)
+        XCTAssertEqual(try Data(contentsOf: setup.url), bytes)
+        await release.open()
+        await loading.value
+        XCTAssertEqual(flow.accounts.first?.quotaSnapshot?.observedAt, time)
+        print("T15 | 缓存先显示 | 登录恢复挂起时账户可见；评分0、查询0；原数值和成功时间不变")
+    }
+
+    func testT15EmptyListWaitsForLoginRecoveryBeforeAllowingNewConnection() async throws {
+        let setup = try await self.setup(save: false)
+        let entered = expectation(description: "空账户登录恢复读取已挂起")
+        let release = QuotaTestGate()
+        let flow = CodexConnectionFlow(
+            transactions: T15DelayedTransactions(entered: { entered.fulfill() }, release: release),
+            bindings: QuotaTestBinding(account: setup.account, store: setup.store))
+        let loading = Task { await flow.loadAccounts() }
+        await fulfillment(of: [entered], timeout: 5)
+        XCTAssertTrue(flow.loadingAccounts)
+        XCTAssertFalse(flow.canConnect)
+        XCTAssertNil(flow.begin(), "已有登录事务读取未完成，不能并发开始另一登录")
+        await release.open()
+        await loading.value
+        XCTAssertFalse(flow.loadingAccounts)
+        XCTAssertTrue(flow.accounts.isEmpty)
+        XCTAssertEqual(flow.state, .failure("登录未完成，请重试"))
+    }
+
+    func testT15NeverFetchedBindingIsVisibleWhileItsInitialQueryWaits() async throws {
+        let setup = try await self.setup()
+        let entered = expectation(description: "首次查询等待网络检查")
+        let release = QuotaTestGate()
+        let transport = QuotaTestTransport(data: Self.complete)
+        let updater = try service(setup, transport: transport, gate: {
+            entered.fulfill()
+            await release.wait()
+            return .unavailable(.transport)
+        })
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(),
+            bindings: QuotaTestBinding(account: setup.account, store: setup.store), quotaUpdater: updater)
+        await flow.loadAccounts()
+        await fulfillment(of: [entered], timeout: 5)
+        XCTAssertFalse(flow.loadingAccounts)
+        XCTAssertEqual(flow.accounts, [setup.account])
+        XCTAssertEqual(flow.accounts.first?.quotaState, .notFetched)
+        XCTAssertNil(flow.accounts.first?.quotaSnapshot)
+        XCTAssertEqual(flow.quotaUpdatingID, setup.account.id)
+        await release.open()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.quotaFailure, "获取失败")
+        XCTAssertEqual(flow.accounts, [setup.account])
+        let requests = await transport.requests.count
+        XCTAssertEqual(requests, 0)
+        let reopened = CodexConnectionFlow(transactions: QuotaTestTransactions(),
+            bindings: QuotaTestBinding(account: setup.account, store: AccountStore(fileURL: setup.url)))
+        await reopened.loadAccounts()
+        XCTAssertEqual(reopened.accounts.first?.quotaState, .notFetched)
+        XCTAssertNil(reopened.accounts.first?.quotaSnapshot)
+        XCTAssertNil(reopened.quotaFailure)
+        print("T15 | 从未取得额度 | 先恢复身份；查询等待/失败不造数值或成功时间；只读重开仍无数据")
+    }
+
+    func testT15LegacySnapshotSurvivesFailedMetadataFetchAndReopen() async throws {
+        let setup = try await self.setup()
+        let snapshot = try CodexUsageParser().parse(Self.complete, for: setup.account, observedAt: time)
+        let saved = try await setup.store.saveQuota(snapshot, for: setup.account)
+        XCTAssertNil(saved.subscription)
+        let gates = QuotaRetryGates([.unavailable(.transport)])
+        let transport = QuotaTestTransport(data: Self.complete)
+        for _ in 0..<2 {
+            let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(),
+                bindings: QuotaTestBinding(account: saved, store: AccountStore(fileURL: setup.url)),
+                quotaUpdater: try service(setup, transport: transport, gate: { await gates.next() }))
+            await flow.loadAccounts()
+            await flow.waitForInitialQuota()
+            XCTAssertFalse(flow.loadingAccounts)
+            XCTAssertEqual(flow.accounts, [saved])
+            XCTAssertEqual(flow.quotaFailure, "刷新失败")
+        }
+        let checks = await gates.count
+        let requests = await transport.requests.count
+        XCTAssertEqual(checks, 2, "仅旧版本缺套餐触发补齐；阅读已有完整缓存不检查网络")
+        XCTAssertEqual(requests, 0)
+        let reloaded = try await setup.store.load()
+        XCTAssertEqual(reloaded.first?.quotaSnapshot, snapshot)
+        print("T15 | 旧版本缓存离线补齐失败 | 两次重开仍保留原快照和成功时间，不冒充刷新成功")
+    }
+
+    func testT15LatestSuccessfulQueryReplacesCacheOnlyAfterSuccess() async throws {
+        let setup = try await self.setup()
+        let old = try await service(setup, transport: QuotaTestTransport(data: Self.complete)).update(setup.account)
+        let gates = QuotaRetryGates([.unavailable(.transport), .allowed(score: 51)])
+        let body = Data(String(decoding: Self.complete, as: UTF8.self).replacingOccurrences(of: "\"used_percent\":30", with: "\"used_percent\":45").utf8)
+        let transport = QuotaTestTransport(data: body)
+        let later = time.addingTimeInterval(600)
+        let updater = try service(setup, transport: transport, gate: { await gates.next() }, now: { later })
+        do { _ = try await updater.update(old); XCTFail("离线不能成功") } catch { }
+        let afterFailure = try await AccountStore(fileURL: setup.url).load()
+        XCTAssertEqual(afterFailure, [old])
+        let updated = try await updater.update(old)
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(),
+            bindings: QuotaTestBinding(account: updated, store: AccountStore(fileURL: setup.url)), quotaUpdater: updater)
+        await flow.loadAccounts()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.accounts, [updated])
+        XCTAssertEqual(flow.accounts.first?.quotaSnapshot?.weekly.amount.remainingPercent, 55)
+        XCTAssertEqual(flow.accounts.first?.quotaSnapshot?.observedAt, later)
+        let checks = await gates.count
+        let requests = await transport.requests.count
+        XCTAssertEqual(checks, 2)
+        XCTAssertEqual(requests, 1)
+        print("T15 | 离线失败→成功→重开 | 失败保留70%；成功后55%和新成功时间读回一致；重开无额外查询")
+    }
+
+    func testT15MismatchedPersistedScopeNeverAppearsAsTrustedCache() async throws {
+        let setup = try await self.setup()
+        _ = try await service(setup, transport: QuotaTestTransport(data: Self.complete)).update(setup.account)
+        var document = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: setup.url)) as? [String: Any])
+        var accounts = try XCTUnwrap(document["accounts"] as? [[String: Any]])
+        var scope = try XCTUnwrap(accounts[0]["scope"] as? [String: Any])
+        scope["remoteAccountID"] = "another-scope"
+        accounts[0]["scope"] = scope
+        document["accounts"] = accounts
+        let bytes = try JSONSerialization.data(withJSONObject: document)
+        try bytes.write(to: setup.url, options: .atomic)
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(),
+            bindings: QuotaTestBinding(account: setup.account, store: AccountStore(fileURL: setup.url)))
+        await flow.loadAccounts()
+        XCTAssertFalse(flow.loadingAccounts)
+        XCTAssertTrue(flow.accountLoadFailed)
+        XCTAssertTrue(flow.accounts.isEmpty)
+        XCTAssertFalse(flow.canConnect)
+        XCTAssertEqual(try Data(contentsOf: setup.url), bytes, "不能用空账户或默认样例覆盖原文件")
+        print("T15 | 错作用域缓存 | 不显示另一账户额度、不写假空数据、原文件保留")
+    }
+
     private typealias Setup = (store: AccountStore, account: ConnectedAccount, url: URL)
     private func setup(save: Bool = true) async throws -> Setup {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T12-test-\(UUID())")
@@ -656,5 +814,17 @@ private actor QuotaRetryTransport: CodexDeviceAuthorizationTransport {
         return (count == 1 ? (firstBody ?? body) : body,
                 HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil,
                                 headerFields: ["Content-Type": "application/json"])!)
+    }
+}
+
+private struct T15DelayedTransactions: CodexLoginTransactionStoring {
+    let entered: @Sendable () -> Void
+    let release: QuotaTestGate
+    func save(_ authorization: CodexDeviceAuthorization) { }
+    func remove(transactionID: UUID) { }
+    func load() async throws -> CodexDeviceAuthorization? {
+        entered()
+        await release.wait()
+        throw CodexLoginError.failed
     }
 }

@@ -91,6 +91,10 @@ final class CodexConnectionFlow: ObservableObject {
         do {
             accounts = try await bindings.load()
             accountLoadFailed = false
+            // An existing account is readable before pending login/Keychain
+            // recovery finishes. Keep an empty list gated until login restoration
+            // resolves, so a new connection cannot race that restoration.
+            if !accounts.isEmpty { loadingAccounts = false }
         } catch {
             accountLoadFailed = true
             return

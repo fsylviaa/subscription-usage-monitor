@@ -212,6 +212,60 @@ final class CodexQuotaUITests: XCTestCase {
         print("T13 样式 | 真实普通启动与重开 | 身份、套餐与数据保持；未输出账户资料或真实截图")
     }
 
+    @MainActor
+    func testT15OfflineCacheAndPartialFieldsAppearBeforeLoginRecovery() {
+        for scenario in ["success", "partial"] {
+            let app = launch(scenario)
+            completeFixtureLogin(app)
+            XCTAssertTrue(app.staticTexts["quota.weekly.remaining"].waitForExistence(timeout: 10))
+            openDetails(app)
+            let identity = app.staticTexts["quota.accountIdentity"].label
+            let ids = ["quota.weekly.remaining", "quota.fiveHours.remaining", "quota.updatedAt"]
+            let savedLabels = ids.map { app.staticTexts[$0].label }
+            app.terminate()
+            app.launchArguments += ["--t15-offline", "--t15-delay-login-read"]
+            app.launch()
+            XCTAssertTrue(app.otherElements["quota.card"].waitForExistence(timeout: 5), "不等待60秒登录恢复")
+            XCTAssertEqual(app.staticTexts["quota.accountIdentity"].label, identity)
+            XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+            XCTAssertFalse(app.otherElements["quota.updating"].exists)
+            openDetails(app)
+            XCTAssertEqual(ids.map { app.staticTexts[$0].label }, savedLabels)
+            if scenario == "partial" {
+                XCTAssertEqual(app.staticTexts["quota.fiveHours.remaining"].label, "未知")
+                XCTAssertEqual(app.staticTexts["quota.weekly.reset"].label, "未提供重置时间")
+            }
+            screenshot(app, "T15-离线缓存-" + scenario)
+            app.buttons["tab.settings"].tap()
+            app.buttons["tab.quota"].tap()
+            XCTAssertTrue(app.otherElements["quota.card"].exists)
+            XCTAssertFalse(app.staticTexts["connection.title"].exists)
+            app.terminate()
+        }
+    }
+
+    @MainActor
+    func testT15NeverFetchedReadOnlyReopenKeepsIdentityAndNoInventedQuota() {
+        let app = launch("plan-only-failure")
+        defer { app.terminate() }
+        completeFixtureLogin(app)
+        XCTAssertTrue(app.buttons["connection.quotaClose"].waitForExistence(timeout: 10))
+        let identity = app.staticTexts["connection.accountIdentity"].label
+        app.terminate()
+        // This fixture isolates local reading. Production still performs T12's
+        // first-fetch recovery; its pending/failure behavior is tested separately.
+        app.launchArguments += ["--t15-read-only", "--t15-offline", "--t15-delay-login-read"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["quota.notFetched"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["quota.notFetched"].label, "尚未获取额度")
+        XCTAssertEqual(app.staticTexts["quota.accountIdentity"].label, identity)
+        XCTAssertEqual(planLabel(app), "Codex · Future Official Plan")
+        for id in ["quota.weekly.remaining", "quota.fiveHours.remaining", "quota.updatedAt", "quota.failure"] {
+            XCTAssertFalse(app.staticTexts[id].exists)
+        }
+        screenshot(app, "T15-只读恢复未获取账户")
+    }
+
     @MainActor private func assertSuccessfulCard(_ app: XCUIApplication) {
         XCTAssertTrue(app.staticTexts["quota.weekly.remaining"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.staticTexts["quota.weekly.remaining"].label, "剩余 70%")

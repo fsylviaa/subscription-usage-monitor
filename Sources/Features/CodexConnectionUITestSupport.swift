@@ -94,26 +94,31 @@ enum CodexConnectionUITestSupport {
         let completer = FixtureCompleter(scenario: includeQuota ? "success" : scenario)
         let store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
         let retryFixture = QuotaRetryFixture(scenario: scenario)
+        // Persisted reads return identical bytes, including JSON key order.
+        // Build once so T14's replacement check sees one stable fixture package.
+        let package = CodexIdentityVerifier.CredentialPackage(credentialVersion: 1,
+            issuer: CodexIdentityVerifier.issuer, clientID: CodexDeviceAuthorization.clientID,
+            subject: "fixture-subject", remoteUserID: "isolated-ui-user",
+            scope: .init(remoteAccountID: "isolated-ui-account", kind: .personal),
+            tokens: .init(accessToken: "fixture-access", refreshToken: "fixture-refresh", idToken: "fixture-id",
+                          obtainedAt: Date(), expiresAt: nil))
+        let credential = (try? JSONEncoder().encode(package)).map { CredentialPayload(data: $0) }
         let updater: CodexQuotaService? = includeQuota ? CodexQuotaService(store: store,
-            loadCredential: { _ in
-                let package = CodexIdentityVerifier.CredentialPackage(credentialVersion: 1,
-                    issuer: CodexIdentityVerifier.issuer, clientID: CodexDeviceAuthorization.clientID,
-                    subject: "fixture-subject", remoteUserID: "isolated-ui-user",
-                    scope: .init(remoteAccountID: "isolated-ui-account", kind: .personal),
-                    tokens: .init(accessToken: "fixture-access", refreshToken: "fixture-refresh", idToken: "fixture-id",
-                                  obtainedAt: Date(), expiresAt: nil))
-                return .init(data: try JSONEncoder().encode(package))
-            }, transport: retryFixture,
-            checkNetwork: { await retryFixture.checkNetwork() }) : nil
+            loadCredential: { _ in credential }, transport: retryFixture,
+            checkNetwork: {
+                if arguments.contains("--t15-offline") { return .unavailable(.transport) }
+                return await retryFixture.checkNetwork()
+            }) : nil
         return CodexConnectionFlow(
             checkNetwork: { .allowed(score: 51) },
             authorizer: FixtureAuthorizer(fails: false, pollInterval: 1),
-            transactions: FixtureTransactions(),
+            transactions: arguments.contains("--t15-delay-login-read")
+                ? T15DelayedTransactions() : FixtureTransactions(),
             completer: completer,
             verifier: FixtureVerifier(fails: scenario == "verification-failure"),
             bindings: FixtureBindings(fileURL: directory.appendingPathComponent("accounts.json")),
             pending: FixturePending(),
-            quotaUpdater: updater,
+            quotaUpdater: arguments.contains("--t15-read-only") ? nil : updater,
             copyCode: { _, _ in },
             openURL: { url in
                 guard url == CodexDeviceAuthorization.verificationURL else { return false }
@@ -121,6 +126,16 @@ enum CodexConnectionUITestSupport {
                 return true
             }
         )
+    }
+
+    /// Explicit isolated launches only; simulates a slow login/Keychain read.
+    private struct T15DelayedTransactions: CodexLoginTransactionStoring {
+        func save(_ authorization: CodexDeviceAuthorization) { }
+        func remove(transactionID: UUID) { }
+        func load() async throws -> CodexDeviceAuthorization? {
+            try await Task.sleep(for: .seconds(60))
+            return nil
+        }
     }
 
     private actor QuotaRetryFixture: CodexDeviceAuthorizationTransport {
