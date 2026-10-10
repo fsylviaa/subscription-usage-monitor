@@ -1,0 +1,32 @@
+T01 开发者检查摘要（2026-10-10，Asia/Shanghai）
+环境：macOS 26.6.2；Xcode 26.6 (17F113)；Swift 6.3.3
+模拟器：iPhone 17 Pro，iOS 26.5 (23F77)，arm64
+
+xcodebuild -list 实际识别：
+Targets: SubscriptionUsage / SubscriptionUsageTests / SubscriptionUsageUITests
+Shared Scheme: SubscriptionUsage
+
+以下摘自 /private/tmp/t01-xcode-test.log：
+Test Case '-[SubscriptionUsageTests.RootViewTests testRootViewCanLoadAndLayOutInAppHost]' started.
+Test Case '-[SubscriptionUsageTests.RootViewTests testRootViewCanLoadAndLayOutInAppHost]' passed (0.004 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.004 (0.004) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.004 (0.005) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.004 (0.005) seconds
+Test Case '-[SubscriptionUsageUITests.LaunchTests testAppLaunchesAndRelaunches]' started.
+Test Case '-[SubscriptionUsageUITests.LaunchTests testAppLaunchesAndRelaunches]' passed (7.684 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 7.684 (7.686) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 7.684 (7.686) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 7.684 (7.687) seconds
+** TEST SUCCEEDED **
+
+xcresulttool summary：Passed；totalTestCount=2；passedTests=2；failedTests=0；skippedTests=0
+
+独立副本重建：git checkout-index 导出仅暂存/受跟踪文件到 build/T01-clean-source；使用 build/FreshDerivedData。
+** BUILD SUCCEEDED **
+
+Xcode 界面检查：打开工程 → Cmd+R → Running SubscriptionUsage on iPhone 17 Pro；关闭到 Welcome to Xcode → 重开 → Cmd+R → 同样运行成功。
+独立重建产物：simctl install 成功；simctl launch 返回 com.iceflying.SubscriptionUsage: 39425。
+截图在启动动画结束后重新抓取；可见订阅用量 / Codex 订阅额度，无账户和额度数据。
+
+非失败提示：构建工具跳过未使用的 AppIntents 元数据；系统测试日志有 WebKit/WebCore 可访问性类重复与 LLDB 版本提示，测试完成且没有失败用例。
+完整测试结果仅本机保存：build/T01-tests.xcresult；缓存/个人状态不纳入 Git。

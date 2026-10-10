@@ -6,7 +6,53 @@
 
 当前依据为需求 **0.8** 及产品决定 D-40～D-50，并遵守用户后续确认的开发与验收约定。与旧文档、历史决定或 Figma 原型不一致时，以最新确认规则为准；规划不代表功能已实现。开发前先读 [项目规则](AGENTS.md) 和 [项目进度](docs/项目进度.md)。
 
-在本项目的新对话里直接说“开始 T01”即可；执行者会检查前置、完成指定任务，并主动更新进度和 Git 存档。也可说“继续上次任务”“T01 我验收通过了”或描述发现的问题，具体含义见项目规则。
+在本项目的新对话里可直接说“开始 T02”等明确任务编号；执行者会检查前置、完成指定任务，并主动更新进度和 Git 存档。也可说“继续上次任务”“T01 我验收通过了”或描述发现的问题，具体含义见项目规则。
+
+## 开发与运行（T01）
+
+工程入口：[SubscriptionUsage.xcodeproj](SubscriptionUsage.xcodeproj)。共享运行方案（Scheme）为 **SubscriptionUsage**，App 的临时显示名称为“订阅用量”。当前只有启动空壳和测试入口；功能进度见[项目进度](docs/项目进度.md)，目录、协作边界和依赖见[工程结构](docs/project-structure.md)。**当前无第三方库依赖**，不需要先安装包管理器、生成工程或登录 Codex。
+
+### 本次环境
+
+- macOS 26.6.2，Xcode 26.6（17F113），Xcode 自带 Swift 6.3.3；工程使用 Swift 6 语言模式。
+- 本次选择 **iPhone 17 Pro / iOS 26.5（23F77）** 模拟器。完整 Xcode 位于 `/Applications/Xcode.app`，系统默认命令行工具仍指向独立 Command Line Tools，所以下面的命令显式指定 Xcode 路径，不修改全局工具选择。
+- 工程部署基线暂定 **iOS 17.0**，用于后续 SwiftUI 与桌面组件能力；这不是在 iOS 17 上已经实测的承诺。用户真机系统尚未核验，T02 再核对兼容与签名。本次不要求 Apple 开发团队或发布证书。
+
+### 在 Xcode 中运行
+
+1. 打开本目录的 `SubscriptionUsage.xcodeproj`（可以双击，或在终端运行 `open SubscriptionUsage.xcodeproj`）。
+2. 顶部选择共享 Scheme **SubscriptionUsage**，运行设备选择 **iPhone 17 Pro（iOS 26.5）**。
+3. 按 **⌘R** 运行。预期模拟器出现“订阅用量”和“Codex 订阅额度”的简洁页面，没有样例账户或额度数字。
+4. 按 **⌘U** 执行检查。`SubscriptionUsageTests` 验证根视图加载与布局；`SubscriptionUsageUITests` 验证 App 启动和退出后重新启动。
+5. 关闭工程窗口后重新打开同一个工程，再按 **⌘R**；运行方案与必须配置均已保存到仓库。
+
+如果另一台 Mac 没有对应模拟器，在 Xcode 的运行设备列表中选择已安装的 iPhone 模拟器（iOS 17 或以上），或在 **Xcode → Settings → Components** 安装所需 iOS 模拟器运行环境。不同 Xcode 版本的界面可能略有区别，参见 [Apple 模拟器组件说明](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components)。切换 Xcode 的命令行工具方式见 [Apple 工具配置说明](https://developer.apple.com/documentation/xcode/configuring-command-line-tools-settings)；本项目命令用 `DEVELOPER_DIR` 只影响当前终端会话。
+
+### 开发者检查命令
+
+在 `app` 目录执行。若 Xcode 安装位置不同，只需将第一行改为实际位置；其他模拟器可按列表中的名称与系统版本替换 `-destination`。
+
+```sh
+export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+xcodebuild -version
+xcodebuild -list -project SubscriptionUsage.xcodeproj
+xcrun simctl list devices available
+
+xcodebuild -project SubscriptionUsage.xcodeproj \
+  -scheme SubscriptionUsage \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' \
+  -derivedDataPath build/DerivedData build
+
+xcodebuild -project SubscriptionUsage.xcodeproj \
+  -scheme SubscriptionUsage \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' \
+  -derivedDataPath build/DerivedData \
+  -parallel-testing-enabled NO test
+```
+
+`build` 只验证编译；`test` 会启动模拟器、运行单元与 UI 测试，界面测试会终止并重新启动 App。两者不查询真实账户、不读电脑授权。测试后可再次按 ⌘R 查看页面。
+
+复查不依赖已有构建缓存时，将 `-derivedDataPath` 改成一个全新目录，如 `build/FreshDerivedData`，重新构建并按上面步骤运行。`build/`、构建结果、Xcode 个人状态均不提交。后续测试样例的隔离规则见 [Tests/README.md](Tests/README.md)；实际执行记录见 [T01 验收](docs/mvp任务清单/记录/T01-验收.md)。
 
 ## 已明确的目标
 
@@ -34,6 +80,7 @@
 |---|---|
 | [项目规则](AGENTS.md) | 每次启动必读、每次小改动更新记录及 Git 存档的持久规则 |
 | [项目进度](docs/项目进度.md) | 当前做到哪里、56 项任务状态、待验/受阻事项及下一步 |
+| [工程结构与依赖](docs/project-structure.md) | 当前目录、职责、系统依赖和后续能力落点 |
 | [MVP 任务总览](docs/mvp任务清单/README.md) | 阶段目标、小任务范围、依赖关系及具体任务入口 |
 | [详细需求与功能清单](docs/requirements.md) | 当前开发范围、页面流程、功能细则、验收标准及待验证事项 |
 | [产品决定记录](docs/decisions.md) | 对话已确认的决定、设计假设和本版排除项 |
@@ -63,7 +110,7 @@
 ## 后续待验证与决定
 
 - Codex 在 iPhone 上的账户连接、授权有效期、安全保存与真实额度查询，需要结合已有技术能力完成端到端验证；其他平台留作扩展研究。
-- 真实支持的套餐和额度窗口、最低 iOS 版本、正式产品名称；原型已覆盖小号和中号主屏幕小组件，采用黑白灰浅深双外观。
+- 真实支持的套餐和额度窗口、最低 iOS 的真机兼容核验（当前工程基线为 iOS 17.0）、正式产品名称；原型已覆盖小号和中号主屏幕小组件，采用黑白灰浅深双外观。
 - 同平台多账户已纳入第一版；具体授权隔离、网络评分获取与实际网络对应方式留到实现阶段验证。
 - 后续再确定上架地区、收费方式与语言范围；iCloud、锁屏小组件和低额度预警不纳入当前必做范围。
 
