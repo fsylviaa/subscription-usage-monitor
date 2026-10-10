@@ -98,3 +98,12 @@ T16 连接入口修正：`CodexConnectionFlowTests` 验证未选平台零网络�
 `--t23-card-fixture limits|states light|dark` 仅 Debug，直接输入内存领域样例并使用独立外观偏好，不读写正式文件、Keychain 或网络。不限量仅验证渲染领域状态，不表示 Codex 接口已识别出不限量，更不能从 credits 或缺字段推导不限量。普通演示模式没有新增这些样例或入口。`--t12-isolated-ui t23-cached-failure` 复用原独立临时目录与假传输，第一次成功、后续请求失败；正式查询逻辑不变。真实双账户余额仍按用户要求延期。
 
 T23 大字号专项优化：`testT23AccessibilityLayoutUsesFullWidthIdentityAndSeparatesResetTime` 使用既有纯内存 `limits` 场景，在辅助字号最小／最大两档与浅深四种组合中检查套餐／身份使用完整内容宽度、重置时间在条形下方、两项余额可见及账户菜单可点击。普通字号沿用原两项卡片检查，并将其四张截图与 `c1a8999` 的同模拟器原图比较（仅排除系统状态栏时钟）。系统字号实时切换另外通过模拟器 `content_size` 验证，并恢复原值；不修改真实手机字号或添加产品设置。
+
+
+## T24 详情与重置时间
+
+`CodexQuotaServiceTests/testT24CrossingEachResetOnlyChangesDisplayAndPreservesStoredObservation` 使用隔离文件、假传输与测试时钟，从五小时重置前一秒推进至两个窗口各自的重置时刻及之后；核对展示状态、剩余值、原成功时间、文件字节与重读结果，时间展示不新增查询或网络评分。真实五小时余额仍不启用。
+
+三个 `CodexQuotaUITests/testT24…` 检查重复展开／收起后标题及额度的位置、下张卡片位移、两个账户详情归属、浅深重置显示、缺失／已到点状态和最大辅助字号可滚动读详情。复用 Debug 纯内存 `--t23-card-fixture times`，时间样例只在隔离入口存在，不进入产品演示模式。旧值失败、从未获取、Free、未知额度和排序使用既有回归测试。
+
+动画过程中间帧必须另验，不能把动画结束后的 UI 断言当作无回弹证明。本次模拟器录像以固定文字区域逐帧比较，保留原版缺陷、修复后录像与数值摘要；最终标题、身份及两项数值区域位置稳定。手机页面与构建结果、用户步骤见 [T24 验收](../docs/mvp任务清单/记录/T24-验收.md)。

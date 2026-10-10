@@ -42,6 +42,34 @@ final class CodexQuotaServiceTests: XCTestCase {
         print("T12 | 成功保存重读 | 周剩余70%、5小时20%，各自真实重置、响应后成功时间与账户作用域一致；普通文件无授权")
     }
 
+    func testT24CrossingEachResetOnlyChangesDisplayAndPreservesStoredObservation() async throws {
+        let setup = try await self.setup()
+        let transport = QuotaTestTransport(data: Self.complete)
+        let gates = QuotaRetryGates([.allowed(score: 51)])
+        let saved = try await service(setup, transport: transport, gate: { await gates.next() }).update(setup.account)
+        let bytes = try Data(contentsOf: setup.url)
+        let snapshot = try XCTUnwrap(saved.quotaSnapshot)
+        let fiveReset = try XCTUnwrap(snapshot.fiveHours.resetsAt)
+        let weekReset = try XCTUnwrap(snapshot.weekly.resetsAt)
+        let clock = QuotaTestClock(fiveReset.addingTimeInterval(-1))
+        XCTAssertEqual(QuotaView.resetText(fiveReset, now: clock.get()), "1 分钟后")
+        for instant in [fiveReset, fiveReset.addingTimeInterval(1), weekReset, weekReset.addingTimeInterval(60)] {
+            clock.set(instant)
+            XCTAssertEqual(QuotaView.resetText(fiveReset, now: clock.get()), "已到预计时间")
+            XCTAssertEqual(QuotaView.resetText(weekReset, now: clock.get()) == "已到预计时间", instant >= weekReset)
+            XCTAssertEqual(QuotaView.amountText(snapshot.weekly.amount), "剩余 70%")
+            XCTAssertEqual(QuotaView.amountText(snapshot.fiveHours.amount), "剩余 20%")
+            XCTAssertEqual(snapshot.observedAt, time)
+            XCTAssertEqual(try Data(contentsOf: setup.url), bytes)
+        }
+        let reopened = try await AccountStore(fileURL: setup.url).load()
+        XCTAssertEqual(reopened, [saved])
+        let requests = await transport.requests.count
+        let checks = await gates.count
+        XCTAssertEqual(requests, 1, "时间展示不发新查询")
+        XCTAssertEqual(checks, 1, "时间展示不重复网络评分")
+    }
+
     func testNetwork50UnknownAndCancellationSendNoUsageAndKeepBinding() async throws {
         for result in [NetworkScoreResult.blocked(score: 50), .blocked(score: 49), .unavailable(.transport), .cancelled, .allowed(score: 50)] {
             let setup = try await self.setup()

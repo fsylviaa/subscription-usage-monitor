@@ -1,0 +1,17 @@
+T24 隔离样例动画逐帧检查
+每帧在固定文字区域统计第一条深色像素行，排除启动/退出；先以原始接触表目视定位，再数值复核。
+原始录像本地 build/T24-Baseline.mp4、build/T24-Final.mp4。
+Baseline: 306 frames, 8.8..13.9 seconds, 60 fps; original 1206×2622
+  title: first dark text row min=399, max=440, range=41 pixels
+  其余文字在原版过渡中相互重叠，不把区域像素变化错误解释为单项文字位移。
+Final: 576 frames, 6..15.6 seconds, 60 fps; original 1206×2622
+  title: first dark text row min=419, max=419, range=0 pixels
+  identity: first dark text row min=479, max=479, range=0 pixels
+  weekly: first dark text row min=553, max=553, range=0 pixels
+  fiveHours: first dark text row min=678, max=678, range=0 pixels
+数值只证明本次模拟器样例片段；真机页面另见验收记录，不冒充真实余额测试。
+
+复核方法：ffmpeg 从头解码，再 fps=60、trim 到上述区间，取原始尺寸的灰度帧（不能先缩放）。
+标题 ROI x=230..550,y=350..460；灰度<100，每行深色像素数>10，统计第一行。
+身份 ROI x=230..620,y=460..540，灰度<180；周数值 x=955..1110,y=510..635；五小时数值 x=1020..1120,y=640..760，后两者灰度<100。均用每行>10像素。
+修复后已目视复核底部裁切：更新行在卡片范围内揭示，下一张卡片随行高移动；无文字重叠。

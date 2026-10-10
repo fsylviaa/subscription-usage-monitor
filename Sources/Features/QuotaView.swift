@@ -222,11 +222,17 @@ private struct QuotaAccountCard: View {
                     .accessibilityIdentifier(updating || failed ? "quota.accountStatus" : "quota.notFetched")
             }
         }
+        // Keep the content at its natural height while UIKit interpolates the row.
+        // A transient smaller proposal must not compress the header and quota rows.
+        .fixedSize(horizontal: false, vertical: true)
         .padding(.horizontal, 16).padding(.vertical, 14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(DashboardStyle.card, in: RoundedRectangle(cornerRadius: 24))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("quota.card")
+        // UIKit animates the self-sizing cell and following rows. Do not also
+        // interpolate SwiftUI text positions through its intermediate proposals.
+        .transaction { $0.animation = nil; $0.disablesAnimations = true }
     }
 
     private var platformIcon: some View {
@@ -361,6 +367,7 @@ private struct QuotaWindowView: View {
         Text(QuotaView.resetText(value.resetsAt, now: now))
             .font(.system(size: secondarySize)).fixedSize(horizontal: false, vertical: true)
             .accessibilityLabel(value.resetsAt.map { "预计重置于 \(QuotaView.dateText($0))" } ?? "未提供重置时间")
+            .accessibilityValue(QuotaView.resetText(value.resetsAt, now: now))
             .accessibilityIdentifier("quota.\(id).reset")
     }
 
@@ -425,7 +432,8 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
         let view = UICollectionView(frame: .zero, collectionViewLayout: QuotaReorderLayout(section: section))
         view.backgroundColor = .clear
         view.alwaysBounceVertical = true
-        view.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "quota")
+        view.selfSizingInvalidation = .enabledIncludingConstraints
+        view.register(QuotaCollectionCell.self, forCellWithReuseIdentifier: "quota")
         view.dataSource = context.coordinator
         view.delegate = context.coordinator
         view.accessibilityIdentifier = "quota.list"
@@ -445,9 +453,9 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
             view.reloadData()
         } else {
             for index in view.indexPathsForVisibleItems {
-                view.cellForItem(at: index)?.contentConfiguration = UIHostingConfiguration {
-                    content(accounts[index.item])
-                }.margins(.all, 0)
+                (view.cellForItem(at: index) as? QuotaCollectionCell)?.configure(UIHostingConfiguration {
+                    content(accounts[index.item]).id(accounts[index.item].id).frame(maxHeight: .infinity, alignment: .top)
+                }.margins(.all, 0))
             }
         }
     }
@@ -463,7 +471,9 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
         func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "quota", for: indexPath)
             let account = displayed[indexPath.item]
-            cell.contentConfiguration = UIHostingConfiguration { parent.content(account) }.margins(.all, 0)
+            (cell as? QuotaCollectionCell)?.configure(UIHostingConfiguration {
+                parent.content(account).id(account.id).frame(maxHeight: .infinity, alignment: .top)
+            }.margins(.all, 0))
             cell.backgroundColor = .clear
             return cell
         }
@@ -510,6 +520,42 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
     }
 }
 
+
+/// The hosted view keeps its intrinsic height and is pinned only to the top.
+/// Pinning it to both vertical edges lets intermediate cell sizes compress or
+/// recenter SwiftUI content while UICollectionView animates a self-sizing row.
+private final class QuotaCollectionCell: UICollectionViewCell {
+    private var hostedContent: (UIView & UIContentView)?
+
+    func configure(_ configuration: any UIContentConfiguration) {
+        contentView.clipsToBounds = true
+        contentView.layer.cornerRadius = 24
+        if let hostedContent {
+            hostedContent.configuration = configuration
+        } else {
+            let hosted = configuration.makeContentView()
+            hosted.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview(hosted)
+            NSLayoutConstraint.activate([
+                hosted.topAnchor.constraint(equalTo: contentView.topAnchor),
+                hosted.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                hosted.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+            ])
+            hostedContent = hosted
+        }
+    }
+
+    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        guard let hostedContent,
+              let result = layoutAttributes.copy() as? UICollectionViewLayoutAttributes else { return layoutAttributes }
+        let size = hostedContent.systemLayoutSizeFitting(
+            CGSize(width: layoutAttributes.size.width, height: UIView.layoutFittingCompressedSize.height),
+            withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+        let scale = traitCollection.displayScale
+        result.size.height = ceil(size.height * scale) / scale
+        return result
+    }
+}
 
 /// Keep crossing boundaries in content coordinates for the whole gesture. Using
 /// the newly displaced cell frames makes unequal-height cards swap back and forth.

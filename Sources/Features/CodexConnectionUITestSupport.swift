@@ -109,7 +109,9 @@ enum CodexConnectionUITestSupport {
         let scenario: String
         func load() async throws -> [ConnectedAccount] {
             let now = Date(timeIntervalSince1970: 1_791_590_400)
+            let reference = Date()
             func account(_ index: Int, plan: String, weekly: QuotaAmount?, fiveHours: QuotaAmount?) -> ConnectedAccount {
+                let observation = scenario == "times" ? now.addingTimeInterval(Double(index - 1) * 3600) : now
                 var result = ConnectedAccount(verifiedEmail: "card-\(index)@example.invalid",
                     scope: .init(remoteAccountID: "t23-\(index)", kind: .personal), credentialRef: UUID(),
                     quotaState: weekly == nil ? .notApplicable : .available,
@@ -117,9 +119,11 @@ enum CodexConnectionUITestSupport {
                 if let weekly, let fiveHours {
                     result.quotaSnapshot = .init(accountID: result.id, provider: result.provider,
                         product: result.product, scope: result.scope, generation: result.generation,
-                        planType: plan, observedAt: now,
-                        weekly: .init(window: .weekly, amount: weekly, resetsAt: nil, observedAt: now),
-                        fiveHours: .init(window: .fiveHours, amount: fiveHours, resetsAt: nil, observedAt: now))
+                        planType: plan, observedAt: observation,
+                        weekly: .init(window: .weekly, amount: weekly,
+                            resetsAt: scenario == "times" ? (index == 1 ? reference.addingTimeInterval(6 * 86400) : now) : nil, observedAt: observation),
+                        fiveHours: .init(window: .fiveHours, amount: fiveHours,
+                            resetsAt: scenario == "times" && index == 1 ? reference.addingTimeInterval(5640) : nil, observedAt: observation))
                 }
                 return result
             }

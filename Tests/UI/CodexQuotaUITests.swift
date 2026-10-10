@@ -2,6 +2,76 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT24RepeatedExpansionKeepsHeaderAndAmountsAnchored() {
+        let app = launchT23("limits", appearance: "light")
+        defer { app.terminate() }
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
+        let ids = ["quota.accountIdentity", "quota.weekly.remaining", "quota.fiveHours.remaining"]
+        let originalY = ids.map { first.staticTexts[$0].frame.minY }
+        let originalNextY = second.frame.minY
+        for cycle in 0..<3 {
+            first.buttons["quota.details"].tap()
+            XCTAssertTrue(first.staticTexts["quota.updatedAt"].waitForExistence(timeout: 3))
+            for (id, y) in zip(ids, originalY) { XCTAssertEqual(first.staticTexts[id].frame.minY, y, accuracy: 1) }
+            XCTAssertGreaterThan(second.frame.minY, originalNextY + 10)
+            XCTAssertFalse(second.staticTexts["quota.updatedAt"].exists)
+            screenshot(app, "T24-展开-\(cycle)")
+            first.buttons["quota.details"].tap()
+            XCTAssertFalse(first.staticTexts["quota.updatedAt"].exists)
+            for (id, y) in zip(ids, originalY) { XCTAssertEqual(first.staticTexts[id].frame.minY, y, accuracy: 1) }
+            XCTAssertEqual(second.frame.minY, originalNextY, accuracy: 1)
+            screenshot(app, "T24-收起-\(cycle)")
+        }
+    }
+
+    @MainActor
+    func testT24DetailsBelongToEachAccountAndMissingOrElapsedResetIsHonest() {
+        for appearance in ["light", "dark"] {
+            let app = launchT23("times", appearance: appearance)
+            let cards = app.otherElements.matching(identifier: "quota.card")
+            let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
+            let weekly = first.staticTexts["quota.weekly.reset"]
+            let five = first.staticTexts["quota.fiveHours.reset"]
+            XCTAssertTrue((weekly.value as? String ?? "").hasPrefix("6 天后"))
+            XCTAssertEqual(five.value as? String, "1 小时 34 分后")
+            XCTAssertNotEqual(weekly.label, five.label)
+            XCTAssertEqual(second.staticTexts["quota.weekly.reset"].value as? String, "已到预计时间")
+            XCTAssertEqual(second.staticTexts["quota.fiveHours.reset"].label, "未提供重置时间")
+            first.buttons["quota.details"].tap()
+            let firstTime = first.staticTexts["quota.updatedAt"].label
+            XCTAssertEqual(firstTime, "更新于 \(Date(timeIntervalSince1970: 1_791_590_400).formatted(.dateTime.month().day().hour().minute()))")
+            XCTAssertFalse(second.staticTexts["quota.updatedAt"].exists)
+            second.buttons["quota.details"].tap()
+            let secondTime = second.staticTexts["quota.updatedAt"].label
+            XCTAssertEqual(secondTime, "更新于 \(Date(timeIntervalSince1970: 1_791_594_000).formatted(.dateTime.month().day().hour().minute()))")
+            XCTAssertNotEqual(firstTime, secondTime)
+            XCTAssertEqual(second.staticTexts["quota.weekly.remaining"].label, "剩余 70%")
+            XCTAssertEqual(second.staticTexts["quota.fiveHours.remaining"].label, "剩余 20%")
+            first.buttons["quota.details"].tap()
+            XCTAssertEqual(second.staticTexts["quota.updatedAt"].label, secondTime)
+            first.buttons["quota.details"].tap()
+            XCTAssertEqual(first.staticTexts["quota.updatedAt"].label, firstTime)
+            screenshot(app, "T24-各自时间与已到点-\(appearance)")
+            app.terminate()
+        }
+    }
+
+    @MainActor
+    func testT24ExpansionRemainsReadableAtLargestAccessibilitySize() {
+        let app = launchT23("limits", appearance: "dark", extra: ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
+        defer { app.terminate() }
+        let first = app.otherElements.matching(identifier: "quota.card").element(boundBy: 0)
+        let identityY = first.staticTexts["quota.accountIdentity"].frame.minY
+        first.buttons["quota.details"].tap()
+        XCTAssertEqual(first.staticTexts["quota.accountIdentity"].frame.minY, identityY, accuracy: 1)
+        XCTAssertTrue(first.staticTexts["quota.updatedAt"].exists)
+        app.swipeUp()
+        XCTAssertTrue(app.staticTexts["quota.updatedAt"].isHittable)
+        screenshot(app, "T24-大字号展开可读")
+    }
+
+    @MainActor
     func testT23AccessibilityLayoutUsesFullWidthIdentityAndSeparatesResetTime() {
         for appearance in ["light", "dark"] {
             for size in ["UICTContentSizeCategoryAccessibilityM", "UICTContentSizeCategoryAccessibilityXXXL"] {
