@@ -29,10 +29,13 @@ final class AccountStore {
     }
 
     private let fileURL: URL
+    private let widgetStore: WidgetSnapshotStore?
+    private(set) var widgetPublicationFailed = false
 
     /// Explicit URL keeps test data isolated from the App's real account directory.
-    nonisolated init(fileURL: URL) {
+    nonisolated init(fileURL: URL, widgetStore: WidgetSnapshotStore? = nil) {
         self.fileURL = fileURL
+        self.widgetStore = widgetStore
     }
 
     nonisolated static func applicationStore() throws -> AccountStore {
@@ -42,10 +45,30 @@ final class AccountStore {
             appropriateFor: nil,
             create: true
         ).appendingPathComponent("SubscriptionUsage", isDirectory: true)
-        return AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
+        return AccountStore(fileURL: directory.appendingPathComponent("accounts.json"), widgetStore: .appGroupStore())
     }
 
-    func load() throws -> [ConnectedAccount] { try readDocument().accounts }
+    func load() throws -> [ConnectedAccount] {
+        let accounts = try readDocument().accounts
+        // Repairs a missed publication after interruption without changing success times.
+        publishWidget(accounts)
+        return accounts
+    }
+
+    private func publishWidget(_ accounts: [ConnectedAccount]) {
+        guard let widgetStore else { return }
+        do {
+            let snapshot = WidgetSnapshot.projecting(accounts)
+            if (try? widgetStore.read()) != snapshot { try widgetStore.write(snapshot) }
+            widgetPublicationFailed = false
+        } catch {
+            // The account commit may already be durable. Never report a login failure
+            // that would roll back its Keychain entry. Retry from the next trusted load.
+            widgetPublicationFailed = true
+            // Avoid leaving a removed/replaced identity available to a fresh reader.
+            try? widgetStore.remove()
+        }
+    }
 
     private func readDocument() throws -> Document {
         let data: Data
@@ -338,5 +361,6 @@ final class AccountStore {
         )
         // Failure propagates; there is no optimistic cache or success timestamp to roll back.
         try data.write(to: fileURL, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        publishWidget(accounts)
     }
 }

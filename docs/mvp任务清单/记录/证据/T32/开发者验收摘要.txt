@@ -1,0 +1,74 @@
+2026-10-11 T32；仅人工隔离样例，非真实平台余额证据。
+初轮两端各一项缺文件分支失败，修正后最终全部通过；详见T32验收记录。
+
+T32-Simulator.log
+Executed 12 tests, with 0 failures (0 unexpected) in 0.036 (0.039) seconds
+Executed 34 tests, with 0 failures (0 unexpected) in 38.634 (38.643) seconds
+Executed 8 tests, with 0 failures (0 unexpected) in 0.253 (0.254) seconds
+T32 | 全部断开 | 未连接账号，无数据 | 无旧身份数值时间 | 点击额度页 | 通过
+T32 | A在首位 | 周70% / 5小时60% | 原成功时间保持 | 点击A | 通过
+T32 | B移到首位 | 周30% / 5小时20% | 原成功时间保持 | 点击B | 通过
+T32 | A确认为Free | 显示A与Free，无额度区域 | 点击A | 通过
+T32 | 共享字段白名单与独立读取 | 只有必要展示数据，无授权、作用域或凭据引用 | 通过
+T32 | 系统App Group真实目录 | 独立写入、重读、排序、清空通过 | 样例与正式数据隔离
+T32 | A尚未取得 / B有额度 | 仍显示A，无数值无成功时间 | 点击A | 通过
+Executed 15 tests, with 1 failure (1 unexpected) in 0.193 (0.199) seconds
+Executed 69 tests, with 1 failure (1 unexpected) in 39.117 (39.136) seconds
+Executed 69 tests, with 1 failure (1 unexpected) in 39.117 (39.137) seconds
+** TEST FAILED **
+
+T32-Device.log
+Executed 12 tests, with 0 failures (0 unexpected) in 0.088 (0.092) seconds
+Executed 34 tests, with 0 failures (0 unexpected) in 40.602 (40.615) seconds
+Executed 63 tests, with 0 failures (0 unexpected) in 11.023 (11.053) seconds
+Executed 8 tests, with 0 failures (0 unexpected) in 0.333 (0.335) seconds
+T32 | 全部断开 | 未连接账号，无数据 | 无旧身份数值时间 | 点击额度页 | 通过
+T32 | A在首位 | 周70% / 5小时60% | 原成功时间保持 | 点击A | 通过
+T32 | B移到首位 | 周30% / 5小时20% | 原成功时间保持 | 点击B | 通过
+T32 | A确认为Free | 显示A与Free，无额度区域 | 点击A | 通过
+T32 | 共享字段白名单与独立读取 | 只有必要展示数据，无授权、作用域或凭据引用 | 通过
+T32 | 系统App Group真实目录 | 独立写入、重读、排序、清空通过 | 样例与正式数据隔离
+T32 | A尚未取得 / B有额度 | 仍显示A，无数值无成功时间 | 点击A | 通过
+Executed 15 tests, with 1 failure (1 unexpected) in 0.303 (0.307) seconds
+Executed 132 tests, with 1 failure (1 unexpected) in 52.348 (52.403) seconds
+Executed 132 tests, with 1 failure (1 unexpected) in 52.348 (52.404) seconds
+** TEST FAILED **
+
+T32-Simulator-Final.log
+Executed 12 tests, with 0 failures (0 unexpected) in 0.036 (0.038) seconds
+Executed 34 tests, with 0 failures (0 unexpected) in 38.983 (38.994) seconds
+Executed 8 tests, with 0 failures (0 unexpected) in 0.130 (0.131) seconds
+T32 | 全部断开 | 未连接账号，无数据 | 无旧身份数值时间 | 点击额度页 | 通过
+T32 | A在首位 | 周70% / 5小时60% | 原成功时间保持 | 点击A | 通过
+T32 | B移到首位 | 周30% / 5小时20% | 原成功时间保持 | 点击B | 通过
+T32 | A确认为Free | 显示A与Free，无额度区域 | 点击A | 通过
+T32 | 共享字段白名单与独立读取 | 只有必要展示数据，无授权、作用域或凭据引用 | 通过
+T32 | 系统App Group真实目录 | 独立写入、重读、排序、清空通过 | 样例与正式数据隔离
+T32 | A尚未取得 / B有额度 | 仍显示A，无数值无成功时间 | 点击A | 通过
+Executed 16 tests, with 0 failures (0 unexpected) in 0.056 (0.059) seconds
+Executed 70 tests, with 0 failures (0 unexpected) in 39.204 (39.223) seconds
+Executed 70 tests, with 0 failures (0 unexpected) in 39.204 (39.223) seconds
+** TEST SUCCEEDED **
+
+T32-Device-Final.log
+Executed 12 tests, with 0 failures (0 unexpected) in 0.085 (0.089) seconds
+Executed 34 tests, with 0 failures (0 unexpected) in 40.600 (40.615) seconds
+Executed 63 tests, with 0 failures (0 unexpected) in 11.029 (11.063) seconds
+Executed 8 tests, with 0 failures (0 unexpected) in 0.355 (0.358) seconds
+T32 | 全部断开 | 未连接账号，无数据 | 无旧身份数值时间 | 点击额度页 | 通过
+T32 | A在首位 | 周70% / 5小时60% | 原成功时间保持 | 点击A | 通过
+T32 | B移到首位 | 周30% / 5小时20% | 原成功时间保持 | 点击B | 通过
+T32 | A确认为Free | 显示A与Free，无额度区域 | 点击A | 通过
+T32 | 共享字段白名单与独立读取 | 只有必要展示数据，无授权、作用域或凭据引用 | 通过
+T32 | 系统App Group真实目录 | 独立写入、重读、排序、清空通过 | 样例与正式数据隔离
+T32 | A尚未取得 / B有额度 | 仍显示A，无数值无成功时间 | 点击A | 通过
+Executed 16 tests, with 0 failures (0 unexpected) in 0.172 (0.177) seconds
+Executed 133 tests, with 0 failures (0 unexpected) in 52.241 (52.303) seconds
+Executed 133 tests, with 0 failures (0 unexpected) in 52.241 (52.304) seconds
+** TEST SUCCEEDED **
+
+T32-LocalCheck.xcresult（显式启用，仅核对正式本机文件，不联网）
+T32 | 正式版普通启动后的本机快照 | 首账户、套餐、双窗口、原时间与点击目标逐字段一致 | 只读检查通过
+Executed 1 test, with 0 failures (0 unexpected) in 0.006 (0.007) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 0.006 (0.007) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 0.006 (0.008) seconds

@@ -1,0 +1,12 @@
+{
+  "first_install_account_file_unchanged": true,
+  "final_install_account_file_unchanged": true,
+  "identity_order_connection_unchanged_after_final_launch": true,
+  "demo_preference_unchanged": true,
+  "release_install_succeeded": true,
+  "ordinary_launch_succeeded": true,
+  "date": "2026-10-11",
+  "timezone": "Asia/Shanghai",
+  "final_install_started": "02:29:44",
+  "final_ordinary_launch": "02:30:05"
+}

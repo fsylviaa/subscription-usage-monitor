@@ -5,6 +5,15 @@
 	};
 	"objectVersion" = "56";
 	"objects" = {
+        "A32000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Shared/WidgetSnapshot.swift"; "sourceTree" = "<group>"; };
+        "A32000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000001"; };
+        "A32000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Shared/WidgetSnapshotStore.swift"; "sourceTree" = "<group>"; };
+        "A32000000000000000000004" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000003"; };
+        "A32000000000000000000005" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Storage/WidgetSnapshotProjection.swift"; "sourceTree" = "<group>"; };
+        "A32000000000000000000006" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000005"; };
+        "A32000000000000000000007" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "WidgetSnapshotTests.swift"; "sourceTree" = "<group>"; };
+        "A32000000000000000000008" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000007"; };
+
         "A30000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "BackgroundQuotaRefresh.swift"; "sourceTree" = "<group>"; };
         "A30000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A30000000000000000000001"; };
 
@@ -399,6 +408,9 @@
 		"A9012353AFD6A66EB75D4BE2" = {
 			"isa" = "PBXGroup";
 			"children" = (
+                "A32000000000000000000001",
+                "A32000000000000000000003",
+                "A32000000000000000000005",
 				"91468586F9881985D065A03B",
 				"19ED03E8225A78EBFF67CDF6",
 				"9D756A79786A998CCABA280E",
@@ -442,6 +454,7 @@
 		"526E9B80F5C826824C672690" = {
 			"isa" = "PBXGroup";
 			"children" = (
+                "A32000000000000000000007",
                 "A12000000000000000000007",
                 "A14000000000000000000003",
                 "A22000000000000000000001",
@@ -640,6 +653,7 @@
 				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
 				"TARGETED_DEVICE_FAMILY" = "1";
 				"PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsage";
+                "CODE_SIGN_ENTITLEMENTS" = "Config/SubscriptionUsage.entitlements";
                 "INFOPLIST_FILE" = "Config/Info.plist";
 				"ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" = "AccentColor";
 				"INFOPLIST_KEY_CFBundleDisplayName" = "订阅用量";
@@ -670,6 +684,7 @@
 				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
 				"TARGETED_DEVICE_FAMILY" = "1";
 				"PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsage";
+                "CODE_SIGN_ENTITLEMENTS" = "Config/SubscriptionUsage.entitlements";
                 "INFOPLIST_FILE" = "Config/Info.plist";
 				"ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" = "AccentColor";
 				"INFOPLIST_KEY_CFBundleDisplayName" = "订阅用量";
@@ -822,6 +837,9 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
 			"files" = (
+                "A32000000000000000000002",
+                "A32000000000000000000004",
+                "A32000000000000000000006",
                 "A14000000000000000000002",
                 "A12000000000000000000002",
                 "A11000000000000000000004",
@@ -904,6 +922,7 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
 			"files" = (
+                "A32000000000000000000008",
                 "A12000000000000000000008",
                 "A14000000000000000000004",
                 "A22000000000000000000002",
