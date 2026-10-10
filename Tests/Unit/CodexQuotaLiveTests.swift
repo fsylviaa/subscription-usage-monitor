@@ -96,6 +96,77 @@ final class CodexQuotaLiveTests: XCTestCase {
         print("T12 | 真实保存重读 | 成功时间\(Self.time(subscription.observedAt))；身份、套餐、额度适用性与保存时间一致；授权未改")
     }
 
+    func testT13RealSavedLoginRetriesAfterControlledFirstFailure() async throws {
+        guard ProcessInfo.processInfo.environment["T13_LIVE_RETRY"] == "1" else {
+            throw XCTSkip("T13真实重试需要显式启用；默认不读取正式账户或联网。")
+        }
+        let formalStore = try AccountStore.applicationStore()
+        let before = try await formalStore.load()
+        guard before.count == 1, var account = before.first else {
+            XCTFail("需要本App已验证的真实账户。")
+            return
+        }
+        let vault = CredentialVault.applicationVault()
+        let credentialBefore = try await vault.load(for: .credential(account.credentialRef))
+        XCTAssertNotNil(credentialBefore)
+        // Copy metadata only into isolated storage; the formal binding/snapshot
+        // and Keychain credential are never rewritten for a failure scenario.
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T13-live-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent("accounts.json")
+        let store = AccountStore(fileURL: url)
+        account.quotaState = .notFetched
+        account.quotaSnapshot = nil
+        try await store.append(account)
+        let gate = T13LiveRetryGate()
+        let transport = T13LiveRetryTransport()
+        let updater = CodexQuotaService(store: store,
+            loadCredential: { try await vault.load(for: .credential($0)) }, transport: transport,
+            checkNetwork: { await gate.check() })
+        let flow = CodexConnectionFlow(transactions: T13ReadOnlyTransactions(),
+            bindings: CodexAccountBindingStore(accountStore: store, vault: vault), quotaUpdater: updater)
+        await flow.loadAccounts()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.quotaFailure, "获取失败")
+        XCTAssertTrue(flow.accounts == [account], "隔离副本首次受控失败保留身份和已知套餐")
+        let initialRequests = await transport.count
+        XCTAssertEqual(initialRequests, 0)
+        let retryStarted = Date()
+        flow.retryInitialQuota(for: account.id)
+        await flow.waitForInitialQuota()
+        guard flow.quotaFailure == nil, let updated = flow.accounts.first,
+              let subscription = updated.subscription else {
+            XCTFail("T13真实重试尚未成功：\(flow.quotaFailure ?? "获取失败")")
+            return
+        }
+        let capturedBody = await transport.bodyValue()
+        let raw = try XCTUnwrap(capturedBody)
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: raw) as? [String: Any])
+        XCTAssertTrue(subscription.planType == object["plan_type"] as? String)
+        XCTAssertTrue(subscription.observedAt >= retryStarted && subscription.observedAt <= Date())
+        XCTAssertTrue(updated.id == account.id && updated.scope == account.scope && updated.credentialRef == account.credentialRef)
+        if updated.quotaState == .notApplicable {
+            XCTAssertTrue(subscription.planType.lowercased() == "free")
+            XCTAssertNil(updated.quotaSnapshot)
+            print("T13 | 真实重试 | 平台返回free，无适用周/5小时；正常清除失败，不造额度及成功时间")
+        } else {
+            XCTAssertEqual(updated.quotaState, .available)
+            let snapshot = try XCTUnwrap(updated.quotaSnapshot)
+            XCTAssertTrue(snapshot == (try CodexUsageParser().parse(raw, for: account, observedAt: subscription.observedAt)))
+            print("T13 | 真实重试 | 有适用额度，同次平台响应与保存快照一致")
+        }
+        let reloaded = try await AccountStore(fileURL: url).load()
+        XCTAssertTrue(reloaded == [updated])
+        let formalAfter = try await formalStore.load()
+        let credentialAfter = try await vault.load(for: .credential(account.credentialRef))
+        XCTAssertTrue(formalAfter == before && credentialBefore == credentialAfter, "原账户、授权和数据保持不变")
+        let checks = await gate.count
+        let requests = await transport.count
+        XCTAssertEqual(checks, 2)
+        XCTAssertEqual(requests, 1)
+        print("T13 | 受控失败→真实网络重试 | 2次检查、1次真实查询；无重登/重复账户，隔离保存重读一致，原数据不变")
+    }
+
     private static func time(_ date: Date) -> String {
         let formatter = ISO8601DateFormatter()
         formatter.timeZone = TimeZone(identifier: "Asia/Shanghai")!
@@ -146,4 +217,36 @@ private struct LiveScoreRecorder: NetworkScoreTransport {
             throw error
         }
     }
+}
+
+private actor T13LiveRetryGate {
+    private(set) var count = 0
+    func check() async -> NetworkScoreResult {
+        count += 1
+        if count == 1 { return .unavailable(.transport) }
+        let result = await NetworkScoreChecker().check()
+        switch result {
+        case let .allowed(score): print("T13 | 真实查询前网络 | 允许，分数\(score)")
+        case let .blocked(score): print("T13 | 真实查询前网络 | 阻止，分数\(score)")
+        case .unavailable: print("T13 | 真实查询前网络 | 未取得有效评分")
+        case .cancelled: print("T13 | 真实查询前网络 | 取消")
+        }
+        return result
+    }
+}
+private actor T13LiveRetryTransport: CodexDeviceAuthorizationTransport {
+    private(set) var count = 0
+    private var body: Data?
+    func bodyValue() -> Data? { body }
+    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+        count += 1
+        let result = try await URLSessionCodexDeviceAuthorizationTransport().data(for: request)
+        body = result.0
+        print("T13 | 真实额度请求 | HTTP \((result.1 as? HTTPURLResponse)?.statusCode ?? 0)")
+        return result
+    }
+}
+private actor T13ReadOnlyTransactions: CodexLoginTransactionStoring {
+    func save(_ authorization: CodexDeviceAuthorization) { }
+    func remove(transactionID: UUID) { }
 }

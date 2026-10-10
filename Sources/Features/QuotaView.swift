@@ -7,7 +7,9 @@ struct QuotaView: View {
     var canConnect = true
     var updatingID: UUID?
     var quotaFailure: String?
+    var quotaFailureID: UUID?
     var connect: () -> Void = {}
+    var retry: (UUID) -> Void = { _ in }
     var body: some View {
         Group {
             if loading {
@@ -29,16 +31,21 @@ struct QuotaView: View {
                             Text("更新于 \(Self.dateText(snapshot.observedAt))")
                                 .font(.footnote).foregroundStyle(.secondary)
                                 .accessibilityIdentifier("quota.updatedAt")
-                        } else if account.quotaState == .notFetched && updatingID != account.id && quotaFailure == nil {
+                        } else if account.quotaState == .notFetched && updatingID != account.id && quotaFailureID != account.id {
                             Text("尚未获取额度").foregroundStyle(.secondary)
                                 .accessibilityIdentifier("quota.notFetched")
                         }
                         if updatingID == account.id {
                             ProgressView("正在更新")
                                 .accessibilityIdentifier("quota.updating")
-                        } else if let quotaFailure {
+                        } else if quotaFailureID == account.id, let quotaFailure {
                             Text(quotaFailure).font(.footnote).foregroundStyle(.secondary)
                                 .accessibilityIdentifier("quota.failure")
+                            if account.quotaState == .notFetched {
+                                Button("重试") { retry(account.id) }
+                                    .buttonStyle(.bordered)
+                                    .accessibilityIdentifier("quota.retry")
+                            }
                         }
                     }
                     .padding(.vertical, 8)

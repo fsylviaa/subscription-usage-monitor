@@ -127,6 +127,72 @@ final class CodexQuotaUITests: XCTestCase {
     }
 
     @MainActor
+    func testT13FailedQueryReopensThenRetryKeepsIdentityAndPlan() {
+        let app = launch("retry-plan")
+        defer { app.terminate() }
+        completeFixtureLogin(app)
+        XCTAssertTrue(app.buttons["quota.retry"].waitForExistence(timeout: 10))
+        let identity = app.staticTexts["quota.accountIdentity"].label
+        XCTAssertEqual(app.staticTexts["quota.plan"].label, "Codex · Future Official Plan")
+        XCTAssertEqual(app.staticTexts["quota.failure"].label, "获取失败")
+        XCTAssertFalse(app.staticTexts["quota.updatedAt"].exists)
+        XCTAssertFalse(app.staticTexts["quota.weekly.remaining"].exists)
+        screenshot(app, "T13-失败可重试-隔离")
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.buttons["quota.retry"].waitForExistence(timeout: 10))
+        XCTAssertEqual(app.staticTexts["quota.accountIdentity"].label, identity)
+        XCTAssertEqual(app.staticTexts["quota.plan"].label, "Codex · Future Official Plan")
+        XCTAssertFalse(app.staticTexts["quota.updatedAt"].exists)
+        app.buttons["quota.retry"].tap()
+        XCTAssertTrue(app.staticTexts["quota.updatedAt"].waitForExistence(timeout: 10))
+        XCTAssertEqual(app.staticTexts["quota.accountIdentity"].label, identity)
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").count, 1)
+        XCTAssertEqual(app.staticTexts["quota.plan"].label, "Codex · Future Official Plan")
+        XCTAssertEqual(app.staticTexts["quota.weekly.remaining"].label, "剩余 70%")
+        XCTAssertEqual(app.staticTexts["quota.fiveHours.remaining"].label, "剩余 20%")
+        XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+        XCTAssertFalse(app.buttons["quota.retry"].exists)
+        screenshot(app, "T13-重试成功-隔离")
+        let timestamp = app.staticTexts["quota.updatedAt"].label
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.staticTexts["quota.updatedAt"].waitForExistence(timeout: 10))
+        XCTAssertEqual(app.staticTexts["quota.updatedAt"].label, timestamp)
+    }
+
+    @MainActor
+    func testT13LowUnknownAndRequestFailuresRecoverThroughRetryButton() {
+        for scenario in ["retry-blocked", "retry-unknown", "retry-request"] {
+            let app = launch(scenario)
+            completeFixtureLogin(app)
+            XCTAssertTrue(app.buttons["quota.retry"].waitForExistence(timeout: 10))
+            XCTAssertEqual(app.staticTexts["quota.failure"].label,
+                           scenario == "retry-blocked" ? "网络不达标，无法更新" : "获取失败")
+            XCTAssertEqual(app.staticTexts["quota.plan"].label, "Codex")
+            XCTAssertFalse(app.staticTexts["quota.updatedAt"].exists)
+            XCTAssertFalse(app.staticTexts["quota.weekly.remaining"].exists)
+            app.buttons["quota.retry"].tap()
+            XCTAssertTrue(app.staticTexts["quota.updatedAt"].waitForExistence(timeout: 10))
+            XCTAssertFalse(app.buttons["quota.retry"].exists)
+            XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+            app.terminate()
+        }
+    }
+
+    @MainActor
+    func testT13RetryCanRecoverToFreeWithoutFalseFailure() {
+        let app = launch("retry-free")
+        defer { app.terminate() }
+        completeFixtureLogin(app)
+        XCTAssertTrue(app.buttons["quota.retry"].waitForExistence(timeout: 10))
+        app.buttons["quota.retry"].tap()
+        XCTAssertTrue(app.staticTexts["Codex · Free"].waitForExistence(timeout: 10))
+        assertNoQuotaOrFailure(app)
+        XCTAssertFalse(app.buttons["quota.retry"].exists)
+    }
+
+    @MainActor
     private func launch(_ scenario: String) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--t12-isolated-ui", scenario, "--t08-run-id", UUID().uuidString]

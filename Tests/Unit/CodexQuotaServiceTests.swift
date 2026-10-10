@@ -382,6 +382,122 @@ final class CodexQuotaServiceTests: XCTestCase {
         XCTAssertEqual(saved, [newer])
     }
 
+    func testT13RetryRechecksNetworkAndOnlyQueriesOriginalBinding() async throws {
+        let setup = try await self.setup()
+        let gates = QuotaRetryGates([.blocked(score: 50), .unavailable(.transport), .allowed(score: 51)])
+        let transport = QuotaTestTransport(data: Self.complete)
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(),
+            bindings: QuotaTestBinding(account: setup.account, store: setup.store),
+            quotaUpdater: try service(setup, transport: transport, gate: { await gates.next() }))
+        await flow.loadAccounts()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.quotaFailure, "网络不达标，无法更新")
+        XCTAssertEqual(flow.quotaFailureID, setup.account.id)
+        XCTAssertEqual(flow.accounts, [setup.account])
+        flow.retryInitialQuota(for: UUID())
+        var gateCount = await gates.count
+        XCTAssertEqual(gateCount, 1, "错误账户不能触发重试")
+        flow.retryInitialQuota(for: setup.account.id)
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.quotaFailure, "获取失败")
+        var requests = await transport.requests
+        XCTAssertTrue(requests.isEmpty, "低分和未知均不发额度请求")
+        flow.retryInitialQuota(for: setup.account.id)
+        flow.retryInitialQuota(for: setup.account.id)
+        await flow.waitForInitialQuota()
+        gateCount = await gates.count
+        requests = await transport.requests
+        XCTAssertEqual(gateCount, 3, "每次重试重新检查，连续点击不重复")
+        XCTAssertEqual(requests.count, 1)
+        XCTAssertEqual(requests.first?.value(forHTTPHeaderField: "ChatGPT-Account-Id"), setup.account.scope.remoteAccountID)
+        XCTAssertNil(flow.quotaFailure)
+        XCTAssertNil(flow.quotaFailureID)
+        XCTAssertNil(flow.quotaUpdatingID)
+        XCTAssertEqual(flow.accounts.count, 1)
+        XCTAssertEqual(flow.accounts.first?.id, setup.account.id)
+        XCTAssertEqual(flow.accounts.first?.credentialRef, setup.account.credentialRef)
+        XCTAssertEqual(flow.accounts.first?.quotaSnapshot?.weekly.amount.remainingPercent, 70)
+        XCTAssertEqual(flow.accounts.first?.quotaSnapshot?.observedAt, time)
+        flow.retryInitialQuota(for: setup.account.id)
+        gateCount = await gates.count
+        XCTAssertEqual(gateCount, 3, "成功后不开放一般刷新")
+        print("T13 | 50分→未知→51分重试 | 同账户保留；前两次0请求，恢复后1请求；无重复绑定，清除失败")
+    }
+
+    func testT13RequestFailurePreservesPlanAndReopenCanRetryWithoutLogin() async throws {
+        let setup = try await self.setup()
+        var original = setup.account
+        original.subscription = .init(planType: "plus", observedAt: time.addingTimeInterval(-60))
+        try await setup.store.update(original)
+        let binding = QuotaTestBinding(account: original, store: setup.store)
+        let transport = QuotaRetryTransport(body: Self.complete, failures: 2)
+        let gates = QuotaRetryGates(Array(repeating: .allowed(score: 51), count: 3))
+        let updater = try service(setup, transport: transport, gate: { await gates.next() })
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(), bindings: binding, quotaUpdater: updater)
+        await flow.loadAccounts()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.quotaFailure, "获取失败")
+        XCTAssertEqual(flow.accounts, [original])
+        let reopened = CodexConnectionFlow(transactions: QuotaTestTransactions(), bindings: binding, quotaUpdater: updater)
+        await reopened.loadAccounts()
+        await reopened.waitForInitialQuota()
+        XCTAssertEqual(reopened.quotaFailure, "获取失败")
+        XCTAssertEqual(reopened.accounts, [original])
+        XCTAssertNil(reopened.accounts.first?.quotaSnapshot)
+        XCTAssertFalse(reopened.isPresented)
+        reopened.retryInitialQuota(for: original.id)
+        await reopened.waitForInitialQuota()
+        XCTAssertNil(reopened.quotaFailure)
+        let saved = try await AccountStore(fileURL: setup.url).load()
+        XCTAssertEqual(saved, reopened.accounts)
+        XCTAssertEqual(saved.count, 1)
+        XCTAssertEqual(saved.first?.id, original.id)
+        XCTAssertEqual(saved.first?.quotaSnapshot?.observedAt, time)
+        let count = await gates.count
+        XCTAssertEqual(count, 3)
+        print("T13 | 请求失败与失败重开 | 保留同一账户、原套餐和原观测时间；不要求登录；重试成功持久保存")
+    }
+
+    func testT13PlanOnlyFailureThenRetryPreservesNewNameAndPublishesQuota() async throws {
+        let setup = try await self.setup()
+        let bad = Data(#"{"account_id":"quota-test-account","plan_type":"New Official Plan","rate_limit":"bad"}"#.utf8)
+        let good = Data(String(decoding: Self.complete, as: UTF8.self).replacingOccurrences(of: "plus", with: "New Official Plan").utf8)
+        let transport = QuotaRetryTransport(body: good, firstBody: bad)
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(),
+            bindings: QuotaTestBinding(account: setup.account, store: setup.store),
+            quotaUpdater: try service(setup, transport: transport))
+        await flow.loadAccounts()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.quotaFailure, "获取失败")
+        XCTAssertEqual(flow.accounts.first?.subscription?.planType, "New Official Plan")
+        XCTAssertNil(flow.accounts.first?.quotaSnapshot)
+        flow.retryInitialQuota(for: setup.account.id)
+        await flow.waitForInitialQuota()
+        XCTAssertNil(flow.quotaFailure)
+        XCTAssertEqual(flow.accounts.first?.subscription?.planType, "New Official Plan")
+        XCTAssertEqual(flow.accounts.first?.quotaSnapshot?.fiveHours.amount.remainingPercent, 20)
+    }
+
+    func testT13RecoveryToFreeEndsNormallyWithoutQuotaAndCannotRetryAgain() async throws {
+        let setup = try await self.setup()
+        let gates = QuotaRetryGates([.unavailable(.transport), .allowed(score: 51)])
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(),
+            bindings: QuotaTestBinding(account: setup.account, store: setup.store),
+            quotaUpdater: try service(setup, transport: QuotaTestTransport(data: Self.free), gate: { await gates.next() }))
+        await flow.loadAccounts()
+        await flow.waitForInitialQuota()
+        flow.retryInitialQuota(for: setup.account.id)
+        await flow.waitForInitialQuota()
+        XCTAssertNil(flow.quotaFailure)
+        XCTAssertNil(flow.quotaFailureID)
+        XCTAssertEqual(flow.accounts.first?.quotaState, .notApplicable)
+        XCTAssertNil(flow.accounts.first?.quotaSnapshot)
+        flow.retryInitialQuota(for: setup.account.id)
+        let count = await gates.count
+        XCTAssertEqual(count, 2)
+        print("T13 | 失败后恢复为Free无适用额度 | 正常结束，无假额度／时间／失败，不留重试入口")
+    }
+
     private static let free = Data(#"{"account_id":"quota-test-account","plan_type":"Free","rate_limit":{"primary_window":{"limit_window_seconds":2592000,"used_percent":0,"reset_at":1800500000},"secondary_window":null}}"#.utf8)
 
     private typealias Setup = (store: AccountStore, account: ConnectedAccount, url: URL)
@@ -476,4 +592,30 @@ private actor QuotaTestPending: CodexPendingLoginStoring {
     func saveCode(_ code: CodexAuthorizationCode, transactionID: UUID) { }
     func saveTokens(_ tokens: CodexTokenResponse, transactionID: UUID) { }
     func remove(transactionID: UUID) { }
+}
+
+private actor QuotaRetryGates {
+    let values: [NetworkScoreResult]
+    private(set) var count = 0
+    init(_ values: [NetworkScoreResult]) { self.values = values }
+    func next() -> NetworkScoreResult {
+        defer { count += 1 }
+        return values[min(count, values.count - 1)]
+    }
+}
+private actor QuotaRetryTransport: CodexDeviceAuthorizationTransport {
+    let body: Data
+    let firstBody: Data?
+    let failures: Int
+    private var count = 0
+    init(body: Data, failures: Int = 0, firstBody: Data? = nil) {
+        self.body = body; self.failures = failures; self.firstBody = firstBody
+    }
+    func data(for request: URLRequest) throws -> (Data, URLResponse) {
+        count += 1
+        if count <= failures { throw URLError(.timedOut) }
+        return (count == 1 ? (firstBody ?? body) : body,
+                HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil,
+                                headerFields: ["Content-Type": "application/json"])!)
+    }
 }

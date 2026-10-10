@@ -93,6 +93,7 @@ enum CodexConnectionUITestSupport {
         }
         let completer = FixtureCompleter(scenario: includeQuota ? "success" : scenario)
         let store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
+        let retryFixture = QuotaRetryFixture(scenario: scenario)
         let updater: CodexQuotaService? = includeQuota ? CodexQuotaService(store: store,
             loadCredential: { _ in
                 let package = CodexIdentityVerifier.CredentialPackage(credentialVersion: 1,
@@ -102,8 +103,8 @@ enum CodexConnectionUITestSupport {
                     tokens: .init(accessToken: "fixture-access", refreshToken: "fixture-refresh", idToken: "fixture-id",
                                   obtainedAt: Date(), expiresAt: nil))
                 return .init(data: try JSONEncoder().encode(package))
-            }, transport: QuotaFixtureTransport(scenario: scenario),
-            checkNetwork: { scenario == "blocked" ? .blocked(score: 50) : .allowed(score: 51) }) : nil
+            }, transport: retryFixture,
+            checkNetwork: { await retryFixture.checkNetwork() }) : nil
         return CodexConnectionFlow(
             checkNetwork: { .allowed(score: 51) },
             authorizer: FixtureAuthorizer(fails: false, pollInterval: 1),
@@ -120,6 +121,28 @@ enum CodexConnectionUITestSupport {
                 return true
             }
         )
+    }
+
+    private actor QuotaRetryFixture: CodexDeviceAuthorizationTransport {
+        let scenario: String
+        private var checks = 0
+        private var requests = 0
+        init(scenario: String) { self.scenario = scenario }
+        func checkNetwork() -> NetworkScoreResult {
+            checks += 1
+            if scenario == "blocked" || (scenario == "retry-blocked" && checks == 1) { return .blocked(score: 50) }
+            if scenario == "retry-unknown" && checks == 1 { return .unavailable(.transport) }
+            return .allowed(score: 51)
+        }
+        func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+            requests += 1
+            if scenario == "retry-request" && requests == 1 { throw URLError(.timedOut) }
+            let resolved: String
+            if scenario == "retry-plan" { resolved = requests == 1 ? "plan-only-failure" : "new-plan" }
+            else if scenario == "retry-free" { resolved = requests == 1 ? "plan-only-failure" : "free" }
+            else { resolved = scenario }
+            return try await QuotaFixtureTransport(scenario: resolved).data(for: request)
+        }
     }
 
     private struct QuotaFixtureTransport: CodexDeviceAuthorizationTransport {

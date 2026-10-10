@@ -19,7 +19,9 @@ struct RootView: View {
                 QuotaView(accounts: connection.accounts, loading: connection.loadingAccounts,
                           loadFailed: connection.accountLoadFailed, canConnect: connection.canConnect,
                           updatingID: connection.quotaUpdatingID, quotaFailure: connection.quotaFailure,
-                          connect: { connection.begin() })
+                          quotaFailureID: connection.quotaFailureID,
+                          connect: { connection.begin() },
+                          retry: { connection.retryInitialQuota(for: $0) })
             }
             .tabItem {
                 Label("额度", systemImage: "chart.bar")

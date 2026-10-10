@@ -24,6 +24,7 @@ final class CodexConnectionFlow: ObservableObject {
     @Published private(set) var accountLoadFailed = false
     @Published private(set) var quotaUpdatingID: UUID?
     @Published private(set) var quotaFailure: String?
+    @Published private(set) var quotaFailureID: UUID?
     private let quotaUpdater: (any CodexQuotaUpdating)?
     private var quotaWork: Task<Void, Never>?
     private let completer: (any CodexLoginCompleting)?
@@ -539,12 +540,20 @@ final class CodexConnectionFlow: ObservableObject {
         }
     }
 
-    /// Separate from the login task: dismissing a successful login sheet cannot
-    /// cancel its newly started quota query or turn query failure into login failure.
+    /// First-fetch recovery only; this does not enable regular manual refresh.
+    func retryInitialQuota(for accountID: UUID) {
+        guard quotaFailureID == accountID,
+              let account = accounts.first(where: { $0.id == accountID }),
+              account.quotaState == .notFetched else { return }
+        startInitialQuota(for: account)
+    }
+
+    /// Separate from login: dismissing its sheet cannot cancel the quota query.
     private func startInitialQuota(for account: ConnectedAccount) {
         guard let quotaUpdater, quotaWork == nil else { return }
         quotaUpdatingID = account.id
         quotaFailure = nil
+        quotaFailureID = nil
         quotaWork = Task { [weak self] in
             guard let self else { return }
             defer { quotaUpdatingID = nil; quotaWork = nil }
@@ -566,6 +575,7 @@ final class CodexConnectionFlow: ObservableObject {
                 quotaFailure = (error as? CodexQuotaError) == .networkBlocked
                     ? "网络不达标，无法更新"
                     : (account.quotaState == .notFetched ? "获取失败" : "刷新失败")
+                quotaFailureID = account.id
             }
         }
     }
