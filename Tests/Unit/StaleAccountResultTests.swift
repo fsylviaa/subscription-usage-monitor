@@ -154,6 +154,38 @@ final class StaleAccountResultTests: XCTestCase {
         try await unchanged(f, expected: [f.c])
     }
 
+    func testT28OldFlowSuccessOrFailureCannotReplaceNewBindingResult() async throws {
+        for fails in [false, true] {
+            let f = try await fixture()
+            let gate = T22Gate()
+            let oldService = service(f, gate: gate)
+            let newService = service(f, used: 20, time: 200)
+            let updater = T28VersionedUpdater(oldReference: f.a.credentialRef, old: oldService, new: newService, fails: fails)
+            let loginGate = T22Gate()
+            let login = T28HeldLogin(login: try Self.login("A", version: "new"), gate: loginGate)
+            let flow = CodexConnectionFlow(checkNetwork: { .allowed(score: 51) }, authorizer: login,
+                transactions: CodexLoginTransactionStore(vault: f.vault), completer: login, verifier: login,
+                bindings: f.binding, pending: T28Pending(), quotaUpdater: updater)
+            await flow.loadAccounts()
+            await flow.begin()?.value
+            flow.refreshAllQuota(manually: false)
+            await gate.waitUntilStarted()
+            await loginGate.waitUntilStarted()
+            await loginGate.release()
+            for _ in 0..<1000 {
+                if flow.accounts.first?.quotaSnapshot?.weekly.amount.remainingPercent == 80 { break }
+                try await Task.sleep(for: .milliseconds(2))
+            }
+            XCTAssertEqual(flow.accounts.first?.quotaSnapshot?.weekly.amount.remainingPercent, 80)
+            let latest = try XCTUnwrap(flow.accounts.first)
+            await gate.release()
+            await flow.waitForInitialQuota()
+            XCTAssertEqual(flow.accounts, [latest, f.c])
+            XCTAssertNil(flow.quotaFailure)
+            try await unchanged(f, expected: [latest, f.c])
+        }
+    }
+
     private struct Fixture {
         let url: URL
         let service: String
@@ -274,4 +306,45 @@ private struct T22Renewal: CodexTokenRenewing {
         await gate?.hold()
         return tokens
     }
+}
+
+private struct T28VersionedUpdater: CodexQuotaUpdating {
+    let oldReference: UUID
+    let old: CodexQuotaService
+    let new: CodexQuotaService
+    let fails: Bool
+    func update(_ account: ConnectedAccount) async throws -> ConnectedAccount {
+        if account.scope.remoteAccountID == "account-C" { return account }
+        if account.credentialRef == oldReference {
+            do { return try await old.update(account) }
+            catch {
+                if fails { throw CodexQuotaError.failed }
+                // Deliberately return a stale value even after the production
+                // persistence guard rejected it; the UI must also reject it.
+                return account
+            }
+        }
+        return try await new.update(account)
+    }
+}
+
+private struct T28HeldLogin: CodexDeviceAuthorizing, CodexLoginCompleting, CodexIdentityVerifying {
+    let login: CodexVerifiedLogin
+    let gate: T22Gate
+    func requestAuthorization() throws -> CodexDeviceAuthorization {
+        try .init(deviceAuthID: "t28-device", userCode: "TEST-T28", pollInterval: 1, startedAt: Date())
+    }
+    func poll(_ authorization: CodexDeviceAuthorization) async -> CodexAuthorizationCode? {
+        await gate.hold()
+        return .init(code: "test-code", verifier: String(repeating: "a", count: 43))
+    }
+    func exchange(_ code: CodexAuthorizationCode) -> CodexTokenResponse {
+        .init(accessToken: "test", refreshToken: "test", idToken: "test", obtainedAt: Date(), expiresAt: nil)
+    }
+    func verify(_ tokens: CodexTokenResponse) -> CodexVerifiedLogin { login }
+}
+private actor T28Pending: CodexPendingLoginStoring {
+    func saveCode(_ code: CodexAuthorizationCode, transactionID: UUID) { }
+    func saveTokens(_ tokens: CodexTokenResponse, transactionID: UUID) { }
+    func remove(transactionID: UUID) { }
 }

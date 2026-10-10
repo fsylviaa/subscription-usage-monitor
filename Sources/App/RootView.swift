@@ -39,7 +39,7 @@ struct RootView: View {
                           retry: { connection.retryDashboardQuota(for: $0) },
                           closeFeedback: { connection.hideQuotaFeedback() },
                           deleteAccount: { connection.deleteAccount($0) }, canManage: connection.canManageAccounts,
-                          canRefresh: connection.quotaUpdatingID == nil, refreshAccount: { connection.refreshQuota(for: $0) },
+                          canRefresh: connection.canManageAccounts, refreshAccount: { connection.refreshQuota(for: $0) },
                           canReorder: connection.canReorderAccounts, savingOrder: connection.reorderingAccounts,
                           move: { connection.moveAccounts(from: $0, to: $1) })
             }

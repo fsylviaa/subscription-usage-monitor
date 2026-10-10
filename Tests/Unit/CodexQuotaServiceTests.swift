@@ -1067,7 +1067,61 @@ final class CodexQuotaServiceTests: XCTestCase {
         XCTAssertFalse(flow.isPresented, "登录完成不能卡在获取额度弹层")
         XCTAssertEqual(flow.accounts.count, 2)
         let attempts = await fixture.attempts
-        XCTAssertEqual(attempts[existing.id], 2, "登录结果必须完成自己的连接查询")
+        XCTAssertEqual(attempts[existing.id], 1, "同一绑定的连接监听复用在途查询；真实新绑定由新代次区分")
+    }
+
+    func testT28AutomaticWorkJoinsManualCardThenAllWithoutDuplicateQueries() async throws {
+        let (flow, fixture) = try await batch("cancel")
+        let ids = flow.accounts.map(\.id)
+        flow.refreshAllQuota(manually: false)
+        for _ in 0..<1000 {
+            if await fixture.checks.count == 2 { break }
+            try await Task.sleep(for: .milliseconds(2))
+        }
+        XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+        flow.refreshQuota(for: ids[0])
+        XCTAssertEqual(flow.visibleQuotaUpdatingIDs, [ids[0]])
+        // A new foreground event also joins, but cannot remove manual feedback.
+        flow.sceneActivityChanged(false)
+        flow.sceneActivityChanged(true)
+        flow.refreshQuota(for: ids[0])
+        XCTAssertEqual(flow.visibleQuotaUpdatingIDs, [ids[0]])
+        await fixture.release()
+        await flow.waitForInitialQuota()
+        var checks = await fixture.checks
+        XCTAssertEqual(checks, Dictionary(uniqueKeysWithValues: ids.map { ($0, 1) }))
+        flow.sceneActivityChanged(false)
+        flow.sceneActivityChanged(true)
+        await flow.waitForInitialQuota()
+        checks = await fixture.checks
+        XCTAssertEqual(checks, Dictionary(uniqueKeysWithValues: ids.map { ($0, 2) }))
+    }
+
+    func testT28SingleHeldAccountDoesNotBlockNewAllScopeAndAutoAllCanBecomeManual() async throws {
+        let (flow, fixture) = try await batch("slow")
+        let old = flow.accounts
+        flow.refreshQuota(for: old[1].id)
+        flow.refreshAllQuota()
+        for _ in 0..<1000 {
+            if flow.accounts[0] != old[0] { break }
+            try await Task.sleep(for: .milliseconds(2))
+        }
+        XCTAssertNotEqual(flow.accounts[0], old[0])
+        XCTAssertEqual(flow.accounts[1], old[1])
+        XCTAssertEqual(flow.visibleQuotaUpdatingIDs, [old[1].id])
+        await fixture.release()
+        await flow.waitForInitialQuota()
+        let checks = await fixture.checks
+        XCTAssertTrue(checks.values.allSatisfy { $0 == 1 })
+
+        let (all, held) = try await batch("cancel")
+        all.refreshAllQuota(manually: false)
+        all.refreshAllQuota()
+        XCTAssertEqual(all.visibleQuotaUpdatingIDs, Set(all.accounts.map(\.id)))
+        await held.release()
+        await all.waitForInitialQuota()
+        let allChecks = await held.checks
+        XCTAssertTrue(allChecks.values.allSatisfy { $0 == 1 })
     }
 
     private typealias Setup = (store: AccountStore, account: ConnectedAccount, url: URL)

@@ -2,6 +2,28 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT28ManualCardJoinsAutomaticRequestWithoutSpinningOtherCard() {
+        let app = launchD60("ui-staggered", extra: ["--t27-lifecycle"])
+        defer { app.terminate() }
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
+        XCTAssertTrue(second.waitForExistence(timeout: 5))
+        XCTAssertFalse(first.descendants(matching: .any)["quota.refreshProgress"].exists)
+        first.buttons["quota.menu"].tap()
+        app.buttons["刷新额度"].tap()
+        XCTAssertTrue(first.descendants(matching: .any)["quota.refreshProgress"].exists)
+        XCTAssertFalse(second.descendants(matching: .any)["quota.refreshProgress"].exists)
+        assertNoRefreshBanner(app)
+        screenshot(app, "T28-自动在途仅手动目标转圈")
+        XCTAssertTrue(app.buttons["quota.toolbarConnect"].waitForExistence(timeout: 5))
+        let done = NSPredicate(format: "enabled == true")
+        expectation(for: done, evaluatedWith: app.buttons["quota.toolbarConnect"])
+        waitForExpectations(timeout: 25)
+        XCTAssertEqual(first.staticTexts["quota.weekly.remaining"].label, "剩余 55%")
+        XCTAssertEqual(second.staticTexts["quota.weekly.remaining"].label, "剩余 55%")
+    }
+
+    @MainActor
     func testT59PullRefreshUsesAllCardsAndReturnsToOriginalLayout() {
         let app = launchD60("ui-staggered")
         defer { app.terminate() }
@@ -634,7 +656,7 @@ final class CodexQuotaUITests: XCTestCase {
         app.launchArguments = ["--t16-isolated-ui", "failure", "--t16-run-id", UUID().uuidString]
         app.launch()
         defer { app.terminate() }
-        app.buttons["quota.connect"].tap()
+        app.buttons["quota.toolbarConnect"].tap()
         XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
         app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
@@ -955,8 +977,8 @@ final class CodexQuotaUITests: XCTestCase {
         return app
     }
     @MainActor private func completeFixtureLogin(_ app: XCUIApplication) {
-        XCTAssertTrue(app.buttons["quota.connect"].waitForExistence(timeout: 10))
-        app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["quota.toolbarConnect"].waitForExistence(timeout: 10))
+        app.buttons["quota.toolbarConnect"].tap()
         XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
         app.buttons["platforms.codex"].tap()
         XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))

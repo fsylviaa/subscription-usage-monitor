@@ -62,9 +62,7 @@ final class CodexConnectionFlow: ObservableObject {
         guard canManageAccounts, let remover = bindings as? any AccountRemoving,
               accounts.contains(where: { $0.id == id }) else { return nil }
         managingAccounts = true
-        queuedQuota.removeAll { $0.account.id == id }
-        let previous = quotaUpdatingID == id && batchQuotaIDs == nil ? quotaWork : nil
-        previous?.cancel()
+        cancelRequests(where: { $0.id == id })
         return Task {
             defer { managingAccounts = false; refreshPendingForeground() }
             do {
@@ -77,11 +75,7 @@ final class CodexConnectionFlow: ObservableObject {
     }
 
     private func cancelDemoQuota() async {
-        queuedQuota.removeAll { $0.account.isDemo }
-        if batchQuotaIDs == nil, let id = quotaUpdatingID, accounts.contains(where: { $0.id == id && $0.isDemo }) {
-            quotaWork?.cancel()
-            await quotaWork?.value
-        }
+        cancelRequests(where: { $0.isDemo })
     }
 
     private func discardRemovedFeedback() {
@@ -103,9 +97,10 @@ final class CodexConnectionFlow: ObservableObject {
     @Published private(set) var manualQuotaInProgress = false
     @Published private(set) var quotaUpdatingID: UUID?
     @Published private(set) var quotaUpdatingIDs: Set<UUID> = []
-    var visibleQuotaUpdatingIDs: Set<UUID> { manualQuotaInProgress ? quotaUpdatingIDs : [] }
+    var visibleQuotaUpdatingIDs: Set<UUID> { manualQuotaIDs.intersection(quotaUpdatingIDs) }
+    private var manualQuotaIDs: Set<UUID> = []
     private var batchQuotaIDs: [UUID]?
-    var canRefreshAll: Bool { canManageAccounts && quotaWork == nil && !accounts.isEmpty && quotaUpdater != nil }
+    var canRefreshAll: Bool { canManageAccounts && !Set(accounts.map(\.id)).isSubset(of: manualQuotaIDs) && !accounts.isEmpty && quotaUpdater != nil }
     @Published private(set) var quotaFailure: String?
     @Published private(set) var quotaFailureID: UUID?
     @Published private(set) var quotaFailures: [UUID: String] = [:]
@@ -113,9 +108,23 @@ final class CodexConnectionFlow: ObservableObject {
     @Published private(set) var quotaFeedbackLocation: QuotaFeedbackLocation = .dashboard
     @Published private(set) var quotaFeedbackHidden = false
     private let quotaUpdater: (any CodexQuotaUpdating)?
-    private var queuedQuota: [(account: ConnectedAccount, location: QuotaFeedbackLocation)] = []
+    private struct QuotaKey: Hashable {
+        let id: UUID
+        let generation: UInt64
+        let credential: UUID
+        init(_ account: ConnectedAccount) {
+            id = account.id; generation = account.generation; credential = account.credentialRef
+        }
+    }
+    private struct QuotaRequest {
+        let account: ConnectedAccount
+        var connection: Bool
+        var work: Task<Void, Never>?
+    }
+    private var quotaRequests: [QuotaKey: QuotaRequest] = [:]
+    private var quotaQueue: [QuotaKey] = []
+    private var refreshTargets: [ConnectedAccount] = []
     @Published private(set) var restoringLogin = false
-    private var quotaWork: Task<Void, Never>?
     private let completer: (any CodexLoginCompleting)?
     private let verifier: (any CodexIdentityVerifying)?
     private let bindings: (any CodexAccountBinding)?
@@ -731,10 +740,9 @@ final class CodexConnectionFlow: ObservableObject {
     }
 
     func refreshQuota(for id: UUID) {
-        guard canManageAccounts, quotaWork == nil,
+        guard canManageAccounts,
               let account = accounts.first(where: { $0.id == id && $0.deletionPending != true }) else { return }
-        manualQuotaInProgress = true
-        startInitialQuota(for: account)
+        enqueueQuota([account], manually: true, location: .dashboard)
     }
 
     func refreshAllQuota(manually: Bool = true) {
@@ -743,76 +751,26 @@ final class CodexConnectionFlow: ObservableObject {
 
     func retryDashboardQuota(for id: UUID) {
         guard quotaFailureID == id else { return }
-        if let ids = batchQuotaIDs { startQuotaBatch(ids: ids) }
-        else {
-            guard quotaWork == nil else { return }
-            manualQuotaInProgress = true
-            retryInitialQuota(for: id)
-        }
+        startQuotaBatch(ids: batchQuotaIDs ?? [id])
     }
 
     private func startQuotaBatch(ids: [UUID], manually: Bool = true) {
-        // Automatic foreground work may run while a login sheet is open or
-        // being restored. It only targets identities already in the cache.
         guard manually ? canRefreshAll : (cachedAccountsLoaded && !accountLoadFailed
-            && !managingAccounts && !reorderingAccounts && quotaWork == nil && quotaUpdater != nil) else { return }
+            && !managingAccounts && !reorderingAccounts && quotaUpdater != nil) else { return }
         let targets = ids.compactMap { id in accounts.first { $0.id == id && $0.deletionPending != true } }
-        guard let first = targets.first else { return }
-        batchQuotaIDs = targets.map(\.id)
-        manualQuotaInProgress = manually
-        quotaFeedbackLocation = .dashboard
-        quotaFeedbackHidden = false
-        quotaFailure = nil
-        quotaFailureID = nil
-        quotaUpdatingID = first.id
-        quotaUpdatingIDs = Set(targets.map(\.id))
-        quotaWork = Task { [weak self] in
-            guard let self else { return }
-            // At most three independent accounts run at once. A slow/failing
-            // account cannot prevent another account from committing success.
-            await withTaskGroup(of: Void.self) { group in
-                var next = targets.makeIterator()
-                for _ in 0..<min(3, targets.count) {
-                    if let account = next.next() {
-                        group.addTask { await self.performQuotaUpdate(account, location: .dashboard) }
-                    }
-                }
-                while await group.next() != nil {
-                    if Task.isCancelled { group.cancelAll() }
-                    else if let account = next.next() {
-                        group.addTask { await self.performQuotaUpdate(account, location: .dashboard) }
-                    }
-                }
-            }
-            // Aggregate only this operation's surviving identities, irrespective
-            // of completion order. Keep the captured scope for its retry.
-            let failures = targets.filter { target in
-                accounts.contains { $0.id == target.id && $0.generation == target.generation }
-                    && quotaFailures[target.id] != nil
-            }
-            quotaFailureID = failures.first?.id
-            quotaFailure = failures.isEmpty ? nil :
-                (failures.contains { quotaFailures[$0.id] == "网络不达标，无法更新" }
-                    ? "网络不达标，无法更新" : "刷新失败")
-            manualQuotaInProgress = false
-            quotaUpdatingID = nil
-            quotaUpdatingIDs = []
-            quotaWork = nil
-            if !queuedQuota.isEmpty {
-                let next = queuedQuota.removeFirst()
-                startInitialQuota(for: next.account, location: next.location)
-            }
-        }
+        enqueueQuota(targets, manually: manually, location: .dashboard)
     }
 
-    // Internal cancellation remains for interruption tests; there is no dashboard cancel action.
-    func cancelQuotaUpdate() { if manualQuotaInProgress { quotaWork?.cancel() } }
+    // Internal interruption only; the dashboard has no cancellation action.
+    func cancelQuotaUpdate() {
+        guard manualQuotaInProgress else { return }
+        cancelRequests(where: { _ in true })
+    }
 
-    /// Retry remains scoped to the failed identity, including an existing snapshot.
     func retryInitialQuota(for accountID: UUID, location: QuotaFeedbackLocation = .dashboard) {
-        guard quotaFailureID == accountID,
-              !managingAccounts, let account = accounts.first(where: { $0.id == accountID && $0.deletionPending != true }) else { return }
-        startInitialQuota(for: account, location: location)
+        guard quotaFailureID == accountID, !managingAccounts,
+              let account = accounts.first(where: { $0.id == accountID && $0.deletionPending != true }) else { return }
+        enqueueQuota([account], manually: false, location: location)
     }
 
     func hideQuotaFeedback() {
@@ -820,49 +778,96 @@ final class CodexConnectionFlow: ObservableObject {
         quotaFeedbackHidden = true
     }
 
-    /// Separate from login: dismissing its sheet cannot cancel the quota query.
     private func startInitialQuota(for account: ConnectedAccount, location: QuotaFeedbackLocation = .dashboard) {
-        guard quotaUpdater != nil else { return }
-        if quotaWork != nil {
-            // A login completed during the foreground batch still needs its own
-            // connection result, even when its ID is the batch's first account.
-            if (location == .connection || quotaUpdatingID != account.id)
-                && !queuedQuota.contains(where: { $0.account.id == account.id && $0.account.generation == account.generation }) {
-                queuedQuota.append((account, location))
-            }
-            return
+        enqueueQuota([account], manually: false, location: location)
+    }
+
+    private func enqueueQuota(_ targets: [ConnectedAccount], manually: Bool, location: QuotaFeedbackLocation) {
+        guard quotaUpdater != nil, !targets.isEmpty else { return }
+        if quotaRequests.isEmpty {
+            refreshTargets = []
+            manualQuotaIDs = []
+            quotaFailure = nil
+            quotaFailureID = nil
+            quotaFeedbackHidden = false
+            quotaFeedbackLocation = location
         }
-        batchQuotaIDs = nil
-        quotaUpdatingIDs = [account.id]
-        quotaFeedbackLocation = location
-        quotaFeedbackHidden = false
-        quotaUpdatingID = account.id
-        quotaFailure = nil
-        quotaFailureID = nil
-        quotaWork = Task { [weak self] in
-            guard let self else { return }
-            defer {
-                manualQuotaInProgress = false
-                quotaUpdatingID = nil
-                quotaUpdatingIDs = []
-                quotaWork = nil
-                if !queuedQuota.isEmpty {
-                    let next = queuedQuota.removeFirst()
-                    startInitialQuota(for: next.account, location: next.location)
-                } else if !isPresented, quotaFailureID == nil,
-                          let failed = accounts.first(where: { quotaFailures[$0.id] != nil }) {
-                    quotaFailureID = failed.id
-                    quotaFailure = quotaFailures[failed.id]
-                    quotaFeedbackLocation = .dashboard
+        for account in targets {
+            let key = QuotaKey(account)
+            if !refreshTargets.contains(where: { QuotaKey($0) == key }) { refreshTargets.append(account) }
+            if manually { manualQuotaIDs.insert(account.id) }
+            if quotaRequests[key] != nil {
+                // A connection query can join the exact same binding. A new
+                // binding has a new key and can never reuse an old response.
+                if location == .connection { quotaRequests[key]?.connection = true }
+            } else {
+                quotaRequests[key] = QuotaRequest(account: account, connection: location == .connection)
+                quotaQueue.append(key)
+            }
+        }
+        batchQuotaIDs = refreshTargets.map(\.id)
+        updateQuotaActivity()
+        startQueuedQuota()
+    }
+
+    private func updateQuotaActivity() {
+        quotaUpdatingIDs = Set(quotaRequests.keys.map(\.id))
+        quotaUpdatingID = refreshTargets.first { quotaUpdatingIDs.contains($0.id) }?.id
+        manualQuotaInProgress = !manualQuotaIDs.intersection(quotaUpdatingIDs).isEmpty
+    }
+
+    private func startQueuedQuota() {
+        while quotaRequests.values.filter({ $0.work != nil }).count < 3, !quotaQueue.isEmpty {
+            let key = quotaQueue.removeFirst()
+            guard let request = quotaRequests[key] else { continue }
+            quotaRequests[key]?.work = Task { [weak self] in
+                guard let self else { return }
+                await performQuotaUpdate(request.account, location: request.connection ? .connection : .dashboard)
+                // The connection listener may have joined while the request waited.
+                if quotaRequests[key]?.connection == true, state == .quota,
+                   accounts.contains(where: { QuotaKey($0) == key }), quotaFailures[key.id] == nil {
+                    state = .idle
+                    isPresented = false
                 }
+                quotaRequests.removeValue(forKey: key)
+                if !quotaRequests.keys.contains(where: { $0.id == key.id }) { manualQuotaIDs.remove(key.id) }
+                updateQuotaActivity()
+                startQueuedQuota()
+                if quotaRequests.isEmpty { finishQuotaRefresh() }
             }
-            await performQuotaUpdate(account, location: location)
         }
+    }
+
+    private func finishQuotaRefresh() {
+        let failures = refreshTargets.filter { target in
+            accounts.contains { QuotaKey($0) == QuotaKey(target) } && quotaFailures[target.id] != nil
+        }
+        var failureID = failures.first?.id
+        var message = failures.first.flatMap { quotaFailures[$0.id] }
+        if failures.contains(where: { quotaFailures[$0.id] == "网络不达标，无法更新" }) {
+            message = "网络不达标，无法更新"
+        }
+        if failureID == nil, !isPresented, let failed = accounts.first(where: { quotaFailures[$0.id] != nil }) {
+            failureID = failed.id
+            message = quotaFailures[failed.id]
+            batchQuotaIDs = [failed.id]
+        }
+        quotaFailureID = failureID
+        if quotaFailure != message { quotaFailure = message }
+        if !isPresented { quotaFeedbackLocation = .dashboard }
+        manualQuotaIDs = []
+    }
+
+    private func cancelRequests(where matches: (ConnectedAccount) -> Bool) {
+        for (key, request) in quotaRequests where matches(request.account) {
+            if let work = request.work { work.cancel() }
+            else { quotaRequests.removeValue(forKey: key); quotaQueue.removeAll { $0 == key } }
+        }
+        updateQuotaActivity()
     }
 
     private func performQuotaUpdate(_ account: ConnectedAccount, location: QuotaFeedbackLocation) async {
         guard let quotaUpdater else { return }
-        defer { quotaUpdatingIDs.remove(account.id) }
         do {
             try Task.checkCancellation()
             guard accounts.contains(where: { $0.id == account.id && $0.generation == account.generation && $0.deletionPending != true }) else { return }
@@ -874,6 +879,7 @@ final class CodexConnectionFlow: ObservableObject {
                 updated = try await quotaUpdater.update(account)
             }
             try Task.checkCancellation()
+            guard accounts.contains(where: { QuotaKey($0) == QuotaKey(account) }) else { return }
             quotaFailures.removeValue(forKey: account.id)
             if let index = accounts.firstIndex(where: { $0.id == updated.id && $0.generation == updated.generation }) {
                 accounts[index] = updated
@@ -895,6 +901,7 @@ final class CodexConnectionFlow: ObservableObject {
                let index = accounts.firstIndex(where: { $0.id == account.id && $0.generation == account.generation }) {
                 accounts[index] = updated
             }
+            guard accounts.contains(where: { QuotaKey($0) == QuotaKey(account) }) else { return }
             quotaFailure = (error as? CodexQuotaError) == .networkBlocked
                 ? "网络不达标，无法更新"
                 : (account.quotaState == .notFetched && !manualQuotaInProgress ? "获取失败" : "刷新失败")
@@ -903,7 +910,9 @@ final class CodexConnectionFlow: ObservableObject {
         }
     }
 
-    func waitForInitialQuota() async { while let work = quotaWork { await work.value } }
+    func waitForInitialQuota() async {
+        while let work = quotaRequests.values.compactMap(\.work).first { await work.value }
+    }
 
     private func waitUntilActive(_ authorization: CodexDeviceAuthorization, attempt: UUID) async throws {
         while !isActive {
