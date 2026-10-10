@@ -5,6 +5,29 @@
 	};
 	"objectVersion" = "56";
 	"objects" = {
+        "A3300000000000000000000A" = { "isa" = "PBXSourcesBuildPhase"; "buildActionMask" = "2147483647"; "files" = ( "A33000000000000000000016", "A3300000000000000000001F", "A3300000000000000000003C", "A3300000000000000000003D" , ); "runOnlyForDeploymentPostprocessing" = "0"; };
+        "A3300000000000000000000C" = { "isa" = "PBXBuildFile"; "fileRef" = "E0E27618A2D2A8FEBDD49F35"; };
+        "A3300000000000000000000B" = { "isa" = "PBXResourcesBuildPhase"; "buildActionMask" = "2147483647"; "files" = ( "A3300000000000000000000C" , ); "runOnlyForDeploymentPostprocessing" = "0"; };
+        "A3300000000000000000000D" = { "isa" = "PBXFrameworksBuildPhase"; "buildActionMask" = "2147483647"; "files" = (  ); "runOnlyForDeploymentPostprocessing" = "0"; };
+        "A33000000000000000000014" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Shared/QuotaWidgetContent.swift"; "sourceTree" = "<group>"; };
+        "A33000000000000000000015" = { "isa" = "PBXBuildFile"; "fileRef" = "A33000000000000000000014"; };
+        "A33000000000000000000016" = { "isa" = "PBXBuildFile"; "fileRef" = "A33000000000000000000014"; };
+        "A3300000000000000000001E" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Widget/SubscriptionUsageWidget.swift"; "sourceTree" = "<group>"; };
+        "A3300000000000000000001F" = { "isa" = "PBXBuildFile"; "fileRef" = "A3300000000000000000001E"; };
+        "A33000000000000000000028" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "QuotaWidgetTests.swift"; "sourceTree" = "<group>"; };
+        "A33000000000000000000029" = { "isa" = "PBXBuildFile"; "fileRef" = "A33000000000000000000028"; };
+        "A3300000000000000000003C" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000001"; };
+        "A3300000000000000000003D" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000003"; };
+        "A33000000000000000000046" = { "isa" = "PBXFileReference"; "explicitFileType" = "wrapper.app-extension"; "path" = "SubscriptionUsageWidget.appex"; "sourceTree" = "BUILT_PRODUCTS_DIR"; };
+        "A33000000000000000000050" = { "isa" = "XCBuildConfiguration"; "baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E"; "buildSettings" = { "CODE_SIGN_ENTITLEMENTS" = "Config/SubscriptionUsage.entitlements"; "MARKETING_VERSION" = "0.1.0"; "SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator"; "PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsage.Widget"; "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" = "AccentColor"; "CURRENT_PROJECT_VERSION" = "1"; "INFOPLIST_KEY_CFBundleDisplayName" = "订阅用量"; "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO"; "SUPPORTS_MACCATALYST" = "NO"; "TARGETED_DEVICE_FAMILY" = "1"; "CODE_SIGN_STYLE" = "Automatic"; "LD_RUNPATH_SEARCH_PATHS" = ( "$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks" , ); "PRODUCT_NAME" = "$(TARGET_NAME)"; "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO"; "INFOPLIST_FILE" = "Config/Widget-Info.plist"; "GENERATE_INFOPLIST_FILE" = "YES"; "APPLICATION_EXTENSION_API_ONLY" = "YES"; "SKIP_INSTALL" = "YES"; }; "name" = "Debug"; };
+        "A33000000000000000000051" = { "isa" = "XCBuildConfiguration"; "baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E"; "buildSettings" = { "CODE_SIGN_ENTITLEMENTS" = "Config/SubscriptionUsage.entitlements"; "MARKETING_VERSION" = "0.1.0"; "SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator"; "PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsage.Widget"; "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" = "AccentColor"; "CURRENT_PROJECT_VERSION" = "1"; "INFOPLIST_KEY_CFBundleDisplayName" = "订阅用量"; "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO"; "SUPPORTS_MACCATALYST" = "NO"; "TARGETED_DEVICE_FAMILY" = "1"; "CODE_SIGN_STYLE" = "Automatic"; "LD_RUNPATH_SEARCH_PATHS" = ( "$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks" , ); "PRODUCT_NAME" = "$(TARGET_NAME)"; "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO"; "INFOPLIST_FILE" = "Config/Widget-Info.plist"; "GENERATE_INFOPLIST_FILE" = "YES"; "APPLICATION_EXTENSION_API_ONLY" = "YES"; "SKIP_INSTALL" = "YES"; }; "name" = "Release"; };
+        "A33000000000000000000052" = { "isa" = "XCConfigurationList"; "buildConfigurations" = ( "A33000000000000000000050", "A33000000000000000000051" , ); "defaultConfigurationIsVisible" = "0"; "defaultConfigurationName" = "Release"; };
+        "A3300000000000000000005A" = { "isa" = "PBXNativeTarget"; "buildConfigurationList" = "A33000000000000000000052"; "buildPhases" = ( "A3300000000000000000000A", "A3300000000000000000000D", "A3300000000000000000000B" , ); "buildRules" = (  ); "dependencies" = (  ); "name" = "SubscriptionUsageWidget"; "productName" = "SubscriptionUsageWidget"; "productReference" = "A33000000000000000000046"; "productType" = "com.apple.product-type.app-extension"; };
+        "A3300000000000000000005B" = { "isa" = "PBXContainerItemProxy"; "containerPortal" = "98F54143AB4E86B28C3AFEE0"; "proxyType" = "1"; "remoteGlobalIDString" = "A3300000000000000000005A"; "remoteInfo" = "SubscriptionUsageWidget"; };
+        "A3300000000000000000005C" = { "isa" = "PBXTargetDependency"; "target" = "A3300000000000000000005A"; "targetProxy" = "A3300000000000000000005B"; };
+        "A3300000000000000000005D" = { "isa" = "PBXBuildFile"; "fileRef" = "A33000000000000000000046"; "settings" = { "ATTRIBUTES" = ( "RemoveHeadersOnCopy" , ); }; };
+        "A3300000000000000000005E" = { "isa" = "PBXCopyFilesBuildPhase"; "buildActionMask" = "2147483647"; "dstPath" = ""; "dstSubfolderSpec" = "13"; "files" = ( "A3300000000000000000005D" , ); "name" = "Embed App Extensions"; "runOnlyForDeploymentPostprocessing" = "0"; };
+
         "A32000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Shared/WidgetSnapshot.swift"; "sourceTree" = "<group>"; };
         "A32000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000001"; };
         "A32000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Shared/WidgetSnapshotStore.swift"; "sourceTree" = "<group>"; };
@@ -408,6 +431,8 @@
 		"A9012353AFD6A66EB75D4BE2" = {
 			"isa" = "PBXGroup";
 			"children" = (
+                "A3300000000000000000001E",
+                "A33000000000000000000014",
                 "A32000000000000000000001",
                 "A32000000000000000000003",
                 "A32000000000000000000005",
@@ -454,6 +479,7 @@
 		"526E9B80F5C826824C672690" = {
 			"isa" = "PBXGroup";
 			"children" = (
+                "A33000000000000000000028",
                 "A32000000000000000000007",
                 "A12000000000000000000007",
                 "A14000000000000000000003",
@@ -533,6 +559,7 @@
 		"5151B46607EBC8890D8DFCC2" = {
 			"isa" = "PBXGroup";
 			"children" = (
+                "A33000000000000000000046",
 				"8B78D6DD1422F301A90CA41C",
 				"DC4B395B83EF4B7D4922E542",
 				"5EFFCF461A990651450E250C",
@@ -837,6 +864,7 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
 			"files" = (
+                "A33000000000000000000015",
                 "A32000000000000000000002",
                 "A32000000000000000000004",
                 "A32000000000000000000006",
@@ -892,10 +920,12 @@
 				"DBD765969E2C480B353169C4",
 				"881D232D2A04C1E59F16365B",
 				"1F4348A705DE26BA70374258",
+                "A3300000000000000000005E",
 			);
 			"buildRules" = (
 			);
 			"dependencies" = (
+                "A3300000000000000000005C",
 			);
 			"name" = "SubscriptionUsage";
 			"productName" = "SubscriptionUsage";
@@ -922,6 +952,7 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
 			"files" = (
+                "A33000000000000000000029",
                 "A32000000000000000000008",
                 "A12000000000000000000008",
                 "A14000000000000000000004",
@@ -1070,6 +1101,7 @@
 			"projectDirPath" = "";
 			"projectRoot" = "";
 			"targets" = (
+                "A3300000000000000000005A",
 				"E633290B294C2A3AB4572C63",
 				"EABDCA511F0CE0D17BB7AB89",
 				"3A56D6E2F23E4EBB75B434CE",

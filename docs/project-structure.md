@@ -11,6 +11,7 @@ T01–T07 的工程、页面、账户/授权存储与网络评分基础说明，
 | 工程文件 | `SubscriptionUsage.xcodeproj` |
 | 共享 Scheme | `SubscriptionUsage`；配置保存在工程的 `xcshareddata/xcschemes/`，随 Git 保存 |
 | App target | `SubscriptionUsage`；仅 iPhone，使用 SwiftUI |
+| Widget target | `SubscriptionUsageWidget`；T33 小号静态组件，与 App 同组 App Group；不含登录／网络代码 |
 | 单元测试 target | `SubscriptionUsageTests` |
 | UI 测试 target | `SubscriptionUsageUITests` |
 | Swift 语言模式 | Swift 6 |
@@ -64,7 +65,7 @@ app/
 | `Tests/UI/LaunchTests.swift` | 通过测试运行器检查启动、页面往返、操作禁用、顶部同排与重启 | 后续界面测试放 `Tests/UI/`；测试入口不作为产品页面或用户设置 |
 | `docs/` | 已确认需求、原研究证据、任务说明和验收结果 | 保留已有资料及历史；新增功能随对应任务更新进度和证据 |
 
-未来小组件文件落在根目录 `Widgets/`，当前不创建此目录、扩展 target 或组件配置。T32/T33 根据实际共享和显示需求建立相关能力；小组件只读取必要结果，不依赖主 App 页面、登录流程或钥匙串。
+T33 的小组件入口位于 `Sources/Widget/SubscriptionUsageWidget.swift`，target 为 `SubscriptionUsageWidget`，随 App 嵌入安装。只编入 Shared 的展示快照、读取器、小号视图和现有资源，不依赖主 App 页面、登录流程或钥匙串。静态配置仅支持小号，无账户／窗口／刷新周期选择。timeline 的 30 分钟目标只重读共享文件，不查询网络、不保证系统准点更新；App 主动请求换图留 T35，账户点击路由留 T36。
 
 ## 各部分如何协作
 

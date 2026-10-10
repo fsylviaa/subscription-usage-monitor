@@ -1,0 +1,6 @@
+{
+  "installation": "success",
+  "launch": "success",
+  "accountFileUnchangedAfterInstall": true,
+  "identityOrderConnectionAndDemoPreferencePreservedAfterLaunch": true
+}
