@@ -2,6 +2,132 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT17DragOrderAcrossPagesReopenAndAppend() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--t16-isolated-ui", "success", "--t16-run-id", UUID().uuidString]
+        app.launch()
+        defer { app.terminate() }
+        for index in 1...3 { addT17FixtureAccount(app, index: index) }
+        app.buttons["tab.settings"].tap()
+        app.buttons["settings.accounts"].tap()
+        let original = (1...3).map { "account-\($0)@example.invalid" }
+        XCTAssertTrue(app.staticTexts[original[2]].waitForExistence(timeout: 5))
+        moveT17Row(app, email: original[2], before: original[1])
+        let partial = [original[0], original[2], original[1]]
+        assertT17Order(app, identifier: "accounts.identity", expected: partial)
+        screenshot(app, "T17-三账户局部移动")
+        moveT17Row(app, email: original[1], before: original[0])
+        let expected = [original[1], original[0], original[2]]
+        assertT17Order(app, identifier: "accounts.identity", expected: expected)
+        app.buttons["tab.quota"].tap()
+        assertT17Order(app, identifier: "quota.accountIdentity", expected: expected)
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label), ["剩余 35%", "剩余 80%", "剩余 35%"])
+        screenshot(app, "T17-额度页同序")
+        app.terminate(); app.launch()
+        assertT17Order(app, identifier: "quota.accountIdentity", expected: expected)
+        addT17FixtureAccount(app, index: 4)
+        app.buttons["tab.settings"].tap()
+        app.buttons["settings.accounts"].tap()
+        assertT17Order(app, identifier: "accounts.identity", expected: expected + ["account-4@example.invalid"])
+        screenshot(app, "T17-排序后新增追加末尾")
+    }
+
+    @MainActor
+    func testT17FailedDragRetainsOrderAndRetrySaves() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--t16-isolated-ui", "order-failure", "--t16-run-id", UUID().uuidString]
+        app.launch()
+        defer { app.terminate() }
+        for index in 1...2 { addT17FixtureAccount(app, index: index) }
+        app.buttons["tab.settings"].tap()
+        app.buttons["settings.accounts"].tap()
+        let original = ["account-1@example.invalid", "account-2@example.invalid"]
+        moveT17Row(app, email: original[1], before: original[0])
+        XCTAssertTrue(app.alerts["排序未保存，请重试"].waitForExistence(timeout: 5))
+        screenshot(app, "T17-保存失败提示")
+        app.alerts.buttons["好"].tap()
+        assertT17Order(app, identifier: "accounts.identity", expected: original)
+        moveT17Row(app, email: original[1], before: original[0])
+        assertT17Order(app, identifier: "accounts.identity", expected: original.reversed())
+        app.terminate(); app.launch()
+        assertT17Order(app, identifier: "quota.accountIdentity", expected: original.reversed())
+    }
+
+    @MainActor
+    func testT17RealAccountOrderPersistsAndOriginalOrderIsRestored() throws {
+        guard ProcessInfo.processInfo.environment["T17_LIVE_ORDER"] == "1" else {
+            throw XCTSkip("显式开启后只验证真实账户排序，不核对真实额度。")
+        }
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launch()
+        defer { app.terminate() }
+        XCTAssertTrue(app.staticTexts["quota.accountIdentity"].firstMatch.waitForExistence(timeout: 15))
+        app.buttons["tab.settings"].tap()
+        app.buttons["settings.accounts"].tap()
+        let rows = app.staticTexts.matching(identifier: "accounts.identity")
+        XCTAssertTrue(rows.firstMatch.waitForExistence(timeout: 5))
+        let original = rows.allElementsBoundByIndex.map(\.label)
+        guard original.count >= 2 else { throw XCTSkip("手机当前不足两个账户，真实排序待本人验收。") }
+        let last = try XCTUnwrap(original.last)
+        moveT17Row(app, email: last, before: original[0])
+        let expected = [last] + original.dropLast()
+        // Boolean assertions avoid printing real identity values to logs.
+        XCTAssertTrue(waitT17Order(app, identifier: "accounts.identity", expected: expected))
+        app.buttons["tab.quota"].tap()
+        XCTAssertTrue(waitT17Order(app, identifier: "quota.accountIdentity", expected: expected))
+        app.terminate(); app.launch()
+        XCTAssertTrue(waitT17Order(app, identifier: "quota.accountIdentity", expected: expected))
+        app.buttons["tab.settings"].tap()
+        app.buttons["settings.accounts"].tap()
+        let source = app.cells.containing(.staticText, identifier: last).firstMatch
+        let target = app.cells.containing(.staticText, identifier: original[original.count - 2]).firstMatch
+        source.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.5))
+            .press(forDuration: 0.7, thenDragTo: target.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.95)))
+        XCTAssertTrue(waitT17Order(app, identifier: "accounts.identity", expected: original))
+        app.terminate(); app.launch()
+        XCTAssertTrue(waitT17Order(app, identifier: "quota.accountIdentity", expected: original))
+        print("T17 | 真实账户末项置顶→跨页→重开→恢复原序 | 通过；未核对或输出真实额度与身份")
+    }
+
+    @MainActor private func addT17FixtureAccount(_ app: XCUIApplication, index: Int) {
+        let connect = app.buttons[index == 1 ? "quota.connect" : "quota.toolbarConnect"]
+        XCTAssertTrue(connect.waitForExistence(timeout: 10)); connect.tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["platforms.codex"].tap()
+        XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
+        app.buttons["connection.open"].tap()
+        let gone = NSPredicate(format: "exists == false")
+        expectation(for: gone, evaluatedWith: app.staticTexts["connection.title"])
+        waitForExpectations(timeout: 15)
+        XCTAssertTrue(app.buttons["quota.toolbarConnect"].isEnabled)
+    }
+
+    @MainActor private func moveT17Row(_ app: XCUIApplication, email: String, before other: String) {
+        let source = app.cells.containing(.staticText, identifier: email).firstMatch
+        let target = app.cells.containing(.staticText, identifier: other).firstMatch
+        XCTAssertTrue(source.waitForExistence(timeout: 5))
+        source.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.5))
+            .press(forDuration: 0.7, thenDragTo: target.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.05)))
+    }
+
+    @MainActor private func waitT17Order(_ app: XCUIApplication, identifier: String, expected: [String]) -> Bool {
+        let predicate = NSPredicate { _, _ in
+            MainActor.assumeIsolated {
+                app.staticTexts.matching(identifier: identifier).allElementsBoundByIndex.map(\.label) == expected
+            }
+        }
+        return XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: nil)], timeout: 10) == .completed
+    }
+
+    @MainActor private func assertT17Order(_ app: XCUIApplication, identifier: String, expected: [String]) {
+        XCTAssertTrue(waitT17Order(app, identifier: identifier, expected: expected))
+        XCTAssertEqual(app.staticTexts.matching(identifier: identifier).allElementsBoundByIndex.map(\.label), expected)
+    }
+
+    @MainActor
     func testT16SixAccountsRemainScrollableInBothLists() {
         let app = XCUIApplication()
         app.launchArguments = ["--t16-isolated-ui", "success", "--t16-run-id", UUID().uuidString]

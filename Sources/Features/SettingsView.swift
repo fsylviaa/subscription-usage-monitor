@@ -4,6 +4,10 @@ struct SettingsView: View {
     var accounts: [ConnectedAccount] = []
     var canConnect = true
     var connect: () -> Void = {}
+    var canReorder = false
+    var orderFailed = false
+    var move: (IndexSet, Int) -> Void = { _, _ in }
+    var dismissOrderFailure: () -> Void = {}
     var body: some View {
         Form {
             Section("账户") {
@@ -17,12 +21,20 @@ struct SettingsView: View {
                                     .font(.subheadline).foregroundStyle(.secondary)
                             }
                             .padding(.vertical, 4)
+                            .moveDisabled(!canReorder)
                         }
+                        .onMove(perform: move)
                         Button("连接账号", systemImage: "plus", action: connect)
                             .disabled(!canConnect).accessibilityIdentifier("accounts.connect")
                     }
                     .navigationTitle("账户管理")
                     .navigationBarTitleDisplayMode(.inline)
+                    .environment(\.editMode, .constant(.active))
+                    .alert("排序未保存，请重试", isPresented: Binding(
+                        get: { orderFailed }, set: { if !$0 { dismissOrderFailure() } }
+                    )) {
+                        Button("好", role: .cancel, action: dismissOrderFailure)
+                    }
                 } label: {
                     Label("账户管理", systemImage: "person.crop.circle")
                 }

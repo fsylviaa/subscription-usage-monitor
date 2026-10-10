@@ -1,5 +1,10 @@
 import Foundation
 
+/// Shared list order is independent of provider login and credential storage.
+protocol AccountOrdering: Sendable {
+    func reorder(_ ids: [UUID]) async throws
+}
+
 protocol CodexAccountBinding: Sendable {
     func load() async throws -> [ConnectedAccount]
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount
@@ -15,7 +20,7 @@ extension CodexAccountBinding {
 /// Accepts the verifier's result type only. Raw tokens and decoded claims never
 /// enter the account store through this boundary.
 @MainActor
-final class CodexAccountBindingStore: CodexAccountBinding {
+final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering {
     enum BindingError: Error, Equatable {
         case credentialCleanupFailed
     }
@@ -37,6 +42,10 @@ final class CodexAccountBindingStore: CodexAccountBinding {
 
     func load() async throws -> [ConnectedAccount] {
         try await accountStore.load()
+    }
+
+    func reorder(_ ids: [UUID]) async throws {
+        try await accountStore.reorder(ids)
     }
 
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount {

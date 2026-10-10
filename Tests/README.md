@@ -60,3 +60,12 @@ T15 在 `CodexQuotaServiceTests` 中增加 6 项具名启动恢复检查：登�
 `--t16-isolated-ui success|failure --t16-run-id <UUID>` 仅 Debug 生效，使用同一 UUID 可重开对应隔离场景。UI 检查两列表顺序、两账户不同值、失败账户归属、六账户滚动及重开；不触达正式账户或网络。`T12_LIVE_REOPEN=1` 的已有普通真实重开检查可另行确认原正式账户未受影响，不代替真实双账户验收，也不补做已延期的五小时真实查询。
 
 T16 连接入口修正：`CodexConnectionFlowTests` 验证未选平台零网络／零登录申请、选择后单次门控和低分阻止。`CodexConnectionUITests` 验证短弹层、上拉吸附、重开复位、四个入口及原登录失败／取消；`--t16-platform-grid-overflow` 仅 Debug 生成重复图标以验证网格溢出和固定标题，不代表接入其他平台，Release 不包含此参数。`T16_LIVE_PICKER=1` 才执行普通真机弹窗检查，只开合与上拉，不选择平台、不拍真实账户截图，也不补做延期的真实额度核验。
+
+
+## T17 排序验收
+
+`CodexAccountBindingStoreTests` 的四个 `testT17…` 使用独立目录与钥匙串，覆盖三账户局部／首末移动、完整数据和授权不变、排序后新增及重开、真实文件故障重试、保存前不发布及并发入口阻止。不会联网或核对正式账户余额。
+
+页面复用 `--t16-isolated-ui success --t16-run-id <UUID>`；`order-failure` 只在这一隔离入口的首次排序注入保存失败，以验证保留旧序和再次拖动恢复。`testT17DragOrderAcrossPagesReopenAndAppend` 与 `testT17FailedDragRetainsOrderAndRetrySaves` 验证原生把手、两页一致、重开及追加。
+
+`T17_LIVE_ORDER=1` 才执行 `testT17RealAccountOrderPersistsAndOriginalOrderIsRestored`，只移动本机已保存的真实账户、比较页面身份顺序与重开，再恢复原顺序；不核对真实余额，不输出真实身份或主动导出真实截图。手机不足两个账户则明确跳过，不记通过。延期的五小时真实查询仍等多账户增删就绪。

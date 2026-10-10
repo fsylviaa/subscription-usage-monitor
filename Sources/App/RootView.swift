@@ -36,7 +36,11 @@ struct RootView: View {
             .tag(Tab.quota).toolbar(.hidden, for: .tabBar)
 
             NavigationStack {
-                SettingsView(accounts: connection.accounts, canConnect: connection.canConnect, connect: { connection.showPlatformPicker() })
+                SettingsView(accounts: connection.accounts, canConnect: connection.canConnect,
+                             connect: { connection.showPlatformPicker() },
+                             canReorder: connection.canReorderAccounts, orderFailed: connection.accountOrderFailed,
+                             move: { connection.moveAccounts(from: $0, to: $1) },
+                             dismissOrderFailure: { connection.dismissAccountOrderFailure() })
             }
             .tag(Tab.settings).toolbar(.hidden, for: .tabBar)
         }

@@ -306,6 +306,105 @@ final class CodexAccountBindingStoreTests: XCTestCase {
         XCTAssertEqual(fixture.client.deleteCount, 1)
     }
 
+    func testT17MovePersistsFullRecordsAndNewLoginAppendsAfterManualOrder() async throws {
+        let f = multiFixture()
+        let flow = f.makeFlow()
+        await flow.loadAccounts()
+        for _ in 0..<3 { try await addAccount(flow) }
+        let original = flow.accounts
+        var credentials: [UUID: CredentialPayload] = [:]
+        for account in original {
+            credentials[account.id] = try await f.vault.load(for: .credential(account.credentialRef))
+        }
+        try await XCTUnwrap(flow.moveAccounts(from: IndexSet(integer: 2), to: 1)).value
+        XCTAssertEqual(flow.accounts, [original[0], original[2], original[1]])
+        try await XCTUnwrap(flow.moveAccounts(from: IndexSet(integer: 2), to: 0)).value
+        XCTAssertEqual(flow.accounts, [original[1], original[0], original[2]])
+        try await XCTUnwrap(flow.moveAccounts(from: IndexSet(integer: 0), to: 3)).value
+        XCTAssertEqual(flow.accounts, [original[0], original[2], original[1]])
+        try await addAccount(flow)
+        XCTAssertEqual(Array(flow.accounts.prefix(3)), [original[0], original[2], original[1]])
+        XCTAssertEqual(flow.accounts.last?.verifiedEmail, "account-4@example.invalid")
+        let reopened = f.makeFlow()
+        await reopened.loadAccounts()
+        XCTAssertEqual(reopened.accounts, flow.accounts, "全记录对照包含额度、原成功时间、作用域及代次")
+        for account in original {
+            let saved = try await f.vault.load(for: .credential(account.credentialRef))
+            XCTAssertTrue(saved == credentials[account.id], "排序不改授权包")
+        }
+        print("T17 | C移到B前、末项置顶、首项移末、再添加D及重开 | 顺序准确；账户完整数据与授权不变")
+    }
+
+    func testT17SaveFailureKeepsPublishedOrderAndCanRetry() async throws {
+        let f = multiFixture()
+        let flow = f.makeFlow()
+        await flow.loadAccounts()
+        for _ in 0..<2 { try await addAccount(flow) }
+        let original = flow.accounts
+        let backup = f.directory.appendingPathExtension("backup")
+        try FileManager.default.moveItem(at: f.directory, to: backup)
+        try Data("not a directory".utf8).write(to: f.directory)
+        await flow.moveAccounts(from: IndexSet(integer: 1), to: 0)?.value
+        XCTAssertEqual(flow.accounts, original)
+        XCTAssertTrue(flow.accountOrderFailed)
+        XCTAssertFalse(flow.reorderingAccounts)
+        flow.dismissAccountOrderFailure()
+        XCTAssertFalse(flow.accountOrderFailed)
+        try FileManager.default.removeItem(at: f.directory)
+        try FileManager.default.moveItem(at: backup, to: f.directory)
+        let disk = try await f.store.load()
+        XCTAssertEqual(disk, original)
+        try await XCTUnwrap(flow.moveAccounts(from: IndexSet(integer: 1), to: 0)).value
+        XCTAssertEqual(flow.accounts, original.reversed())
+        XCTAssertFalse(flow.accountOrderFailed)
+        print("T17 | 存储不可用后移动→恢复重试 | 失败保留旧顺序、提示失败；恢复后可保存")
+    }
+
+    func testT17SingleAccountAndInvalidOrNoOpMovesDoNothing() async throws {
+        let f = multiFixture()
+        let flow = f.makeFlow()
+        await flow.loadAccounts()
+        XCTAssertFalse(flow.canReorderAccounts)
+        try await addAccount(flow)
+        XCTAssertFalse(flow.canReorderAccounts)
+        XCTAssertNil(flow.moveAccounts(from: IndexSet(integer: 0), to: 1))
+        try await addAccount(flow)
+        let original = flow.accounts
+        for (offsets, destination) in [(IndexSet(), 0), (IndexSet(integer: 9), 0),
+                                        (IndexSet(integer: 0), -1), (IndexSet(integer: 0), 3),
+                                        (IndexSet(integer: 0), 1)] {
+            XCTAssertNil(flow.moveAccounts(from: offsets, to: destination))
+        }
+        XCTAssertEqual(flow.accounts, original)
+        flow.showPlatformPicker()
+        XCTAssertFalse(flow.canReorderAccounts)
+        XCTAssertNil(flow.moveAccounts(from: IndexSet(integer: 1), to: 0))
+        flow.cancel()
+    }
+
+    func testT17PublishesOnlyAfterSaveAndPreventsOverlappingMovesOrLogin() async throws {
+        let f = multiFixture()
+        let seed = f.makeFlow()
+        await seed.loadAccounts()
+        for _ in 0..<2 { try await addAccount(seed) }
+        let delayed = T17DelayedOrdering(base: f.bindings)
+        let flow = CodexConnectionFlow(transactions: CodexLoginTransactionStore(vault: f.vault), bindings: delayed)
+        await flow.loadAccounts()
+        let original = flow.accounts
+        let move = try XCTUnwrap(flow.moveAccounts(from: IndexSet(integer: 1), to: 0))
+        try await waitUntil { delayed.waiting != nil }
+        XCTAssertEqual(flow.accounts, original, "保存完成前不发布新顺序")
+        XCTAssertTrue(flow.reorderingAccounts)
+        XCTAssertFalse(flow.canConnect)
+        XCTAssertNil(flow.begin())
+        XCTAssertNil(flow.moveAccounts(from: IndexSet(integer: 0), to: 2))
+        delayed.waiting?.resume(); delayed.waiting = nil
+        await move.value
+        XCTAssertEqual(flow.accounts, original.reversed())
+        XCTAssertTrue(flow.canConnect)
+        XCTAssertTrue(flow.canReorderAccounts)
+    }
+
     private func multiFixture(failSecond: Bool = false) -> T16MultiAccountFixture {
         let fixture = T16MultiAccountFixture(directory: FileManager.default.temporaryDirectory
             .appendingPathComponent("T16-unit-\(UUID())"), failSecond: failSecond)
@@ -431,5 +530,18 @@ private final class BindingKeychainClient: KeychainClient, @unchecked Sendable {
     func delete(_ query: [String: Any]) -> OSStatus {
         lock.withLock { deletions += 1 }
         return deleteStatus ?? system.delete(query)
+    }
+}
+
+@MainActor
+private final class T17DelayedOrdering: CodexAccountBinding, AccountOrdering {
+    let base: CodexAccountBindingStore
+    var waiting: CheckedContinuation<Void, Never>?
+    init(base: CodexAccountBindingStore) { self.base = base }
+    func load() async throws -> [ConnectedAccount] { try await base.load() }
+    func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount { try await base.save(login) }
+    func reorder(_ ids: [UUID]) async throws {
+        await withCheckedContinuation { waiting = $0 }
+        try await base.reorder(ids)
     }
 }

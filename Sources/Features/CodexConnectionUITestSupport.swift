@@ -20,7 +20,8 @@ enum CodexConnectionUITestSupport {
                 arguments.indices.contains($0 + 1) ? UUID(uuidString: arguments[$0 + 1]) : nil
             } ?? UUID()
             let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T16-ui-\(runID)")
-            return T16MultiAccountFixture(directory: directory, failSecond: scenario == "failure").makeFlow()
+            return T16MultiAccountFixture(directory: directory, failSecond: scenario == "failure")
+                .makeFlow(orderingFailsOnce: scenario == "order-failure")
         }
         if let marker = arguments.firstIndex(of: "--t12-isolated-ui") {
             let scenario = arguments.indices.contains(marker + 1) ? arguments[marker + 1] : "success"
@@ -523,11 +524,12 @@ final class T16MultiAccountFixture {
             transport: server, checkNetwork: { .allowed(score: 51) })
     }
 
-    func makeFlow() -> CodexConnectionFlow {
+    func makeFlow(orderingFailsOnce: Bool = false) -> CodexConnectionFlow {
         let server = server
+        let flowBindings: any CodexAccountBinding = orderingFailsOnce ? T17OrderFailureBindings(base: bindings) : bindings
         return CodexConnectionFlow(checkNetwork: { .allowed(score: 51) }, authorizer: server,
             transactions: CodexLoginTransactionStore(vault: vault), completer: server, verifier: server,
-            bindings: bindings, pending: CodexPendingLoginStore(vault: vault), quotaUpdater: updater,
+            bindings: flowBindings, pending: CodexPendingLoginStore(vault: vault), quotaUpdater: updater,
             copyCode: { _, _ in }, openURL: { _ in await server.openWebsite(); return true })
     }
 
@@ -584,6 +586,22 @@ actor T16MultiAccountServer: CodexDeviceAuthorizing, CodexLoginCompleting, Codex
         """
         return (Data(body.utf8), HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil,
                                                headerFields: ["Content-Type": "application/json"])!)
+    }
+}
+/// Failure injection is limited to the explicit isolated UI fixture.
+@MainActor
+private final class T17OrderFailureBindings: CodexAccountBinding, AccountOrdering {
+    let base: CodexAccountBindingStore
+    var failNext = true
+    init(base: CodexAccountBindingStore) { self.base = base }
+    func load() async throws -> [ConnectedAccount] { try await base.load() }
+    func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount { try await base.save(login) }
+    func save(_ login: CodexVerifiedLogin, transactionID: UUID) async throws -> ConnectedAccount {
+        try await base.save(login, transactionID: transactionID)
+    }
+    func reorder(_ ids: [UUID]) async throws {
+        if failNext { failNext = false; throw CocoaError(.fileWriteUnknown) }
+        try await base.reorder(ids)
     }
 }
 #endif

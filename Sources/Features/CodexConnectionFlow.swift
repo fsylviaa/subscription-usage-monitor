@@ -33,6 +33,8 @@ final class CodexConnectionFlow: ObservableObject {
     @Published private(set) var accounts: [ConnectedAccount] = []
     @Published private(set) var loadingAccounts = false
     @Published private(set) var accountLoadFailed = false
+    @Published private(set) var reorderingAccounts = false
+    @Published private(set) var accountOrderFailed = false
     @Published private(set) var quotaUpdatingID: UUID?
     @Published private(set) var quotaFailure: String?
     @Published private(set) var quotaFailureID: UUID?
@@ -86,7 +88,39 @@ final class CodexConnectionFlow: ObservableObject {
         }
     }
 
-    var canConnect: Bool { !loadingAccounts && !accountLoadFailed && !restoringLogin && quotaUpdatingID == nil }
+    var canConnect: Bool { !loadingAccounts && !accountLoadFailed && !restoringLogin && !reorderingAccounts && quotaUpdatingID == nil }
+
+    var canReorderAccounts: Bool {
+        accounts.count > 1 && bindings is any AccountOrdering && !loadingAccounts
+            && !accountLoadFailed && !restoringLogin && !reorderingAccounts && !isPresented
+            && state == .idle
+    }
+
+    func dismissAccountOrderFailure() { accountOrderFailed = false }
+
+    @discardableResult
+    func moveAccounts(from offsets: IndexSet, to destination: Int) -> Task<Void, Never>? {
+        guard canReorderAccounts, let ordering = bindings as? any AccountOrdering,
+              !offsets.isEmpty, offsets.allSatisfy({ accounts.indices.contains($0) }),
+              (0...accounts.count).contains(destination) else { return nil }
+        var ids = accounts.map(\.id)
+        ids.move(fromOffsets: offsets, toOffset: destination)
+        guard ids != accounts.map(\.id) else { return nil }
+        reorderingAccounts = true
+        accountOrderFailed = false
+        return Task {
+            defer { reorderingAccounts = false }
+            do {
+                try await ordering.reorder(ids)
+                // Publish only after durable success. Use the latest in-memory
+                // records so a quota response during saving cannot be undone.
+                let current = Dictionary(uniqueKeysWithValues: accounts.map { ($0.id, $0) })
+                accounts = ids.compactMap { current[$0] }
+            } catch {
+                accountOrderFailed = true
+            }
+        }
+    }
 
     /// RootView can appear more than once; restoration is one serialized operation.
     func loadAccounts() async {
@@ -277,7 +311,7 @@ final class CodexConnectionFlow: ObservableObject {
 
     @discardableResult
     func begin() -> Task<Void, Never>? {
-        guard !loadingAccounts, !accountLoadFailed, !restoringLogin,
+        guard !loadingAccounts, !accountLoadFailed, !restoringLogin, !reorderingAccounts,
               (quotaUpdatingID == nil || recovery != nil), state == .idle || state == .choosingPlatform || isFailure else { return nil }
         let previousWork = work
         let previousCompletion = completionWork
