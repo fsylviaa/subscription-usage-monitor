@@ -36,6 +36,10 @@ enum CodexConnectionUITestSupport {
                 authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions(),
                 bindings: T23CardFixture(scenario: arguments[marker + 1]))
         }
+        if let marker = arguments.firstIndex(of: "--t26-isolated-ui"), arguments.indices.contains(marker + 1) {
+            let fixture = T26BatchFixture(scenario: arguments[marker + 1])
+            return CodexConnectionFlow(transactions: FixtureTransactions(), bindings: fixture, quotaUpdater: fixture)
+        }
         if let id = managementRunID {
             let store = AccountStore(fileURL: FileManager.default.temporaryDirectory
                 .appendingPathComponent("ManagementUI-\(id)/accounts.json"))
@@ -682,6 +686,99 @@ private final class T17OrderFailureBindings: CodexAccountBinding, AccountOrderin
     func reorder(_ ids: [UUID]) async throws {
         if failNext { failNext = false; throw CocoaError(.fileWriteUnknown) }
         try await base.reorder(ids)
+    }
+}
+/// T26 uses synthetic credentials, a temporary file and a fake HTTP transport.
+/// Its production service still executes the real network-gate/parse/store path.
+actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAuthorizationTransport, AccountRemoving {
+    nonisolated let directory: URL
+    let store: AccountStore
+    let scenario: String
+    let count: Int
+    var seeded = false
+    var attempts: [UUID: Int] = [:]
+    var checks: [UUID: Int] = [:]
+    var requests: [String: Int] = [:]
+    var waiting: [CheckedContinuation<Void, Never>] = []
+    var released = false
+    var active = 0
+    var maximumActive = 0
+    static let oldTime = Date(timeIntervalSince1970: 1_791_590_400)
+    static let newTime = Date(timeIntervalSince1970: 1_791_594_000)
+
+    init(scenario: String, count: Int = 2) {
+        directory = FileManager.default.temporaryDirectory.appendingPathComponent("T26-\(UUID())")
+        store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
+        self.scenario = scenario
+        self.count = count
+    }
+
+    func load() async throws -> [ConnectedAccount] {
+        if !seeded {
+            seeded = true
+            for index in 0..<count {
+                var account = ConnectedAccount(remoteUserID: "t26-user-\(index)", verifiedEmail: "batch-\(index + 1)@example.invalid",
+                    scope: .init(remoteAccountID: "t26-account-\(index)", kind: .personal), credentialRef: UUID())
+                account.subscription = .init(planType: "Plus", observedAt: Self.oldTime)
+                account.quotaState = .available
+                account.quotaSnapshot = try CodexUsageParser().parse(Self.body(account.scope.remoteAccountID, used: 10 + index * 20),
+                    for: account, observedAt: Self.oldTime)
+                try await store.append(account)
+            }
+        }
+        return try await store.load()
+    }
+    func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount { throw CodexQuotaError.failed }
+    func removeAccount(_ id: UUID) async throws {
+        _ = try await store.markForDeletion(id)
+        try await store.finishDeletion(id)
+    }
+    func update(_ account: ConnectedAccount) async throws -> ConnectedAccount {
+        active += 1; maximumActive = max(maximumActive, active)
+        defer { active -= 1 }
+        attempts[account.id, default: 0] += 1
+        let attempt = attempts[account.id]!
+        let tokens = CodexTokenResponse(accessToken: "t26-synthetic-access", refreshToken: "t26-synthetic-refresh",
+            idToken: "t26-synthetic-id", obtainedAt: Self.oldTime, expiresAt: nil)
+        let package = CodexIdentityVerifier.CredentialPackage(credentialVersion: 1, issuer: CodexIdentityVerifier.issuer,
+            clientID: CodexDeviceAuthorization.clientID, subject: "t26-subject", remoteUserID: account.remoteUserID!,
+            scope: account.scope, tokens: tokens)
+        let payload = CredentialPayload(data: try JSONEncoder().encode(package))
+        let service = CodexQuotaService(store: store, loadCredential: { _ in payload }, transport: self,
+            checkNetwork: { await self.check(account) }, now: { Self.newTime.addingTimeInterval(Double(attempt * 60)) })
+        return try await service.update(account)
+    }
+    func check(_ account: ConnectedAccount) async -> NetworkScoreResult {
+        checks[account.id, default: 0] += 1
+        if scenario == "cancel" || (scenario == "slow" && account.scope.remoteAccountID == "t26-account-1") {
+            if !released { await withCheckedContinuation { waiting.append($0) } }
+        } else if scenario == "ui-cancel" {
+            // Deliberately ignore cancellation until the late allowed result.
+            await withCheckedContinuation { continuation in
+                Task { try? await Task.sleep(for: .seconds(4)); continuation.resume() }
+            }
+        } else { try? await Task.sleep(for: .milliseconds(200)) }
+        if scenario == "blocked" { return .blocked(score: 50) }
+        if scenario == "unknown" { return .unavailable(.transport) }
+        return .allowed(score: 51)
+    }
+    func release() {
+        released = true
+        waiting.forEach { $0.resume() }; waiting.removeAll()
+    }
+    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+        let id = request.value(forHTTPHeaderField: "ChatGPT-Account-Id")!
+        requests[id, default: 0] += 1
+        let attempt = requests[id]!
+        let fails = scenario == "partial" && id == "t26-account-1" && attempt == 1
+        let body = Self.body(id, used: 40 + attempt * 5)
+        return (body, HTTPURLResponse(url: request.url!, statusCode: fails ? 500 : 200, httpVersion: nil,
+            headerFields: ["Content-Type": "application/json"])!)
+    }
+    private static func body(_ id: String, used: Int) -> Data {
+        Data("""
+        {"account_id":"\(id)","plan_type":"Plus","rate_limit":{"primary_window":{"limit_window_seconds":18000,"used_percent":\(used),"reset_at":1791604000},"secondary_window":{"limit_window_seconds":604800,"used_percent":\(used),"reset_at":1792100000}}}
+        """.utf8)
     }
 }
 #endif

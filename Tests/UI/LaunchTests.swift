@@ -25,6 +25,40 @@ final class LaunchTests: XCTestCase {
     }
 
     @MainActor
+    func testT26DemoToolbarUpdatesEveryCardAndPersistsOnReopen() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        app.launch()
+        defer { app.terminate() }
+        XCTAssertTrue(app.buttons["quota.refresh"].waitForExistence(timeout: 8))
+        XCTAssertFalse(app.buttons["quota.refresh"].isEnabled)
+        app.buttons["tab.settings"].tap()
+        app.switches["settings.demo"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        app.buttons["tab.quota"].tap()
+        for count in 1...2 {
+            app.buttons["quota.toolbarConnect"].tap()
+            let ready = NSPredicate { _, _ in MainActor.assumeIsolated {
+                app.staticTexts.matching(identifier: "quota.accountIdentity").count == count
+            }}
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: nil)], timeout: 5), .completed)
+        }
+        let before = app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label)
+        app.buttons["quota.refresh"].tap()
+        let allChanged = NSPredicate { _, _ in MainActor.assumeIsolated {
+            let after = app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label)
+            return after.count == 2 && zip(before, after).allSatisfy { $0 != $1 }
+        }}
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: allChanged, object: nil)], timeout: 8), .completed)
+        XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+        let after = app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label)
+        saveScreenshot(of: app, name: "T26-演示全部刷新")
+        app.terminate(); app.launch()
+        XCTAssertTrue(app.staticTexts["quota.weekly.remaining"].firstMatch.waitForExistence(timeout: 8))
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label), after)
+    }
+
+    @MainActor
     func testManagementDemoMenuClearAndReopen() {
         continueAfterFailure = false
         let app = XCUIApplication()

@@ -28,6 +28,9 @@ struct QuotaView: View {
     var loadFailed = false
     var canConnect = true
     var updatingID: UUID?
+    var updatingIDs: Set<UUID> = []
+    var canRefreshAll = false
+    var refreshAll: () -> Void = {}
     var quotaFailure: String?
     var quotaFailureID: UUID?
     var failedAccountIDs: Set<UUID> = []
@@ -54,11 +57,10 @@ struct QuotaView: View {
                 Text("订阅额度").font(.system(size: dynamicTypeSize.isAccessibilitySize ? min(titleSize, 28) : titleSize, weight: .semibold))
                     .accessibilityAddTraits(.isHeader).accessibilityIdentifier("quota.title")
                 Spacer(minLength: 12)
-                Button { if let id = quotaFailureID { retry(id) } } label: {
+                Button(action: refreshAll) {
                     DesignIcon(name: "Refresh").frame(width: 44, height: 44)
                 }
-                // T13 permits retrying a failed first fetch. Regular refresh is T25/T26.
-                .disabled(quotaFailureID == nil || updatingID != nil)
+                .disabled(!canRefreshAll)
                 .accessibilityLabel("刷新").accessibilityIdentifier("quota.refresh")
                 Button(action: connect) {
                     DesignIcon(name: "Link").frame(width: 44, height: 44)
@@ -113,7 +115,7 @@ struct QuotaView: View {
                             }
                         }
                     ReorderableQuotaList(accounts: accounts, canMove: canReorder, saving: savingOrder, move: move) { account in
-                        QuotaAccountCard(account: account, updating: updatingID == account.id,
+                        QuotaAccountCard(account: account, updating: updatingIDs.contains(account.id),
                                          failed: failedAccountIDs.contains(account.id) || quotaFailureID == account.id,
                                          canManage: canManage, canRefresh: canRefresh,
                                          refresh: { refreshAccount(account.id) }, delete: { deleting = account })

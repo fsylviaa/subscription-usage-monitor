@@ -107,3 +107,9 @@ T23 大字号专项优化：`testT23AccessibilityLayoutUsesFullWidthIdentityAndS
 三个 `CodexQuotaUITests/testT24…` 检查重复展开／收起后标题及额度的位置、下张卡片位移、两个账户详情归属、浅深重置显示、缺失／已到点状态和最大辅助字号可滚动读详情。复用 Debug 纯内存 `--t23-card-fixture times`，时间样例只在隔离入口存在，不进入产品演示模式。旧值失败、从未获取、Free、未知额度和排序使用既有回归测试。
 
 动画过程中间帧必须另验，不能把动画结束后的 UI 断言当作无回弹证明。本次模拟器录像以固定文字区域逐帧比较，保留原版缺陷、修复后录像与数值摘要；最终标题、身份及两项数值区域位置稳定。手机页面与构建结果、用户步骤见 [T24 验收](../docs/mvp任务清单/记录/T24-验收.md)。
+
+## T26 全部刷新与部分失败
+
+`CodexQuotaServiceTests/testT26…` 六项使用 `T26BatchFixture` 的随机临时目录、人工账户与合成授权，经过正式 `CodexQuotaService` 的网络检查／解析／保存，覆盖部分失败及全部范围重试、低分与未知评分、最多三户并行、五户取消与迟到检查、慢账户不阻塞成功、删除不复活。没有真实网络或正式 Keychain 读取。
+
+`CodexQuotaUITests/testT26…` 两项用 Debug 专用 `--t26-isolated-ui partial|blocked|ui-cancel` 验证页面按钮、各户新旧值及时间、整批重试和迟到检查取消；不加入产品设置。`LaunchTests/testT26DemoToolbarUpdatesEveryCardAndPersistsOnReopen` 走已有演示模式验证用户亲验路径、空列表刷新禁用及结果重开保持；既有单卡／删除／关闭演示回归使用 `testManagementDemoMenuClearAndReopen`。结果见 [T26 验收](../docs/mvp任务清单/记录/T26-验收.md)。真实五小时余额仍延期。

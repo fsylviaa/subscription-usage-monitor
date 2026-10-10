@@ -2,6 +2,64 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT26ToolbarRefreshPartialFailureAndWholeScopeRetry() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--t26-isolated-ui", "partial"]
+        app.launch()
+        defer { app.terminate() }
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        XCTAssertTrue(cards.element(boundBy: 1).waitForExistence(timeout: 10))
+        let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
+        first.buttons["quota.details"].tap()
+        second.buttons["quota.details"].tap()
+        let oldTime = second.staticTexts["quota.updatedAt"].label
+        app.buttons["quota.refresh"].tap()
+        XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 8))
+        XCTAssertEqual(app.staticTexts["quota.failure"].label, "刷新失败")
+        XCTAssertEqual(first.staticTexts["quota.weekly.remaining"].label, "剩余 55%")
+        XCTAssertEqual(second.staticTexts["quota.weekly.remaining"].label, "剩余 70%")
+        XCTAssertEqual(second.staticTexts["quota.updatedAt"].label, oldTime)
+        let firstTime = first.staticTexts["quota.updatedAt"].label
+        XCTAssertNotEqual(firstTime, oldTime)
+        screenshot(app, "T26-部分成功与旧值保留")
+        app.buttons["quota.retry"].tap()
+        XCTAssertTrue(app.staticTexts["quota.failure"].waitForNonExistence(timeout: 8))
+        XCTAssertTrue(app.otherElements["quota.updating"].waitForNonExistence(timeout: 8))
+        XCTAssertEqual(first.staticTexts["quota.weekly.remaining"].label, "剩余 50%")
+        XCTAssertEqual(second.staticTexts["quota.weekly.remaining"].label, "剩余 50%")
+        XCTAssertNotEqual(first.staticTexts["quota.updatedAt"].label, firstTime)
+        XCTAssertNotEqual(second.staticTexts["quota.updatedAt"].label, oldTime)
+        screenshot(app, "T26-整批重试全部成功")
+    }
+
+    @MainActor
+    func testT26BlockedBatchAndCancelKeepBothCards() {
+        continueAfterFailure = false
+        for scenario in ["blocked", "ui-cancel"] {
+            let app = XCUIApplication()
+            app.launchArguments = ["--t26-isolated-ui", scenario]
+            app.launch()
+            let cards = app.otherElements.matching(identifier: "quota.card")
+            XCTAssertTrue(cards.element(boundBy: 1).waitForExistence(timeout: 10))
+            app.buttons["quota.refresh"].tap()
+            if scenario == "blocked" {
+                XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 8))
+                XCTAssertEqual(app.staticTexts["quota.failure"].label, "网络不达标，无法更新")
+            } else {
+                XCTAssertTrue(app.buttons["quota.cancelUpdate"].waitForExistence(timeout: 3))
+                app.buttons["quota.cancelUpdate"].tap()
+                XCTAssertTrue(app.otherElements["quota.updating"].waitForNonExistence(timeout: 8))
+                XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+            }
+            XCTAssertEqual(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 90%")
+            XCTAssertEqual(cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].label, "剩余 70%")
+            screenshot(app, "T26-\(scenario)-两户保留")
+            app.terminate()
+        }
+    }
+
+    @MainActor
     func testT24RepeatedExpansionKeepsHeaderAndAmountsAnchored() {
         let app = launchT23("limits", appearance: "light")
         defer { app.terminate() }

@@ -755,6 +755,144 @@ final class CodexQuotaServiceTests: XCTestCase {
         print("T15 | 错作用域缓存 | 不显示另一账户额度、不写假空数据、原文件保留")
     }
 
+    private func batch(_ scenario: String, count: Int = 2) async throws -> (CodexConnectionFlow, T26BatchFixture) {
+        let fixture = T26BatchFixture(scenario: scenario, count: count)
+        directories.append(fixture.directory)
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(), bindings: fixture, quotaUpdater: fixture)
+        await flow.loadAccounts()
+        return (flow, fixture)
+    }
+
+    func testT26PartialFailurePersistsSuccessAndRetryRechecksEntireScope() async throws {
+        let (flow, fixture) = try await batch("partial")
+        let old = flow.accounts
+        // A previous single-card action must not determine the next batch retry.
+        flow.refreshQuota(for: old[0].id)
+        await flow.waitForInitialQuota()
+        flow.refreshAllQuota()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.accounts[0].quotaSnapshot?.weekly.amount.remainingPercent, 50)
+        XCTAssertEqual(flow.accounts[1], old[1])
+        XCTAssertEqual(flow.quotaFailure, "刷新失败")
+        XCTAssertEqual(flow.quotaFailureID, old[1].id)
+        let persisted = try await AccountStore(fileURL: fixture.directory.appendingPathComponent("accounts.json")).load()
+        XCTAssertEqual(persisted, flow.accounts)
+        let firstSuccess = flow.accounts[0].quotaSnapshot?.observedAt
+        flow.retryDashboardQuota(for: old[1].id)
+        await flow.waitForInitialQuota()
+        let checks = await fixture.checks
+        let requests = await fixture.requests
+        XCTAssertEqual(checks[old[0].id], 3)
+        XCTAssertEqual(checks[old[1].id], 2)
+        XCTAssertEqual(requests["t26-account-0"], 3)
+        XCTAssertEqual(requests["t26-account-1"], 2)
+        XCTAssertGreaterThan(try XCTUnwrap(flow.accounts[0].quotaSnapshot?.observedAt), try XCTUnwrap(firstSuccess))
+        XCTAssertNotEqual(flow.accounts[1].quotaSnapshot?.observedAt, old[1].quotaSnapshot?.observedAt)
+        XCTAssertNil(flow.quotaFailure)
+        XCTAssertTrue(flow.quotaFailures.isEmpty)
+        let reopened = try await fixture.load()
+        XCTAssertEqual(reopened, flow.accounts)
+    }
+
+    func testT26AllBlockedOrUnknownNeverQueryOrChangeOldObservations() async throws {
+        for scenario in ["blocked", "unknown"] {
+            let (flow, fixture) = try await batch(scenario)
+            let old = flow.accounts
+            flow.refreshAllQuota()
+            await flow.waitForInitialQuota()
+            XCTAssertEqual(flow.accounts, old)
+            XCTAssertEqual(flow.quotaFailure, scenario == "blocked" ? "网络不达标，无法更新" : "刷新失败")
+            let checks = await fixture.checks
+            let requests = await fixture.requests
+            XCTAssertEqual(checks.count, 2)
+            XCTAssertTrue(requests.isEmpty)
+            let persisted = try await fixture.load()
+            XCTAssertEqual(persisted, old)
+        }
+    }
+
+    func testT26CancellationRejectsAllLateChecksAndQueuedAccounts() async throws {
+        let (flow, fixture) = try await batch("cancel", count: 5)
+        let old = flow.accounts
+        flow.refreshAllQuota()
+        for _ in 0..<1000 {
+            if await fixture.checks.count == 3 { break }
+            try await Task.sleep(for: .milliseconds(2))
+        }
+        let checksBefore = await fixture.checks.count
+        XCTAssertEqual(checksBefore, 3)
+        flow.cancelQuotaUpdate()
+        await fixture.release()
+        await flow.waitForInitialQuota()
+        let requests = await fixture.requests
+        let checksAfter = await fixture.checks.count
+        XCTAssertTrue(requests.isEmpty)
+        XCTAssertEqual(checksAfter, 3, "取消后剩下两户不能开始")
+        XCTAssertEqual(flow.accounts, old)
+        XCTAssertNil(flow.quotaFailure)
+        XCTAssertFalse(flow.manualQuotaInProgress)
+        XCTAssertTrue(flow.quotaUpdatingIDs.isEmpty)
+        let persisted = try await fixture.load()
+        XCTAssertEqual(persisted, old)
+    }
+
+    func testT26SlowAccountDoesNotBlockOtherSuccessAndCancelKeepsCompletedResult() async throws {
+        let (flow, fixture) = try await batch("slow")
+        let old = flow.accounts
+        flow.refreshAllQuota()
+        for _ in 0..<1000 {
+            if flow.accounts[0] != old[0] { break }
+            try await Task.sleep(for: .milliseconds(2))
+        }
+        XCTAssertNotEqual(flow.accounts[0], old[0])
+        XCTAssertEqual(flow.accounts[1], old[1])
+        XCTAssertTrue(flow.manualQuotaInProgress)
+        let committed = flow.accounts[0]
+        flow.cancelQuotaUpdate()
+        await fixture.release()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.accounts, [committed, old[1]])
+        let persisted = try await fixture.load()
+        XCTAssertEqual(persisted, flow.accounts)
+    }
+
+    func testT26AllSuccessUsesBoundedParallelismAndSingleCardStillOnlyUpdatesItself() async throws {
+        let (flow, fixture) = try await batch("success", count: 5)
+        let old = flow.accounts
+        flow.refreshAllQuota()
+        await flow.waitForInitialQuota()
+        let maximum = await fixture.maximumActive
+        let requests = await fixture.requests
+        XCTAssertEqual(maximum, 3)
+        XCTAssertEqual(requests.count, 5)
+        XCTAssertTrue(flow.accounts.allSatisfy { $0.quotaSnapshot!.observedAt > T26BatchFixture.oldTime })
+        XCTAssertEqual(flow.accounts.map(\.id), old.map(\.id))
+        XCTAssertNil(flow.quotaFailure)
+        let untouched = Array(flow.accounts.dropFirst())
+        flow.refreshQuota(for: old[0].id)
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(Array(flow.accounts.dropFirst()), untouched)
+    }
+
+    func testT26DeletingSlowAccountDoesNotCancelOthersOrResurrectDeletedIdentity() async throws {
+        let (flow, fixture) = try await batch("slow")
+        let old = flow.accounts
+        flow.refreshAllQuota()
+        for _ in 0..<1000 {
+            if await fixture.checks.count == 2 { break }
+            try await Task.sleep(for: .milliseconds(2))
+        }
+        await flow.deleteAccount(old[1].id)?.value
+        await fixture.release()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.accounts.count, 1)
+        XCTAssertEqual(flow.accounts[0].id, old[0].id)
+        XCTAssertNotEqual(flow.accounts[0], old[0])
+        XCTAssertNil(flow.quotaFailure)
+        let persisted = try await fixture.load()
+        XCTAssertEqual(persisted, flow.accounts)
+    }
+
     private typealias Setup = (store: AccountStore, account: ConnectedAccount, url: URL)
     private func setup(save: Bool = true) async throws -> Setup {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T12-test-\(UUID())")
