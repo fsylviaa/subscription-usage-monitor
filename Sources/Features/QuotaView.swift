@@ -35,6 +35,8 @@ struct QuotaView: View {
     var connect: () -> Void = {}
     var retry: (UUID) -> Void = { _ in }
     var closeFeedback: () -> Void = {}
+    var canCancelUpdate = false
+    var cancelUpdate: () -> Void = {}
     var deleteAccount: (UUID) -> Void = { _ in }
     var canManage = true
     var canRefresh = false
@@ -87,6 +89,7 @@ struct QuotaView: View {
                                     ProgressView()
                                     Text("正在更新").font(.subheadline)
                                     Spacer()
+                                    if canCancelUpdate { Button("取消", action: cancelUpdate).accessibilityIdentifier("quota.cancelUpdate") }
                                 }
                                 .padding(12).background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 14))
                                 .accessibilityElement(children: .contain)

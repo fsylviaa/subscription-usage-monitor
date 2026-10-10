@@ -25,6 +25,66 @@ final class LaunchTests: XCTestCase {
     }
 
     @MainActor
+    func testManagementDemoMenuClearAndReopen() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        app.launch()
+        app.buttons["tab.settings"].tap()
+        XCTAssertFalse(app.buttons["settings.accounts"].exists)
+        XCTAssertFalse(app.buttons["settings.connect"].exists)
+        let demo = app.switches["settings.demo"]
+        demo.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        XCTAssertEqual(demo.value as? String, "1")
+        app.buttons["tab.quota"].tap()
+        for count in 1...3 {
+            app.buttons["quota.toolbarConnect"].tap()
+            let countMatches = NSPredicate { _, _ in MainActor.assumeIsolated {
+                app.staticTexts.matching(identifier: "quota.accountIdentity").count == count
+            }}
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: countMatches, object: nil)], timeout: 5), .completed)
+        }
+        XCTAssertFalse(app.staticTexts["connection.code"].exists)
+        let original = app.staticTexts.matching(identifier: "quota.accountIdentity").allElementsBoundByIndex.map(\.label)
+        let amounts = app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label)
+        app.buttons.matching(identifier: "quota.menu").element(boundBy: 1).tap()
+        XCTAssertTrue(app.buttons["刷新额度"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["删除账户"].exists)
+        app.buttons["刷新额度"].tap()
+        let changed = NSPredicate { _, _ in MainActor.assumeIsolated {
+            app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label) != amounts
+        }}
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: changed, object: nil)], timeout: 5), .completed)
+        let after = app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label)
+        XCTAssertEqual(after[0], amounts[0]); XCTAssertEqual(after[2], amounts[2]); XCTAssertNotEqual(after[1], amounts[1])
+        app.buttons.matching(identifier: "quota.menu").element(boundBy: 1).tap()
+        app.buttons["删除账户"].tap()
+        XCTAssertTrue(app.alerts["删除账户？"].waitForExistence(timeout: 3))
+        app.alerts.buttons["取消"].tap()
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").allElementsBoundByIndex.map(\.label), original)
+        app.buttons.matching(identifier: "quota.menu").element(boundBy: 1).tap()
+        app.buttons["删除账户"].tap()
+        app.alerts.buttons["删除账户"].tap()
+        XCTAssertTrue(app.staticTexts[original[0]].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts[original[1]].exists)
+        app.terminate(); app.launch()
+        XCTAssertTrue(app.staticTexts[original[2]].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts[original[1]].exists)
+        saveScreenshot(of: app, name: "新版-删除后重开")
+        app.buttons["tab.settings"].tap()
+        XCTAssertEqual(demo.value as? String, "1")
+        demo.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        saveScreenshot(of: app, name: "新版-设置")
+        app.buttons["tab.quota"].tap()
+        XCTAssertTrue(app.staticTexts["未连接账户"].waitForExistence(timeout: 5))
+        app.terminate(); app.launch()
+        XCTAssertTrue(app.staticTexts["未连接账户"].waitForExistence(timeout: 5))
+        app.buttons["quota.toolbarConnect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["connection.cancel"].tap()
+    }
+
+    @MainActor
     func testNavigationEmptyStateAndUnavailableActions() {
         continueAfterFailure = false
         let app = XCUIApplication()

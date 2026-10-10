@@ -415,6 +415,36 @@ final class CodexQuotaServiceTests: XCTestCase {
         XCTAssertEqual(saved, [newer])
     }
 
+    func testT25ManualRefreshKeepsCachedQuotaOnLowScoreAndCancellation() async throws {
+        let setup = try await self.setup()
+        let cached = try await service(setup, transport: QuotaTestTransport(data: Self.complete)).update(setup.account)
+        let gate = QuotaTestGate()
+        let gates = QuotaRetryGates([.blocked(score: 50), .allowed(score: 51)])
+        let transport = QuotaTestTransport(data: Self.complete)
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(),
+            bindings: QuotaTestBinding(account: cached, store: setup.store),
+            quotaUpdater: try service(setup, transport: transport, gate: {
+                let result = await gates.next()
+                if case .allowed = result { await gate.wait() }
+                return result
+            }))
+        await flow.loadAccounts()
+        flow.refreshQuota(for: cached.id)
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.quotaFailure, "网络不达标，无法更新")
+        XCTAssertEqual(flow.accounts, [cached])
+        flow.refreshQuota(for: cached.id)
+        XCTAssertTrue(flow.manualQuotaInProgress)
+        flow.cancelQuotaUpdate()
+        await gate.open()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.accounts, [cached])
+        let requests = await transport.requests
+        XCTAssertTrue(requests.isEmpty)
+        let persisted = try await setup.store.load()
+        XCTAssertEqual(persisted, [cached])
+    }
+
     func testT13RetryRechecksNetworkAndOnlyQueriesOriginalBinding() async throws {
         let setup = try await self.setup()
         let gates = QuotaRetryGates([.blocked(score: 50), .unavailable(.transport), .allowed(score: 51)])

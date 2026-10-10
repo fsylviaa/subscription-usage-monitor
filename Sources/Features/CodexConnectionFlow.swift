@@ -100,6 +100,7 @@ final class CodexConnectionFlow: ObservableObject {
             catch { accountActionFailure = "添加失败，请重试" }
         }
     }
+    @Published private(set) var manualQuotaInProgress = false
     @Published private(set) var quotaUpdatingID: UUID?
     @Published private(set) var quotaFailure: String?
     @Published private(set) var quotaFailureID: UUID?
@@ -691,11 +692,19 @@ final class CodexConnectionFlow: ObservableObject {
         }
     }
 
-    /// First-fetch recovery only; this does not enable regular manual refresh.
+    func refreshQuota(for id: UUID) {
+        guard canManageAccounts, quotaWork == nil,
+              let account = accounts.first(where: { $0.id == id && $0.deletionPending != true }) else { return }
+        manualQuotaInProgress = true
+        startInitialQuota(for: account)
+    }
+
+    func cancelQuotaUpdate() { if manualQuotaInProgress { quotaWork?.cancel() } }
+
+    /// Retry remains scoped to the failed identity, including an existing snapshot.
     func retryInitialQuota(for accountID: UUID, location: QuotaFeedbackLocation = .dashboard) {
         guard quotaFailureID == accountID,
-              let account = accounts.first(where: { $0.id == accountID }),
-              account.quotaState == .notFetched else { return }
+              !managingAccounts, let account = accounts.first(where: { $0.id == accountID && $0.deletionPending != true }) else { return }
         startInitialQuota(for: account, location: location)
     }
 
@@ -721,6 +730,7 @@ final class CodexConnectionFlow: ObservableObject {
         quotaWork = Task { [weak self] in
             guard let self else { return }
             defer {
+                manualQuotaInProgress = false
                 quotaUpdatingID = nil
                 quotaWork = nil
                 if !queuedQuota.isEmpty {
@@ -741,6 +751,7 @@ final class CodexConnectionFlow: ObservableObject {
                 } else {
                     updated = try await quotaUpdater.update(account)
                 }
+                try Task.checkCancellation()
                 quotaFailures.removeValue(forKey: account.id)
                 if let index = accounts.firstIndex(where: { $0.id == updated.id && $0.generation == updated.generation }) {
                     accounts[index] = updated
@@ -761,7 +772,7 @@ final class CodexConnectionFlow: ObservableObject {
                 }
                 quotaFailure = (error as? CodexQuotaError) == .networkBlocked
                     ? "网络不达标，无法更新"
-                    : (account.quotaState == .notFetched ? "获取失败" : "刷新失败")
+                    : (account.quotaState == .notFetched && !manualQuotaInProgress ? "获取失败" : "刷新失败")
                 quotaFailureID = account.id
                 quotaFailures[account.id] = quotaFailure
             }
