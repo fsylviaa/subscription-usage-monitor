@@ -4,7 +4,7 @@ T04 的 `AccountStore` 用带 schemaVersion 的 Codable JSON 文件保存有序�
 
 App 接入时组装一个共享 actor 实例，串行执行无挂起点的读改写；磁盘采用原子替换和首次解锁后可读的文件保护。只在成功写入后返回；没有会提前更新的内存缓存。损坏文件、未知版本和读取／写入失败向调用方返回错误，保留文件，不降级为空列表或自动重置。
 
-`applicationStore()` 提供 App 私有 Application Support/SubscriptionUsage/accounts.json 路径，T08 已接入首账户绑定与启动读取。测试显式传入唯一临时路径；重新构造实例验证真正从文件读取，测试文件不会进入生产路径。
+`applicationStore()` 提供 App 私有 Application Support/SubscriptionUsage/accounts.json 路径，T08 接入首账户绑定，T16 已扩为不同账户按序追加与启动读取。测试显式传入唯一临时路径；重新构造实例验证真正从文件读取，测试文件不会进入生产路径。
 
 普通文件保存账户元数据、凭据 UUID 引用、独立套餐及其观测时间，以及 T12 成功查询得到的两窗口快照；未查询时为 notFetched，兼容原有文件。`saveObservation` 原子提交套餐与额度结果，校验当前身份、作用域、凭据引用、generation 及观测时间，拒绝迟到旧结果。有额度时保存 available 和 quotaSnapshot；确认无适用额度时保存 notApplicable，不创建假快照。可靠套餐可在额度失败时保存；同套餐保留旧额度和原成功时间，确认套餐变化后清除失效额度。不保存登录令牌、原始响应或 Cookie。T05 提供独立钥匙串；完整离线恢复验收由 T15 收口。组件共享在 T32 接入，不共用此账户文件写入器。
 
@@ -27,10 +27,12 @@ T08 已接入核验后提交；T09/T10 已接入到期、取消清理和登录�
 
 取消按事务 ID 清理；读取后删除还通过 `CredentialVault.remove(ifMatching:for:)` 在同一 actor 无挂起地比较和移除，避免旧取消删掉新包。清理失败保留引用，下一次申请前重试；不删除正式授权或账户。T09/T10 已接入登录失败和恢复编排。
 
-T08 的 `CodexAccountBindingStore` 仅接受已验证登录结果；先保存本 App 的独立凭据条目，再在账户 actor 内原子提交首账户。失败只回滚本次新引用，不修改已有账户；取消在提交前检查，提交后保持已保存事实。`CodexPendingLoginStore` 临时保存授权码及未核验令牌，正常完成/取消清理。T10 读取具名阶段恢复；系统拒绝删除时不声称已清除。
+T08 的 `CodexAccountBindingStore` 仅接受已验证登录结果；先保存本 App 的独立凭据条目，再在账户 actor 内原子追加本次账户。失败只回滚本次新引用，不修改已有账户；取消在提交前检查，提交后保持已保存事实。`CodexPendingLoginStore` 临时保存授权码及未核验令牌，正常完成/取消清理。T10 读取具名阶段恢复；系统拒绝删除时不声称已清除。
 
 ## T10 持久恢复与取消
 
 待领取状态由原设备事务表示；`CodexPendingLoginStore` 的 version 1 包含 transactionID 和 `codeReady`、`exchangeStarted`、`tokensReady` 三个阶段。真正发送一次性兑换前先原子写入 exchangeStarted 并删除持久代码；只有 codeReady 可以交换，tokensReady 只做核验。T09 旧 codeReceived 没有兑换开始标记，因此一律按结果不明清理重试，旧完整 tokensReceived 可核验。
 
 取消先写不含秘密的 ID tombstone，再等待旧写入结束并精确清理。初次保存前已取消的同 ID 不能迟到复活；旧取消不覆盖新 ID。条件替换只在同一 vault actor 内比较、写入，登录入口自身合并重复恢复。永久损坏的阶段按事务清理；固定槽仅在当前包确实不可解码时条件移除，系统暂不可用保留重试。已有正式账户优先于未清理的临时事务，避免崩溃收尾重复保存。
+
+T16 在账户普通元数据中保存可选 `loginTransactionID`（随机本地关联编号，不是授权材料），区分另一次尚未完成的添加与已提交但清理未完成的事务。旧文件缺此字段仍可读取；不再因存在 A 就丢弃 B 的待完成登录。多个首次未获取账户依次补齐，原快照与授权分别保留。

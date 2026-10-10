@@ -29,6 +29,7 @@ struct QuotaView: View {
     var updatingID: UUID?
     var quotaFailure: String?
     var quotaFailureID: UUID?
+    var failedAccountIDs: Set<UUID> = []
     var showDashboardFeedback = true
     var connect: () -> Void = {}
     var retry: (UUID) -> Void = { _ in }
@@ -101,7 +102,7 @@ struct QuotaView: View {
                         }
                         ForEach(accounts) { account in
                             QuotaAccountCard(account: account, updating: updatingID == account.id,
-                                             failed: quotaFailureID == account.id)
+                                             failed: failedAccountIDs.contains(account.id) || quotaFailureID == account.id)
                         }
                     }
                     .padding(.horizontal, 16).padding(.top, 12).padding(.bottom, 24)

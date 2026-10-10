@@ -25,6 +25,7 @@ struct RootView: View {
                           loadFailed: connection.accountLoadFailed, canConnect: connection.canConnect,
                           updatingID: connection.quotaUpdatingID, quotaFailure: connection.quotaFailure,
                           quotaFailureID: connection.quotaFailureID,
+                          failedAccountIDs: Set(connection.quotaFailures.keys),
                           showDashboardFeedback: connection.quotaFeedbackLocation == .dashboard && !connection.quotaFeedbackHidden,
                           connect: { connection.begin() },
                           retry: { connection.retryInitialQuota(for: $0) },
@@ -33,7 +34,7 @@ struct RootView: View {
             .tag(Tab.quota).toolbar(.hidden, for: .tabBar)
 
             NavigationStack {
-                SettingsView(canConnect: connection.canConnect, connect: { connection.begin() })
+                SettingsView(accounts: connection.accounts, canConnect: connection.canConnect, connect: { connection.begin() })
             }
             .tag(Tab.settings).toolbar(.hidden, for: .tabBar)
         }

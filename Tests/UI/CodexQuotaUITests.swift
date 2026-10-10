@@ -2,6 +2,85 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT16SixAccountsRemainScrollableInBothLists() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--t16-isolated-ui", "success", "--t16-run-id", UUID().uuidString]
+        app.launch()
+        defer { app.terminate() }
+        for index in 1...6 {
+            app.buttons[index == 1 ? "quota.connect" : "quota.toolbarConnect"].tap()
+            XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
+            app.buttons["connection.open"].tap()
+            XCTAssertTrue(app.buttons["quota.toolbarConnect"].waitForExistence(timeout: 10))
+            let deadline = Date().addingTimeInterval(10)
+            while app.staticTexts["connection.title"].exists && Date() < deadline { Thread.sleep(forTimeInterval: 0.1) }
+            XCTAssertFalse(app.staticTexts["connection.title"].exists)
+        }
+        for _ in 0..<4 { app.swipeUp() }
+        XCTAssertTrue(app.staticTexts["account-6@example.invalid"].isHittable)
+        screenshot(app, "T16-六账户滚动末尾")
+        app.buttons["tab.settings"].tap()
+        app.buttons["settings.accounts"].tap()
+        XCTAssertTrue(app.staticTexts["account-6@example.invalid"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts.matching(identifier: "accounts.identity").count, 6)
+        screenshot(app, "T16-六账户管理")
+    }
+
+    @MainActor
+    func testT16TwoAccountAdditionManagementAndReopen() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--t16-isolated-ui", "success", "--t16-run-id", UUID().uuidString]
+        app.launch()
+        defer { app.terminate() }
+        for index in 1...2 {
+            let connect = app.buttons[index == 1 ? "quota.connect" : "quota.toolbarConnect"]
+            XCTAssertTrue(connect.waitForExistence(timeout: 5))
+            connect.tap()
+            XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
+            app.buttons["connection.open"].tap()
+            XCTAssertTrue(app.staticTexts["account-\(index)@example.invalid"].waitForExistence(timeout: 10))
+            XCTAssertTrue(app.staticTexts["quota.weekly.remaining"].firstMatch.waitForExistence(timeout: 10))
+            XCTAssertTrue(app.buttons["quota.toolbarConnect"].waitForExistence(timeout: 5))
+        }
+        let identities = app.staticTexts.matching(identifier: "quota.accountIdentity")
+        XCTAssertEqual(identities.allElementsBoundByIndex.map(\.label), ["account-1@example.invalid", "account-2@example.invalid"])
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label), ["剩余 80%", "剩余 35%"])
+        screenshot(app, "T16-两账户独立额度")
+        app.buttons["tab.settings"].tap()
+        app.buttons["settings.accounts"].tap()
+        XCTAssertTrue(app.buttons["accounts.connect"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts.matching(identifier: "accounts.identity").allElementsBoundByIndex.map(\.label), ["account-1@example.invalid", "account-2@example.invalid"])
+        screenshot(app, "T16-账户管理")
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(app.staticTexts["account-2@example.invalid"].waitForExistence(timeout: 10))
+        XCTAssertEqual(identities.allElementsBoundByIndex.map(\.label), ["account-1@example.invalid", "account-2@example.invalid"])
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.fiveHours.remaining").allElementsBoundByIndex.map(\.label), ["剩余 70%", "剩余 25%"])
+    }
+
+    @MainActor
+    func testT16FailedSecondAccountKeepsFirstAndIdentifiesFailure() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--t16-isolated-ui", "failure", "--t16-run-id", UUID().uuidString]
+        app.launch()
+        defer { app.terminate() }
+        app.buttons["quota.connect"].tap()
+        XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
+        app.buttons["connection.open"].tap()
+        XCTAssertTrue(app.staticTexts["quota.weekly.remaining"].waitForExistence(timeout: 10))
+        app.buttons["quota.toolbarConnect"].tap()
+        XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
+        app.buttons["connection.open"].tap()
+        XCTAssertTrue(app.buttons["connection.quotaClose"].waitForExistence(timeout: 10))
+        XCTAssertEqual(app.staticTexts["connection.accountIdentity"].label, "account-2@example.invalid")
+        app.buttons["connection.quotaClose"].tap()
+        XCTAssertTrue(app.staticTexts["account-2@example.invalid"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["quota.weekly.remaining"].label, "剩余 80%")
+        XCTAssertEqual(app.staticTexts["quota.fiveHours.remaining"].label, "剩余 70%")
+        screenshot(app, "T16-B失败保留A")
+    }
+
+    @MainActor
     func testAutomaticQuotaAfterLoginAndSameResultOnReopen() {
         let app = launch("success")
         defer { app.terminate() }

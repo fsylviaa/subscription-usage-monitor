@@ -60,15 +60,14 @@ actor AccountStore {
         try commit(accounts)
     }
 
-    /// T08 accepts only the initial binding. The check and atomic replacement share
-    /// this actor turn, so two login completions cannot both create the first account.
-    /// There is no suspension after the final cancellation check: starting commit
-    /// is the save operation's linearization point.
-    func appendFirstUnlessCancelled(_ account: ConnectedAccount) throws {
+    /// Cancellation is checked immediately before the atomic append. Existing
+    /// rows and their order are retained in the same actor turn.
+    func appendUnlessCancelled(_ account: ConnectedAccount) throws {
         try Task.checkCancellation()
-        guard try load().isEmpty else { throw StoreError.accountAlreadyExists }
+        var accounts = try load()
+        accounts.append(account)
         try Task.checkCancellation()
-        try commit([account])
+        try commit(accounts)
     }
 
     /// Replaces only this local record, keeping its current position and every other record intact.

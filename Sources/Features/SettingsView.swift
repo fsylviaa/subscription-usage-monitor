@@ -1,11 +1,32 @@
 import SwiftUI
 
 struct SettingsView: View {
+    var accounts: [ConnectedAccount] = []
     var canConnect = true
     var connect: () -> Void = {}
     var body: some View {
         Form {
             Section("账户") {
+                NavigationLink {
+                    List {
+                        ForEach(accounts) { account in
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(account.verifiedEmail ?? "Codex 账户")
+                                    .accessibilityIdentifier("accounts.identity")
+                                Text(account.subscription.map { "Codex · \($0.planType)" } ?? "Codex")
+                                    .font(.subheadline).foregroundStyle(.secondary)
+                            }
+                            .padding(.vertical, 4)
+                        }
+                        Button("连接 Codex", systemImage: "plus", action: connect)
+                            .disabled(!canConnect).accessibilityIdentifier("accounts.connect")
+                    }
+                    .navigationTitle("账户管理")
+                    .navigationBarTitleDisplayMode(.inline)
+                } label: {
+                    Label("账户管理", systemImage: "person.crop.circle")
+                }
+                .accessibilityIdentifier("settings.accounts")
                 Button("连接 Codex", systemImage: "plus", action: connect)
                     .accessibilityIdentifier("settings.connect")
                     .disabled(!canConnect)

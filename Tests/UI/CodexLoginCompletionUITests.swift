@@ -17,7 +17,7 @@ final class CodexLoginCompletionUITests: XCTestCase {
         assertConnectedIdentity(in: app)
         saveFixtureScreenshot(app, name: "重开账户仍在")
         app.buttons["tab.settings"].tap()
-        XCTAssertFalse(app.buttons["settings.connect"].isEnabled)
+        XCTAssertTrue(app.buttons["settings.connect"].isEnabled)
     }
 
     @MainActor
@@ -251,7 +251,7 @@ final class CodexLoginCompletionUITests: XCTestCase {
         let original = identity.label
         XCTAssertTrue(original.contains("@") && !original.hasSuffix(".invalid"), "真实账户标识存在，非隔离样例")
         XCTAssertTrue(app.staticTexts["quota.notFetched"].exists)
-        XCTAssertFalse(app.buttons["quota.toolbarConnect"].isEnabled)
+        XCTAssertTrue(app.buttons["quota.toolbarConnect"].isEnabled)
         app.terminate()
         app.launch()
         XCTAssertTrue(identity.waitForExistence(timeout: 10), "关闭并重开后账户存在")
@@ -281,7 +281,7 @@ final class CodexLoginCompletionUITests: XCTestCase {
         let original = identity.label
         XCTAssertTrue(original.contains("@") && !original.hasSuffix(".invalid"), "真实账户标识存在，非虚构样例")
         XCTAssertTrue(app.staticTexts["quota.notFetched"].exists)
-        XCTAssertFalse(app.buttons["quota.toolbarConnect"].isEnabled)
+        XCTAssertTrue(app.buttons["quota.toolbarConnect"].isEnabled)
         app.terminate()
         app.launch()
         XCTAssertTrue(identity.waitForExistence(timeout: 10), "重开后指定隔离账户仍存在")
@@ -363,7 +363,7 @@ final class CodexLoginCompletionUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["quota.notFetched"].exists)
         XCTAssertEqual(app.staticTexts["quota.notFetched"].label, "尚未获取额度")
         XCTAssertEqual(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "%")).count, 0)
-        XCTAssertFalse(app.buttons["quota.toolbarConnect"].isEnabled)
+        XCTAssertTrue(app.buttons["quota.toolbarConnect"].isEnabled)
         XCTAssertFalse(app.buttons["quota.refresh"].isEnabled)
         XCTAssertFalse(app.buttons["connection.cancel"].exists)
     }

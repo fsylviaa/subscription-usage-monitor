@@ -14,6 +14,14 @@ enum CodexConnectionUITestSupport {
             return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
                 authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
         }
+        if let marker = arguments.firstIndex(of: "--t16-isolated-ui") {
+            let scenario = arguments.indices.contains(marker + 1) ? arguments[marker + 1] : "success"
+            let runID = arguments.firstIndex(of: "--t16-run-id").flatMap {
+                arguments.indices.contains($0 + 1) ? UUID(uuidString: arguments[$0 + 1]) : nil
+            } ?? UUID()
+            let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T16-ui-\(runID)")
+            return T16MultiAccountFixture(directory: directory, failSecond: scenario == "failure").makeFlow()
+        }
         if let marker = arguments.firstIndex(of: "--t12-isolated-ui") {
             let scenario = arguments.indices.contains(marker + 1) ? arguments[marker + 1] : "success"
             return completionFlow(scenario: scenario, arguments: arguments, includeQuota: true)
@@ -227,7 +235,7 @@ enum CodexConnectionUITestSupport {
             try Task.checkCancellation()
             let account = ConnectedAccount(remoteUserID: login.remoteUserID, verifiedEmail: login.email,
                                            scope: login.scope, credentialRef: UUID())
-            try await accounts.appendFirstUnlessCancelled(account)
+            try await accounts.appendUnlessCancelled(account)
             credentials[account.credentialRef] = login.credentials
             return account
         }
@@ -490,6 +498,92 @@ enum CodexConnectionUITestSupport {
             return CodexTokenResponse(accessToken: "isolated-t09-access", refreshToken: "isolated-t09-refresh",
                                       idToken: "isolated-t09-id", obtainedAt: Date(), expiresAt: nil)
         }
+    }
+}
+
+/// Test-only server identities; production binding, Keychain, parsing and files
+/// run unchanged in a random namespace. No external request is made.
+@MainActor
+final class T16MultiAccountFixture {
+    let store: AccountStore
+    let vault: CredentialVault
+    let bindings: CodexAccountBindingStore
+    let server: T16MultiAccountServer
+    let updater: CodexQuotaService
+    let directory: URL
+
+    init(directory: URL, failSecond: Bool = false) {
+        self.directory = directory
+        store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
+        vault = CredentialVault(service: "T16.fixture.\(directory.lastPathComponent)")
+        bindings = CodexAccountBindingStore(accountStore: store, vault: vault)
+        server = T16MultiAccountServer(store: store, failSecond: failSecond)
+        let vault = vault
+        updater = CodexQuotaService(store: store, loadCredential: { try await vault.load(for: .credential($0)) },
+            transport: server, checkNetwork: { .allowed(score: 51) })
+    }
+
+    func makeFlow() -> CodexConnectionFlow {
+        let server = server
+        return CodexConnectionFlow(checkNetwork: { .allowed(score: 51) }, authorizer: server,
+            transactions: CodexLoginTransactionStore(vault: vault), completer: server, verifier: server,
+            bindings: bindings, pending: CodexPendingLoginStore(vault: vault), quotaUpdater: updater,
+            copyCode: { _, _ in }, openURL: { _ in await server.openWebsite(); return true })
+    }
+
+    func cleanup() async throws {
+        let transactions = CodexLoginTransactionStore(vault: vault)
+        if let auth = try await transactions.load() {
+            try await CodexPendingLoginStore(vault: vault).remove(transactionID: auth.transactionID)
+            try await transactions.remove(transactionID: auth.transactionID)
+        }
+        for account in try await store.load() { try await vault.remove(for: .credential(account.credentialRef)) }
+        if FileManager.default.fileExists(atPath: directory.path) { try FileManager.default.removeItem(at: directory) }
+    }
+}
+
+actor T16MultiAccountServer: CodexDeviceAuthorizing, CodexLoginCompleting, CodexIdentityVerifying, CodexDeviceAuthorizationTransport {
+    let store: AccountStore
+    let failSecond: Bool
+    private var opened = false
+    private(set) var requests: [URLRequest] = []
+    init(store: AccountStore, failSecond: Bool) { self.store = store; self.failSecond = failSecond }
+    func openWebsite() { opened = true }
+    func requestAuthorization() async throws -> CodexDeviceAuthorization {
+        opened = false
+        let index = try await store.load().count + 1
+        return try .init(deviceAuthID: "\(index)", userCode: "TEST-\(index)", pollInterval: 1, startedAt: Date())
+    }
+    func poll(_ authorization: CodexDeviceAuthorization) async throws -> CodexAuthorizationCode? {
+        guard opened else { return nil }
+        return .init(code: authorization.deviceAuthID, verifier: String(repeating: "v", count: 43))
+    }
+    func exchange(_ code: CodexAuthorizationCode) async throws -> CodexTokenResponse {
+        .init(accessToken: code.code, refreshToken: "fixture-refresh", idToken: "fixture-id", obtainedAt: Date(), expiresAt: nil)
+    }
+    func verify(_ tokens: CodexTokenResponse) async throws -> CodexVerifiedLogin {
+        let index = tokens.accessToken
+        let scope = AccountScope(remoteAccountID: "t16-\(index)", kind: .personal)
+        let package = CodexIdentityVerifier.CredentialPackage(credentialVersion: 1,
+            issuer: CodexIdentityVerifier.issuer, clientID: CodexDeviceAuthorization.clientID,
+            subject: "fixture-subject-\(index)", remoteUserID: "t16-user-\(index)", scope: scope, tokens: tokens)
+        return .fixture(remoteUserID: package.remoteUserID, email: "account-\(index)@example.invalid", scope: scope,
+            credentials: CredentialPayload(data: try JSONEncoder().encode(package)))
+    }
+    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+        requests.append(request)
+        let scope = request.value(forHTTPHeaderField: "ChatGPT-Account-Id") ?? ""
+        let token = request.value(forHTTPHeaderField: "Authorization") ?? ""
+        guard let index = Int(scope.replacingOccurrences(of: "t16-", with: "")), token == "Bearer \(index)" else {
+            throw CodexQuotaError.failed
+        }
+        if failSecond && index == 2 { throw URLError(.notConnectedToInternet) }
+        let used = index == 1 ? 20 : 65
+        let body = """
+        {"account_id":"\(scope)","plan_type":"Plus","rate_limit":{"primary_window":{"limit_window_seconds":18000,"used_percent":\(used + 10),"reset_at":1800010000},"secondary_window":{"limit_window_seconds":604800,"used_percent":\(used),"reset_at":1800500000}}}
+        """
+        return (Data(body.utf8), HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil,
+                                               headerFields: ["Content-Type": "application/json"])!)
     }
 }
 #endif

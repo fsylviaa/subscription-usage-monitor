@@ -88,7 +88,7 @@ final class CodexLoginCompletionTests: XCTestCase {
         XCTAssertEqual(account.quotaState, .notFetched)
         XCTAssertNil(account.displayName)
         XCTAssertFalse(scenario.flow.isPresented)
-        XCTAssertFalse(scenario.flow.canConnect)
+        XCTAssertTrue(scenario.flow.canConnect)
         let saveCount = await scenario.bindings.saveCount
         let verifyCount = await scenario.verifier.count
         let pendingRemovals = await scenario.pending.removalCount
@@ -97,7 +97,7 @@ final class CodexLoginCompletionTests: XCTestCase {
         XCTAssertEqual(verifyCount, 1)
         XCTAssertEqual(pendingRemovals, 1)
         XCTAssertNil(transaction)
-        XCTAssertNil(scenario.flow.begin())
+        scenario.flow.cancel()
         print("T08 | 已核验的固定账户 | 仅保存一次；显示身份，额度保持尚未获取")
     }
 
@@ -152,7 +152,7 @@ final class CodexLoginCompletionTests: XCTestCase {
         XCTAssertEqual(reloaded.accounts, scenario.flow.accounts)
         XCTAssertEqual(reloaded.accounts.first?.quotaState, .notFetched)
         XCTAssertFalse(reloaded.accountLoadFailed)
-        XCTAssertFalse(reloaded.canConnect)
+        XCTAssertTrue(reloaded.canConnect)
     }
 
     private struct Observation {

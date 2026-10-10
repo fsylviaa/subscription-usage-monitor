@@ -3,6 +3,13 @@ import Foundation
 protocol CodexAccountBinding: Sendable {
     func load() async throws -> [ConnectedAccount]
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount
+    func save(_ login: CodexVerifiedLogin, transactionID: UUID) async throws -> ConnectedAccount
+}
+
+extension CodexAccountBinding {
+    func save(_ login: CodexVerifiedLogin, transactionID: UUID) async throws -> ConnectedAccount {
+        try await save(login)
+    }
 }
 
 /// Accepts the verifier's result type only. Raw tokens and decoded claims never
@@ -33,11 +40,15 @@ final class CodexAccountBindingStore: CodexAccountBinding {
     }
 
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount {
+        try await save(login, transactionID: UUID())
+    }
+
+    func save(_ login: CodexVerifiedLogin, transactionID: UUID) async throws -> ConnectedAccount {
         try Task.checkCancellation()
-        // Fail before creating a credential when an established account already
-        // exists. The atomic first-append check below also covers a competing save.
-        guard try await accountStore.load().isEmpty else {
-            throw AccountStore.StoreError.accountAlreadyExists
+        let existing = try await accountStore.load()
+        // A committed login can survive a crash before temporary cleanup.
+        if let committed = existing.first(where: { $0.loginTransactionID == transactionID }) {
+            return committed
         }
         try Task.checkCancellation()
 
@@ -45,13 +56,14 @@ final class CodexAccountBindingStore: CodexAccountBinding {
             remoteUserID: login.remoteUserID,
             verifiedEmail: login.email,
             scope: login.scope,
-            credentialRef: UUID()
+            credentialRef: UUID(),
+            loginTransactionID: transactionID
         )
         let entry = CredentialVault.Entry.credential(account.credentialRef)
         try await vault.save(login.credentials, for: entry)
         do {
             try Task.checkCancellation()
-            try await accountStore.appendFirstUnlessCancelled(account)
+            try await accountStore.appendUnlessCancelled(account)
         } catch {
             // This random reference belongs only to this attempted binding. Never
             // delete or replace an established account or a different payload.

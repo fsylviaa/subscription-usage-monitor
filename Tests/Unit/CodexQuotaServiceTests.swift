@@ -761,7 +761,7 @@ private actor QuotaTestBinding: CodexAccountBinding {
     init(account: ConnectedAccount, store: AccountStore) { self.account = account; self.store = store }
     func load() async throws -> [ConnectedAccount] { try await store.load() }
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount {
-        try await store.appendFirstUnlessCancelled(account)
+        try await store.appendUnlessCancelled(account)
         return account
     }
 }

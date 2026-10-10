@@ -10,6 +10,7 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
     var displayName: String?
     var scope: AccountScope
     var credentialRef: UUID
+    var loginTransactionID: UUID?
     var generation: UInt64
     var subscription: AccountSubscription?
     var quotaSnapshot: CodexQuotaSnapshot?
@@ -27,8 +28,10 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
         generation: UInt64 = 0,
         quotaState: AccountQuotaState = .notFetched,
         quotaSnapshot: CodexQuotaSnapshot? = nil,
-        subscription: AccountSubscription? = nil
+        subscription: AccountSubscription? = nil,
+        loginTransactionID: UUID? = nil
     ) {
+        self.loginTransactionID = loginTransactionID
         self.id = id
         self.provider = provider
         self.product = product

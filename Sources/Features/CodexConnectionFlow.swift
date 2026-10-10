@@ -26,10 +26,13 @@ final class CodexConnectionFlow: ObservableObject {
     @Published private(set) var quotaUpdatingID: UUID?
     @Published private(set) var quotaFailure: String?
     @Published private(set) var quotaFailureID: UUID?
+    @Published private(set) var quotaFailures: [UUID: String] = [:]
     enum QuotaFeedbackLocation { case connection, dashboard }
     @Published private(set) var quotaFeedbackLocation: QuotaFeedbackLocation = .dashboard
     @Published private(set) var quotaFeedbackHidden = false
     private let quotaUpdater: (any CodexQuotaUpdating)?
+    private var queuedQuota: [(account: ConnectedAccount, location: QuotaFeedbackLocation)] = []
+    @Published private(set) var restoringLogin = false
     private var quotaWork: Task<Void, Never>?
     private let completer: (any CodexLoginCompleting)?
     private let verifier: (any CodexIdentityVerifying)?
@@ -73,7 +76,7 @@ final class CodexConnectionFlow: ObservableObject {
         }
     }
 
-    var canConnect: Bool { accounts.isEmpty && !loadingAccounts && !accountLoadFailed }
+    var canConnect: Bool { !loadingAccounts && !accountLoadFailed && !restoringLogin && quotaUpdatingID == nil }
 
     /// RootView can appear more than once; restoration is one serialized operation.
     func loadAccounts() async {
@@ -86,14 +89,15 @@ final class CodexConnectionFlow: ObservableObject {
     private func loadAndRestore() async {
         guard let bindings else { return }
         loadingAccounts = true
+        restoringLogin = true
         let attempt = generation
-        defer { loadingAccounts = false }
+        defer { loadingAccounts = false; restoringLogin = false }
         do {
             accounts = try await bindings.load()
             accountLoadFailed = false
             // An existing account is readable before pending login/Keychain
-            // recovery finishes. Keep an empty list gated until login restoration
-            // resolves, so a new connection cannot race that restoration.
+            // recovery finishes. New connections stay gated independently until
+            // restoration resolves, even when the cached list is already visible.
             if !accounts.isEmpty { loadingAccounts = false }
         } catch {
             accountLoadFailed = true
@@ -101,19 +105,23 @@ final class CodexConnectionFlow: ObservableObject {
         }
         // T12 also completes the first query for an existing T08 binding on
         // upgrade/relaunch. Regular foreground refresh remains a later task.
-        if let account = accounts.first, account.quotaState == .notFetched || account.subscription == nil {
+        for account in accounts where account.quotaState == .notFetched || account.subscription == nil {
             startInitialQuota(for: account)
         }
-        // A committed account wins over leftover temporary data after a crash.
-        // T10 only binds the first account; it never reconnects an existing one.
+        // Resume an unfinished addition even when other accounts are present.
         do {
             needsPersistentRestore = true
             let found = try await readPersistedRecovery()
-            guard found, accounts.isEmpty else { return }
+            guard found else { return }
+            // Finish any cached account's first fetch before presenting another
+            // account's login result, so the sheet cannot identify the wrong row.
+            await waitForInitialQuota()
+            guard generation == attempt, !Task.isCancelled else { return }
             loadingAccounts = false
+            restoringLogin = false
             await begin()?.value
         } catch {
-            guard generation == attempt, !Task.isCancelled, accounts.isEmpty else { return }
+            guard generation == attempt, !Task.isCancelled else { return }
             isPresented = true
             state = .failure("登录未完成，请重试")
         }
@@ -144,7 +152,7 @@ final class CodexConnectionFlow: ObservableObject {
             return false
         }
         pendingID = saved.transactionID
-        if !accounts.isEmpty {
+        if accounts.contains(where: { $0.loginTransactionID == saved.transactionID }) {
             try await removePending()
             needsPersistentRestore = false
             return false
@@ -245,7 +253,8 @@ final class CodexConnectionFlow: ObservableObject {
 
     @discardableResult
     func begin() -> Task<Void, Never>? {
-        guard canConnect, state == .idle || isFailure else { return nil }
+        guard !loadingAccounts, !accountLoadFailed, !restoringLogin,
+              (quotaUpdatingID == nil || recovery != nil), state == .idle || isFailure else { return nil }
         let previousWork = work
         let previousCompletion = completionWork
         let previousCleanup = cleanupWork
@@ -510,8 +519,12 @@ final class CodexConnectionFlow: ObservableObject {
                 safeRecovery = nil
                 recovery = nil
                 state = .saving
-                let account = try await bindings.save(verified)
-                accounts = [account]
+                let account = try await bindings.save(verified, transactionID: authorization.transactionID)
+                if let index = accounts.firstIndex(where: { $0.id == account.id }) {
+                    accounts[index] = account
+                } else {
+                    accounts.append(account)
+                }
                 expiryWork?.cancel()
                 self.authorization = nil
                 // A cleanup problem cannot turn a committed account into a failure.
@@ -568,7 +581,13 @@ final class CodexConnectionFlow: ObservableObject {
 
     /// Separate from login: dismissing its sheet cannot cancel the quota query.
     private func startInitialQuota(for account: ConnectedAccount, location: QuotaFeedbackLocation = .dashboard) {
-        guard let quotaUpdater, quotaWork == nil else { return }
+        guard let quotaUpdater else { return }
+        if quotaWork != nil {
+            if quotaUpdatingID != account.id && !queuedQuota.contains(where: { $0.account.id == account.id }) {
+                queuedQuota.append((account, location))
+            }
+            return
+        }
         quotaFeedbackLocation = location
         quotaFeedbackHidden = false
         quotaUpdatingID = account.id
@@ -576,9 +595,22 @@ final class CodexConnectionFlow: ObservableObject {
         quotaFailureID = nil
         quotaWork = Task { [weak self] in
             guard let self else { return }
-            defer { quotaUpdatingID = nil; quotaWork = nil }
+            defer {
+                quotaUpdatingID = nil
+                quotaWork = nil
+                if !queuedQuota.isEmpty {
+                    let next = queuedQuota.removeFirst()
+                    startInitialQuota(for: next.account, location: next.location)
+                } else if !isPresented, quotaFailureID == nil,
+                          let failed = accounts.first(where: { quotaFailures[$0.id] != nil }) {
+                    quotaFailureID = failed.id
+                    quotaFailure = quotaFailures[failed.id]
+                    quotaFeedbackLocation = .dashboard
+                }
+            }
             do {
                 let updated = try await quotaUpdater.update(account)
+                quotaFailures.removeValue(forKey: account.id)
                 if let index = accounts.firstIndex(where: { $0.id == updated.id && $0.generation == updated.generation }) {
                     accounts[index] = updated
                 }
@@ -600,11 +632,12 @@ final class CodexConnectionFlow: ObservableObject {
                     ? "网络不达标，无法更新"
                     : (account.quotaState == .notFetched ? "获取失败" : "刷新失败")
                 quotaFailureID = account.id
+                quotaFailures[account.id] = quotaFailure
             }
         }
     }
 
-    func waitForInitialQuota() async { await quotaWork?.value }
+    func waitForInitialQuota() async { while let work = quotaWork { await work.value } }
 
     private func waitUntilActive(_ authorization: CodexDeviceAuthorization, attempt: UUID) async throws {
         while !isActive {

@@ -107,7 +107,7 @@ final class CodexLoginInterruptionTests: XCTestCase {
             flow.setActive(true)
         }
         await s.verifier.release.open()
-        await waitUntil { flow.accounts.count == 1 }
+        await waitUntil { flow.accounts.count == 1 && flow.state == .idle && !flow.isPresented }
 
         let requests = await s.authorizer.count
         let polls = await s.client.pollCount
@@ -217,10 +217,12 @@ final class CodexLoginInterruptionTests: XCTestCase {
     }
 
     func testCommittedAccountAndResidualTransactionDoNotSaveAgain() async throws {
-        let original = ConnectedAccount(remoteUserID: "t10-existing-user", verifiedEmail: "existing@example.invalid",
+        var original = ConnectedAccount(remoteUserID: "t10-existing-user", verifiedEmail: "existing@example.invalid",
             displayName: "已有测试账户", scope: .init(remoteAccountID: "t10-existing-account", kind: .personal),
             credentialRef: UUID(), generation: 4, quotaState: .notFetched)
-        let s = try scenario(existing: [original])
+        let s = try scenario()
+        original.loginTransactionID = s.original.transactionID
+        await s.bindings.setAccounts([original])
         try await seed(s, phase: .tokensReady(s.tokens))
         let flow = s.makeFlow()
         await flow.loadAccounts()
@@ -229,7 +231,7 @@ final class CodexLoginInterruptionTests: XCTestCase {
         XCTAssertEqual(flow.accounts, [original])
         XCTAssertEqual(flow.state, .idle)
         XCTAssertFalse(flow.isPresented)
-        XCTAssertFalse(flow.canConnect)
+        XCTAssertTrue(flow.canConnect)
         let verifies = await s.verifier.tokens.count
         let saves = await s.bindings.saveCount
         let stored = try await s.bindings.load()
@@ -633,6 +635,7 @@ private actor InterruptionBindings: CodexAccountBinding {
     private var accounts: [ConnectedAccount]
     private(set) var saveCount = 0
     init(accounts: [ConnectedAccount]) { self.accounts = accounts }
+    func setAccounts(_ value: [ConnectedAccount]) { accounts = value }
     func load() async throws -> [ConnectedAccount] { accounts }
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount {
         saveCount += 1
