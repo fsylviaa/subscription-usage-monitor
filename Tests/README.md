@@ -41,3 +41,7 @@ T11 的 `CodexUsageParserTests` 使用源码内人工 JSON、`example.invalid` �
 T12 的 `CodexQuotaServiceTests` 覆盖首次自动查询、响应后成功时间、网络门控、缺失字段、失败保留、取消、身份变化、旧文件兼容及快照保存读回；默认使用人工 JSON 与独立目录。`CodexQuotaUITests` 使用 DEBUG `--t12-isolated-ui` 的 success／partial／blocked 场景及唯一 `--t08-run-id`，无网络、无正式账户或钥匙串访问。hosted 单元测试的 App 主场景自动使用空隔离流程，阻止启动副作用。
 
 `CodexQuotaLiveTests` 仅在 `T12_LIVE_QUERY=1` 时读取本 iPhone App 正式登录，执行真实 T06 检查和 usage 主请求，并将成功快照写回同一账户；不读桌面授权，不续期或修改凭据。传输记录器只在内存中对照同次平台响应，日志仅输出数值、窗口、时间、HTTP 状态与固定阶段，不输出身份和秘密。`T12_LIVE_REOPEN=1` 才运行普通真实页面重开检查。默认不启用这两项；实际证据见 [T12 验收](../docs/mvp任务清单/记录/T12-验收.md)。
+
+T14 的 `CodexCredentialRenewalTests` 18 项使用固定时钟、独立真实 Keychain 与故障注入，覆盖续期、401 有界恢复、保存失败重试、防重放、并发、取消及旧包保护；`CodexIdentityVerifierTests` 的 5 项 T14 测试使用内存生成 RSA 公私钥，核验签名、绑定、可选旧身份与到期时间。默认不联网、不访问正式账户。
+
+`CodexCredentialRenewalLiveTests` 仅在 `T14_LIVE_QUERY=1` 时使用本 iPhone App 的正式授权和生产续期路径，先执行 T06 评分，查询与保存实际套餐／适用额度；接近到期时可能真实更新本 App 授权，不能再断言凭据永远不变。只报告身份匹配、成功时间、期限和是否发生续期，不打印秘密；不读电脑授权。当前真实查询与普通重开通过，未发生自然续期；后续 T54 必须区别每次真实续期及同次成功查询，不能以默认隔离测试代替。

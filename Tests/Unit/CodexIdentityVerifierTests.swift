@@ -248,6 +248,93 @@ final class CodexIdentityVerifierTests: XCTestCase {
         return CodexIdentityVerifier(transport: transport, checkNetwork: { await gate.check() }, now: { instant })
     }
 
+    func testT14RenewalVerifiesNewSignaturesAndDerivesExpiryWithoutUsageRequest() async throws {
+        let signer = try SyntheticJWTSigner()
+        let original = try renewalOriginal(signer)
+        let transport = IdentityTransportStub(jwks: signer.jwks)
+        let current = instant
+        let verifier = CodexIdentityVerifier(transport: transport, checkNetwork: { .blocked(score: 0) }, now: { current })
+        let candidate = CodexTokenResponse(accessToken: try signer.sign(accessClaims()), refreshToken: "rotated-refresh",
+            idToken: try signer.sign(idClaims()), obtainedAt: instant, expiresAt: nil)
+        let verified = try await verifier.verifyRenewal(candidate, replacing: original)
+        XCTAssertEqual(verified.expiresAt, instant.addingTimeInterval(3600))
+        XCTAssertTrue(verified.refreshToken == "rotated-refresh")
+        let requests = await transport.requests
+        XCTAssertEqual(requests.map(\.url), [CodexIdentityVerifier.jwksURL], "公钥核验不偷偷请求usage")
+    }
+
+    func testT14OmittedIdentityCanRetainExpiredOriginalButAccessMustBeFreshAndSigned() async throws {
+        let signer = try SyntheticJWTSigner()
+        let original = try renewalOriginal(signer)
+        let current = instant.addingTimeInterval(7200)
+        var claims = accessClaims()
+        claims["iat"] = Int(current.timeIntervalSince1970)
+        claims["exp"] = Int(current.addingTimeInterval(3600).timeIntervalSince1970)
+        let candidate = CodexTokenResponse(accessToken: try signer.sign(claims), refreshToken: "rotated-refresh",
+            idToken: original.tokens.idToken, obtainedAt: current, expiresAt: nil)
+        let verifier = CodexIdentityVerifier(transport: IdentityTransportStub(jwks: signer.jwks), now: { current })
+        let verified = try await verifier.verifyRenewal(candidate, replacing: original)
+        XCTAssertEqual(verified.expiresAt, current.addingTimeInterval(3600))
+        XCTAssertTrue(verified.idToken == original.tokens.idToken)
+    }
+
+    func testT14RenewalRejectsChangedIdentityScopeAudienceExpiredAndTamperedSignatures() async throws {
+        let signer = try SyntheticJWTSigner()
+        let original = try renewalOriginal(signer)
+        let current = instant
+        let verifier = CodexIdentityVerifier(transport: IdentityTransportStub(jwks: signer.jwks), now: { current })
+        var changes: [[String: Any]] = []
+        for (key, value) in [("sub", "different-subject"), ("client_id", "different-client"), ("aud", "different-api")] {
+            var claims = accessClaims(); claims[key] = value; changes.append(claims)
+        }
+        var scope = accessClaims()
+        scope["https://api.openai.com/auth"] = ["chatgpt_account_id": "different-account", "chatgpt_user_id": "user-synthetic"]
+        changes.append(scope)
+        var expired = accessClaims(); expired["exp"] = 1_789_999_994; changes.append(expired)
+        var changedID = idClaims(); changedID["sub"] = "different-subject"
+        var candidates = try changes.map { try signer.sign($0) }
+        candidates.append(try SyntheticJWTSigner().sign(accessClaims()))
+        for access in candidates {
+            let candidate = CodexTokenResponse(accessToken: access, refreshToken: "rotated-refresh",
+                idToken: original.tokens.idToken, obtainedAt: instant, expiresAt: nil)
+            do { _ = try await verifier.verifyRenewal(candidate, replacing: original); XCTFail("不可信新授权不能替换原绑定") }
+            catch { }
+        }
+        let candidate = CodexTokenResponse(accessToken: try signer.sign(accessClaims()), refreshToken: "rotated-refresh",
+            idToken: try signer.sign(changedID), obtainedAt: instant, expiresAt: nil)
+        do { _ = try await verifier.verifyRenewal(candidate, replacing: original); XCTFail("不能接受其他身份的新id token") }
+        catch { }
+    }
+
+    func testT14ExpiryUsesEarlierOfSignedAndResponseTime() async throws {
+        let signer = try SyntheticJWTSigner()
+        let original = try renewalOriginal(signer)
+        let current = instant
+        let verifier = CodexIdentityVerifier(transport: IdentityTransportStub(jwks: signer.jwks), now: { current })
+        for seconds in [100.0, 7200.0] {
+            let candidate = CodexTokenResponse(accessToken: try signer.sign(accessClaims()), refreshToken: "rotated-refresh",
+                idToken: original.tokens.idToken, obtainedAt: instant, expiresAt: instant.addingTimeInterval(seconds))
+            let verified = try await verifier.verifyRenewal(candidate, replacing: original)
+            XCTAssertEqual(verified.expiresAt, instant.addingTimeInterval(min(seconds, 3600)))
+        }
+    }
+
+    func testT14LegacyPackageWithoutResponseExpiryUsesAlreadyVerifiedAccessExpiryForScheduling() throws {
+        let signer = try SyntheticJWTSigner()
+        let token = CodexTokenResponse(accessToken: try signer.sign(accessClaims()), refreshToken: "original-refresh",
+            idToken: try signer.sign(idClaims()), obtainedAt: instant, expiresAt: nil)
+        XCTAssertEqual(CodexIdentityVerifier.expirationForScheduling(token), instant.addingTimeInterval(3600))
+        let unknown = CodexTokenResponse(accessToken: "unknown", refreshToken: "original-refresh",
+            idToken: "unknown", obtainedAt: instant, expiresAt: nil)
+        XCTAssertNil(CodexIdentityVerifier.expirationForScheduling(unknown), "解析不了不编造期限；仍可按一次401恢复")
+    }
+
+    private func renewalOriginal(_ signer: SyntheticJWTSigner) throws -> CodexIdentityVerifier.CredentialPackage {
+        .init(credentialVersion: 1, issuer: CodexIdentityVerifier.issuer, clientID: CodexDeviceAuthorization.clientID,
+            subject: "subject-synthetic", remoteUserID: "user-synthetic",
+            scope: .init(remoteAccountID: "account-synthetic", kind: .personal), tokens: try tokens(signer))
+    }
+
     private func assertFailure(_ tokens: CodexTokenResponse, transport: IdentityTransportStub,
                                gate: IdentityNetworkGate = .init(.allowed(score: 57)),
                                expected: CodexLoginError = .failed,

@@ -186,14 +186,61 @@ struct CodexIdentityVerifier: CodexIdentityVerifying {
             && value.unicodeScalars.allSatisfy { !CharacterSet.whitespacesAndNewlines.contains($0) && !CharacterSet.controlCharacters.contains($0) }
     }
 
-    struct CredentialPackage: Codable {
+    /// Refresh validates new signed tokens against the existing binding. An
+    /// omitted id_token may retain the original (now expired) identity token;
+    /// it is never used to assert a new identity. Usage is gated separately.
+    func verifyRenewal(_ tokens: CodexTokenResponse, replacing original: CredentialPackage) async throws -> CodexTokenResponse {
+        guard Self.safeSecret(tokens.accessToken), Self.safeSecret(tokens.refreshToken),
+              Self.safeSecret(tokens.idToken), tokens.obtainedAt.timeIntervalSince1970.isFinite,
+              tokens.obtainedAt <= now().addingTimeInterval(5) else { throw CodexLoginError.failed }
+        let keys = try JSONDecoder().decode(JWKSet.self, from: await get(Self.jwksURL))
+        let access = try SignedJWT(tokens.accessToken).verify(using: keys, now: now())
+        guard access.subject == original.subject,
+              access.audiences.contains("https://api.openai.com/v1"),
+              access.clientID == CodexDeviceAuthorization.clientID || access.authorizedParty == CodexDeviceAuthorization.clientID,
+              access.clientID == nil || access.clientID == CodexDeviceAuthorization.clientID,
+              access.authorizedParty == nil || access.authorizedParty == CodexDeviceAuthorization.clientID,
+              access.auth?.accountID == nil || access.auth?.accountID == original.scope.remoteAccountID,
+              access.auth?.userID == nil || access.auth?.userID == original.remoteUserID,
+              access.auth?.chatGPTUserID == nil || access.auth?.legacyUserID == nil
+                || access.auth?.chatGPTUserID == access.auth?.legacyUserID else { throw CodexLoginError.failed }
+        if tokens.idToken != original.tokens.idToken {
+            let id = try SignedJWT(tokens.idToken).verify(using: keys, now: now())
+            guard id.subject == original.subject,
+                  id.audiences.contains(CodexDeviceAuthorization.clientID),
+                  id.authorizedParty == nil || id.authorizedParty == CodexDeviceAuthorization.clientID,
+                  id.audiences.count == 1 || id.authorizedParty == CodexDeviceAuthorization.clientID,
+                  id.auth?.accountID == original.scope.remoteAccountID,
+                  (id.auth?.userID ?? id.subject) == original.remoteUserID,
+                  id.auth?.chatGPTUserID == nil || id.auth?.legacyUserID == nil
+                    || id.auth?.chatGPTUserID == id.auth?.legacyUserID else { throw CodexLoginError.failed }
+        }
+        let signedExpiry = Date(timeIntervalSince1970: access.expiration)
+        let expiry = tokens.expiresAt.map { min($0, signedExpiry) } ?? signedExpiry
+        guard expiry.timeIntervalSince1970.isFinite, expiry > now(), expiry > tokens.obtainedAt else {
+            throw CodexLoginError.failed
+        }
+        return .init(accessToken: tokens.accessToken, refreshToken: tokens.refreshToken,
+                     idToken: tokens.idToken, obtainedAt: tokens.obtainedAt, expiresAt: expiry)
+    }
+
+    /// Only a scheduling hint from an already verified, local Keychain package.
+    /// This never establishes identity or accepts newly received unsigned claims.
+    static func expirationForScheduling(_ tokens: CodexTokenResponse) -> Date? {
+        tokens.expiresAt ?? (try? SignedJWT(tokens.accessToken).expiration)
+    }
+
+    struct CredentialPackage: Codable, Sendable {
         let credentialVersion: Int
         let issuer: String
         let clientID: String
         let subject: String
         let remoteUserID: String
         let scope: AccountScope
-        let tokens: CodexTokenResponse
+        var tokens: CodexTokenResponse
+        // Optional for backward compatibility with T08–T13 Keychain packages.
+        var renewal: CodexRenewalAttempt? = nil
+        var renewalHistory: [CodexRenewalObservation]? = nil
     }
 
     struct UsageIdentity: Decodable {
@@ -249,6 +296,7 @@ private struct SignedJWT {
     private let signature: Data
     private let claims: Claims
     private let keyID: String
+    var expiration: Date { Date(timeIntervalSince1970: claims.expiration) }
 
     init(_ token: String) throws {
         let parts = token.split(separator: ".", omittingEmptySubsequences: false)

@@ -59,7 +59,8 @@ final class CodexConnectionFlow: ObservableObject {
         do {
             let accounts = try AccountStore.applicationStore()
             let vault = CredentialVault.applicationVault()
-            let updater = CodexQuotaService(store: accounts, loadCredential: { try await vault.load(for: .credential($0)) })
+            let updater = CodexQuotaService(store: accounts, loadCredential: { try await vault.load(for: .credential($0)) },
+                renewal: CodexCredentialRenewal(vault: vault))
             let flow = CodexConnectionFlow(completer: CodexLoginClient(), verifier: CodexIdentityVerifier(),
                                            bindings: CodexAccountBindingStore(accountStore: accounts, vault: vault),
                                            pending: CodexPendingLoginStore(), quotaUpdater: updater)

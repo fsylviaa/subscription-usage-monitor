@@ -18,17 +18,20 @@ protocol CodexQuotaUpdating: Sendable {
 struct CodexQuotaService: CodexQuotaUpdating {
     private let store: AccountStore
     private let loadCredential: @Sendable (UUID) async throws -> CredentialPayload?
+    private let renewal: (any CodexCredentialPreparing)?
     private let transport: any CodexDeviceAuthorizationTransport
     private let checkNetwork: @Sendable () async -> NetworkScoreResult
     private let now: @Sendable () -> Date
 
     init(store: AccountStore,
          loadCredential: @escaping @Sendable (UUID) async throws -> CredentialPayload?,
+         renewal: (any CodexCredentialPreparing)? = nil,
          transport: any CodexDeviceAuthorizationTransport = URLSessionCodexDeviceAuthorizationTransport(),
          checkNetwork: @escaping @Sendable () async -> NetworkScoreResult = { await NetworkScoreChecker().check() },
          now: @escaping @Sendable () -> Date = { Date() }) {
         self.store = store
         self.loadCredential = loadCredential
+        self.renewal = renewal
         self.transport = transport
         self.checkNetwork = checkNetwork
         self.now = now
@@ -38,40 +41,50 @@ struct CodexQuotaService: CodexQuotaUpdating {
         var stage = "读取本机授权"
         do {
             try Task.checkCancellation()
-            guard let credential = try await loadCredential(account.credentialRef) else {
+            guard var credential = try await loadCredential(account.credentialRef) else {
                 throw CodexQuotaError.failed
             }
-            stage = "核对授权作用域"
-            let package = try JSONDecoder().decode(CodexIdentityVerifier.CredentialPackage.self, from: credential.data)
-            guard package.credentialVersion == 1, package.issuer == CodexIdentityVerifier.issuer,
-                  package.clientID == CodexDeviceAuthorization.clientID,
-                  !package.subject.isEmpty, package.remoteUserID == account.remoteUserID,
-                  package.scope == account.scope,
-                  Self.safeHeader(package.scope.remoteAccountID),
-                  Self.safeHeader(package.tokens.accessToken),
-                  package.tokens.expiresAt.map({ $0.timeIntervalSince1970.isFinite && $0 > now() }) ?? true else {
-                throw CodexQuotaError.failed
-            }
+            _ = try CodexCredentialRenewal.package(credential, for: account)
             stage = "查询前网络检查"
-            let network = await checkNetwork()
-            try Task.checkCancellation()
-            switch network {
-            case let .allowed(score) where score.isFinite && score > 50: break
-            case .blocked: throw CodexQuotaError.networkBlocked
-            case .cancelled: throw CancellationError()
-            default: throw CodexQuotaError.failed
+            try await requireNetwork()
+            var renewed = false
+            if let renewal {
+                let prepared = try await renewal.credential(for: account, rejected: nil)
+                renewed = prepared != credential
+                credential = prepared
+                if renewed { try await requireNetwork() }
             }
-
+            var data = Data()
+            var response: URLResponse?
+            for attempt in 0...1 {
+                try Task.checkCancellation()
+                let package = try CodexCredentialRenewal.package(credential, for: account)
+                guard package.renewal == nil,
+                      Self.safeHeader(package.scope.remoteAccountID), Self.safeHeader(package.tokens.accessToken),
+                      package.tokens.expiresAt.map({ $0 > now() }) ?? true else { throw CodexQuotaError.failed }
+                var request = URLRequest(url: CodexIdentityVerifier.usageURL,
+                    cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 20)
+                request.httpMethod = "GET"
+                request.setValue("application/json", forHTTPHeaderField: "Accept")
+                request.setValue("no-store", forHTTPHeaderField: "Cache-Control")
+                request.setValue("Bearer \(package.tokens.accessToken)", forHTTPHeaderField: "Authorization")
+                request.setValue(account.scope.remoteAccountID, forHTTPHeaderField: "ChatGPT-Account-Id")
+                stage = "请求真实额度"
+                let result = try await transport.data(for: request)
+                try Task.checkCancellation()
+                data = result.0; response = result.1
+                if let http = response as? HTTPURLResponse, http.url == CodexIdentityVerifier.usageURL,
+                   http.statusCode == 401, attempt == 0, !renewed, let renewal {
+                    stage = "自动续期授权"
+                    credential = try await renewal.credential(for: account, rejected: credential)
+                    renewed = true
+                    // The retry is a new actual quota request, with its own gate.
+                    try await requireNetwork()
+                    continue
+                }
+                break
+            }
             let url = CodexIdentityVerifier.usageURL
-            var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 20)
-            request.httpMethod = "GET"
-            request.setValue("application/json", forHTTPHeaderField: "Accept")
-            request.setValue("no-store", forHTTPHeaderField: "Cache-Control")
-            request.setValue("Bearer \(package.tokens.accessToken)", forHTTPHeaderField: "Authorization")
-            request.setValue(account.scope.remoteAccountID, forHTTPHeaderField: "ChatGPT-Account-Id")
-            stage = "请求真实额度"
-            let (data, response) = try await transport.data(for: request)
-            try Task.checkCancellation()
             stage = "核对HTTP响应"
             guard let http = response as? HTTPURLResponse, http.url == url,
                   (200...299).contains(http.statusCode), !data.isEmpty, data.count <= 256 * 1024,
@@ -105,6 +118,10 @@ struct CodexQuotaService: CodexQuotaUpdating {
                 observation = .failed
             }
             stage = "保存套餐及额度结果"
+            guard try await loadCredential(account.credentialRef) == credential else {
+                throw CodexQuotaError.failed
+            }
+            try Task.checkCancellation()
             let updated = try await store.saveObservation(subscription, quota: observation, for: account)
             // Saving the plan is not proof of quota success. The caller reloads
             // this independently committed metadata while displaying the failure.
@@ -119,6 +136,17 @@ struct CodexQuotaService: CodexQuotaUpdating {
             #endif
             if let failure = error as? CodexQuotaError { throw failure }
             throw CodexQuotaError.failed
+        }
+    }
+
+    private func requireNetwork() async throws {
+        let network = await checkNetwork()
+        try Task.checkCancellation()
+        switch network {
+        case let .allowed(score) where score.isFinite && score > 50: return
+        case .blocked: throw CodexQuotaError.networkBlocked
+        case .cancelled: throw CancellationError()
+        default: throw CodexQuotaError.failed
         }
     }
 

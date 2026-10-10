@@ -5,6 +5,10 @@
 	};
 	"objectVersion" = "56";
 	"objects" = {
+        "A14000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexCredentialRenewalTests.swift"; "sourceTree" = "<group>"; };
+        "A14000000000000000000004" = { "isa" = "PBXBuildFile"; "fileRef" = "A14000000000000000000003"; };
+        "A14000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexCredentialRenewal.swift"; "sourceTree" = "<group>"; };
+        "A14000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A14000000000000000000001"; };
         "A12000000000000000000007" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexQuotaLiveTests.swift"; "sourceTree" = "<group>"; };
         "A12000000000000000000008" = { "isa" = "PBXBuildFile"; "fileRef" = "A12000000000000000000007"; };
         "A12000000000000000000005" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexQuotaUITests.swift"; "sourceTree" = "<group>"; };
@@ -319,6 +323,7 @@
 		"507C28C1668CF2ACD62ACF25" = {
 			"isa" = "PBXGroup";
 			"children" = (
+                "A14000000000000000000001",
                 "A12000000000000000000001",
                 "A11000000000000000000003",
                 "FCA67A6E5372DB618EA78309",
@@ -432,6 +437,7 @@
 			"isa" = "PBXGroup";
 			"children" = (
                 "A12000000000000000000007",
+                "A14000000000000000000003",
                 "A12000000000000000000003",
                 "A11000000000000000000005",
                 "B715B2783B02EAB7679FD999",
@@ -807,6 +813,7 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
 			"files" = (
+                "A14000000000000000000002",
                 "A12000000000000000000002",
                 "A11000000000000000000004",
                 "A11000000000000000000002",
@@ -888,6 +895,7 @@
 			"buildActionMask" = "2147483647";
 			"files" = (
                 "A12000000000000000000008",
+                "A14000000000000000000004",
                 "A12000000000000000000004",
                 "A11000000000000000000006",
                 "10724C65BFB4E935CCE372E8",
