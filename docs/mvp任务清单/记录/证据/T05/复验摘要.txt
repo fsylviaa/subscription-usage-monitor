@@ -1,0 +1,30 @@
+T05 独立验收复验
+日期：2026-10-10 13:27（Asia/Shanghai）
+被验代码：f6aabdc；本轮未修改功能或测试代码。
+设备：iPhone 11 / iOS 26.5，使用隔离的虚构授权。
+
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testActualKeychainAttributesUseLocalOnlyProtectionWithoutSync]' passed (0.011 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testDescriptionsAndReflectionNeverExposePayload]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testEmptySaveIsRejectedWithoutChangingExistingOrMissingEntries]' passed (0.005 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFailedDeleteKeepsEntriesAndAccountFileAndCanBeRetried]' passed (0.012 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFailedFirstSaveDoesNotCreateAnEmptyItem]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFailedUpdateKeepsOldWholePackageOtherAccountAndAccountFile]' passed (0.013 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testFormalAndTemporaryEntriesWithSameUUIDRemainIndependent]' passed (0.008 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testMissingEntryReturnsNilWithoutCreatingAnItem]' passed (0.002 seconds).
+T05 | 保存 A、B 后新建读取实例 | A 存在且匹配；B 存在且匹配
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testNewVaultRestoresIndependentPackagesForAAndB]' passed (0.006 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testOtherReadFailureIsNotReportedAsMissingAndKeepsSavedPackage]' passed (0.003 seconds).
+T05 | 只删除 A 并重复删除 | A 不存在；B 存在且匹配
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testRemovingAIsExactAndAlreadyAbsentRemovalIsSafe]' passed (0.005 seconds).
+T05 | 只替换 A 的整份授权 | A 匹配新值；B 匹配原值
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testReplacingAReplacesWholePackageAndPreservesB]' passed (0.006 seconds).
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testSuccessfulReadWithoutUsablePayloadIsRejectedWithoutDeletion]' passed (0.004 seconds).
+T05 | 暂时无法读取后恢复 | A、B 仍匹配；账户文件保持匹配
+Test Case '-[SubscriptionUsageTests.CredentialVaultTests testTemporaryReadFailuresPreservePackagesAndOrdinaryAccountData]' passed (0.044 seconds).
+Executed 14 tests, with 0 failures (0 unexpected) in 0.123 (0.127) seconds
+Executed 14 tests, with 0 failures (0 unexpected) in 0.123 (0.128) seconds
+Executed 14 tests, with 0 failures (0 unexpected) in 0.123 (0.129) seconds
+** TEST SUCCEEDED **
+
+Xcode 结果页已打开并实见：T05-acceptance-device.xcresult，14 Tests、Passed 14、iPhone 11 iOS 26.5。
+独立只读审核：五项任务验收都有对应检查，无阻断缺陷；新实例读取、注入故障和真实登录的边界标注准确。
