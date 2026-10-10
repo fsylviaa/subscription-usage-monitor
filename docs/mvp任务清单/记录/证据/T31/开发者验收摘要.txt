@@ -1,0 +1,25 @@
+T31-Simulator-Recheck.log
+Executed 1 test, with 0 failures (0 unexpected) in 21.275 (21.276) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 21.275 (21.277) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 21.275 (21.278) seconds
+PASS
+
+T31-Simulator-Guard.log
+Executed 8 tests, with 0 failures (0 unexpected) in 0.137 (0.139) seconds
+Executed 71 tests, with 0 failures (0 unexpected) in 9.481 (9.502) seconds
+Executed 71 tests, with 0 failures (0 unexpected) in 9.481 (9.502) seconds
+PASS
+
+T31-Device.log
+Executed 1 test, with 0 failures (0 unexpected) in 83.017 (83.019) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 83.017 (83.025) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 83.017 (83.034) seconds
+PASS
+
+T31-Device-Guard.log
+Executed 8 tests, with 0 failures (0 unexpected) in 0.371 (0.374) seconds
+Executed 71 tests, with 0 failures (0 unexpected) in 11.416 (11.459) seconds
+Executed 71 tests, with 0 failures (0 unexpected) in 11.416 (11.460) seconds
+PASS
+
+手机系统调试使用合成账户；自然系统后台执行0次。正式构建通过；02:12:12发起覆盖安装成功，02:12:29普通启动成功。

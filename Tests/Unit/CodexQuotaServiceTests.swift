@@ -1268,6 +1268,141 @@ final class CodexQuotaServiceTests: XCTestCase {
         XCTAssertTrue(coordinator.journalWriteSucceeded)
     }
 
+    func testT31ExpirationReleasesHungRequestKeepsPartialSuccessAndNextRunRecovers() async throws {
+        let (flow, fixture) = try await batch("t31-expire")
+        let old = flow.accounts
+        let scheduler = T30Scheduler()
+        let coordinator = BackgroundQuotaRefresh(flow: flow, scheduler: scheduler,
+            journalURL: fixture.directory.appendingPathComponent("audit.json"))
+        var completions: [Bool] = []
+        let run = coordinator.start(source: "debug", wasInBackground: true) { completions.append($0) }
+        for _ in 0..<1000 {
+            if flow.accounts[0].quotaSnapshot != old[0].quotaSnapshot && flow.quotaUpdatingIDs == [old[1].id] { break }
+            try await Task.sleep(for: .milliseconds(2))
+        }
+        XCTAssertNotEqual(flow.accounts[0].quotaSnapshot, old[0].quotaSnapshot)
+        XCTAssertEqual(flow.quotaUpdatingIDs, [old[1].id])
+        let partial = flow.accounts
+        run.expire()
+        run.expire()
+        XCTAssertEqual(completions, [false])
+        XCTAssertTrue(flow.quotaUpdatingIDs.isEmpty)
+        XCTAssertEqual(flow.accounts, partial)
+        XCTAssertEqual(flow.accounts[1], old[1])
+        let savedPartial = try await fixture.load()
+        XCTAssertEqual(savedPartial, partial)
+        XCTAssertFalse(flow.isPresented)
+        scheduler.pending = []
+        let recovery = Task { await coordinator.execute(source: "debug", wasInBackground: true) }
+        for _ in 0..<1000 {
+            if await fixture.checks[old[1].id] == 2 { break }
+            try await Task.sleep(for: .milliseconds(1))
+        }
+        await fixture.release()
+        await run.work?.value
+        XCTAssertTrue(flow.quotaUpdatingIDs.contains(old[1].id), "旧请求结束不能移除同账户新请求")
+        let recovered = await recovery.value
+        XCTAssertTrue(recovered.success, "下一次无需等旧请求返回")
+        XCTAssertEqual(scheduler.submissions.count, 2)
+        let newest = flow.accounts
+        await fixture.release()
+        await run.work?.value
+        XCTAssertEqual(completions, [false])
+        XCTAssertEqual(flow.accounts, newest, "迟到响应不覆盖恢复后的结果")
+        let savedNewest = try await fixture.load()
+        XCTAssertEqual(savedNewest, newest)
+        XCTAssertEqual(coordinator.events.filter { $0.kind == "expired" }.count, 1)
+        XCTAssertEqual(coordinator.events.filter { $0.kind == "finished" }.count, 1, "到期任务不再记为成功完成")
+        flow.sceneActivityChanged(true)
+        await flow.loadAccounts()
+        await flow.waitForInitialQuota()
+        let attempts = await fixture.attempts
+        XCTAssertTrue(attempts.values.allSatisfy { $0 == 3 })
+        print("T31 | A成功/B中断 | A新值保留/B旧值旧时间保留/立即释放/下一轮后台和前台恢复 | 通过")
+    }
+
+    func testT31UnknownScoreAndUnavailableCredentialKeepCacheThenRecover() async throws {
+        for scenario in ["t31-unknown", "t31-credential"] {
+            let (flow, fixture) = try await batch(scenario)
+            let old = flow.accounts
+            let scheduler = T30Scheduler()
+            let coordinator = BackgroundQuotaRefresh(flow: flow, scheduler: scheduler,
+                journalURL: fixture.directory.appendingPathComponent("audit.json"))
+            let first = await coordinator.execute(source: "debug", wasInBackground: true)
+            XCTAssertEqual(first.failed, 2)
+            XCTAssertFalse(first.success)
+            XCTAssertEqual(flow.accounts, old)
+            let saved = try await fixture.load()
+            XCTAssertEqual(saved, old)
+            let requests = await fixture.requests
+            XCTAssertTrue(requests.isEmpty)
+            XCTAssertFalse(flow.isPresented)
+            XCTAssertTrue(flow.quotaUpdatingIDs.isEmpty)
+            XCTAssertEqual(flow.quotaFailure, "刷新失败")
+            scheduler.pending = []
+            let next = await coordinator.execute(source: "debug", wasInBackground: true)
+            XCTAssertEqual(next.succeeded, 2)
+            XCTAssertTrue(next.success)
+            XCTAssertEqual(flow.accounts.map(\.credentialRef), old.map(\.credentialRef))
+            XCTAssertEqual(scheduler.submissions.count, 2)
+            XCTAssertNil(flow.quotaFailure)
+            print("T31 | \(scenario) | 旧值旧时间及连接保留/不弹登录/后续恢复 | 通过")
+        }
+    }
+
+    func testT31QueryFailurePreservesOnlyFailedAccountAndNextBackgroundRecovers() async throws {
+        let (flow, fixture) = try await batch("partial")
+        let old = flow.accounts
+        let coordinator = BackgroundQuotaRefresh(flow: flow, scheduler: T30Scheduler(),
+            journalURL: fixture.directory.appendingPathComponent("audit.json"))
+        let first = await coordinator.execute(source: "debug", wasInBackground: true)
+        XCTAssertEqual(first, .init(total: 2, succeeded: 1, failed: 1, loaded: true))
+        XCTAssertNotEqual(flow.accounts[0].quotaSnapshot, old[0].quotaSnapshot)
+        XCTAssertEqual(flow.accounts[1], old[1])
+        XCTAssertEqual(flow.quotaFailure, "刷新失败")
+        XCTAssertFalse(flow.isPresented)
+        let next = await coordinator.execute(source: "debug", wasInBackground: true)
+        XCTAssertTrue(next.success)
+        XCTAssertNil(flow.quotaFailure)
+        let saved = try await fixture.load()
+        XCTAssertEqual(saved, flow.accounts)
+        print("T31 | 查询失败 | 另一户成功保留/失败户旧值保留/下次恢复 | 通过")
+    }
+
+    func testT31LateExpirationAfterCompletionCannotInterruptForegroundWork() async throws {
+        let (flow, fixture) = try await batch("success")
+        let coordinator = BackgroundQuotaRefresh(flow: flow, scheduler: T30Scheduler(),
+            journalURL: fixture.directory.appendingPathComponent("audit.json"))
+        var completions: [Bool] = []
+        let run = coordinator.start(source: "debug", wasInBackground: true) { completions.append($0) }
+        await run.work?.value
+        flow.refreshAllQuota()
+        let updating = flow.quotaUpdatingIDs
+        run.expire()
+        XCTAssertEqual(completions, [true])
+        XCTAssertEqual(flow.quotaUpdatingIDs, updating)
+        await flow.waitForInitialQuota()
+        let attempts = await fixture.attempts
+        XCTAssertTrue(attempts.values.allSatisfy { $0 == 2 })
+        XCTAssertFalse(coordinator.events.contains { $0.kind == "expired" })
+    }
+
+    func testT31ImmediateExpirationDoesNotStartQueriesOrDoubleComplete() async throws {
+        let (flow, fixture) = try await batch("success")
+        let old = flow.accounts
+        let coordinator = BackgroundQuotaRefresh(flow: flow, scheduler: T30Scheduler(),
+            journalURL: fixture.directory.appendingPathComponent("audit.json"))
+        var completions: [Bool] = []
+        let run = coordinator.start(source: "debug", wasInBackground: true) { completions.append($0) }
+        run.expire()
+        await run.work?.value
+        run.expire()
+        XCTAssertEqual(completions, [false])
+        XCTAssertEqual(flow.accounts, old)
+        let requests = await fixture.requests
+        XCTAssertTrue(requests.isEmpty)
+    }
+
     private typealias Setup = (store: AccountStore, account: ConnectedAccount, url: URL)
     private func setup(save: Bool = true) async throws -> Setup {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T12-test-\(UUID())")

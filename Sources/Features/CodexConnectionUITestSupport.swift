@@ -758,16 +758,24 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
             clientID: CodexDeviceAuthorization.clientID, subject: "t26-subject", remoteUserID: account.remoteUserID!,
             scope: account.scope, tokens: tokens)
         let payload = CredentialPayload(data: try JSONEncoder().encode(package))
-        let service = CodexQuotaService(store: store, loadCredential: { _ in payload }, transport: self,
+        let service = CodexQuotaService(store: store, loadCredential: { [scenario] _ in
+                if scenario == "t31-credential" && attempt == 1 { throw CredentialVault.VaultError.temporarilyUnavailable }
+                return payload
+            }, transport: self,
             checkNetwork: { await self.check(account) }, now: { Self.newTime.addingTimeInterval(Double(attempt * 60)) })
         return try await service.update(account)
     }
     func check(_ account: ConnectedAccount) async -> NetworkScoreResult {
         checks[account.id, default: 0] += 1
-        if scenario == "cancel" || (scenario == "slow" && account.scope.remoteAccountID == "t26-account-1") {
+        if (scenario == "t31-expire" && account.scope.remoteAccountID == "t26-account-1" && checks[account.id] == 1) {
+            if !released { await withCheckedContinuation { waiting.append($0) } }
+        } else if scenario == "cancel" || (scenario == "slow" && account.scope.remoteAccountID == "t26-account-1") {
             if !released { await withCheckedContinuation { waiting.append($0) } }
         } else if scenario == "ui-staggered" || scenario == "ui-single" || scenario == "ui-auto-failure" {
             try? await Task.sleep(for: .seconds(account.scope.remoteAccountID == "t26-account-0" ? 8 : 20))
+        } else if scenario == "ui-t31-expire" {
+            let seconds = account.scope.remoteAccountID == "t26-account-1" && checks[account.id] == 2 ? 60 : 4
+            try? await Task.sleep(for: .seconds(seconds))
         } else if scenario == "ui-foreground" {
             try? await Task.sleep(for: .seconds(4))
         } else if scenario == "ui-cancel" {
@@ -777,7 +785,7 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
             }
         } else { try? await Task.sleep(for: .milliseconds(200)) }
         if scenario == "blocked" { return .blocked(score: 50) }
-        if scenario == "unknown" { return .unavailable(.transport) }
+        if scenario == "unknown" || (scenario == "t31-unknown" && checks[account.id] == 1) { return .unavailable(.transport) }
         return .allowed(score: 51)
     }
     func release() {

@@ -2,6 +2,42 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT31SystemExpirationKeepsPartialCacheAndBackgroundRunsAgain() throws {
+        guard ProcessInfo.processInfo.environment["T30_SYSTEM_DEBUG"] == "1" else {
+            throw XCTSkip("需连接手机调试器；隔离样例，不是自然执行")
+        }
+        let app = launchD60("ui-t31-expire", extra: ["--t27-lifecycle", "--t30-background-debug"])
+        defer { app.terminate() }
+        let button = app.buttons["quota.toolbarConnect"]
+        expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: button)
+        waitForExpectations(timeout: 15)
+        XCUIDevice.shared.press(.home)
+        print("T31 DEBUG READY expire")
+        Thread.sleep(forTimeInterval: 35)
+        app.activate()
+        XCTAssertEqual(app.staticTexts["quota.title"].value as? String, "T31 expired background=true")
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        XCTAssertEqual(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 50%")
+        XCTAssertEqual(cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].label, "剩余 55%")
+        screenshot(app, "T31-中断后A新值B旧值")
+        expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: button)
+        waitForExpectations(timeout: 15)
+        XCTAssertEqual(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 45%")
+        XCTAssertEqual(cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].label, "剩余 50%")
+        XCUIDevice.shared.press(.home)
+        print("T31 DEBUG READY recover")
+        Thread.sleep(forTimeInterval: 30)
+        app.activate()
+        XCTAssertEqual(app.staticTexts["quota.title"].value as? String, "T30 debug background=true success=2 failed=0")
+        XCTAssertEqual(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 40%")
+        XCTAssertEqual(cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].label, "剩余 45%")
+        expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: button)
+        waitForExpectations(timeout: 15)
+        XCTAssertEqual(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 35%")
+        screenshot(app, "T31-后台恢复后前台独立刷新")
+    }
+
+    @MainActor
     func testT30SystemDebugBackgroundSuccessThenIndependentForeground() throws {
         try runT30SystemDebug(scenario: "ui-foreground", expected: "success=2 failed=0")
     }

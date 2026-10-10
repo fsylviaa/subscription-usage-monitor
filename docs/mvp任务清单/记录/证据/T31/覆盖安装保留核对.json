@@ -1,0 +1,8 @@
+{
+  "fullFileSameAfterInstall": true,
+  "identityOrderAndConnectionsSameAfterOrdinaryLaunch": true,
+  "demoPreferenceSame": true,
+  "installResult": "success",
+  "ordinaryLaunchResult": "success",
+  "naturalSystemExecutionObserved": false
+}

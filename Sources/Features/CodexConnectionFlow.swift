@@ -117,6 +117,7 @@ final class CodexConnectionFlow: ObservableObject {
         }
     }
     private struct QuotaRequest {
+        let executionID = UUID()
         let account: ConnectedAccount
         var connection: Bool
         var work: Task<Void, Never>?
@@ -830,6 +831,8 @@ final class CodexConnectionFlow: ObservableObject {
             quotaRequests[key]?.work = Task { [weak self] in
                 guard let self else { return }
                 await performQuotaUpdate(request.account, location: request.connection ? .connection : .dashboard)
+                // An expired request must not remove a newer request for the same binding.
+                guard quotaRequests[key]?.executionID == request.executionID else { return }
                 // The connection listener may have joined while the request waited.
                 if quotaRequests[key]?.connection == true, state == .quota,
                    accounts.contains(where: { QuotaKey($0) == key }), quotaFailures[key.id] == nil {
@@ -869,7 +872,9 @@ final class CodexConnectionFlow: ObservableObject {
     private func cancelRequests(where matches: (ConnectedAccount) -> Bool) {
         for (key, request) in quotaRequests where matches(request.account) {
             if let work = request.work { work.cancel() }
-            else { quotaRequests.removeValue(forKey: key); quotaQueue.removeAll { $0 == key } }
+            quotaRequests.removeValue(forKey: key)
+            quotaQueue.removeAll { $0 == key }
+            manualQuotaIDs.remove(key.id)
         }
         updateQuotaActivity()
     }
@@ -899,17 +904,18 @@ final class CodexConnectionFlow: ObservableObject {
         } catch is CancellationError {
             // Cancellation never becomes a successful observation.
         } catch {
+            guard !Task.isCancelled else { return }
             // A superseded/deleted request must not publish failure against a new binding.
             guard accounts.contains(where: { $0.id == account.id && $0.generation == account.generation
                 && $0.credentialRef == account.credentialRef && $0.deletionPending != true }) else { return }
             // A validated plan can have been saved despite a quota failure.
-            if let saved = try? await bindings?.load(),
+            if let saved = try? await bindings?.load(), !Task.isCancelled,
                let updated = saved.first(where: { $0.id == account.id && $0.generation == account.generation
                    && $0.credentialRef == account.credentialRef && $0.scope == account.scope }),
                let index = accounts.firstIndex(where: { $0.id == account.id && $0.generation == account.generation }) {
                 accounts[index] = updated
             }
-            guard accounts.contains(where: { QuotaKey($0) == QuotaKey(account) }) else { return }
+            guard !Task.isCancelled, accounts.contains(where: { QuotaKey($0) == QuotaKey(account) }) else { return }
             quotaFailure = (error as? CodexQuotaError) == .networkBlocked
                 ? "网络不达标，无法更新"
                 : (account.quotaState == .notFetched && location == .connection ? "获取失败" : "刷新失败")
@@ -951,7 +957,7 @@ final class CodexConnectionFlow: ObservableObject {
     func interruptBackgroundQuota() { cancelRequests(where: { _ in true }) }
 
     func waitForInitialQuota() async {
-        while let work = quotaRequests.values.compactMap(\.work).first { await work.value }
+        while !Task.isCancelled, let work = quotaRequests.values.compactMap(\.work).first { await work.value }
     }
 
     private func waitUntilActive(_ authorization: CodexDeviceAuthorization, attempt: UUID) async throws {

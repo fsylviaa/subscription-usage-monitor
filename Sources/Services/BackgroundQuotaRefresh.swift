@@ -95,32 +95,63 @@ final class BackgroundQuotaRefresh {
         record(.init(kind: "started", source: source, at: now(), wasInBackground: wasInBackground,
                      successTimes: flow.accounts.compactMap { $0.quotaSnapshot?.observedAt }))
         await scheduleIfNeeded()
+        guard !Task.isCancelled else { return .init(total: 0, succeeded: 0, failed: 0, loaded: false) }
         let result = await flow.refreshQuotaInBackground()
+        guard !Task.isCancelled else { return result }
+        await scheduleIfNeeded()
+        guard !Task.isCancelled else { return result }
         record(.init(kind: "finished", source: source, at: now(), wasInBackground: wasInBackground,
                      result: result, successTimes: flow.accounts.compactMap { $0.quotaSnapshot?.observedAt }))
         return result
     }
 
+    /// The same completion gate is used by the system callback and isolated tests.
+    func start(source: String, wasInBackground: Bool, completion: @escaping (Bool) -> Void) -> BackgroundRefreshRun {
+        let run = BackgroundRefreshRun(completion: completion)
+        run.work = Task {
+            guard !Task.isCancelled else { return }
+            let result = await execute(source: source, wasInBackground: wasInBackground)
+            run.finish(result.success && !Task.isCancelled)
+        }
+        run.onExpire = { [weak self] in
+            guard let self else { return }
+            flow.interruptBackgroundQuota()
+            Task { await self.scheduleIfNeeded() }
+            record(.init(kind: "expired", source: source, at: now(), wasInBackground: wasInBackground,
+                         successTimes: flow.accounts.compactMap { $0.quotaSnapshot?.observedAt }))
+        }
+        return run
+    }
+
     func handle(_ task: BGTask, source: String) {
-        let inBackground = UIApplication.shared.applicationState == .background
-        var completed = false
-        let finish: (Bool) -> Void = { success in
-            guard !completed else { return }
-            completed = true
-            task.setTaskCompleted(success: success)
+        let run = start(source: source, wasInBackground: UIApplication.shared.applicationState == .background) {
+            task.setTaskCompleted(success: $0)
+            task.expirationHandler = nil
         }
-        let work = Task {
-            let result = await execute(source: source, wasInBackground: inBackground)
-            finish(result.success && !Task.isCancelled)
-        }
-        task.expirationHandler = { [weak self] in
-            Task { @MainActor in
-                work.cancel()
-                self?.flow.interruptBackgroundQuota()
-                self?.record(.init(kind: "expired", source: source, at: Date()))
-                finish(false)
-            }
-        }
+        task.expirationHandler = { Task { @MainActor in run.expire() } }
+    }
+
+}
+
+/// Expiration finishes immediately even when a dependency is slow to cancel.
+/// A late expiration after completion must not cancel unrelated foreground work.
+@MainActor
+final class BackgroundRefreshRun {
+    var work: Task<Void, Never>?
+    var onExpire: (() -> Void)?
+    private var completion: ((Bool) -> Void)?
+    init(completion: @escaping (Bool) -> Void) { self.completion = completion }
+    func finish(_ success: Bool) {
+        guard let callback = completion else { return }
+        completion = nil
+        onExpire = nil
+        callback(success)
+    }
+    func expire() {
+        guard completion != nil else { return }
+        work?.cancel()
+        onExpire?()
+        finish(false)
     }
 }
 
@@ -182,6 +213,9 @@ final class AppBackgroundRuntime {
         guard source == "debug" else { return "" }
         let sessionStart = coordinator.events.lastIndex(where: { $0.kind == "debugSession" }) ?? 0
         let current = coordinator.events[sessionStart...]
+        if let last = current.last(where: { $0.kind == "expired" || $0.kind == "finished" }), last.kind == "expired" {
+            return "T31 expired background=\(last.wasInBackground == true)"
+        }
         guard let event = current.last(where: { $0.kind == "finished" }), let result = event.result else { return "T30 waiting" }
         return "T30 \(event.source) background=\(event.wasInBackground == true) success=\(result.succeeded) failed=\(result.failed)"
     }

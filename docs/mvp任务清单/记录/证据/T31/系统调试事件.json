@@ -1,0 +1,100 @@
+[
+  {
+    "at": 813348589.3838,
+    "source": "debug",
+    "kind": "debugSession"
+  },
+  {
+    "at": 813348589.39101,
+    "source": "request",
+    "kind": "registered"
+  },
+  {
+    "at": 813348589.533459,
+    "source": "request",
+    "kind": "alreadyScheduled",
+    "target": 813349380.71385
+  },
+  {
+    "at": 813348594.984461,
+    "source": "request",
+    "kind": "alreadyScheduled",
+    "target": 813349380.71385
+  },
+  {
+    "at": 813348602.058246,
+    "source": "debug",
+    "kind": "started",
+    "wasInBackground": true,
+    "successTimes": [
+      813286860,
+      813286860
+    ]
+  },
+  {
+    "at": 813348602.072713,
+    "source": "request",
+    "kind": "scheduled",
+    "target": 813350402.072713
+  },
+  {
+    "at": 813348616.728037,
+    "source": "debug",
+    "kind": "expired",
+    "wasInBackground": true,
+    "successTimes": [
+      813286920,
+      813286860
+    ]
+  },
+  {
+    "at": 813348616.749301,
+    "source": "request",
+    "kind": "alreadyScheduled",
+    "target": 813350402.072713
+  },
+  {
+    "at": 813348635.249957,
+    "source": "request",
+    "kind": "alreadyScheduled",
+    "target": 813350402.072713
+  },
+  {
+    "at": 813348642.516754,
+    "source": "debug",
+    "kind": "started",
+    "wasInBackground": true,
+    "successTimes": [
+      813286980,
+      813286980
+    ]
+  },
+  {
+    "at": 813348642.529724,
+    "source": "request",
+    "kind": "scheduled",
+    "target": 813350442.529724
+  },
+  {
+    "at": 813348646.607055,
+    "source": "request",
+    "kind": "alreadyScheduled",
+    "target": 813350442.529724
+  },
+  {
+    "successTimes": [
+      813287040,
+      813287040
+    ],
+    "at": 813348646.611156,
+    "source": "debug",
+    "kind": "finished",
+    "wasInBackground": true,
+    "result": {
+      "total": 2,
+      "failed": 0,
+      "loaded": true,
+      "succeeded": 2
+    }
+  }
+]
