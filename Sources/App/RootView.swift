@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct RootView: View {
     @AppStorage private var appearance: String
@@ -9,6 +10,7 @@ struct RootView: View {
     private enum Tab: Hashable { case quota, settings }
     @State private var selection: Tab = .quota
     @State private var connectionDetent: PresentationDetent = .height(250)
+    @State private var appearanceTransition = AppearanceTransition()
 
     init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard) {
         _appearance = AppStorage(wrappedValue: "system", "appearance", store: preferences)
@@ -47,7 +49,11 @@ struct RootView: View {
                 SettingsView(demoEnabled: connection.demoEnabled, canManage: connection.canManageAccounts,
                              setDemoMode: { connection.setDemoMode($0) },
                              darkAppearance: appearance == "dark" || (appearance == "system" && systemColorScheme == .dark),
-                             setDarkAppearance: { appearance = $0 ? "dark" : "light" })
+                             setDarkAppearance: { dark in
+                                 appearanceTransition.perform {
+                                     appearance = dark ? "dark" : "light"
+                                 }
+                             })
             }
             .tag(Tab.settings).toolbar(.hidden, for: .tabBar)
         }
@@ -67,6 +73,7 @@ struct RootView: View {
             set: { if !$0 { connection.accountActionFailure = nil } })) {
             Button("好", role: .cancel) { connection.accountActionFailure = nil }
         } message: { Text(connection.accountActionFailure ?? "请重试") }
+        .background(AppearanceWindowReader(transition: appearanceTransition))
         .preferredColorScheme(appearance == "dark" ? .dark : appearance == "light" ? .light : nil)
         .tint(DashboardStyle.text)
         .task {
@@ -114,5 +121,63 @@ struct RootView: View {
         .accessibilityLabel(title)
         .accessibilityAddTraits(selection == value ? .isSelected : [])
         .accessibilityIdentifier("tab.\(id)")
+    }
+}
+
+/// Fade the rendered page as a whole: SwiftUI color animation alone leaves native
+/// navigation, form and menu surfaces switching their traits immediately.
+@MainActor
+private final class AppearanceTransition {
+    weak var window: UIWindow?
+    private var overlay: UIView?
+
+    func perform(_ update: () -> Void) {
+        guard let window, let snapshot = window.snapshotView(afterScreenUpdates: false) else {
+            update()
+            return
+        }
+        // A second tap starts from the currently visible blend, without jumping
+        // back to the previous theme or blocking the underlying controls.
+        overlay?.removeFromSuperview()
+        snapshot.frame = window.bounds
+        snapshot.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        snapshot.isUserInteractionEnabled = false
+        snapshot.accessibilityElementsHidden = true
+        window.addSubview(snapshot)
+        overlay = snapshot
+        update()
+
+        // Let preferredColorScheme update the real page underneath the snapshot.
+        DispatchQueue.main.async { [weak self, weak window] in
+            guard let self, self.overlay === snapshot else { return }
+            window?.layoutIfNeeded()
+            UIView.animate(withDuration: 0.65, delay: 0, options: [.curveEaseInOut, .allowUserInteraction]) {
+                snapshot.alpha = 0
+            } completion: { [weak self] _ in
+                snapshot.removeFromSuperview()
+                if self?.overlay === snapshot { self?.overlay = nil }
+            }
+        }
+    }
+}
+
+private struct AppearanceWindowReader: UIViewRepresentable {
+    let transition: AppearanceTransition
+
+    func makeUIView(context: Context) -> WindowProbe {
+        let view = WindowProbe()
+        view.transition = transition
+        view.isUserInteractionEnabled = false
+        return view
+    }
+
+    func updateUIView(_ uiView: WindowProbe, context: Context) {}
+
+    final class WindowProbe: UIView {
+        weak var transition: AppearanceTransition?
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            transition?.window = window
+        }
     }
 }
