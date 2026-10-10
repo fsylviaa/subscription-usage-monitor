@@ -85,6 +85,84 @@ final class LaunchTests: XCTestCase {
     }
 
     @MainActor
+    func testLongDemoListScrollAndDragToTop() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        app.launch()
+        app.buttons["tab.settings"].tap()
+        app.switches["settings.demo"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        app.buttons["tab.quota"].tap()
+        for _ in 1...6 { app.buttons["quota.toolbarConnect"].tap() }
+        let list = app.collectionViews["quota.list"]
+        list.swipeUp(); list.swipeUp()
+        let last = app.staticTexts.matching(identifier: "quota.accountIdentity").allElementsBoundByIndex.last!
+        XCTAssertTrue(last.isHittable)
+        let identity = last.label
+        let cell = app.cells.containing(.staticText, identifier: identity).firstMatch
+        cell.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.65))
+            .press(forDuration: 0.7, thenDragTo: list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02)),
+                   withVelocity: .slow, thenHoldForDuration: 3)
+        list.swipeDown(); list.swipeDown()
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").firstMatch.label, identity)
+        saveScreenshot(of: app, name: "新版-长列表拖至首位")
+        app.terminate(); app.launch()
+        XCTAssertTrue(app.staticTexts[identity].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").firstMatch.label, identity)
+    }
+
+    @MainActor
+    func testManualDarkQuotaDetailsAndMenu() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        app.launch()
+        app.buttons["tab.settings"].tap()
+        let appearance = app.switches["settings.darkAppearance"]
+        if appearance.value as? String != "1" {
+            appearance.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        }
+        app.switches["settings.demo"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        app.buttons["tab.quota"].tap()
+        app.buttons["quota.toolbarConnect"].tap()
+        XCTAssertTrue(app.buttons["quota.details"].waitForExistence(timeout: 5))
+        app.buttons["quota.details"].tap()
+        XCTAssertTrue(app.staticTexts["quota.updatedAt"].waitForExistence(timeout: 5))
+        saveScreenshot(of: app, name: "新版-手动深色额度详情")
+        app.buttons["quota.menu"].tap()
+        XCTAssertTrue(app.buttons["刷新额度"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["删除账户"].exists)
+        saveScreenshot(of: app, name: "新版-手动深色账户菜单")
+    }
+
+    @MainActor
+    func testManualRefreshCancelLeavesQuotaUnchanged() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--t12-isolated-ui", "slow-quota", "--t08-run-id", UUID().uuidString]
+        app.launch()
+        app.buttons["quota.toolbarConnect"].tap()
+        app.buttons["platforms.codex"].tap()
+        XCTAssertTrue(app.buttons["connection.open"].waitForExistence(timeout: 5))
+        app.buttons["connection.open"].tap()
+        XCTAssertTrue(app.buttons["quota.menu"].waitForExistence(timeout: 15))
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
+            object: app.staticTexts["connection.title"])], timeout: 10), .completed)
+        app.buttons["quota.details"].tap()
+        let time = app.staticTexts["quota.updatedAt"].label
+        let amount = app.staticTexts["quota.weekly.remaining"].label
+        app.buttons["quota.menu"].tap()
+        app.buttons["刷新额度"].tap()
+        XCTAssertTrue(app.buttons["quota.cancelUpdate"].waitForExistence(timeout: 3))
+        app.buttons["quota.cancelUpdate"].tap()
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
+            object: app.buttons["quota.cancelUpdate"])], timeout: 5), .completed)
+        XCTAssertEqual(app.staticTexts["quota.weekly.remaining"].label, amount)
+        XCTAssertEqual(app.staticTexts["quota.updatedAt"].label, time)
+        XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+    }
+
+    @MainActor
     func testNavigationEmptyStateAndUnavailableActions() {
         continueAfterFailure = false
         let app = XCUIApplication()

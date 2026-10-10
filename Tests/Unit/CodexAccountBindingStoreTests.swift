@@ -440,6 +440,36 @@ final class CodexAccountBindingStoreTests: XCTestCase {
         )
     }
 
+    func testT57ClosingOrDeletingDuringDemoRefreshCannotRestoreSamplesOrTouchRealAccount() async throws {
+        let f = multiFixture()
+        let flow = f.makeFlow()
+        await flow.loadAccounts()
+        try await addAccount(flow)
+        let real = try XCTUnwrap(flow.accounts.first)
+        try await XCTUnwrap(flow.setDemoMode(true)).value
+        try await XCTUnwrap(flow.addDemoAccount()).value
+        let sample = try XCTUnwrap(flow.accounts.last)
+        flow.refreshQuota(for: sample.id)
+        try await XCTUnwrap(flow.setDemoMode(false)).value
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.accounts, [real])
+        var saved = try await f.store.load()
+        XCTAssertEqual(saved, [real])
+        try await XCTUnwrap(flow.setDemoMode(true)).value
+        try await XCTUnwrap(flow.addDemoAccount()).value
+        let second = try XCTUnwrap(flow.accounts.last)
+        flow.refreshQuota(for: second.id)
+        try await XCTUnwrap(flow.deleteAccount(second.id)).value
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.accounts, [real])
+        saved = try await f.store.load()
+        XCTAssertEqual(saved, [real])
+        let requests = await f.server.requests
+        XCTAssertEqual(requests.count, 1, "Only the initial isolated real-provider login fetched quota")
+        let credential = try await f.vault.load(for: .credential(real.credentialRef))
+        XCTAssertNotNil(credential)
+    }
+
     func testT21RemovalDeletesOnlyTargetCredentialAndSurvivesReopen() async throws {
         let f = try isolatedFixture()
         let a = try await f.binding.save(verifiedLogin())
