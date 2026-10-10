@@ -35,6 +35,11 @@ struct QuotaView: View {
     var connect: () -> Void = {}
     var retry: (UUID) -> Void = { _ in }
     var closeFeedback: () -> Void = {}
+    var deleteAccount: (UUID) -> Void = { _ in }
+    var canManage = true
+    var canRefresh = false
+    var refreshAccount: (UUID) -> Void = { _ in }
+    @State private var deleting: ConnectedAccount?
     var canReorder = false
     var savingOrder = false
     var move: (IndexSet, Int) -> Void = { _, _ in }
@@ -105,7 +110,9 @@ struct QuotaView: View {
                         }
                     ReorderableQuotaList(accounts: accounts, canMove: canReorder, saving: savingOrder, move: move) { account in
                         QuotaAccountCard(account: account, updating: updatingID == account.id,
-                                         failed: failedAccountIDs.contains(account.id) || quotaFailureID == account.id)
+                                         failed: failedAccountIDs.contains(account.id) || quotaFailureID == account.id,
+                                         canManage: canManage, canRefresh: canRefresh,
+                                         refresh: { refreshAccount(account.id) }, delete: { deleting = account })
                     }
                 }
 
@@ -114,6 +121,13 @@ struct QuotaView: View {
         .foregroundStyle(DashboardStyle.text)
         .background(DashboardStyle.background)
         .toolbar(.hidden, for: .navigationBar)
+        .alert("删除账户？", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } })) {
+            Button("取消", role: .cancel) { deleting = nil }
+            Button("删除账户", role: .destructive) {
+                if let account = deleting { deleteAccount(account.id) }
+                deleting = nil
+            }
+        } message: { Text("仅断开本 App 的连接，不会取消订阅。") }
     }
 
     static func amountText(_ amount: QuotaAmount) -> String {
@@ -147,6 +161,10 @@ private struct QuotaAccountCard: View {
     let account: ConnectedAccount
     let updating: Bool
     let failed: Bool
+    var canManage = true
+    var canRefresh = false
+    var refresh: () -> Void = {}
+    var delete: () -> Void = {}
     @State private var expanded = false
     @ScaledMetric(relativeTo: .headline) private var titleSize = 17
     @ScaledMetric(relativeTo: .caption2) private var emailSize = 11
@@ -177,6 +195,15 @@ private struct QuotaAccountCard: View {
                         .accessibilityIdentifier("quota.accountIdentity")
                 }
                 Spacer(minLength: 0)
+                Menu {
+                    Button("刷新额度", systemImage: "arrow.clockwise", action: refresh).disabled(!canRefresh)
+                    Button("删除账户", systemImage: "trash", role: .destructive, action: delete)
+                } label: {
+                    Image(systemName: "ellipsis").font(.body.weight(.semibold)).frame(width: 36, height: 36)
+                        .contentShape(Rectangle())
+                }
+                .disabled(!canManage)
+                .accessibilityLabel("账户操作").accessibilityIdentifier("quota.menu")
             }
             if let snapshot = account.quotaSnapshot {
                 TimelineView(.periodic(from: .now, by: 60)) { context in
@@ -335,6 +362,12 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
         if coordinator.displayed != accounts {
             coordinator.displayed = accounts
             view.reloadData()
+        } else {
+            for index in view.indexPathsForVisibleItems {
+                view.cellForItem(at: index)?.contentConfiguration = UIHostingConfiguration {
+                    content(accounts[index.item])
+                }.margins(.all, 0)
+            }
         }
     }
 
@@ -372,9 +405,21 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
             case .ended:
                 if dragging { view.endInteractiveMovement() }
                 dragging = false
+                reconcileAfterMovement()
             default:
                 if dragging { view.cancelInteractiveMovement() }
                 dragging = false
+                reconcileAfterMovement()
+            }
+        }
+
+        private func reconcileAfterMovement() {
+            // An immediate failed save may publish while the lift animation is
+            // still ending. Reconcile once it releases the collection's snapshot.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
+                guard let self, !dragging, !parent.saving, displayed != parent.accounts else { return }
+                displayed = parent.accounts
+                collection?.reloadData()
             }
         }
     }

@@ -92,7 +92,7 @@ actor AccountStore {
             throw StoreError.accountNotFound
         }
         let current = accounts[index]
-        guard current.provider == expected.provider, current.product == expected.product,
+        guard current.deletionPending != true, current.provider == expected.provider, current.product == expected.product,
               current.generation == expected.generation, current.scope == expected.scope,
               current.credentialRef == expected.credentialRef,
               current.remoteUserID == expected.remoteUserID, current.verifiedEmail == expected.verifiedEmail,
@@ -122,7 +122,7 @@ actor AccountStore {
             throw StoreError.accountNotFound
         }
         var current = accounts[index]
-        guard current.provider == expected.provider, current.product == expected.product,
+        guard current.deletionPending != true, current.provider == expected.provider, current.product == expected.product,
               current.generation == expected.generation, current.scope == expected.scope,
               current.credentialRef == expected.credentialRef,
               current.remoteUserID == expected.remoteUserID, current.verifiedEmail == expected.verifiedEmail,
@@ -190,6 +190,21 @@ actor AccountStore {
                       } ?? true)
                   }) else { throw StoreError.invalidQuotaSnapshot }
         }
+    }
+
+    func markForDeletion(_ id: UUID) throws -> ConnectedAccount? {
+        var accounts = try load()
+        guard let index = accounts.firstIndex(where: { $0.id == id }) else { return nil }
+        accounts[index].deletionPending = true
+        try commit(accounts)
+        return accounts[index]
+    }
+
+    func finishDeletion(_ id: UUID) throws {
+        let accounts = try load()
+        guard let account = accounts.first(where: { $0.id == id }) else { return }
+        guard account.deletionPending == true else { throw StoreError.staleQuotaContext }
+        try commit(accounts.filter { $0.id != id })
     }
 
     func demoModeEnabled() throws -> Bool { try readDocument().demoEnabled ?? false }

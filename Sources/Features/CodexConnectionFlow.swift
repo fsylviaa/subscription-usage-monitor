@@ -57,6 +57,25 @@ final class CodexConnectionFlow: ObservableObject {
         }
     }
 
+    @discardableResult
+    func deleteAccount(_ id: UUID) -> Task<Void, Never>? {
+        guard canManageAccounts, let remover = bindings as? any AccountRemoving,
+              accounts.contains(where: { $0.id == id }) else { return nil }
+        managingAccounts = true
+        queuedQuota.removeAll { $0.account.id == id }
+        let previous = quotaUpdatingID == id ? quotaWork : nil
+        previous?.cancel()
+        return Task {
+            defer { managingAccounts = false }
+            await previous?.value
+            do {
+                try await remover.removeAccount(id)
+                accounts.removeAll { $0.id == id }
+                discardRemovedFeedback()
+            } catch { accountActionFailure = "删除未完成，请重试" }
+        }
+    }
+
     private func cancelDemoQuota() async {
         queuedQuota.removeAll { $0.account.isDemo }
         if let id = quotaUpdatingID, accounts.contains(where: { $0.id == id && $0.isDemo }) {
@@ -359,7 +378,7 @@ final class CodexConnectionFlow: ObservableObject {
 
     @discardableResult
     func begin() -> Task<Void, Never>? {
-        guard !loadingAccounts, !accountLoadFailed, !restoringLogin, !reorderingAccounts,
+        guard !loadingAccounts, !accountLoadFailed, !restoringLogin, !reorderingAccounts, !managingAccounts,
               (quotaUpdatingID == nil || recovery != nil), state == .idle || state == .choosingPlatform || isFailure else { return nil }
         let previousWork = work
         let previousCompletion = completionWork

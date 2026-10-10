@@ -5,6 +5,10 @@ protocol AccountOrdering: Sendable {
     func reorder(_ ids: [UUID]) async throws
 }
 
+protocol AccountRemoving: Sendable {
+    func removeAccount(_ id: UUID) async throws
+}
+
 protocol DemoAccountManaging: Sendable {
     func demoModeEnabled() async throws -> Bool
     func setDemoMode(_ enabled: Bool) async throws -> [ConnectedAccount]
@@ -27,7 +31,7 @@ extension CodexAccountBinding {
 /// Accepts the verifier's result type only. Raw tokens and decoded claims never
 /// enter the account store through this boundary.
 @MainActor
-final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, DemoAccountManaging {
+final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, DemoAccountManaging, AccountRemoving {
     enum BindingError: Error, Equatable {
         case credentialCleanupFailed
     }
@@ -48,7 +52,25 @@ final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, Demo
     }
 
     func load() async throws -> [ConnectedAccount] {
-        try await accountStore.load()
+        // Retain the exact references until all cleanup succeeds; restart retries them.
+        for account in try await accountStore.load() where account.deletionPending == true {
+            try await removeAccount(account.id)
+        }
+        return try await accountStore.load()
+    }
+
+    func removeAccount(_ id: UUID) async throws {
+        guard let account = try await accountStore.markForDeletion(id) else { return }
+        if !account.isDemo {
+            if let transactionID = account.loginTransactionID {
+                let transactions = CodexLoginTransactionStore(vault: vault)
+                try await transactions.cancel(transactionID: transactionID)
+                try await vault.remove(for: .loginTransaction(transactionID))
+                try await transactions.remove(transactionID: transactionID)
+            }
+            try await vault.remove(for: .credential(account.credentialRef))
+        }
+        try await accountStore.finishDeletion(id)
     }
 
     func reorder(_ ids: [UUID]) async throws {

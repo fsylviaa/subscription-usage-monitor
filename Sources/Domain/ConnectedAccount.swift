@@ -14,6 +14,7 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
     var generation: UInt64
     var subscription: AccountSubscription?
     var quotaSnapshot: CodexQuotaSnapshot?
+    var deletionPending: Bool?
     var source: Source?
     enum Source: String, Codable, Sendable { case demo }
     var isDemo: Bool { source == .demo }

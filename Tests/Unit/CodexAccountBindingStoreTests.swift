@@ -440,6 +440,37 @@ final class CodexAccountBindingStoreTests: XCTestCase {
         )
     }
 
+    func testT21RemovalDeletesOnlyTargetCredentialAndSurvivesReopen() async throws {
+        let f = try isolatedFixture()
+        let a = try await f.binding.save(verifiedLogin())
+        let b = try await f.binding.save(verifiedLogin(email: "other@example.invalid"))
+        try await f.binding.removeAccount(a.id)
+        let rows = try await f.binding.load()
+        XCTAssertEqual(rows, [b])
+        let removed = try await f.vault.load(for: .credential(a.credentialRef))
+        let retained = try await f.vault.load(for: .credential(b.credentialRef))
+        XCTAssertNil(removed)
+        XCTAssertNotNil(retained)
+        try await f.binding.removeAccount(a.id)
+        try await f.binding.removeAccount(b.id)
+        let empty = try await f.binding.load()
+        XCTAssertTrue(empty.isEmpty)
+    }
+
+    func testT21InterruptedCleanupRetainsReferencesAndReopenFinishes() async throws {
+        let f = try isolatedFixture(deleteStatus: errSecNotAvailable)
+        let account = try await f.binding.save(verifiedLogin())
+        do { try await f.binding.removeAccount(account.id); XCTFail("Cleanup failure must surface") } catch {}
+        let marked = try await f.accounts.load()
+        XCTAssertEqual(marked.first?.id, account.id)
+        XCTAssertEqual(marked.first?.deletionPending, true)
+        let recovered = CodexAccountBindingStore(accountStore: f.accounts, vault: CredentialVault(service: f.service))
+        let rows = try await recovered.load()
+        XCTAssertTrue(rows.isEmpty)
+        let credential = try await f.vault.load(for: .credential(account.credentialRef))
+        XCTAssertNil(credential)
+    }
+
     private func isolatedFixture(
         addStatus: OSStatus? = nil,
         deleteStatus: OSStatus? = nil

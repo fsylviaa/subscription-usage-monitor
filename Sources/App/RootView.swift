@@ -35,6 +35,7 @@ struct RootView: View {
                           connect: { connection.showPlatformPicker() },
                           retry: { connection.retryInitialQuota(for: $0) },
                           closeFeedback: { connection.hideQuotaFeedback() },
+                          deleteAccount: { connection.deleteAccount($0) }, canManage: connection.canManageAccounts,
                           canReorder: connection.canReorderAccounts, savingOrder: connection.reorderingAccounts,
                           move: { connection.moveAccounts(from: $0, to: $1) })
             }
