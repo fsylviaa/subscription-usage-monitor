@@ -2,6 +2,54 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT59PullRefreshUsesAllCardsAndReturnsToOriginalLayout() {
+        let app = launchD60("ui-staggered")
+        defer { app.terminate() }
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        let title = app.staticTexts["quota.title"].frame
+        let top = cards.element(boundBy: 0).frame.minY
+        let list = app.collectionViews["quota.list"]
+        let start = list.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12))
+        start.press(forDuration: 0.05, thenDragTo: start.withOffset(CGVector(dx: 0, dy: 300)),
+                    withVelocity: .slow, thenHoldForDuration: 0.3)
+        XCTAssertTrue(cards.element(boundBy: 0).descendants(matching: .any)["quota.refreshProgress"].waitForExistence(timeout: 4))
+        XCTAssertTrue(cards.element(boundBy: 1).descendants(matching: .any)["quota.refreshProgress"].exists)
+        XCTAssertTrue(app.otherElements["quota.pullIndicator"].waitForNonExistence(timeout: 4))
+        XCTAssertEqual(app.staticTexts["quota.title"].frame, title)
+        XCTAssertEqual(cards.element(boundBy: 0).frame.minY, top, accuracy: 1)
+        assertNoRefreshBanner(app)
+        screenshot(app, "T59-松手回弹后全量卡片刷新")
+        // A second pull while work is active must not queue another batch.
+        start.press(forDuration: 0.05, thenDragTo: start.withOffset(CGVector(dx: 0, dy: 300)),
+                    withVelocity: .slow, thenHoldForDuration: 0.1)
+        XCTAssertTrue(cards.element(boundBy: 1).descendants(matching: .any)["quota.refreshProgress"].waitForNonExistence(timeout: 25))
+        XCTAssertEqual(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 55%")
+        XCTAssertEqual(cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].label, "剩余 55%")
+        screenshot(app, "T59-下拉全部完成")
+    }
+
+    @MainActor
+    func testT59ShortPullDoesNotRefreshAndFailureKeepsOldValues() {
+        let app = launchD60("partial", extra: ["--t26-dark"])
+        defer { app.terminate() }
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        let start = app.collectionViews["quota.list"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12))
+        start.press(forDuration: 0.05, thenDragTo: start.withOffset(CGVector(dx: 0, dy: 45)),
+                    withVelocity: .slow, thenHoldForDuration: 0.1)
+        XCTAssertEqual(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 90%")
+        XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+        start.press(forDuration: 0.05, thenDragTo: start.withOffset(CGVector(dx: 0, dy: 300)),
+                    withVelocity: .slow, thenHoldForDuration: 0.3)
+        XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 8))
+        XCTAssertEqual(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 55%")
+        XCTAssertEqual(cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].label, "剩余 70%")
+        screenshot(app, "T59-深色下拉部分失败")
+        app.buttons["quota.retry"].tap()
+        XCTAssertTrue(app.staticTexts["quota.failure"].waitForNonExistence(timeout: 8))
+        XCTAssertEqual(cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].label, "剩余 50%")
+    }
+
+    @MainActor
     func testT26ToolbarRefreshPartialFailureAndWholeScopeRetry() {
         continueAfterFailure = false
         let app = XCUIApplication()

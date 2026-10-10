@@ -102,7 +102,8 @@ struct QuotaView: View {
                                 .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 14))
                             }
                         }
-                    ReorderableQuotaList(accounts: accounts, canMove: canReorder, saving: savingOrder, move: move) { account in
+                    ReorderableQuotaList(accounts: accounts, canMove: canReorder, saving: savingOrder, move: move,
+                                         canRefresh: canRefreshAll, refresh: refreshAll) { account in
                         QuotaAccountCard(account: account, updating: updatingIDs.contains(account.id),
                                          failed: failedAccountIDs.contains(account.id) || quotaFailureID == account.id,
                                          canManage: canManage, canRefresh: canRefresh,
@@ -422,6 +423,8 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
     let canMove: Bool
     let saving: Bool
     let move: (IndexSet, Int) -> Void
+    let canRefresh: Bool
+    let refresh: () -> Void
     @ViewBuilder let content: (ConnectedAccount) -> Content
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
@@ -445,12 +448,15 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
         gesture.minimumPressDuration = 0.4
         view.addGestureRecognizer(gesture)
         context.coordinator.collection = view
+        context.coordinator.pull.attach(to: view)
+        view.panGestureRecognizer.addTarget(context.coordinator, action: #selector(Coordinator.panEnded(_:)))
         return view
     }
 
     func updateUIView(_ view: UICollectionView, context: Context) {
         let coordinator = context.coordinator
         coordinator.parent = self
+        if !canRefresh || saving { coordinator.pull.cancelGesture() }
         guard !coordinator.dragging, !saving else { return }
         if coordinator.displayed != accounts {
             coordinator.displayed = accounts
@@ -469,7 +475,27 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
         var displayed: [ConnectedAccount]
         var dragging = false
         weak var collection: UICollectionView?
+        let pull = QuotaPullRefreshGesture()
         init(_ parent: ReorderableQuotaList) { self.parent = parent; displayed = parent.accounts }
+
+        func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+            pull.begin(enabled: parent.canRefresh && !dragging && !parent.saving)
+        }
+
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            pull.update(enabled: parent.canRefresh && !dragging && !parent.saving)
+        }
+
+        func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+            let state = scrollView.panGestureRecognizer.state
+            let refresh = pull.end(enabled: parent.canRefresh && !dragging && !parent.saving,
+                                   cancelled: state == .cancelled || state == .failed)
+            if refresh { parent.refresh() }
+        }
+
+        @objc func panEnded(_ gesture: UIPanGestureRecognizer) {
+            if gesture.state == .cancelled || gesture.state == .failed { pull.cancelGesture() }
+        }
 
         func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { displayed.count }
         func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -493,6 +519,7 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
             switch gesture.state {
             case .began:
                 guard parent.canMove, let index = view.indexPathForItem(at: gesture.location(in: view)) else { return }
+                pull.cancelGesture()
                 (view.collectionViewLayout as? QuotaReorderLayout)?.beginMovement(at: index)
                 dragging = view.beginInteractiveMovementForItem(at: index)
                 if !dragging { (view.collectionViewLayout as? QuotaReorderLayout)?.finishMovement() }
@@ -524,6 +551,108 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
     }
 }
 
+
+/// Observes the existing scroll gesture without adding a recognizer or holding
+/// the content inset open. The list therefore keeps its native rubber banding.
+@MainActor
+final class QuotaPullRefreshGesture {
+    static let threshold: CGFloat = 72
+    let indicator = QuotaPullIndicator()
+    private weak var scrollView: UIScrollView?
+    private var tracking = false
+    private var didHaptic = false
+    private var returning = false
+    private let feedback = UIImpactFeedbackGenerator(style: .light)
+    var onThreshold: (() -> Void)?
+
+    func attach(to view: UIScrollView) {
+        scrollView = view
+        indicator.isUserInteractionEnabled = false
+        indicator.isHidden = true
+        indicator.isAccessibilityElement = true
+        indicator.accessibilityIdentifier = "quota.pullIndicator"
+        indicator.accessibilityLabel = "下拉刷新"
+        view.addSubview(indicator)
+    }
+
+    func begin(enabled: Bool) {
+        tracking = enabled
+        returning = false
+        didHaptic = false
+        if enabled { feedback.prepare() }
+        update(enabled: enabled)
+    }
+
+    private var distance: CGFloat {
+        guard let scrollView else { return 0 }
+        return max(0, -(scrollView.contentOffset.y + scrollView.adjustedContentInset.top))
+    }
+
+    func update(enabled: Bool) {
+        if tracking && !enabled { cancelGesture() }
+        let distance = distance
+        if tracking && distance > Self.threshold && !didHaptic {
+            didHaptic = true
+            if let onThreshold { onThreshold() }
+            else { feedback.impactOccurred() }
+        }
+        if distance <= 0 { returning = false }
+        indicator.isHidden = !(tracking || returning) || distance < 4
+        guard !indicator.isHidden, let scrollView else { return }
+        let progress = min(1, distance / Self.threshold)
+        let diameter = 22 * (0.3 + 0.7 * progress)
+        // Content coordinates: the indicator stays centered in the pulled gap.
+        indicator.frame = CGRect(x: scrollView.bounds.midX - diameter / 2,
+                                 y: -scrollView.adjustedContentInset.top - distance / 2 - diameter / 2,
+                                 width: diameter, height: diameter)
+        indicator.alpha = min(1, distance / 20)
+        indicator.accessibilityValue = tracking && distance > Self.threshold ? "松手刷新" : "继续下拉"
+        indicator.setNeedsDisplay()
+    }
+
+    func end(enabled: Bool, cancelled: Bool = false) -> Bool {
+        let shouldRefresh = tracking && enabled && !cancelled && distance > Self.threshold
+        returning = tracking && !cancelled
+        tracking = false
+        update(enabled: enabled)
+        return shouldRefresh
+    }
+
+    func cancelGesture() {
+        tracking = false
+        // After a valid release the existing bounce retracts the indicator,
+        // even when the refresh immediately disables further gestures.
+        if !returning { indicator.isHidden = true }
+    }
+}
+
+/// Static spokes, visually matching the card spinner, with no rotation animation.
+final class QuotaPullIndicator: UIView {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .clear
+        isOpaque = false
+        contentMode = .redraw
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    override func draw(_ rect: CGRect) {
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        let radius = min(bounds.width, bounds.height) / 2
+        context.translateBy(x: bounds.midX, y: bounds.midY)
+        context.setLineCap(.round)
+        context.setLineWidth(radius * 0.22)
+        for index in 0..<8 {
+            context.saveGState()
+            context.rotate(by: CGFloat(index) * .pi / 4)
+            context.setStrokeColor(UIColor.secondaryLabel.withAlphaComponent(0.35 + Double(index) * 0.08).cgColor)
+            context.move(to: CGPoint(x: 0, y: -radius * 0.48))
+            context.addLine(to: CGPoint(x: 0, y: -radius * 0.84))
+            context.strokePath()
+            context.restoreGState()
+        }
+    }
+}
 
 /// The hosted view keeps its intrinsic height and is pinned only to the top.
 /// Pinning it to both vertical edges lets intermediate cell sizes compress or

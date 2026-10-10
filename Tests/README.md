@@ -120,3 +120,8 @@ T23 大字号专项优化：`testT23AccessibilityLayoutUsesFullWidthIdentityAndS
 `testD60…` 验证手动全量／单卡的原生转圈、各户独立停转、固定标题／身份／卡片位置、深色最大辅助字号，以及自动触发成功无提示／失败才提示。自动触发由Debug `--t26-auto`显式调用，**不代表T27前台生命周期已接入**。`--t26-dark`仅用于隔离外观，不更改正式偏好。使用可访问标识查询，iOS将该转圈报告为ActivityIndicator。
 
 `testT26BlockedFailureCanCloseWithoutChangingCards`替代旧检查取消页面测试；普通刷新不再提供取消按钮。T26内部取消测试仍用于验证系统中断和旧结果保护，不作为产品取消入口。登录弹层的查询／取消回归沿用`testQueryProgressStaysWithItsOriginAndDoesNotOfferFailureClose`，仅更新其已有卡片重试阶段的预期。
+
+
+### T59 下拉全量刷新
+
+RootViewTests新增4项：真实滚动控件的门槛／松手／收回／单次震动调用、禁用及中断、静态圆圈缩放上限与原生回弹、正式列表承载视图的浅深截图和回调。UI新增2项用真实触摸手势验证轻拉不触发、充分下拉松手全量刷新、刷新中再拉不重复及部分失败／全量重试。全部用隔离演示或合成身份，不执行真实五小时查询。自动化可验证轻震调用，实际触感由用户亲验。

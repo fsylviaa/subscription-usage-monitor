@@ -4,6 +4,172 @@ import XCTest
 @testable import SubscriptionUsage
 
 final class RootViewTests: XCTestCase {
+    @MainActor
+    func testT59HostedListPullPresentationAndReleaseUsesExistingRefreshAction() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("T59-\(UUID())")
+        let store = AccountStore(fileURL: root.appendingPathComponent("accounts.json"))
+        _ = try await store.setDemoMode(true)
+        for _ in 0..<2 { _ = try await store.addDemo(now: Date()) }
+        let accounts = try await store.load()
+        defer { try? FileManager.default.removeItem(at: root) }
+        var refreshes = 0
+        let host = UIHostingController(rootView: QuotaView(accounts: accounts, canRefreshAll: true,
+                                                         refreshAll: { refreshes += 1 }))
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.first as? UIWindowScene)
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 414, height: 896)
+        window.rootViewController = host
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; window.rootViewController = nil }
+        try await Task.sleep(for: .milliseconds(400))
+        func find(_ view: UIView) -> UICollectionView? {
+            if let collection = view as? UICollectionView { return collection }
+            return view.subviews.compactMap { find($0) }.first
+        }
+        let list = try XCTUnwrap(find(host.view))
+        let indicator = try XCTUnwrap(list.subviews.first { $0 is QuotaPullIndicator })
+        let topInset = list.adjustedContentInset.top
+        func position(_ distance: CGFloat) {
+            list.contentOffset.y = -topInset - distance
+            list.delegate?.scrollViewDidScroll?(list)
+            window.layoutIfNeeded()
+        }
+        for style: UIUserInterfaceStyle in [.light, .dark] {
+            window.overrideUserInterfaceStyle = style
+            position(0)
+            list.delegate?.scrollViewWillBeginDragging?(list)
+            let previous = refreshes
+            var lastWidth: CGFloat = 0
+            for distance: CGFloat in [24, 48, 100, 160] {
+                position(distance)
+                XCTAssertFalse(indicator.isHidden)
+                XCTAssertGreaterThanOrEqual(indicator.frame.width, lastWidth)
+                lastWidth = indicator.frame.width
+                XCTAssertEqual(refreshes, previous, "手指未松开不能刷新")
+                let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+                    window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+                }
+                let attachment = XCTAttachment(image: image)
+                attachment.name = "T59-拉动-\(style == .dark ? "深" : "浅")-\(Int(distance))"
+                attachment.lifetime = .keepAlways
+                add(attachment)
+            }
+            position(30)
+            list.delegate?.scrollViewDidEndDragging?(list, willDecelerate: true)
+            XCTAssertEqual(refreshes, previous, "超过后收回再松手不触发")
+            position(0)
+            list.delegate?.scrollViewWillBeginDragging?(list)
+            position(100)
+            list.delegate?.scrollViewDidEndDragging?(list, willDecelerate: true)
+            XCTAssertEqual(refreshes, previous + 1)
+            position(0)
+            XCTAssertTrue(indicator.isHidden)
+        }
+    }
+
+
+    @MainActor
+    func testT59PullThresholdReleaseRetractionAndOneHapticPerGesture() {
+        let scroll = UIScrollView(frame: CGRect(x: 0, y: 0, width: 390, height: 700))
+        scroll.contentInset.top = 16
+        let pull = QuotaPullRefreshGesture()
+        pull.attach(to: scroll)
+        var haptics = 0
+        pull.onThreshold = { haptics += 1 }
+        func position(_ distance: CGFloat) {
+            scroll.contentOffset.y = -scroll.adjustedContentInset.top - distance
+            pull.update(enabled: true)
+        }
+        position(0)
+        pull.begin(enabled: true)
+        position(24)
+        XCTAssertFalse(pull.end(enabled: true))
+        XCTAssertEqual(haptics, 0)
+        position(0)
+        XCTAssertTrue(pull.indicator.isHidden)
+        pull.begin(enabled: true)
+        position(100)
+        XCTAssertEqual(haptics, 1)
+        for distance: CGFloat in [140, 65, 120, 60, 110, 20] { position(distance) }
+        XCTAssertEqual(haptics, 1, "同一手势反复经过门槛也不重复震动")
+        XCTAssertFalse(pull.end(enabled: true), "收回后松手不刷新")
+        position(0)
+        pull.begin(enabled: true)
+        position(100)
+        XCTAssertEqual(haptics, 2)
+        XCTAssertTrue(pull.end(enabled: true))
+        XCTAssertFalse(pull.end(enabled: true), "一次松手只能提交一次")
+        position(0)
+        XCTAssertTrue(pull.indicator.isHidden)
+    }
+
+    @MainActor
+    func testT59DisabledCancelledAndOrdinaryScrollNeverTrigger() {
+        let scroll = UIScrollView(frame: CGRect(x: 0, y: 0, width: 390, height: 700))
+        let pull = QuotaPullRefreshGesture()
+        pull.attach(to: scroll)
+        var haptics = 0
+        pull.onThreshold = { haptics += 1 }
+        pull.begin(enabled: false)
+        scroll.contentOffset.y = -140
+        pull.update(enabled: false)
+        XCTAssertTrue(pull.indicator.isHidden)
+        XCTAssertFalse(pull.end(enabled: false))
+        XCTAssertEqual(haptics, 0)
+        scroll.contentOffset.y = 200
+        pull.begin(enabled: true)
+        pull.update(enabled: true)
+        XCTAssertTrue(pull.indicator.isHidden)
+        XCTAssertFalse(pull.end(enabled: true))
+        scroll.contentOffset.y = 0
+        pull.begin(enabled: true)
+        scroll.contentOffset.y = -140
+        pull.update(enabled: true)
+        XCTAssertFalse(pull.end(enabled: true, cancelled: true))
+        XCTAssertTrue(pull.indicator.isHidden)
+        scroll.contentOffset.y = 0
+        pull.begin(enabled: true)
+        scroll.contentOffset.y = -140
+        pull.update(enabled: true)
+        pull.cancelGesture() // Account movement / another operation interrupts the pull.
+        XCTAssertFalse(pull.end(enabled: true))
+        XCTAssertEqual(haptics, 2)
+    }
+
+    @MainActor
+    func testT59StaticIndicatorScalesCapsAndRetractsWithoutHoldingContent() {
+        let scroll = UIScrollView(frame: CGRect(x: 0, y: 0, width: 390, height: 700))
+        scroll.contentInset.top = 12
+        let pull = QuotaPullRefreshGesture()
+        pull.onThreshold = {}
+        pull.attach(to: scroll)
+        scroll.contentOffset.y = -12
+        pull.begin(enabled: true)
+        var widths: [CGFloat] = []
+        for distance: CGFloat in [18, 36, 72, 140] {
+            scroll.contentOffset.y = -12 - distance
+            pull.update(enabled: true)
+            widths.append(pull.indicator.frame.width)
+            XCTAssertEqual(pull.indicator.frame.midY - scroll.contentOffset.y, distance / 2, accuracy: 0.1)
+            XCTAssertTrue((pull.indicator.layer.animationKeys() ?? []).isEmpty, "下拉阶段圆圈不能旋转")
+        }
+        XCTAssertLessThan(widths[0], widths[1])
+        XCTAssertLessThan(widths[1], widths[2])
+        XCTAssertEqual(widths[2], widths[3])
+        XCTAssertLessThanOrEqual(widths[3], 24)
+        XCTAssertTrue(pull.end(enabled: true))
+        pull.cancelGesture() // Refresh disables a second gesture while bounce continues.
+        scroll.contentOffset.y = -36
+        pull.update(enabled: false)
+        XCTAssertFalse(pull.indicator.isHidden)
+        XCTAssertLessThan(pull.indicator.frame.width, widths[3])
+        scroll.contentOffset.y = -12
+        pull.update(enabled: false)
+        XCTAssertTrue(pull.indicator.isHidden)
+        XCTAssertEqual(scroll.contentInset.top, 12, "不修改原生回弹或停留高度")
+    }
+
+
     func testT17StableBoundariesHandleMixedHeightsMicroMovementAndReversal() {
         for centers: [CGFloat] in [[44, 167.17, 337.5], [91, 261, 431], [44, 290, 620]] {
             for source in centers.indices {
