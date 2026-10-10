@@ -8,8 +8,8 @@ struct CodexConnectionView: View {
         NavigationStack {
             Group {
                 switch flow.state {
-                case .idle, .checking, .requesting:
-                    ProgressView("连接中…")
+                case .idle, .checking, .requesting, .verifying, .saving:
+                    ProgressView(flow.state == .verifying || flow.state == .saving ? "正在完成登录…" : "连接中…")
                         .accessibilityIdentifier("connection.progress")
                 case let .failure(message):
                     ContentUnavailableView {
@@ -74,6 +74,7 @@ struct CodexConnectionView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("取消", action: flow.cancel)
                         .accessibilityIdentifier("connection.cancel")
+                        .disabled(flow.state == .saving)
                 }
             }
             .onChange(of: scenePhase) { _, phase in

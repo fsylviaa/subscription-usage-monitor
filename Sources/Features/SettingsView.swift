@@ -1,12 +1,14 @@
 import SwiftUI
 
 struct SettingsView: View {
+    var canConnect = true
     var connect: () -> Void = {}
     var body: some View {
         Form {
             Section("账户") {
                 Button("连接 Codex", systemImage: "plus", action: connect)
                     .accessibilityIdentifier("settings.connect")
+                    .disabled(!canConnect)
             }
 
             Section("通用") {

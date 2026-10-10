@@ -2,8 +2,9 @@ import SwiftUI
 
 struct RootView: View {
     @StateObject private var connection: CodexConnectionFlow
+    @Environment(\.scenePhase) private var scenePhase
 
-    init(connection: CodexConnectionFlow = CodexConnectionFlow()) {
+    init(connection: CodexConnectionFlow = CodexConnectionFlow.live()) {
         _connection = StateObject(wrappedValue: connection)
     }
 
@@ -15,22 +16,27 @@ struct RootView: View {
     var body: some View {
         TabView {
             NavigationStack {
-                QuotaView(connect: { connection.begin() })
+                QuotaView(accounts: connection.accounts, loading: connection.loadingAccounts,
+                          loadFailed: connection.accountLoadFailed, canConnect: connection.canConnect,
+                          connect: { connection.begin() })
             }
             .tabItem {
                 Label("额度", systemImage: "chart.bar")
             }
 
             NavigationStack {
-                SettingsView(connect: { connection.begin() })
+                SettingsView(canConnect: connection.canConnect, connect: { connection.begin() })
             }
             .tabItem {
                 Label("设置", systemImage: "gearshape")
             }
         }
+        .task { await connection.loadAccounts() }
+        .onChange(of: scenePhase) { _, phase in connection.setActive(phase == .active) }
         .sheet(isPresented: $connection.isPresented, onDismiss: { connection.cancel() }) {
             CodexConnectionView(flow: connection)
                 .presentationDetents(connectionDetents)
+                .interactiveDismissDisabled(connection.state == .saving)
         }
     }
 }

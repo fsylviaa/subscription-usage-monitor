@@ -4,4 +4,4 @@ T07 已实现 `CodexDeviceAuthorizationClient` 和 `CodexDeviceAuthorization`：
 
 协议依据：[官方固定源码快照](https://github.com/openai/codex/blob/165299214855c2e48facf9bb3bc3c0fc277ee639/codex-rs/login/src/device_code_auth.rs)。`user_code`／`usercode`、字符串或整数 interval 均有隔离验证；固定 HTTPS 页面不带代码参数。没有服务器完整含码 URL 或 expires_in 的证据，不编造自动填码或服务器保留期限。
 
-请求无浏览器 Cookie、共享认证、缓存或重定向；模型打印与反射去敏。T07 不轮询、换令牌、验证身份或保存正式账户，这些由 T08 等后续任务逐项实现。不读取电脑登录状态，也未复制参考项目源码。
+请求无浏览器 Cookie、共享认证、缓存或重定向；模型打印与反射去敏。T08 的 `CodexLoginClient` 领取授权码、校验 PKCE 对应关系并交换令牌；`CodexIdentityVerifier` 使用固定官方 JWKS 验证两种令牌的 RSA 签名、签发者、受众和主体，核对可信邮箱及账户作用域，再经 T06 检查请求 usage 验证服务端账户一致。此次不解析或保存额度窗口。身份核验来源和真实验证状态见 [T08 验收](../../../docs/mvp任务清单/记录/T08-验收.md)。不读取电脑登录状态，也未复制参考项目源码。
