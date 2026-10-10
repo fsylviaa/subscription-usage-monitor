@@ -5,6 +5,12 @@
 	};
 	"objectVersion" = "56";
 	"objects" = {
+        "A11000000000000000000005" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexUsageParserTests.swift"; "sourceTree" = "<group>"; };
+        "A11000000000000000000006" = { "isa" = "PBXBuildFile"; "fileRef" = "A11000000000000000000005"; };
+        "A11000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexUsageParser.swift"; "sourceTree" = "<group>"; };
+        "A11000000000000000000004" = { "isa" = "PBXBuildFile"; "fileRef" = "A11000000000000000000003"; };
+        "A11000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "QuotaSnapshot.swift"; "sourceTree" = "<group>"; };
+        "A11000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A11000000000000000000001"; };
         "A10000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexLoginInterruptionTests.swift"; "sourceTree" = "<group>"; };
         "A10000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A10000000000000000000001"; };
         "F26017C7DE0572766FDDAF7A" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexLoginCompletionUITests.swift"; "sourceTree" = "<group>"; };
@@ -269,6 +275,7 @@
 		"19ED03E8225A78EBFF67CDF6" = {
 			"isa" = "PBXGroup";
 			"children" = (
+                "A11000000000000000000001",
 				"A04000000000000000000021",
 				"A04000000000000000000011",
 				"ACC8FCD787A05BFEE356200B",
@@ -304,6 +311,7 @@
 		"507C28C1668CF2ACD62ACF25" = {
 			"isa" = "PBXGroup";
 			"children" = (
+                "A11000000000000000000003",
                 "FCA67A6E5372DB618EA78309",
                 "F3590A99FA1708957F199906",
 				"A07000000000000000000021",
@@ -413,6 +421,7 @@
 		"526E9B80F5C826824C672690" = {
 			"isa" = "PBXGroup";
 			"children" = (
+                "A11000000000000000000005",
                 "B715B2783B02EAB7679FD999",
                 "7A154EA2F901EC5E5D4F2A96",
                 "A10000000000000000000001",
@@ -786,6 +795,8 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
 			"files" = (
+                "A11000000000000000000004",
+                "A11000000000000000000002",
                 "C4E764B22F9E7814349D62A2",
                 "C5E1E1CB18E2CCF30699F0BE",
                 "03D934DC612B0E38B9051938",
@@ -863,6 +874,7 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
 			"files" = (
+                "A11000000000000000000006",
                 "10724C65BFB4E935CCE372E8",
                 "49D944FC303735BD3250BADB",
                 "A10000000000000000000002",

@@ -1,0 +1,34 @@
+T11 开发者自验摘要（2026-10-10，Asia/Shanghai）
+环境：Xcode 26.6（17F113）/ Swift 6；iPhone 17 Pro / iOS 26.5 模拟器。
+结果包：build/T11-parser-tests.xcresult
+xcresulttool 确认：Passed；totalTestCount 17；passedTests 17；failedTests 0；skippedTests 0。
+Release / iOS Simulator 构建：BUILD SUCCEEDED。
+实现与具名测试独立只读复核：无阻断缺陷。
+使用隔离人工 JSON、虚构账户及固定时间；不查询真实额度，不访问正式授权或账户数据。
+没有新增产品页面；用户尚未亲验。真实额度查询属于尚未启动的 T12。
+
+实际运行日志摘录：
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testConflictingResponseIdentityCannotBeBoundToTheRequestedAccount]' passed (0.002 seconds).
+T11 | 额外模型额度、余额和 credits 不限量 → 订阅周剩余 70.0%、5 小时剩余 20.0% 不变；没有订阅窗口时仍未知
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testCreditsAndAdditionalModelLimitsNeitherReplaceNorCreateSubscriptionQuota]' passed (0.001 seconds).
+T11 | 领域状态：明确不限量 / 未知 → 两种状态分别保留，均无已用比例、剩余比例或进度条
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testDomainExplicitUnlimitedAndUnknownRemainDistinctWithoutNumericProgress]' passed (0.000 seconds).
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testDomainPercentageRejectsNonFiniteAndOutOfRangeNumbers]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testDuplicateTargetWindowsFailInsteadOfPickingFirstOrLast]' passed (0.000 seconds).
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testExplicitNullsHaveTheSameUnknownMeaningAsAbsentFields]' passed (0.000 seconds).
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testInvalidDurationCannotBecomeARecognizedWindow]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testInvalidPercentageTypesAndValuesFailInsteadOfClampingOrGuessing]' passed (0.000 seconds).
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testInvalidResetTimesFailInsteadOfInferringADate]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testMalformedKnownFieldsAndInvalidObservationDoNotProduceASnapshot]' passed (0.000 seconds).
+T11 | 字段缺失：仅周额度 → 周剩余 70.0%、5 小时未知；缺比例保留重置时间，缺时间保留剩余 20.0%
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testMissingWindowPercentageAndResetRemainIndependentlyUnknown]' passed (0.000 seconds).
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testNearbyAndUnrelatedDurationsCannotImpersonateMVPWindows]' passed (0.000 seconds).
+T11 | 已到或超过重置时间 → 仍保留上次真实剩余 20.0%，等待更新，不自动变成满额
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testPassingTheResetPointOnlyMarksStaleAndNeverRefillsTheMeasuredQuota]' passed (0.000 seconds).
+T11 | 真实边界：已用 0% / 100% → 剩余 100.0% / 0.0%；小数保留
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testRealZeroFullAndFractionalUsageAreNotMissingOrRounded]' passed (0.000 seconds).
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testTrustedAccountContextAndUnknownPlanArePreservedWithoutInventingALimit]' passed (0.000 seconds).
+T11 | 两个窗口：周已用 30%、5 小时已用 80% → 周剩余 70.0%、5 小时剩余 20.0%；各自重置时间与观测时间保留
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testTwoNormalWindowsKeepIndependentRemainingResetAndObservation]' passed (0.001 seconds).
+T11 | 窗口交换或单独返回：按真实时长识别 → 周剩余 70.0%、5 小时剩余 20.0%，位置不影响结果
+Test Case '-[SubscriptionUsageTests.CodexUsageParserTests testWindowMeaningFollowsDurationWhenOrderIsSwappedOrOnlyOnePositionExists]' passed (0.000 seconds).

@@ -34,3 +34,6 @@ T09 的 `CodexLoginRecoveryTests` 10 项覆盖安全恢复、重新评分、交�
 T10 新增 `CodexLoginInterruptionTests` 15 项与 `CodexLoginTransactionRecoveryTests` 16 项：使用真实独立 Keychain 重建 reader，覆盖三个安全阶段、不明兑换、到期、坏阶段、取消迟到读取／写入、正式账户残留、重复返回、网络门控与后台暂停。默认不联网。新增三项 `testT10...` UI 测试使用 `--t10-isolated-ui` 和 `--t10-run-id`，专属 Application Support/T10-ui-UUID 与 T10.ui.UUID；结束以 `--t10-reset-storage` 精确清理。
 
 真实 T10 使用 DEBUG 参数 `--t10-live-ui --t10-live-run-id <规范 UUID>`，目录 Application Support/T10-live-UUID，基础 service T10.live.UUID。`testRealT10PendingCodeSurvivesWebsiteReturnAndRelaunch` 需 `T10_LIVE_PENDING_REOPEN=1` 与 `T10_LIVE_RUN_ID`，真实评分通过后申请并验证官网返回／退出重开保留原代码；默认取消收尾，设 `T10_LIVE_KEEP_PENDING=1` 可留给本人确认。后续 `testRealT10IsolatedAccountSurvivesRelaunch` 需 `T10_LIVE_REOPEN=1`；`testT10IsolatedSavedIdentityAndCleanup` 需 `T10_LIVE_SAVED_ACCOUNT=1`，可加 `T10_LIVE_CLEANUP=1`；仅清理指定验收用 `testT10CleanupIsolatedRun` 与 `T10_LIVE_CLEANUP_ONLY=1`。均使用相同 UUID，原正式账户／授权只作布尔核对，不输出真实身份或秘密，不导出真实截图。
+
+
+T11 的 `CodexUsageParserTests` 使用源码内人工 JSON、`example.invalid` 账户和固定时间，纯解析五类验收输入，并覆盖非法数值／类型、冲突账户、窗口歧义和额外字段；领域明确不限量不产生百分比。没有网络、文件写入、Keychain 或正式账户访问。专项复验可只运行 `CodexUsageParserTests`；测试代码只编入测试目标，不增加 App 验收页面。实际输入输出和运行数量见 [T11 验收](../docs/mvp任务清单/记录/T11-验收.md)。
