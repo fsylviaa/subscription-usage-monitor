@@ -8,7 +8,7 @@
 
 在本项目的新对话里可直接说“开始 T02”等明确任务编号；执行者会检查前置、完成指定任务，并主动更新进度和 Git 存档。也可说“继续上次任务”“T01 我验收通过了”或描述发现的问题，具体含义见项目规则。
 
-## 开发与运行（T01–T03）
+## 开发与运行（T01–T04）
 
 工程入口：[SubscriptionUsage.xcodeproj](SubscriptionUsage.xcodeproj)。共享运行方案（Scheme）为 **SubscriptionUsage**，App 的临时显示名称为“订阅用量”。当前可在“额度”和“设置”之间切换，额度页显示无账户状态；连接、刷新和设置子项暂时禁用，尚不能登录或查询额度。功能进度见[项目进度](docs/项目进度.md)，目录、协作边界和依赖见[工程结构](docs/project-structure.md)。**当前无第三方库依赖**，不需要先安装包管理器、生成工程或登录 Codex。
 
@@ -23,7 +23,7 @@
 1. 打开本目录的 `SubscriptionUsage.xcodeproj`（可以双击，或在终端运行 `open SubscriptionUsage.xcodeproj`）。
 2. 顶部选择共享 Scheme **SubscriptionUsage**，运行设备选择 **iPhone 17 Pro（iOS 26.5）**。
 3. 按 **⌘R** 运行。预期模拟器出现“订阅额度”页面及底部“额度／设置”入口。无账户时显示“未连接账户”和禁用的“连接 Codex”，没有样例账户或额度数字。
-4. 按 **⌘U** 执行检查。`SubscriptionUsageTests` 验证根视图加载与布局；`SubscriptionUsageUITests` 验证页面往返、当前入口、未接入操作禁用、顶部操作排列及退出后重新启动。
+4. 按 **⌘U** 执行检查。`SubscriptionUsageTests` 验证根视图加载与布局，以及隔离账户数据的保存、重新读取和失败保护；`SubscriptionUsageUITests` 验证页面往返、当前入口、未接入操作禁用、顶部操作排列及退出后重新启动。
 5. 关闭工程窗口后重新打开同一个工程，再按 **⌘R**；运行方案与必须配置均已保存到仓库。
 
 如果另一台 Mac 没有对应模拟器，在 Xcode 的运行设备列表中选择已安装的 iPhone 模拟器（iOS 17 或以上），或在 **Xcode → Settings → Components** 安装所需 iOS 模拟器运行环境。不同 Xcode 版本的界面可能略有区别，参见 [Apple 模拟器组件说明](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components)。切换 Xcode 的命令行工具方式见 [Apple 工具配置说明](https://developer.apple.com/documentation/xcode/configuring-command-line-tools-settings)；本项目命令用 `DEVELOPER_DIR` 只影响当前终端会话。
@@ -61,6 +61,22 @@ xcodebuild -project SubscriptionUsage.xcodeproj \
 3. 切换模拟器或 iPhone 的系统浅深外观，再回到 App，两页应跟随变化。App 内不提供主题或刷新频率设置。
 
 本任务仅建立入口；实际登录从 T07 接入。模拟器证据及用户亲验状态见 [T03 验收](docs/mvp任务清单/记录/T03-验收.md)。手机需在 Xcode 再次按 ⌘R 安装本次版本后查看，T02 的安装验证不代表本次页面已在真机复验。
+
+### T04 账户保存复验
+
+本次是供后续登录使用的底层能力，没有新增账户页面。普通账户文件保存身份、平台／产品、查询作用域、凭据引用、generation 和列表顺序；尚未获取额度时只保留空状态，文件中没有登录令牌或伪造额度。当前页面仍为 T03 的无账户入口。
+
+在 Xcode 按 **⌘U**，查看 `AccountStoreTests` 的结果；固定输入 A／B 和实际输出见 [T04 验收](docs/mvp任务清单/记录/T04-验收.md)。测试在每次独立的临时目录读写，不访问真实账户目录、钥匙串或网络。可只运行这一组：
+
+```sh
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
+  -project SubscriptionUsage.xcodeproj -scheme SubscriptionUsage \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' \
+  -derivedDataPath build/DerivedData -parallel-testing-enabled NO \
+  -only-testing:SubscriptionUsageTests/AccountStoreTests test
+```
+
+页面排序与真实多账户操作分别由 T16/T17 及后续任务接入；本次没有执行这些页面或真账户验收。
 
 ### 在自己的 iPhone 上运行（T02）
 

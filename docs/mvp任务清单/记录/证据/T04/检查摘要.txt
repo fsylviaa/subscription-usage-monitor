@@ -1,0 +1,36 @@
+T04 检查摘要 — 2026-10-10
+环境：Xcode 26.6 / iPhone 17 Pro 模拟器 / iOS 26.5；Swift 6 模式
+数据：每测试独立临时目录，人工 A/B 与 example.invalid 邮箱；无真实账户、令牌、网络或钥匙串访问。
+前置：T01 243162b，启动前工作区干净；已有 T03 ab0e81e。
+
+构建：BUILD SUCCEEDED（/private/tmp/t04-build-authorized.log）
+测试：仅 SubscriptionUsageTests；未执行 UI 测试或真机测试。
+结果包：build/T04-tests.xcresult（忽略，不纳入 Git）
+命令：DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project SubscriptionUsage.xcodeproj -scheme SubscriptionUsage -destination "platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5" -derivedDataPath build/DerivedData -resultBundlePath build/T04-tests.xcresult -parallel-testing-enabled NO -only-testing:SubscriptionUsageTests test
+
+以下为实际 XCTest 日志节选：
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testCorruptFilesAreReportedAndNeverOverwrittenByAppend]' passed (0.006 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testDuplicateLocalIDsInSavedDocumentCannotBeLoadedOrOverwritten]' passed (0.003 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testMissingFileReturnsEmptyWithoutCreatingAccountData]' passed (0.001 seconds).
+T04 | 保存 A、B 后新建读取实例 | A,B | 身份与顺序按完整记录核对
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testNewStoreRestoresBothAccountIdentitiesAndAppendOrder]' passed (0.002 seconds).
+T04 | 保存尚未获取额度 | notFetched | 磁盘无额度百分比、重置/成功时间、授权秘密字段
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testNotFetchedSurvivesReloadWithoutQuotaValuesTimesOrSecretsOnDisk]' passed (0.001 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testRejectedMutationsLeaveCommittedFileUnchanged]' passed (0.003 seconds).
+T04 | 将 A、B 移为 B、A 后新建读取实例 | B,A | 两账户完整记录未变
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testReorderingPersistsWithoutChangingEitherAccount]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testUnavailableStoragePathFailsAndCommittedAccountsCanBeRecovered]' passed (0.002 seconds).
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testUnsupportedSchemaIsReportedAndNeverOverwrittenByAppend]' passed (0.001 seconds).
+T04 | 只修改 A 的身份与作用域 | A 已更新,B | B 完整记录未变
+Test Case '-[SubscriptionUsageTests.AccountStoreTests testUpdatingAChangesOnlyItsMetadataAndKeepsItsPosition]' passed (0.002 seconds).
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.023 (0.025) seconds
+Test Case '-[SubscriptionUsageTests.RootViewTests testRootViewCanLoadAndLayOutInAppHost]' passed (0.005 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.005 (0.005) seconds
+	 Executed 11 tests, with 0 failures (0 unexpected) in 0.028 (0.031) seconds
+	 Executed 11 tests, with 0 failures (0 unexpected) in 0.028 (0.031) seconds
+** TEST SUCCEEDED **
+
+边界：新建存储实例读取磁盘，不冒称真实登录后的 App 重启验收。
+路径故障测试验证读写失败保护与原文件恢复，不模拟 commit 中途断电；原子写入由 Foundation Data.write(.atomic) 提供。
+第一次沙箱构建因无法连接 CoreSimulator 退出 70；允许开发工具访问本机模拟器后构建、测试成功。
+独立只读复核：实现与 10 项账户测试无阻断问题。

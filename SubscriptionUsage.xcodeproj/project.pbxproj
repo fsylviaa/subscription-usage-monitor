@@ -5,6 +5,47 @@
 	};
 	"objectVersion" = "56";
 	"objects" = {
+		"A04000000000000000000011" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "ConnectedAccount.swift";
+			"sourceTree" = "<group>";
+		};
+		"A04000000000000000000012" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A04000000000000000000011";
+		};
+		"A04000000000000000000021" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "AccountQuotaState.swift";
+			"sourceTree" = "<group>";
+		};
+		"A04000000000000000000022" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A04000000000000000000021";
+		};
+		"A04000000000000000000031" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "AccountStore.swift";
+			"sourceTree" = "<group>";
+		};
+		"A04000000000000000000032" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A04000000000000000000031";
+		};
+		"A04000000000000000000041" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "AccountStoreTests.swift";
+			"sourceTree" = "<group>";
+		};
+		"A04000000000000000000042" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "A04000000000000000000041";
+		};
+
 		"A030000000000000000000011" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -56,6 +97,8 @@
 		"19ED03E8225A78EBFF67CDF6" = {
 			"isa" = "PBXGroup";
 			"children" = (
+				"A04000000000000000000021",
+				"A04000000000000000000011",
 				"ACC8FCD787A05BFEE356200B",
 			);
 			"path" = "Domain";
@@ -136,6 +179,7 @@
 		"D92BB5E5FB4824670C77346D" = {
 			"isa" = "PBXGroup";
 			"children" = (
+				"A04000000000000000000031",
 				"A4616617039740D1ABBB7E3E",
 			);
 			"path" = "Storage";
@@ -184,6 +228,7 @@
 		"526E9B80F5C826824C672690" = {
 			"isa" = "PBXGroup";
 			"children" = (
+				"A04000000000000000000041",
 				"1DF5E0AD711BD84D4AC12F40",
 			);
 			"path" = "Unit";
@@ -540,6 +585,9 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
 			"files" = (
+				"A04000000000000000000032",
+				"A04000000000000000000022",
+				"A04000000000000000000012",
 				"A030000000000000000000022",
 				"A030000000000000000000012",
 				"0868E870EDC42183AF777E36",
@@ -603,6 +651,7 @@
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
 			"files" = (
+				"A04000000000000000000042",
 				"B70410B9B464B0A73168916A",
 			);
 			"runOnlyForDeploymentPostprocessing" = "0";
