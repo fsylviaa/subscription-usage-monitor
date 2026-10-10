@@ -55,6 +55,30 @@ final class CodexLoginCompletionUITests: XCTestCase {
     }
 
     @MainActor
+    func testRealSavedAccountSurvivesRelaunch() throws {
+        guard ProcessInfo.processInfo.environment["T08_LIVE_REOPEN"] == "1" else {
+            throw XCTSkip("仅在用户官网确认后显式核验真实账户重开；不附真实身份截图。")
+        }
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = []
+        app.launch()
+        let identity = app.staticTexts["quota.accountIdentity"]
+        XCTAssertTrue(identity.waitForExistence(timeout: 10), "正常启动后真实账户可见")
+        let original = identity.label
+        XCTAssertTrue(original.contains("@") && !original.hasSuffix(".invalid"), "真实账户标识存在，非隔离样例")
+        XCTAssertTrue(app.staticTexts["quota.notFetched"].exists)
+        XCTAssertFalse(app.buttons["quota.toolbarConnect"].isEnabled)
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(identity.waitForExistence(timeout: 10), "关闭并重开后账户存在")
+        XCTAssertTrue(identity.label == original, "重开后身份一致；不在报告打印邮箱")
+        XCTAssertTrue(app.staticTexts["quota.notFetched"].exists)
+        XCTAssertEqual(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "%")).count, 0)
+        print("T08 | 真实页面重开 | 正常启动显示真实身份；关闭重开后同账户仍在，尚未获取额度，无虚构百分比；不记录邮箱或截图")
+    }
+
+    @MainActor
     private func launch(_ scenario: String) -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()

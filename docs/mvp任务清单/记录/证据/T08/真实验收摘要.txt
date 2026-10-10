@@ -1,0 +1,14 @@
+T08 真实 iPhone 验收，2026-10-10 14:35 Asia/Shanghai。
+用户本人完成官网私密登录；开发者只读核验与重开。
+无邮箱、账户标识、令牌或真实截图。
+
+T08 | 真实iPhone | 双令牌签名、issuer/audience/subject、网络检查、服务端scope核对通过
+T08 | 真实保存重读 | 邮箱/用户/作用域匹配，授权可读；尚未获取额度；临时设备事务已清除；不记录邮箱或秘密
+Executed 1 test, with 0 failures (0 unexpected) in 4.790 (4.792) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 4.790 (4.793) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 4.790 (4.795) seconds
+T08 | 真实页面重开 | 正常启动显示真实身份；关闭重开后同账户仍在，尚未获取额度，无虚构百分比；不记录邮箱或截图
+Executed 1 test, with 0 failures (0 unexpected) in 7.878 (7.882) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 7.878 (7.889) seconds
+Executed 1 test, with 0 failures (0 unexpected) in 7.878 (7.894) seconds
+** TEST EXECUTE SUCCEEDED **
