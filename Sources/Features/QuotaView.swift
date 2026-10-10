@@ -55,11 +55,6 @@ struct QuotaView: View {
                 Text("订阅额度").font(.system(size: dynamicTypeSize.isAccessibilitySize ? min(titleSize, 28) : titleSize, weight: .semibold))
                     .accessibilityAddTraits(.isHeader).accessibilityIdentifier("quota.title")
                 Spacer(minLength: 12)
-                Button(action: refreshAll) {
-                    DesignIcon(name: "Refresh").frame(width: 44, height: 44)
-                }
-                .disabled(!canRefreshAll)
-                .accessibilityLabel("刷新").accessibilityIdentifier("quota.refresh")
                 Button(action: connect) {
                     DesignIcon(name: "Link").frame(width: 44, height: 44)
                 }
@@ -562,7 +557,7 @@ final class QuotaPullRefreshGesture {
     private var tracking = false
     private var didHaptic = false
     private var returning = false
-    private let feedback = UIImpactFeedbackGenerator(style: .light)
+    private let feedback = UIImpactFeedbackGenerator(style: .heavy)
     var onThreshold: (() -> Void)?
 
     func attach(to view: UIScrollView) {

@@ -389,7 +389,7 @@ final class CodexLoginCompletionUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["quota.notFetched"].label, "尚未获取额度")
         XCTAssertEqual(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "%")).count, 0)
         XCTAssertTrue(app.buttons["quota.toolbarConnect"].isEnabled)
-        XCTAssertFalse(app.buttons["quota.refresh"].isEnabled)
+        XCTAssertFalse(app.buttons["quota.refresh"].exists)
         XCTAssertFalse(app.buttons["connection.cancel"].exists)
     }
 

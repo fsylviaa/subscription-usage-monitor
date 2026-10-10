@@ -25,14 +25,14 @@ final class LaunchTests: XCTestCase {
     }
 
     @MainActor
-    func testT26DemoToolbarUpdatesEveryCardAndPersistsOnReopen() {
+    func testT26DemoPullUpdatesEveryCardAndPersistsOnReopen() {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["--management-ui", UUID().uuidString]
         app.launch()
         defer { app.terminate() }
-        XCTAssertTrue(app.buttons["quota.refresh"].waitForExistence(timeout: 8))
-        XCTAssertFalse(app.buttons["quota.refresh"].isEnabled)
+        XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 8))
+        XCTAssertFalse(app.buttons["quota.refresh"].exists)
         app.buttons["tab.settings"].tap()
         app.switches["settings.demo"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
         app.buttons["tab.quota"].tap()
@@ -44,7 +44,7 @@ final class LaunchTests: XCTestCase {
             XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: nil)], timeout: 5), .completed)
         }
         let before = app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label)
-        app.buttons["quota.refresh"].tap()
+        app.pullAllQuota()
         let allChanged = NSPredicate { _, _ in MainActor.assumeIsolated {
             let after = app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label)
             return after.count == 2 && zip(before, after).allSatisfy { $0 != $1 }
@@ -198,8 +198,9 @@ final class LaunchTests: XCTestCase {
     func testNavigationEmptyStateAndUnavailableActions() {
         continueAfterFailure = false
         let app = XCUIApplication()
-
+        app.launchArguments = ["--management-ui", UUID().uuidString]
         app.launch()
+        defer { app.terminate() }
         assertEmptyQuota(in: app)
         XCTAssertEqual(app.state, .runningForeground)
         saveScreenshot(of: app, name: "额度")
@@ -240,18 +241,12 @@ final class LaunchTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["未连接账户"].exists)
         XCTAssertTrue(app.buttons["tab.quota"].isSelected)
 
-        let refresh = app.buttons["quota.refresh"]
+        XCTAssertFalse(app.buttons["quota.refresh"].exists)
         let toolbarConnect = app.buttons["quota.toolbarConnect"]
-        for action in [refresh] {
-            XCTAssertTrue(action.exists)
-            XCTAssertFalse(action.isEnabled)
-        }
         XCTAssertTrue(toolbarConnect.isEnabled)
         XCTAssertTrue(app.buttons["quota.connect"].isEnabled)
-        // 顶部两个操作位于标题右侧同一行。
-        XCTAssertGreaterThan(refresh.frame.minX, title.frame.maxX)
-        XCTAssertGreaterThan(toolbarConnect.frame.minX, refresh.frame.minX)
-        XCTAssertLessThan(abs(title.frame.midY - refresh.frame.midY), 12)
+        // 顶部只保留标题右侧的连接入口。
+        XCTAssertGreaterThan(toolbarConnect.frame.minX, title.frame.maxX)
         XCTAssertLessThan(abs(title.frame.midY - toolbarConnect.frame.midY), 12)
     }
 
