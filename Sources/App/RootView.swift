@@ -77,10 +77,10 @@ struct RootView: View {
         .preferredColorScheme(appearance == "dark" ? .dark : appearance == "light" ? .light : nil)
         .tint(DashboardStyle.text)
         .task {
-            connection.setActive(scenePhase == .active)
+            connection.sceneActivityChanged(scenePhase == .active)
             await connection.loadAccounts()
         }
-        .onChange(of: scenePhase) { _, phase in connection.setActive(phase == .active) }
+        .onChange(of: scenePhase) { _, phase in connection.sceneActivityChanged(phase == .active) }
         .sheet(isPresented: $connection.isPresented, onDismiss: { connection.cancel() }) {
             CodexConnectionView(flow: connection)
                 .presentationDetents(connectionDetents, selection: $connectionDetent)

@@ -909,6 +909,167 @@ final class CodexQuotaServiceTests: XCTestCase {
         XCTAssertTrue(checks.values.allSatisfy { $0 == 2 })
     }
 
+    func testT27ColdLaunchPublishesCacheBeforeSilentQueryAndFreshReturnQueriesAgain() async throws {
+        let fixture = T26BatchFixture(scenario: "cancel")
+        directories.append(fixture.directory)
+        let old = try await fixture.load()
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(), bindings: fixture, quotaUpdater: fixture)
+        flow.sceneActivityChanged(true)
+        await flow.loadAccounts()
+        XCTAssertEqual(flow.accounts, old)
+        XCTAssertFalse(flow.loadingAccounts)
+        XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+        XCTAssertFalse(flow.manualQuotaInProgress)
+        await fixture.release()
+        await flow.waitForInitialQuota()
+        let first = flow.accounts
+        XCTAssertTrue(first.allSatisfy { $0.quotaSnapshot!.observedAt > T26BatchFixture.oldTime })
+        flow.sceneActivityChanged(true) // Duplicate active delivery is not a new entry.
+        await flow.loadAccounts()
+        var counts = await fixture.checks
+        XCTAssertTrue(counts.values.allSatisfy { $0 == 1 })
+        for _ in 0..<2 {
+            flow.sceneActivityChanged(false)
+            flow.sceneActivityChanged(true)
+            XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+            await flow.waitForInitialQuota()
+        }
+        counts = await fixture.checks
+        XCTAssertEqual(counts.count, 2)
+        XCTAssertTrue(counts.values.allSatisfy { $0 == 3 }, "刚更新也要再查，不能等5或30分钟")
+        XCTAssertEqual(flow.accounts.map(\.id), old.map(\.id))
+        let persisted = try await fixture.load()
+        XCTAssertEqual(persisted, flow.accounts)
+        let reopened = CodexConnectionFlow(transactions: QuotaTestTransactions(), bindings: fixture, quotaUpdater: fixture)
+        reopened.sceneActivityChanged(true)
+        await reopened.loadAccounts()
+        await reopened.waitForInitialQuota()
+        counts = await fixture.checks
+        XCTAssertTrue(counts.values.allSatisfy { $0 == 4 })
+    }
+
+    func testT27InactiveLaunchWaitsForActiveAndEmptyAccountsDoNotQuery() async throws {
+        for count in [0, 2] {
+            let fixture = T26BatchFixture(scenario: "success", count: count)
+            if count > 0 { directories.append(fixture.directory) }
+            let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(), bindings: fixture, quotaUpdater: fixture)
+            flow.sceneActivityChanged(false)
+            await flow.loadAccounts()
+            let before = await fixture.checks
+            XCTAssertTrue(before.isEmpty)
+            flow.sceneActivityChanged(true)
+            await flow.waitForInitialQuota()
+            let after = await fixture.checks
+            XCTAssertEqual(after.count, count)
+            XCTAssertNil(flow.quotaFailure)
+            XCTAssertFalse(flow.isPresented)
+        }
+    }
+
+    func testT27AutomaticFailureKeepsOldValuesAndUsesShortClosableBanner() async throws {
+        for scenario in ["blocked", "unknown", "partial"] {
+            let fixture = T26BatchFixture(scenario: scenario)
+            directories.append(fixture.directory)
+            let old = try await fixture.load()
+            let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(), bindings: fixture, quotaUpdater: fixture)
+            flow.sceneActivityChanged(true)
+            await flow.loadAccounts()
+            XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+            await flow.waitForInitialQuota()
+            XCTAssertEqual(flow.quotaFailure, scenario == "blocked" ? "网络不达标，无法更新" : "刷新失败")
+            XCTAssertEqual(flow.accounts[1], old[1])
+            if scenario != "partial" {
+                XCTAssertEqual(flow.accounts, old)
+                let requests = await fixture.requests
+                XCTAssertTrue(requests.isEmpty)
+            } else { XCTAssertNotEqual(flow.accounts[0], old[0]) }
+            XCTAssertFalse(flow.isPresented)
+            flow.hideQuotaFeedback()
+            XCTAssertTrue(flow.quotaFeedbackHidden)
+            let persisted = try await fixture.load()
+            XCTAssertEqual(flow.accounts, persisted)
+        }
+    }
+
+    func testT27CachedAccountsRefreshWhileLoginRestorationWaits() async throws {
+        let fixture = T26BatchFixture(scenario: "success")
+        directories.append(fixture.directory)
+        let entered = expectation(description: "login read waits")
+        let release = QuotaTestGate()
+        let flow = CodexConnectionFlow(transactions: T15DelayedTransactions(entered: { entered.fulfill() }, release: release),
+            bindings: fixture, quotaUpdater: fixture)
+        flow.sceneActivityChanged(true)
+        let loading = Task { await flow.loadAccounts() }
+        await fulfillment(of: [entered], timeout: 5)
+        await flow.waitForInitialQuota()
+        XCTAssertTrue(flow.restoringLogin)
+        XCTAssertFalse(flow.loadingAccounts)
+        XCTAssertTrue(flow.accounts.allSatisfy { $0.quotaSnapshot!.observedAt > T26BatchFixture.oldTime })
+        XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+        await release.open()
+        await loading.value
+    }
+
+    func testT27BrowserReturnPreservesCodeAndRefreshesAlreadyBoundAccounts() async throws {
+        let fixture = T26BatchFixture(scenario: "success")
+        directories.append(fixture.directory)
+        let authorizer = T27CountingAuthorizer()
+        let flow = CodexConnectionFlow(checkNetwork: { .allowed(score: 51) }, authorizer: authorizer,
+            transactions: QuotaTestTransactions(), bindings: fixture, quotaUpdater: fixture)
+        flow.sceneActivityChanged(true)
+        await flow.loadAccounts()
+        await flow.waitForInitialQuota()
+        await flow.begin()?.value
+        let original = flow.state
+        guard case .code = original else { return XCTFail("必须已进入原登录事务") }
+        let oldIDs = flow.accounts.map(\.id)
+        flow.sceneActivityChanged(false)
+        flow.sceneActivityChanged(true)
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.state, original)
+        XCTAssertEqual(flow.accounts.map(\.id), oldIDs)
+        XCTAssertTrue(flow.isPresented)
+        XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+        let requests = await authorizer.count
+        let checks = await fixture.checks
+        XCTAssertEqual(requests, 1)
+        XCTAssertTrue(checks.values.allSatisfy { $0 == 2 })
+        flow.cancel()
+    }
+
+    func testT27LoginCompletionForFirstAccountDuringForegroundBatchDoesNotStick() async throws {
+        let fixture = T26BatchFixture(scenario: "cancel")
+        directories.append(fixture.directory)
+        let existing = try await fixture.load()[0]
+        let login = QuotaTestLogin(account: existing, payload: .init(data: Data("t27-fixture".utf8)))
+        let completer = T27HeldLoginCompleter(login: login)
+        let flow = CodexConnectionFlow(checkNetwork: { .allowed(score: 51) }, authorizer: login,
+            transactions: QuotaTestTransactions(), completer: completer, verifier: login,
+            bindings: T27ExistingLoginBinding(fixture: fixture), pending: QuotaTestPending(), quotaUpdater: fixture)
+        await flow.loadAccounts()
+        await flow.begin()?.value
+        flow.sceneActivityChanged(false)
+        flow.sceneActivityChanged(true)
+        for _ in 0..<1000 {
+            if await fixture.checks.count == 2 { break }
+            try await Task.sleep(for: .milliseconds(2))
+        }
+        XCTAssertEqual(flow.quotaUpdatingID, existing.id)
+        await completer.release.open()
+        for _ in 0..<1000 {
+            if flow.state == .quota { break }
+            try await Task.sleep(for: .milliseconds(2))
+        }
+        XCTAssertEqual(flow.state, .quota)
+        await fixture.release()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.state, .idle)
+        XCTAssertFalse(flow.isPresented, "登录完成不能卡在获取额度弹层")
+        XCTAssertEqual(flow.accounts.count, 2)
+        let attempts = await fixture.attempts
+        XCTAssertEqual(attempts[existing.id], 2, "登录结果必须完成自己的连接查询")
+    }
+
     private typealias Setup = (store: AccountStore, account: ConnectedAccount, url: URL)
     private func setup(save: Bool = true) async throws -> Setup {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T12-test-\(UUID())")
@@ -1039,4 +1200,28 @@ private struct T15DelayedTransactions: CodexLoginTransactionStoring {
         await release.wait()
         throw CodexLoginError.failed
     }
+}
+
+private actor T27CountingAuthorizer: CodexDeviceAuthorizing {
+    private(set) var count = 0
+    func requestAuthorization() throws -> CodexDeviceAuthorization {
+        count += 1
+        return try .init(deviceAuthID: "t27-isolated", userCode: "TEST-T27", pollInterval: 1, startedAt: Date())
+    }
+}
+
+private actor T27HeldLoginCompleter: CodexLoginCompleting {
+    let release = QuotaTestGate()
+    let login: QuotaTestLogin
+    init(login: QuotaTestLogin) { self.login = login }
+    func poll(_ authorization: CodexDeviceAuthorization) async throws -> CodexAuthorizationCode? {
+        await release.wait()
+        return login.poll(authorization)
+    }
+    func exchange(_ code: CodexAuthorizationCode) async throws -> CodexTokenResponse { login.exchange(code) }
+}
+private struct T27ExistingLoginBinding: CodexAccountBinding {
+    let fixture: T26BatchFixture
+    func load() async throws -> [ConnectedAccount] { try await fixture.load() }
+    func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount { try await fixture.load()[0] }
 }

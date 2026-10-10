@@ -178,6 +178,56 @@ final class CodexQuotaUITests: XCTestCase {
         }
     }
 
+    @MainActor
+    func testT27ColdLaunchAndImmediateForegroundReturnsRefreshBothCardsSilently() {
+        let app = launchD60("ui-foreground", extra: ["--t27-lifecycle"])
+        defer { app.terminate() }
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
+        XCTAssertTrue(first.staticTexts["quota.weekly.remaining"].label.contains("90%"))
+        XCTAssertTrue(second.staticTexts["quota.weekly.remaining"].label.contains("70%"))
+        XCTAssertEqual(app.activityIndicators.count, 0)
+        assertNoRefreshBanner(app)
+        XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+        screenshot(app, "T27-打开先显示缓存且无进度")
+        for expected in ["55%", "50%", "45%"] {
+            let updated = NSPredicate(format: "label CONTAINS %@", expected)
+            expectation(for: updated, evaluatedWith: first.staticTexts["quota.weekly.remaining"])
+            expectation(for: updated, evaluatedWith: second.staticTexts["quota.weekly.remaining"])
+            waitForExpectations(timeout: 20)
+            XCTAssertEqual(app.activityIndicators.count, 0)
+            XCTAssertFalse(app.buttons["quota.closeFeedback"].exists)
+            screenshot(app, "T27-两户自动成功-\(expected)")
+            if expected != "45%" {
+                XCUIDevice.shared.press(.home)
+                app.activate()
+                XCTAssertEqual(app.activityIndicators.count, 0)
+            }
+        }
+        app.buttons["tab.settings"].tap()
+        XCTAssertTrue(app.buttons["tab.quota"].exists)
+        app.buttons["tab.quota"].tap()
+        XCTAssertTrue(first.staticTexts["quota.weekly.remaining"].label.contains("45%"), "页签往返不冒充回前台")
+    }
+
+    @MainActor
+    func testT27ForegroundBlockedKeepsCacheAndCanCloseFailure() {
+        let app = launchD60("blocked", extra: ["--t27-lifecycle"])
+        defer { app.terminate() }
+        XCTAssertTrue(app.staticTexts["网络不达标，无法更新"].waitForExistence(timeout: 10))
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        XCTAssertTrue(cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label.contains("90%"))
+        XCTAssertTrue(cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].label.contains("70%"))
+        XCTAssertEqual(app.activityIndicators.count, 0)
+        screenshot(app, "T27-自动失败保留原两户")
+        app.buttons["quota.closeFeedback"].tap()
+        XCTAssertFalse(app.staticTexts["网络不达标，无法更新"].exists)
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(app.staticTexts["网络不达标，无法更新"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["connection.cancel"].exists)
+    }
+
     @MainActor private func launchD60(_ scenario: String, extra: [String] = []) -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()

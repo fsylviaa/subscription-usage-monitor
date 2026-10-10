@@ -47,7 +47,7 @@ final class CodexConnectionFlow: ObservableObject {
         guard canManageAccounts, let manager = bindings as? any DemoAccountManaging else { return nil }
         managingAccounts = true
         return Task {
-            defer { managingAccounts = false }
+            defer { managingAccounts = false; refreshPendingForeground() }
             do {
                 if !enabled { await cancelDemoQuota() }
                 accounts = try await manager.setDemoMode(enabled)
@@ -66,7 +66,7 @@ final class CodexConnectionFlow: ObservableObject {
         let previous = quotaUpdatingID == id && batchQuotaIDs == nil ? quotaWork : nil
         previous?.cancel()
         return Task {
-            defer { managingAccounts = false }
+            defer { managingAccounts = false; refreshPendingForeground() }
             do {
                 // Persist deletion before a non-cooperative request can finish.
                 try await remover.removeAccount(id)
@@ -95,7 +95,7 @@ final class CodexConnectionFlow: ObservableObject {
         guard demoEnabled, canConnect, let manager = bindings as? any DemoAccountManaging else { return nil }
         managingAccounts = true
         return Task {
-            defer { managingAccounts = false }
+            defer { managingAccounts = false; refreshPendingForeground() }
             do { accounts.append(try await manager.addDemo(now: now())) }
             catch { accountActionFailure = "添加失败，请重试" }
         }
@@ -122,6 +122,11 @@ final class CodexConnectionFlow: ObservableObject {
     private let pending: (any CodexPendingLoginStoring)?
     private var completionWork: Task<Void, Never>?
     private var isActive = true
+    private let foregroundRefreshEnabled: Bool
+    private var observesSceneActivity = false
+    private var sceneIsActive = false
+    private var cachedAccountsLoaded = false
+    private var pendingForegroundRefresh = false
     private var expiryWork: Task<Void, Never>?
     private var cleanupWork: Task<Void, Never>?
     private var startupWork: Task<Void, Never>?
@@ -179,7 +184,7 @@ final class CodexConnectionFlow: ObservableObject {
         reorderingAccounts = true
         accountOrderFailed = false
         return Task {
-            defer { reorderingAccounts = false }
+            defer { reorderingAccounts = false; refreshPendingForeground() }
             do {
                 try await ordering.reorder(ids)
                 // Publish only after durable success. Use the latest in-memory
@@ -218,19 +223,26 @@ final class CodexConnectionFlow: ObservableObject {
             accountLoadFailed = true
             return
         }
-        // T12 also completes the first query for an existing T08 binding on
-        // upgrade/relaunch. Regular foreground refresh remains a later task.
-        for account in accounts where account.quotaState == .notFetched || account.subscription == nil {
-            startInitialQuota(for: account)
+        cachedAccountsLoaded = true
+        if observesSceneActivity && foregroundRefreshEnabled {
+            // Publish trusted cache first. Login recovery may wait on storage or
+            // browser authorization, so it must not hold up existing accounts.
+            refreshPendingForeground()
+        } else {
+            for account in accounts where account.quotaState == .notFetched || account.subscription == nil {
+                startInitialQuota(for: account)
+            }
         }
         // Resume an unfinished addition even when other accounts are present.
         do {
             needsPersistentRestore = true
             let found = try await readPersistedRecovery()
             guard found else { return }
-            // Finish any cached account's first fetch before presenting another
-            // account's login result, so the sheet cannot identify the wrong row.
-            await waitForInitialQuota()
+            // Legacy first-fetch restoration used one feedback slot. Foreground
+            // batches use the dashboard and must not delay the login's resumption.
+            if !observesSceneActivity || !foregroundRefreshEnabled {
+                await waitForInitialQuota()
+            }
             guard generation == attempt, !Task.isCancelled else { return }
             loadingAccounts = false
             restoringLogin = false
@@ -325,6 +337,25 @@ final class CodexConnectionFlow: ObservableObject {
         if isFailure, recovery != nil { begin() }
     }
 
+    /// One request for each transition to active, including cold launch. This
+    /// is distinct from login polling and never uses cache age as a throttle.
+    func sceneActivityChanged(_ active: Bool) {
+        observesSceneActivity = true
+        let entered = active && !sceneIsActive
+        sceneIsActive = active
+        setActive(active)
+        if entered { pendingForegroundRefresh = true }
+        refreshPendingForeground()
+    }
+
+    private func refreshPendingForeground() {
+        guard foregroundRefreshEnabled, pendingForegroundRefresh, sceneIsActive,
+              cachedAccountsLoaded, !accountLoadFailed,
+              !managingAccounts, !reorderingAccounts else { return }
+        pendingForegroundRefresh = false
+        refreshAllQuota(manually: false)
+    }
+
     private let checkNetwork: @Sendable () async -> NetworkScoreResult
     private let authorizer: any CodexDeviceAuthorizing
     private let transactions: any CodexLoginTransactionStoring
@@ -344,6 +375,7 @@ final class CodexConnectionFlow: ObservableObject {
         bindings: (any CodexAccountBinding)? = nil,
         pending: (any CodexPendingLoginStoring)? = nil,
         quotaUpdater: (any CodexQuotaUpdating)? = nil,
+        foregroundRefreshEnabled: Bool = true,
         now: @escaping @Sendable () -> Date = { Date() },
         copyCode: @escaping @MainActor (String, Date) -> Void = { code, deadline in
             UIPasteboard.general.setItems([[UIPasteboard.typeAutomatic: code]],
@@ -353,6 +385,7 @@ final class CodexConnectionFlow: ObservableObject {
             await UIApplication.shared.open(url, options: [:])
         }
     ) {
+        self.foregroundRefreshEnabled = foregroundRefreshEnabled
         self.completer = completer
         self.verifier = verifier
         self.bindings = bindings
@@ -719,7 +752,10 @@ final class CodexConnectionFlow: ObservableObject {
     }
 
     private func startQuotaBatch(ids: [UUID], manually: Bool = true) {
-        guard canRefreshAll else { return }
+        // Automatic foreground work may run while a login sheet is open or
+        // being restored. It only targets identities already in the cache.
+        guard manually ? canRefreshAll : (cachedAccountsLoaded && !accountLoadFailed
+            && !managingAccounts && !reorderingAccounts && quotaWork == nil && quotaUpdater != nil) else { return }
         let targets = ids.compactMap { id in accounts.first { $0.id == id && $0.deletionPending != true } }
         guard let first = targets.first else { return }
         batchQuotaIDs = targets.map(\.id)
@@ -788,7 +824,10 @@ final class CodexConnectionFlow: ObservableObject {
     private func startInitialQuota(for account: ConnectedAccount, location: QuotaFeedbackLocation = .dashboard) {
         guard quotaUpdater != nil else { return }
         if quotaWork != nil {
-            if quotaUpdatingID != account.id && !queuedQuota.contains(where: { $0.account.id == account.id }) {
+            // A login completed during the foreground batch still needs its own
+            // connection result, even when its ID is the batch's first account.
+            if (location == .connection || quotaUpdatingID != account.id)
+                && !queuedQuota.contains(where: { $0.account.id == account.id && $0.account.generation == account.generation }) {
                 queuedQuota.append((account, location))
             }
             return

@@ -9,6 +9,29 @@ final class CodexLoginInterruptionTests: XCTestCase {
     private let start = Date(timeIntervalSince1970: 1_790_000_000)
     private let failed = CodexConnectionFlow.State.failure("登录未完成，请重试")
 
+    func testT27ColdLoginResumesWhileExistingAccountQueryWaits() async throws {
+        let existing = ConnectedAccount(remoteUserID: "t27-existing", verifiedEmail: "t27@example.invalid",
+            scope: .init(remoteAccountID: "t27-existing", kind: .personal), credentialRef: UUID())
+        let s = try scenario(holdPoll: true, existing: [existing])
+        try await seed(s, phase: nil)
+        let updater = T27HeldQuotaUpdater()
+        let flow = s.makeFlow(quotaUpdater: updater)
+        flow.sceneActivityChanged(true)
+        let loading = Task { await flow.loadAccounts() }
+        await waitUntil { await s.client.pollCount == 1 }
+        XCTAssertEqual(flow.state, .code(s.original))
+        XCTAssertEqual(flow.accounts, [existing])
+        XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+        let requests = await s.authorizer.count
+        XCTAssertEqual(requests, 0)
+        flow.cancel()
+        await updater.release.open()
+        await s.client.pollRelease.open()
+        await loading.value
+        await flow.waitForInitialQuota()
+        await waitForCleanup(s)
+    }
+
     func testColdPollingRecoveryKeepsOriginalCodeAndDeadlineWithoutRequestingAgain() async throws {
         let s = try scenario(holdPoll: true)
         try await seed(s, phase: nil)
@@ -541,13 +564,13 @@ private struct InterruptionScenario {
     let now: Date
 
     @MainActor
-    func makeFlow(transactionStore: (any CodexLoginTransactionStoring)? = nil) -> CodexConnectionFlow {
+    func makeFlow(transactionStore: (any CodexLoginTransactionStoring)? = nil, quotaUpdater: (any CodexQuotaUpdating)? = nil) -> CodexConnectionFlow {
         // Recreate the storage objects as happens in a new process, using only
         // the persisted service; no prior flow's in-memory recovery is shared.
         let vault = CredentialVault(service: service)
         return CodexConnectionFlow(checkNetwork: { await scores.next() }, authorizer: authorizer,
             transactions: transactionStore ?? CodexLoginTransactionStore(vault: vault), completer: client, verifier: verifier,
-            bindings: bindings, pending: CodexPendingLoginStore(vault: vault), now: { now },
+            bindings: bindings, pending: CodexPendingLoginStore(vault: vault), quotaUpdater: quotaUpdater, now: { now },
             copyCode: { _, _ in }, openURL: { _ in true })
     }
 }
@@ -672,5 +695,13 @@ private actor InterruptionGate {
         let ready = waiters
         waiters.removeAll()
         for waiter in ready { waiter.resume() }
+    }
+}
+
+private actor T27HeldQuotaUpdater: CodexQuotaUpdating {
+    let release = InterruptionGate()
+    func update(_ account: ConnectedAccount) async throws -> ConnectedAccount {
+        await release.wait()
+        return account
     }
 }

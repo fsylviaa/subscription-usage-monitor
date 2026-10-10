@@ -43,7 +43,8 @@ enum CodexConnectionUITestSupport {
         }
         if let marker = arguments.firstIndex(of: "--t26-isolated-ui"), arguments.indices.contains(marker + 1) {
             let fixture = T26BatchFixture(scenario: arguments[marker + 1])
-            let flow = CodexConnectionFlow(transactions: FixtureTransactions(), bindings: fixture, quotaUpdater: fixture)
+            let flow = CodexConnectionFlow(transactions: FixtureTransactions(), bindings: fixture, quotaUpdater: fixture,
+                foregroundRefreshEnabled: arguments.contains("--t27-lifecycle"))
             if arguments.contains("--t26-auto") {
                 Task {
                     await flow.loadAccounts()
@@ -767,6 +768,8 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
             if !released { await withCheckedContinuation { waiting.append($0) } }
         } else if scenario == "ui-staggered" || scenario == "ui-single" || scenario == "ui-auto-failure" {
             try? await Task.sleep(for: .seconds(account.scope.remoteAccountID == "t26-account-0" ? 8 : 20))
+        } else if scenario == "ui-foreground" {
+            try? await Task.sleep(for: .seconds(4))
         } else if scenario == "ui-cancel" {
             // Deliberately ignore cancellation until the late allowed result.
             await withCheckedContinuation { continuation in

@@ -52,10 +52,18 @@ final class LaunchTests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: allChanged, object: nil)], timeout: 8), .completed)
         XCTAssertFalse(app.staticTexts["quota.failure"].exists)
         let after = app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label)
+        let identities = app.staticTexts.matching(identifier: "quota.accountIdentity").allElementsBoundByIndex.map(\.label)
         saveScreenshot(of: app, name: "T26-演示全部刷新")
         app.terminate(); app.launch()
         XCTAssertTrue(app.staticTexts["quota.weekly.remaining"].firstMatch.waitForExistence(timeout: 8))
-        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label), after)
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").allElementsBoundByIndex.map(\.label), identities)
+        // T27 now refreshes the restored demo accounts on every cold launch.
+        let refreshedOnLaunch = NSPredicate { _, _ in MainActor.assumeIsolated {
+            let current = app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label)
+            return current.count == 2 && zip(after, current).allSatisfy { $0 != $1 }
+        }}
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: refreshedOnLaunch, object: nil)], timeout: 8), .completed)
+        XCTAssertFalse(app.descendants(matching: .any)["quota.refreshProgress"].firstMatch.exists)
     }
 
     @MainActor
