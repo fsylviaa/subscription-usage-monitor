@@ -1,0 +1,42 @@
+历史证据：对应已撤回的 T19 实现；当前功能已取消，移除后自验见相邻 T19-取消 目录。
+
+T19-Simulator-Approved.log
+Test Case '-[SubscriptionUsageTests.CodexAccountBindingStoreTests testT19CancelAndVerificationFailurePreserveBothBindings]' passed (3.115 seconds).
+Test Case '-[SubscriptionUsageTests.CodexAccountBindingStoreTests testT19NetworkGateAndCheckingCancellationKeepOldConnection]' passed (1.041 seconds).
+Test Case '-[SubscriptionUsageTests.CodexAccountBindingStoreTests testT19NewBindingQuotaFailureKeepsOldValuesAndCanReauthenticateFromFailure]' passed (4.133 seconds).
+Test Case '-[SubscriptionUsageTests.CodexAccountBindingStoreTests testT19SameAccountUpdatesMovedTargetAndQueriesOnlyNewConnection]' passed (3.135 seconds).
+Test Case '-[SubscriptionUsageTests.CodexAccountBindingStoreTests testT19TargetPersistsAcrossProcessRecovery]' passed (3.116 seconds).
+Test Case '-[SubscriptionUsageTests.CodexAccountBindingStoreTests testT19WrongOrRemovedTargetCannotFallThroughToAdditionOrUpdateAnotherRow]' passed (0.011 seconds).
+	 Executed 57 tests, with 0 failures (0 unexpected) in 53.181 (53.195) seconds
+	 Executed 57 tests, with 0 failures (0 unexpected) in 53.181 (53.195) seconds
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT19CardReauthenticationCancelSuccessAndReopen]' passed (25.213 seconds).
+** TEST SUCCEEDED **
+T19-Final-UI.log
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT19CardReauthenticationCancelSuccessAndReopen]' passed (25.422 seconds).
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT19FailedReauthenticationRecoveryEntriesKeepTargetAndOldData]' passed (22.843 seconds).
+	 Executed 2 tests, with 0 failures (0 unexpected) in 48.264 (48.267) seconds
+	 Executed 2 tests, with 0 failures (0 unexpected) in 48.264 (48.267) seconds
+	 Executed 2 tests, with 0 failures (0 unexpected) in 48.264 (48.268) seconds
+** TEST SUCCEEDED **
+T19-Device.log
+Test Case '-[SubscriptionUsageTests.CodexAccountBindingStoreTests testT19CancelAndVerificationFailurePreserveBothBindings]' passed (3.236 seconds).
+Test Case '-[SubscriptionUsageTests.CodexAccountBindingStoreTests testT19NetworkGateAndCheckingCancellationKeepOldConnection]' passed (1.085 seconds).
+Test Case '-[SubscriptionUsageTests.CodexAccountBindingStoreTests testT19NewBindingQuotaFailureKeepsOldValuesAndCanReauthenticateFromFailure]' passed (4.294 seconds).
+Test Case '-[SubscriptionUsageTests.CodexAccountBindingStoreTests testT19SameAccountUpdatesMovedTargetAndQueriesOnlyNewConnection]' passed (3.243 seconds).
+Test Case '-[SubscriptionUsageTests.CodexAccountBindingStoreTests testT19TargetPersistsAcrossProcessRecovery]' passed (3.245 seconds).
+Test Case '-[SubscriptionUsageTests.CodexAccountBindingStoreTests testT19WrongOrRemovedTargetCannotFallThroughToAdditionOrUpdateAnotherRow]' passed (0.024 seconds).
+	 Executed 2 tests, with 2 tests skipped and 0 failures (0 unexpected) in 0.002 (0.003) seconds
+	 Executed 294 tests, with 11 tests skipped and 0 failures (0 unexpected) in 77.746 (77.859) seconds
+	 Executed 294 tests, with 11 tests skipped and 0 failures (0 unexpected) in 77.746 (77.861) seconds
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT19CardReauthenticationCancelSuccessAndReopen]' passed (30.814 seconds).
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT19FailedReauthenticationRecoveryEntriesKeepTargetAndOldData]' passed (28.917 seconds).
+	 Executed 2 tests, with 0 failures (0 unexpected) in 59.732 (59.737) seconds
+	 Executed 2 tests, with 0 failures (0 unexpected) in 59.732 (59.740) seconds
+	 Executed 2 tests, with 0 failures (0 unexpected) in 59.732 (59.744) seconds
+** TEST SUCCEEDED **
+T19-Release.log: BUILD SUCCEEDED
+21:03:11  Acquired tunnel connection to device.（覆盖安装成功）
+21:03:22  Acquired tunnel connection to device.
+21:03:22  Enabling developer disk image services.
+21:03:22  Acquired usage assertion.
+Launched application with com.iceflying.SubscriptionUsage bundle identifier.
