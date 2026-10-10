@@ -10,3 +10,6 @@ DerivedData/
 build/
 xcuserdata/
 *.xcuserstate
+
+# Personal Xcode development team (optional local configuration)
+/Config/Signing.local.xcconfig

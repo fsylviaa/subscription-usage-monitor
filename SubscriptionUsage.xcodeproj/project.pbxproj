@@ -240,9 +240,24 @@
 			"path" = "AGENTS.md";
 			"sourceTree" = "<group>";
 		};
+		"3D3BC75BB5D203E4E79BB10E" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "text.xcconfig";
+			"path" = "Signing.xcconfig";
+			"sourceTree" = "<group>";
+		};
+		"32D7FD54A675882A40444E85" = {
+			"isa" = "PBXGroup";
+			"children" = (
+				"3D3BC75BB5D203E4E79BB10E",
+			);
+			"path" = "Config";
+			"sourceTree" = "<group>";
+		};
 		"ADCF10F76EBF2A74473E9DC4" = {
 			"isa" = "PBXGroup";
 			"children" = (
+				"32D7FD54A675882A40444E85",
 				"A9012353AFD6A66EB75D4BE2",
 				"A024F06580C79B7582C3806A",
 				"156052F04525D0F710673CF0",
@@ -313,6 +328,7 @@
 		};
 		"89291EB5FEBDC4EA06C9EEEA" = {
 			"isa" = "XCBuildConfiguration";
+			"baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E";
 			"buildSettings" = {
 				"CODE_SIGN_STYLE" = "Automatic";
 				"CURRENT_PROJECT_VERSION" = "1";
@@ -341,6 +357,7 @@
 		};
 		"43709F679F348B2EF2352978" = {
 			"isa" = "XCBuildConfiguration";
+			"baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E";
 			"buildSettings" = {
 				"CODE_SIGN_STYLE" = "Automatic";
 				"CURRENT_PROJECT_VERSION" = "1";

@@ -8,7 +8,7 @@
 
 在本项目的新对话里可直接说“开始 T02”等明确任务编号；执行者会检查前置、完成指定任务，并主动更新进度和 Git 存档。也可说“继续上次任务”“T01 我验收通过了”或描述发现的问题，具体含义见项目规则。
 
-## 开发与运行（T01）
+## 开发与运行（T01／T02）
 
 工程入口：[SubscriptionUsage.xcodeproj](SubscriptionUsage.xcodeproj)。共享运行方案（Scheme）为 **SubscriptionUsage**，App 的临时显示名称为“订阅用量”。当前只有启动空壳和测试入口；功能进度见[项目进度](docs/项目进度.md)，目录、协作边界和依赖见[工程结构](docs/project-structure.md)。**当前无第三方库依赖**，不需要先安装包管理器、生成工程或登录 Codex。
 
@@ -16,7 +16,7 @@
 
 - macOS 26.6.2，Xcode 26.6（17F113），Xcode 自带 Swift 6.3.3；工程使用 Swift 6 语言模式。
 - 本次选择 **iPhone 17 Pro / iOS 26.5（23F77）** 模拟器。完整 Xcode 位于 `/Applications/Xcode.app`，系统默认命令行工具仍指向独立 Command Line Tools，所以下面的命令显式指定 Xcode 路径，不修改全局工具选择。
-- 工程部署基线暂定 **iOS 17.0**，用于后续 SwiftUI 与桌面组件能力；这不是在 iOS 17 上已经实测的承诺。用户真机系统尚未核验，T02 再核对兼容与签名。本次不要求 Apple 开发团队或发布证书。
+- 工程部署基线暂定 **iOS 17.0**，用于后续 SwiftUI 与桌面组件能力；这不是在 iOS 17 上已经实测的承诺。T02 已识别用户的 iPhone 11 / iOS 26.5（23F77），符合部署基线；安装与启动的实际结果见 [T02 验收](docs/mvp任务清单/记录/T02-验收.md)。模拟器运行不要求 Apple 开发团队或发布证书。
 
 ### 在 Xcode 中运行
 
@@ -53,6 +53,22 @@ xcodebuild -project SubscriptionUsage.xcodeproj \
 `build` 只验证编译；`test` 会启动模拟器、运行单元与 UI 测试，界面测试会终止并重新启动 App。两者不查询真实账户、不读电脑授权。测试后可再次按 ⌘R 查看页面。
 
 复查不依赖已有构建缓存时，将 `-derivedDataPath` 改成一个全新目录，如 `build/FreshDerivedData`，重新构建并按上面步骤运行。`build/`、构建结果、Xcode 个人状态均不提交。后续测试样例的隔离规则见 [Tests/README.md](Tests/README.md)；实际执行记录见 [T01 验收](docs/mvp任务清单/记录/T01-验收.md)。
+
+### 在自己的 iPhone 上运行（T02）
+
+工程入口与 Scheme 仍为 **SubscriptionUsage**。目标真机为 **iPhone 11 / iOS 26.5（23F77）**；当前页面仍显示“订阅用量”和“Codex 订阅额度”。2026-10-10 已通过 Xcode 安装／启动、手机桌面重开及停止真机调试后重开；用户亲验已通过，详细过程见 [T02 验收记录](docs/mvp任务清单/记录/T02-验收.md)。
+
+1. 用数据线将 iPhone 连接到 Mac 并解锁；如手机询问信任，由用户本人确认。
+2. 如尚未开启，在 iPhone 的 **设置 → 隐私与安全性 → 开发者模式** 开启，按提示重启，再确认开启并解锁。参见 [Apple 开发者模式说明](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)。
+3. 在 **Xcode → Settings → Apple Accounts** 登录自己的 Apple 账户。用户本人输入密码、验证码和处理账户协议；不向聊天或仓库提供这些信息。
+4. 打开工程，选择 App target **SubscriptionUsage → Signing & Capabilities**，保持 **Automatically manage signing** 开启，使用自己的开发团队。现有 Bundle Identifier 为 `com.iceflying.SubscriptionUsage`；个人配置由开发者保存在本机。
+5. 顶部运行设备选择 **iOS Device** 下的实体 **iPhone**，按 **⌘R**。等待 Xcode 完成设备准备、构建和安装；如系统要求解锁，先解锁手机；若提示开发者证书未受信任，在手机 **设置 → 通用 → VPN 与设备管理** 中信任自己的开发者账户，然后回 Xcode 再运行。参见 [Apple 真机运行说明](https://developer.apple.com/documentation/xcode/running-your-app-on-simulated-or-physical-devices)。
+6. 手机出现两行标题后，回到主屏幕，点击“订阅用量”图标再打开一次。
+7. 在 Xcode 点击停止调试，再从手机桌面打开一次；能看到相同页面才完成本任务最后一项验收。
+
+这是 Xcode 的开发安装，受实际开发签名有效期限制，不代表永久安装或分发版本。T02 只验证 App 本体；未添加小组件、App Group 或发布配置。若尚无可用团队，先完成账户登录；不通过撤销现有证书来尝试修复。
+
+开发者保存签名配置：将团队 ID 写入被忽略的 `Config/Signing.local.xcconfig`（`DEVELOPMENT_TEAM = 自己的团队ID`），由 `Config/Signing.xcconfig` 读取。若在 Xcode 选团队时写回了工程，提交前移除工程内覆盖本机文件的团队字段；实际团队、账户资料和签名秘密不入 Git。缺少本机文件仍可运行模拟器，真机需重新配置自己的团队。
 
 ## 已明确的目标
 

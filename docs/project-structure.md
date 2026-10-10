@@ -14,7 +14,7 @@ T01 的基础脚手架说明，更新于 2026-10-10。运行步骤见[根 README
 | 单元测试 target | `SubscriptionUsageTests` |
 | UI 测试 target | `SubscriptionUsageUITests` |
 | Swift 语言模式 | Swift 6 |
-| 部署基线 | iOS 17.0；目前是工程基线，尚未验证用户真机版本，T02 核对真机兼容与签名 |
+| 部署基线 | iOS 17.0；目前是工程基线，T02 已识别 iPhone 11 / iOS 26.5；真机安装与启动结果见 T02 验收 |
 | 本次开发环境 | macOS 26.6.2、Xcode 26.6（17F113）、随 Xcode 提供的 Swift 6.3.3 |
 | 本次模拟器环境 | iPhone 17 Pro，iOS 26.5（23F77） |
 
@@ -27,6 +27,7 @@ T01 的基础脚手架说明，更新于 2026-10-10。运行步骤见[根 README
 ```text
 app/
 ├── SubscriptionUsage.xcodeproj/   工程、targets 与共享 Scheme
+├── Config/                       本机开发团队的可选配置入口
 ├── Sources/
 │   ├── App/                      App 入口与根页面
 │   ├── Features/                 后续各功能页面
@@ -47,6 +48,7 @@ app/
 
 | 位置 | 负责什么 | 后续落点与边界 |
 |---|---|---|
+| `Config/Signing.xcconfig` | App 的 Debug/Release 读取可选的本机开发团队 | 实际团队保存在被 Git 忽略的 `Signing.local.xcconfig`；不保存账户、证书或私钥；文件缺少时模拟器仍可用 |
 | `Sources/App/SubscriptionUsageApp.swift` | SwiftUI 的 `@main` 入口，打开根页面 | 后续在此组装必要依赖、连接 App 生命周期，不直接承担平台解析 |
 | `Sources/App/RootView.swift` | T01 的简洁空壳页面 | T03 起接入实际页面；当前不显示样例账户或伪造额度 |
 | `Sources/Features/` | 额度、账户、设置、教程等页面及直接相关展示逻辑 | T03 及后续页面任务添加；页面调用业务能力，不自行管理授权秘密 |
@@ -106,4 +108,4 @@ App 与测试 targets 共用同一工程和共享 Scheme。测试代码、固定
 
 共享 Scheme、工程配置、源码、资源及测试随 Git 保存；构建产物、`DerivedData`、个人 Xcode 状态和签名秘密由忽略规则排除。模拟器运行步骤与检查命令统一维护在[根 README](../README.md)，避免在多处保留不同版本的命令。
 
-T01 的重新打开、构建、启动及测试结果写入[验收记录](mvp任务清单/记录/T01-验收.md)。真机安装、个人开发团队和实际手机系统核验归 T02；此文档不代替必要的真实验证，也不将开发者自检记为用户亲验。
+T01 的重新打开、构建、启动及测试结果写入[验收记录](mvp任务清单/记录/T01-验收.md)。真机安装、个人开发团队及手机系统核验见 [T02 验收记录](mvp任务清单/记录/T02-验收.md)；此文档不代替必要的真实验证，也不将开发者自检记为用户亲验。
