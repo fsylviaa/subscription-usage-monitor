@@ -39,13 +39,13 @@ struct NetworkScoreChecker: Sendable {
         do {
             try Task.checkCancellation()
             let traceURL = URL(string: "https://claude.ai/cdn-cgi/trace")!
-            let trace = try await fetch(traceURL, timeout: 8)
+            let trace = try await fetch(traceURL, timeout: 8, freshTrace: true)
             let exitAddress = try Self.exitAddress(from: trace)
 
             try Task.checkCancellation()
             let scoreURL = URL(string: "https://ip.net.coffee/api/iprisk/")!
                 .appendingPathComponent(exitAddress)
-            let data = try await fetch(scoreURL, timeout: 10)
+            let data = try await fetch(scoreURL, timeout: 10, freshTrace: false)
             let score = try Self.score(from: data)
             try Task.checkCancellation()
             return score > 50 ? .allowed(score: score) : .blocked(score: score)
@@ -78,12 +78,19 @@ struct NetworkScoreChecker: Sendable {
         return result
     }
 
-    private func fetch(_ url: URL, timeout: TimeInterval) async throws -> Data {
+    private func fetch(_ url: URL, timeout: TimeInterval, freshTrace: Bool) async throws -> Data {
         try Task.checkCancellation()
-        var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+        // Match the source page: trace is fresh; risk uses the source's server-side
+        // score cache. The session has no local URLCache in either case. Forcing
+        // remote revalidation here timed out on device while the page's policy worked.
+        let policy: URLRequest.CachePolicy = freshTrace
+            ? .reloadIgnoringLocalAndRemoteCacheData : .useProtocolCachePolicy
+        var request = URLRequest(url: url, cachePolicy: policy,
                                  timeoutInterval: timeout)
-        request.setValue("no-cache, no-store", forHTTPHeaderField: "Cache-Control")
-        request.setValue("no-cache", forHTTPHeaderField: "Pragma")
+        if freshTrace {
+            request.setValue("no-cache, no-store", forHTTPHeaderField: "Cache-Control")
+            request.setValue("no-cache", forHTTPHeaderField: "Pragma")
+        }
         let (data, response) = try await transport.data(for: request)
         try Task.checkCancellation()
         guard let http = response as? HTTPURLResponse,
@@ -136,7 +143,7 @@ private final class URLSessionNetworkScoreTransport: NSObject, NetworkScoreTrans
     override init() {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.urlCache = nil
-        configuration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        configuration.requestCachePolicy = .useProtocolCachePolicy
         configuration.httpCookieStorage = nil
         configuration.httpShouldSetCookies = false
         configuration.urlCredentialStorage = nil

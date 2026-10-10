@@ -97,9 +97,15 @@ final class NetworkScoreCheckerTests: XCTestCase {
         XCTAssertEqual(requests[1].url?.absoluteString, "https://ip.net.coffee/api/iprisk/192.0.2.1")
         XCTAssertEqual(requests[0].timeoutInterval, 8)
         XCTAssertEqual(requests[1].timeoutInterval, 10)
+        XCTAssertEqual(requests[0].cachePolicy, .reloadIgnoringLocalAndRemoteCacheData)
+        XCTAssertEqual(requests[0].value(forHTTPHeaderField: "Cache-Control"), "no-cache, no-store")
+        // The page uses its service's cached score; every check still fetches a new
+        // trace and the production session has no local URLCache.
+        XCTAssertEqual(requests[1].cachePolicy, .useProtocolCachePolicy)
+        XCTAssertNil(requests[1].value(forHTTPHeaderField: "Cache-Control"))
+        XCTAssertNil(requests[1].value(forHTTPHeaderField: "Pragma"))
         for request in requests {
             XCTAssertEqual(request.httpMethod, "GET")
-            XCTAssertEqual(request.cachePolicy, .reloadIgnoringLocalAndRemoteCacheData)
             XCTAssertNil(request.value(forHTTPHeaderField: "Authorization"))
             XCTAssertNil(request.value(forHTTPHeaderField: "Cookie"))
         }
