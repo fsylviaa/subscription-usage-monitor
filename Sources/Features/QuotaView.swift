@@ -17,7 +17,9 @@ struct QuotaView: View {
             } else if !accounts.isEmpty {
                 List(accounts) { account in
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("Codex").font(.headline)
+                        Text(account.subscription.map { "Codex · \($0.planType)" } ?? "Codex")
+                            .font(.headline)
+                            .accessibilityIdentifier("quota.plan")
                         Text(account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户")
                             .privacySensitive()
                             .accessibilityIdentifier("quota.accountIdentity")
@@ -27,7 +29,7 @@ struct QuotaView: View {
                             Text("更新于 \(Self.dateText(snapshot.observedAt))")
                                 .font(.footnote).foregroundStyle(.secondary)
                                 .accessibilityIdentifier("quota.updatedAt")
-                        } else {
+                        } else if account.quotaState == .notFetched && updatingID != account.id && quotaFailure == nil {
                             Text("尚未获取额度").foregroundStyle(.secondary)
                                 .accessibilityIdentifier("quota.notFetched")
                         }

@@ -102,7 +102,7 @@ enum CodexConnectionUITestSupport {
                     tokens: .init(accessToken: "fixture-access", refreshToken: "fixture-refresh", idToken: "fixture-id",
                                   obtainedAt: Date(), expiresAt: nil))
                 return .init(data: try JSONEncoder().encode(package))
-            }, transport: QuotaFixtureTransport(partial: scenario == "partial"),
+            }, transport: QuotaFixtureTransport(scenario: scenario),
             checkNetwork: { scenario == "blocked" ? .blocked(score: 50) : .allowed(score: 51) }) : nil
         return CodexConnectionFlow(
             checkNetwork: { .allowed(score: 51) },
@@ -123,13 +123,22 @@ enum CodexConnectionUITestSupport {
     }
 
     private struct QuotaFixtureTransport: CodexDeviceAuthorizationTransport {
-        let partial: Bool
+        let scenario: String
         func data(for request: URLRequest) async throws -> (Data, URLResponse) {
             // Make sheet dismissal overlap the query to exercise task separation.
             try await Task.sleep(for: .milliseconds(500))
-            let partialBody = #"{"account_id":"isolated-ui-account","rate_limit":{"primary_window":{"limit_window_seconds":604800,"used_percent":30}}}"#
-            let completeBody = #"{"account_id":"isolated-ui-account","rate_limit":{"primary_window":{"limit_window_seconds":18000,"used_percent":80,"reset_at":1791669600},"secondary_window":{"limit_window_seconds":604800,"used_percent":30,"reset_at":1792144800}}}"#
-            return (Data((partial ? partialBody : completeBody).utf8),
+            let partialBody = #"{"account_id":"isolated-ui-account","plan_type":"Plus","rate_limit":{"primary_window":{"limit_window_seconds":604800,"used_percent":30}}}"#
+            let completeBody = #"{"account_id":"isolated-ui-account","plan_type":"Plus","rate_limit":{"primary_window":{"limit_window_seconds":18000,"used_percent":80,"reset_at":1791669600},"secondary_window":{"limit_window_seconds":604800,"used_percent":30,"reset_at":1792144800}}}"#
+            let freeBody = #"{"account_id":"isolated-ui-account","plan_type":"Free","rate_limit":{"primary_window":{"limit_window_seconds":2592000,"used_percent":0},"secondary_window":null}}"#
+            let failedBody = #"{"account_id":"isolated-ui-account","plan_type":"Future Official Plan","rate_limit":"bad"}"#
+            let body = switch scenario {
+            case "partial": partialBody
+            case "free": freeBody
+            case "plan-only-failure": failedBody
+            case "new-plan": completeBody.replacingOccurrences(of: "Plus", with: "Future Official Plan")
+            default: completeBody
+            }
+            return (Data(body.utf8),
                     HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: ["Content-Type": "application/json"])!)
         }
     }

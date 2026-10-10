@@ -3,6 +3,32 @@ import Foundation
 /// Pure wham/usage interpretation; no network, credentials, storage or current clock.
 /// Field shape checked against the pinned CodexBar source documented in README.md.
 struct CodexUsageParser {
+    func subscription(_ data: Data, observedAt: Date) throws -> AccountSubscription {
+        // Decode independently: malformed quota fields must not discard reliable plan metadata.
+        struct Metadata: Decodable { let plan_type: String }
+        let metadata = try JSONDecoder().decode(Metadata.self, from: data)
+        let value = AccountSubscription(planType: metadata.plan_type, observedAt: observedAt)
+        guard value.isValid else { throw CodexQuotaError.failed }
+        return value
+    }
+
+    func hasNoApplicableQuota(_ data: Data, subscription: AccountSubscription) throws -> Bool {
+        // This is a provider capability rule, not a display-name whitelist. Future
+        // plan names with supported windows work without any name mapping.
+        guard subscription.planType.lowercased() == "free" else { return false }
+        let response = try JSONDecoder().decode(Response.self, from: data)
+        guard let rate = response.rateLimit, rate.hasBothWindowFields else { return false }
+        for raw in [rate.primaryWindow, rate.secondaryWindow].compactMap({ $0 }) {
+            guard let seconds = raw.seconds, seconds > 0,
+                  QuotaWindow(rawValue: seconds) == nil,
+                  let used = raw.usedPercent else { return false }
+            _ = try QuotaPercentage(used: used)
+            if let reset = raw.resetAt, !(1...253_402_300_799).contains(reset) { return false }
+        }
+        // Explicit null windows are meaningful; an omitted/malformed container isn't.
+        return true
+    }
+
     func parse(_ data: Data, for account: ConnectedAccount, observedAt: Date) throws -> CodexQuotaSnapshot {
         guard observedAt.timeIntervalSince1970.isFinite else {
             throw QuotaInterpretationError.invalidObservationTime
@@ -80,6 +106,14 @@ struct CodexUsageParser {
     private struct RateLimit: Decodable {
         let primaryWindow: Window?
         let secondaryWindow: Window?
+        let hasBothWindowFields: Bool
+
+        init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            hasBothWindowFields = container.contains(.primaryWindow) && container.contains(.secondaryWindow)
+            primaryWindow = try container.decodeIfPresent(Window.self, forKey: .primaryWindow)
+            secondaryWindow = try container.decodeIfPresent(Window.self, forKey: .secondaryWindow)
+        }
 
         enum CodingKeys: String, CodingKey {
             case primaryWindow = "primary_window"

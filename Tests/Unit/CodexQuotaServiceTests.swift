@@ -14,7 +14,7 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testGatedQueryStoresCorrectScopeWindowsAndResponseTimeWithoutSecrets() async throws {
-        let setup = try await setup()
+        let setup = try await self.setup()
         let before = time.addingTimeInterval(-60)
         let clock = QuotaTestClock(before)
         let transport = QuotaTestTransport(data: Self.complete) { [time] in clock.set(time) }
@@ -44,7 +44,7 @@ final class CodexQuotaServiceTests: XCTestCase {
 
     func testNetwork50UnknownAndCancellationSendNoUsageAndKeepBinding() async throws {
         for result in [NetworkScoreResult.blocked(score: 50), .blocked(score: 49), .unavailable(.transport), .cancelled, .allowed(score: 50)] {
-            let setup = try await setup()
+            let setup = try await self.setup()
             let transport = QuotaTestTransport(data: Self.complete)
             do {
                 _ = try await service(setup, transport: transport, gate: { result }).update(setup.account)
@@ -59,8 +59,8 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testPartialResponsePreservesKnownWindowAndMissingReset() async throws {
-        let setup = try await setup()
-        let data = Data(#"{"account_id":"quota-test-account","rate_limit":{"primary_window":{"limit_window_seconds":604800,"used_percent":30}}}"#.utf8)
+        let setup = try await self.setup()
+        let data = Data(#"{"account_id":"quota-test-account","plan_type":"plus","rate_limit":{"primary_window":{"limit_window_seconds":604800,"used_percent":30}}}"#.utf8)
         let updated = try await service(setup, transport: QuotaTestTransport(data: data)).update(setup.account)
         let quota = try XCTUnwrap(updated.quotaSnapshot)
         XCTAssertEqual(quota.weekly.amount.remainingPercent, 70)
@@ -74,7 +74,7 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testUnknownMalformedMismatchedAndHTTPFailuresPreserveOldValuesAndTime() async throws {
-        let setup = try await setup()
+        let setup = try await self.setup()
         let old = try await service(setup, transport: QuotaTestTransport(data: Self.complete)).update(setup.account)
         let cases: [(Data, Int, String)] = [
             (Data(#"{"account_id":"quota-test-account","credits":{"unlimited":true}}"#.utf8), 200, "application/json"),
@@ -99,7 +99,7 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testRealObservedThirtyDayWindowIsNotRenamedToWeekOrFiveHours() async throws {
-        let setup = try await setup()
+        let setup = try await self.setup()
         // Actual field shape observed on 2026-10-10; identity and reset are synthetic.
         let body = Data(#"{"account_id":"quota-test-account","rate_limit":{"primary_window":{"limit_window_seconds":2592000,"used_percent":0,"reset_at":1800500000},"secondary_window":null},"additional_rate_limits":null}"#.utf8)
         let transport = QuotaTestTransport(data: body)
@@ -114,7 +114,7 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testCredentialMismatchAndMissingCredentialNeverQuery() async throws {
-        let setup = try await setup()
+        let setup = try await self.setup()
         for payload in [Optional<CredentialPayload>.none, try payload(for: ConnectedAccount(remoteUserID: "other", scope: setup.account.scope, credentialRef: UUID()))] {
             let transport = QuotaTestTransport(data: Self.complete)
             let service = CodexQuotaService(store: setup.store, loadCredential: { _ in payload }, transport: transport,
@@ -126,7 +126,7 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testCancellationAfterResponseCannotPublish() async throws {
-        let setup = try await setup()
+        let setup = try await self.setup()
         let gate = QuotaTestGate()
         let transport = QuotaTestTransport(data: Self.complete, beforeResponse: { await gate.wait() })
         let work = Task { try await service(setup, transport: transport).update(setup.account) }
@@ -139,7 +139,7 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testChangedBindingDuringRequestRejectsLateSnapshot() async throws {
-        let setup = try await setup()
+        let setup = try await self.setup()
         let gate = QuotaTestGate()
         let transport = QuotaTestTransport(data: Self.complete, beforeResponse: { await gate.wait() })
         let work = Task { try await service(setup, transport: transport).update(setup.account) }
@@ -155,7 +155,7 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testFailedDiskCommitDoesNotPublishSuccess() async throws {
-        let setup = try await setup()
+        let setup = try await self.setup()
         let backup = setup.url.deletingLastPathComponent().appendingPathComponent("backup.json")
         let transport = QuotaTestTransport(data: Self.complete, beforeResponse: {
             try! FileManager.default.moveItem(at: setup.url, to: backup)
@@ -167,7 +167,7 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testPreT12AccountFileRemainsReadable() async throws {
-        let setup = try await setup()
+        let setup = try await self.setup()
         let text = try String(contentsOf: setup.url, encoding: .utf8)
         XCTAssertFalse(text.contains("quotaSnapshot"))
         let reopened = try await AccountStore(fileURL: setup.url).load()
@@ -176,7 +176,7 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testLoginCompletionAutomaticallyQueriesAfterBindingAndDismissal() async throws {
-        let setup = try await setup(save: false)
+        let setup = try await self.setup(save: false)
         let transport = QuotaTestTransport(data: Self.complete)
         let binding = QuotaTestBinding(account: setup.account, store: setup.store)
         let login = QuotaTestLogin(account: setup.account, payload: try payload(for: setup.account))
@@ -198,7 +198,7 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testLoginGatePassesButQuotaGate50KeepsSuccessfulAccountWithSimpleMessage() async throws {
-        let setup = try await setup(save: false)
+        let setup = try await self.setup(save: false)
         let transport = QuotaTestTransport(data: Self.complete)
         let login = QuotaTestLogin(account: setup.account, payload: try payload(for: setup.account))
         let flow = CodexConnectionFlow(checkNetwork: { .allowed(score: 51) }, authorizer: login,
@@ -222,7 +222,7 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testExistingNotFetchedBindingQueriesOnceButSavedSnapshotDoesNotStartNewQuery() async throws {
-        let setup = try await setup()
+        let setup = try await self.setup()
         let transport = QuotaTestTransport(data: Self.complete)
         let binding = QuotaTestBinding(account: setup.account, store: setup.store)
         let updater = try service(setup, transport: transport)
@@ -239,7 +239,7 @@ final class CodexQuotaServiceTests: XCTestCase {
     }
 
     func testSavedSnapshotCannotBelongToAnotherScopeOrBeEntirelyUnknown() async throws {
-        let setup = try await setup()
+        let setup = try await self.setup()
         var other = setup.account
         other.scope = .init(remoteAccountID: "other", kind: .personal)
         for snapshot in [try CodexUsageParser().parse(Data("{}".utf8), for: setup.account, observedAt: time),
@@ -250,6 +250,139 @@ final class CodexQuotaServiceTests: XCTestCase {
         let saved = try await setup.store.load()
         XCTAssertEqual(saved, [setup.account])
     }
+
+    func testFreeThirtyDayResponseSavesSubscriptionWithoutQuotaOrFailureAndReopens() async throws {
+        let setup = try await self.setup()
+        let transport = QuotaTestTransport(data: Self.free)
+        let binding = QuotaTestBinding(account: setup.account, store: setup.store)
+        let updater = try service(setup, transport: transport)
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(), bindings: binding, quotaUpdater: updater)
+        await flow.loadAccounts()
+        await flow.waitForInitialQuota()
+        let account = try XCTUnwrap(flow.accounts.first)
+        XCTAssertEqual(account.subscription, AccountSubscription(planType: "Free", observedAt: time))
+        XCTAssertEqual(account.quotaState, .notApplicable)
+        XCTAssertNil(account.quotaSnapshot)
+        XCTAssertNil(flow.quotaFailure)
+        let reopened = CodexConnectionFlow(transactions: QuotaTestTransactions(), bindings: binding, quotaUpdater: updater)
+        await reopened.loadAccounts()
+        await reopened.waitForInitialQuota()
+        XCTAssertEqual(reopened.accounts, [account])
+        XCTAssertNil(reopened.quotaFailure)
+        let count = await transport.requests.count
+        XCTAssertEqual(count, 1)
+        print("T12 | Free真实结构固定输入 | 独立保存Free，无适用额度正常成功，重开一致，无额度快照和失败")
+    }
+
+    func testNewPlanNameAndCaseArePreservedWithoutWhitelist() async throws {
+        for name in ["Next Plan 2030", "free", "Free"] {
+            let setup = try await self.setup()
+            let data = Data(String(decoding: Self.complete, as: UTF8.self).replacingOccurrences(of: "plus", with: name).utf8)
+            let updated = try await service(setup, transport: QuotaTestTransport(data: data)).update(setup.account)
+            XCTAssertEqual(updated.subscription?.planType, name)
+            XCTAssertEqual(updated.quotaState, .available, "有真实支持窗口时Free也显示额度，不能仅靠套餐跳过")
+        }
+    }
+
+    func testExplicitNullWindowsForFreeAreNormalButMissingOrMalformedAreNot() async throws {
+        let setup = try await self.setup()
+        let data = Data(#"{"account_id":"quota-test-account","plan_type":"free","rate_limit":{"primary_window":null,"secondary_window":null}}"#.utf8)
+        let updated = try await service(setup, transport: QuotaTestTransport(data: data)).update(setup.account)
+        XCTAssertEqual(updated.quotaState, .notApplicable)
+        XCTAssertEqual(updated.subscription?.planType, "free")
+        for rate in ["null", "{}", #"{"primary_window":null}"#, #"{"primary_window":{},"secondary_window":null}"#,
+                     #"{"primary_window":{"limit_window_seconds":2592000,"used_percent":101},"secondary_window":null}"#,
+                     #"{"primary_window":{"limit_window_seconds":18000},"secondary_window":null}"#] {
+            let setup = try await self.setup()
+            let body = Data((#"{"account_id":"quota-test-account","plan_type":"Free","rate_limit":REPLACE}"#).replacingOccurrences(of: "REPLACE", with: rate).utf8)
+            do { _ = try await service(setup, transport: QuotaTestTransport(data: body)).update(setup.account); XCTFail("不能把坏响应默认无额度") }
+            catch { XCTAssertEqual(error as? CodexQuotaError, .failed) }
+            let saved = try await setup.store.load()
+            XCTAssertEqual(saved.first?.subscription?.planType, "Free")
+            XCTAssertEqual(saved.first?.quotaState, .notFetched)
+        }
+    }
+
+    func testMissingEmptyOrInvalidPlanDoesNotBecomeFree() async throws {
+        for plan in ["null", "123", #""""#, #""   ""#, #""bad\nname""#] {
+            let setup = try await self.setup()
+            let data = Data(String(decoding: Self.free, as: UTF8.self).replacingOccurrences(of: #""Free""#, with: plan).utf8)
+            do { _ = try await service(setup, transport: QuotaTestTransport(data: data)).update(setup.account); XCTFail("无可靠套餐必须失败") }
+            catch { XCTAssertEqual(error as? CodexQuotaError, .failed) }
+            let saved = try await setup.store.load()
+            XCTAssertEqual(saved, [setup.account])
+        }
+    }
+
+    func testPlanSurvivesMalformedQuotaAndFlowReportsFirstFetchFailure() async throws {
+        let setup = try await self.setup()
+        let data = Data(#"{"account_id":"quota-test-account","plan_type":"New Official Plan","rate_limit":"malformed"}"#.utf8)
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(),
+            bindings: QuotaTestBinding(account: setup.account, store: setup.store),
+            quotaUpdater: try service(setup, transport: QuotaTestTransport(data: data)))
+        await flow.loadAccounts()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.accounts.first?.subscription?.planType, "New Official Plan")
+        XCTAssertEqual(flow.quotaFailure, "获取失败")
+        XCTAssertNil(flow.accounts.first?.quotaSnapshot)
+        let saved = try await setup.store.load()
+        XCTAssertEqual(saved, flow.accounts)
+    }
+
+    func testSamePlanQuotaFailureUpdatesOnlySubscriptionTimeAndNewPlanClearsOldQuota() async throws {
+        let setup = try await self.setup()
+        let old = try await service(setup, transport: QuotaTestTransport(data: Self.complete)).update(setup.account)
+        let later = time.addingTimeInterval(100)
+        for plan in ["plus", "Future Plan"] {
+            let body = Data((#"{"account_id":"quota-test-account","plan_type":"PLAN","rate_limit":{}}"#).replacingOccurrences(of: "PLAN", with: plan).utf8)
+            do { _ = try await service(setup, transport: QuotaTestTransport(data: body), now: { later }).update(old); XCTFail("套餐成功不能冒充额度成功") }
+            catch { XCTAssertEqual(error as? CodexQuotaError, .failed) }
+            let records = try await setup.store.load()
+            let saved = try XCTUnwrap(records.first)
+            XCTAssertEqual(saved.subscription?.observedAt, later)
+            XCTAssertEqual(saved.subscription?.planType, plan)
+            if plan == "plus" { XCTAssertEqual(saved.quotaSnapshot, old.quotaSnapshot) }
+            else { XCTAssertNil(saved.quotaSnapshot); XCTAssertEqual(saved.quotaState, .notFetched) }
+        }
+    }
+
+    func testDowngradeToFreeClearsOldQuotaAndLaterSupportedQuotaIsQueried() async throws {
+        let setup = try await self.setup()
+        let old = try await service(setup, transport: QuotaTestTransport(data: Self.complete)).update(setup.account)
+        let free = try await service(setup, transport: QuotaTestTransport(data: Self.free)).update(old)
+        XCTAssertNil(free.quotaSnapshot)
+        XCTAssertEqual(free.quotaState, .notApplicable)
+        let upgraded = try await service(setup, transport: QuotaTestTransport(data: Self.complete)).update(free)
+        XCTAssertEqual(upgraded.quotaState, .available)
+        XCTAssertEqual(upgraded.subscription?.planType, "plus")
+    }
+
+    func testLegacySnapshotAutomaticallyFetchesMissingSubscription() async throws {
+        let setup = try await self.setup()
+        let snapshot = try CodexUsageParser().parse(Self.complete, for: setup.account, observedAt: time)
+        _ = try await setup.store.saveQuota(snapshot, for: setup.account)
+        let transport = QuotaTestTransport(data: Self.free)
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(),
+            bindings: QuotaTestBinding(account: setup.account, store: setup.store),
+            quotaUpdater: try service(setup, transport: transport))
+        await flow.loadAccounts()
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.accounts.first?.subscription?.planType, "Free")
+        XCTAssertEqual(flow.accounts.first?.quotaState, .notApplicable)
+        XCTAssertNil(flow.quotaFailure)
+    }
+
+    func testOlderSubscriptionResponseCannotOverwriteNewerObservation() async throws {
+        let setup = try await self.setup()
+        let later = time.addingTimeInterval(100)
+        let newer = try await service(setup, transport: QuotaTestTransport(data: Self.free), now: { later }).update(setup.account)
+        do { _ = try await service(setup, transport: QuotaTestTransport(data: Self.complete)).update(setup.account); XCTFail("旧响应不得覆盖新套餐") }
+        catch { XCTAssertEqual(error as? CodexQuotaError, .failed) }
+        let saved = try await setup.store.load()
+        XCTAssertEqual(saved, [newer])
+    }
+
+    private static let free = Data(#"{"account_id":"quota-test-account","plan_type":"Free","rate_limit":{"primary_window":{"limit_window_seconds":2592000,"used_percent":0,"reset_at":1800500000},"secondary_window":null}}"#.utf8)
 
     private typealias Setup = (store: AccountStore, account: ConnectedAccount, url: URL)
     private func setup(save: Bool = true) async throws -> Setup {

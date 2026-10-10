@@ -91,7 +91,7 @@ final class CodexConnectionFlow: ObservableObject {
         }
         // T12 also completes the first query for an existing T08 binding on
         // upgrade/relaunch. Regular foreground refresh remains a later task.
-        if let account = accounts.first, account.quotaState == .notFetched {
+        if let account = accounts.first, account.quotaState == .notFetched || account.subscription == nil {
             startInitialQuota(for: account)
         }
         // A committed account wins over leftover temporary data after a crash.
@@ -556,7 +556,16 @@ final class CodexConnectionFlow: ObservableObject {
             } catch is CancellationError {
                 // Cancellation never becomes a successful observation.
             } catch {
-                quotaFailure = (error as? CodexQuotaError)?.message ?? "刷新失败"
+                // A validated plan can have been saved despite a quota failure.
+                if let saved = try? await bindings?.load(),
+                   let updated = saved.first(where: { $0.id == account.id && $0.generation == account.generation
+                       && $0.credentialRef == account.credentialRef && $0.scope == account.scope }),
+                   let index = accounts.firstIndex(where: { $0.id == account.id && $0.generation == account.generation }) {
+                    accounts[index] = updated
+                }
+                quotaFailure = (error as? CodexQuotaError) == .networkBlocked
+                    ? "网络不达标，无法更新"
+                    : (account.quotaState == .notFetched ? "获取失败" : "刷新失败")
             }
         }
     }

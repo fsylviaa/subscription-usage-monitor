@@ -11,6 +11,7 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
     var scope: AccountScope
     var credentialRef: UUID
     var generation: UInt64
+    var subscription: AccountSubscription?
     var quotaSnapshot: CodexQuotaSnapshot?
     var quotaState: AccountQuotaState
 
@@ -25,7 +26,8 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
         credentialRef: UUID,
         generation: UInt64 = 0,
         quotaState: AccountQuotaState = .notFetched,
-        quotaSnapshot: CodexQuotaSnapshot? = nil
+        quotaSnapshot: CodexQuotaSnapshot? = nil,
+        subscription: AccountSubscription? = nil
     ) {
         self.id = id
         self.provider = provider
@@ -38,6 +40,20 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
         self.generation = generation
         self.quotaState = quotaState
         self.quotaSnapshot = quotaSnapshot
+        self.subscription = subscription
+    }
+}
+
+/// Platform-supplied text, independent of whether this product exposes an applicable quota.
+struct AccountSubscription: Codable, Equatable, Sendable {
+    let planType: String
+    let observedAt: Date
+
+    var isValid: Bool {
+        !planType.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && planType.utf8.count <= 256
+            && !planType.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) })
+            && observedAt.timeIntervalSince1970.isFinite
     }
 }
 

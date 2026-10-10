@@ -9,4 +9,6 @@ T04 的 `ConnectedAccount` 保存稳定本地 ID（`id`）、provider/product、
 
 T11 的 `QuotaPercentage` 只接受有限的 0…100 已用百分比，剩余由 `100 - used` 得到；`QuotaAmount` 分为未知、已知限额和明确不限量。未知／不限量不输出百分比或进度条。进度输出左侧已用、右侧剩余，两窗口不能合并。
 
-`QuotaWindowSnapshot` 分别保存精确 5 小时／周含义、百分比单位、可空的真实重置时间和观测时间。到重置点仅 `isAwaitingUpdate(at:)` 变为 true，原始额度不变。`CodexQuotaSnapshot` 保存账户本地 ID、provider/product、查询 scope、generation、原样套餐和观测时间；不携带邮箱或凭据。`hasKnownQuota` 用于区分“解释完成”与“确实有已知额度”；T12 在保存前检查此值，全未知结果不会产生新的成功时间。
+`QuotaWindowSnapshot` 分别保存精确 5 小时／周含义、百分比单位、可空的真实重置时间和观测时间。到重置点仅 `isAwaitingUpdate(at:)` 变为 true，原始额度不变。`CodexQuotaSnapshot` 保存账户本地 ID、provider/product、查询 scope、generation、原样套餐和观测时间；不携带邮箱或凭据。`hasKnownQuota` 用于区分“解释完成”与“确实有已知额度”；T12 在保存前检查此值，全未知结果不会产生新的额度成功时间。
+
+T12 的可选 `AccountSubscription` 独立保存平台原始套餐文本及观测时间，挂在已验证账户／产品／作用域之下。`notApplicable` 表示已确认无本期适用额度，须有套餐且没有额度快照；`notFetched` 不等同免费或不限量。原文件缺少 subscription 时兼容读取，升级首次查询补齐。

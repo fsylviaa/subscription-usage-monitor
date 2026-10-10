@@ -6,7 +6,7 @@ App 接入时组装一个共享 actor 实例，串行执行无挂起点的读改
 
 `applicationStore()` 提供 App 私有 Application Support/SubscriptionUsage/accounts.json 路径，T08 已接入首账户绑定与启动读取。测试显式传入唯一临时路径；重新构造实例验证真正从文件读取，测试文件不会进入生产路径。
 
-普通文件保存账户元数据、凭据 UUID 引用，以及 T12 成功查询得到的两窗口快照；未查询时仍为 notFetched，兼容原有文件。成功时原子提交 available 和 quotaSnapshot，校验当前身份、作用域、凭据引用及 generation；失败不改原值及成功时间。不保存登录令牌、原始响应或 Cookie。T05 提供独立钥匙串；完整离线恢复验收由 T15 收口。组件共享在 T32 接入，不共用此账户文件写入器。
+普通文件保存账户元数据、凭据 UUID 引用、独立套餐及其观测时间，以及 T12 成功查询得到的两窗口快照；未查询时为 notFetched，兼容原有文件。`saveObservation` 原子提交套餐与额度结果，校验当前身份、作用域、凭据引用、generation 及观测时间，拒绝迟到旧结果。有额度时保存 available 和 quotaSnapshot；确认无适用额度时保存 notApplicable，不创建假快照。可靠套餐可在额度失败时保存；同套餐保留旧额度和原成功时间，确认套餐变化后清除失效额度。不保存登录令牌、原始响应或 Cookie。T05 提供独立钥匙串；完整离线恢复验收由 T15 收口。组件共享在 T32 接入，不共用此账户文件写入器。
 
 ## T05 登录授权存取
 

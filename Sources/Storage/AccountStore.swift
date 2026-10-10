@@ -104,6 +104,54 @@ actor AccountStore {
         return accounts[index]
     }
 
+    enum QuotaObservation: Sendable {
+        case available(CodexQuotaSnapshot)
+        case notApplicable
+        case failed
+    }
+
+    /// Commit reliable subscription metadata even when quota interpretation fails.
+    /// A plan change invalidates old quota; an ordinary same-plan failure preserves it.
+    func saveObservation(_ subscription: AccountSubscription, quota: QuotaObservation,
+                         for expected: ConnectedAccount) throws -> ConnectedAccount {
+        try Task.checkCancellation()
+        var accounts = try load()
+        guard let index = accounts.firstIndex(where: { $0.id == expected.id }) else {
+            throw StoreError.accountNotFound
+        }
+        var current = accounts[index]
+        guard current.provider == expected.provider, current.product == expected.product,
+              current.generation == expected.generation, current.scope == expected.scope,
+              current.credentialRef == expected.credentialRef,
+              current.remoteUserID == expected.remoteUserID, current.verifiedEmail == expected.verifiedEmail,
+              current.subscription.map({ $0.observedAt <= subscription.observedAt }) ?? true,
+              current.quotaSnapshot.map({ $0.observedAt <= subscription.observedAt }) ?? true else {
+            throw StoreError.staleQuotaContext
+        }
+        let previousPlan = current.subscription?.planType ?? current.quotaSnapshot?.planType
+        if previousPlan != subscription.planType {
+            current.quotaSnapshot = nil
+            current.quotaState = .notFetched
+        }
+        current.subscription = subscription
+        switch quota {
+        case let .available(snapshot):
+            guard snapshot.planType == subscription.planType, snapshot.observedAt == subscription.observedAt else {
+                throw StoreError.invalidQuotaSnapshot
+            }
+            current.quotaSnapshot = snapshot
+            current.quotaState = .available
+        case .notApplicable:
+            current.quotaSnapshot = nil
+            current.quotaState = .notApplicable
+        case .failed: break
+        }
+        accounts[index] = current
+        try Task.checkCancellation()
+        try commit(accounts)
+        return current
+    }
+
     /// Requires an exact permutation: sorting cannot silently add, remove or duplicate accounts.
     func reorder(_ ids: [UUID]) throws {
         let accounts = try load()
@@ -119,11 +167,16 @@ actor AccountStore {
             throw StoreError.duplicateLocalID
         }
         for account in accounts {
+            guard account.subscription?.isValid ?? true else { throw StoreError.invalidQuotaSnapshot }
             guard let quota = account.quotaSnapshot else {
-                guard account.quotaState == .notFetched else { throw StoreError.invalidQuotaSnapshot }
+                guard account.quotaState == .notFetched
+                    || (account.quotaState == .notApplicable && account.subscription != nil) else {
+                    throw StoreError.invalidQuotaSnapshot
+                }
                 continue
             }
             guard account.quotaState == .available, quota.hasKnownQuota,
+                  account.subscription.map({ $0.planType == quota.planType && $0.observedAt >= quota.observedAt }) ?? true,
                   quota.accountID == account.id, quota.provider == account.provider,
                   quota.product == account.product, quota.scope == account.scope,
                   quota.generation == account.generation,

@@ -33,13 +33,14 @@ final class CodexQuotaLiveTests: XCTestCase {
             })
         let startedAt = Date()
         let updated: ConnectedAccount
-        if account.quotaState == .notFetched {
+        if account.quotaState == .notFetched || account.subscription == nil {
             let flow = CodexConnectionFlow(transactions: CodexLoginTransactionStore(vault: vault),
                 bindings: CodexAccountBindingStore(accountStore: store, vault: vault),
                 pending: CodexPendingLoginStore(vault: vault), quotaUpdater: updater)
             await flow.loadAccounts()
             await flow.waitForInitialQuota()
-            guard let fetched = flow.accounts.first, fetched.quotaState == .available else {
+            guard let fetched = flow.accounts.first, fetched.subscription != nil, flow.quotaFailure == nil,
+                  fetched.quotaState == .available || fetched.quotaState == .notApplicable else {
                 XCTFail("真实自动查询尚未成功：\(flow.quotaFailure ?? "刷新失败")")
                 return
             }
@@ -51,7 +52,7 @@ final class CodexQuotaLiveTests: XCTestCase {
             updated = try await updater.update(account)
             print("T12 | 真实复核 | 已有成功快照，显式复核请求；不冒称再次首次自动查询")
         }
-        guard let quota = updated.quotaSnapshot else { XCTFail("缺少成功快照"); return }
+        let subscription = try XCTUnwrap(updated.subscription)
         let captured = await recorder.captured
         guard captured.count == 1, let response = captured.first,
               let body = try JSONSerialization.jsonObject(with: response) as? [String: Any],
@@ -61,27 +62,38 @@ final class CodexQuotaLiveTests: XCTestCase {
         }
         let identityMatches = (body["account_id"] as? String ?? body["accountId"] as? String) == account.scope.remoteAccountID
         XCTAssertTrue(identityMatches, "同次平台响应对应已验证作用域")
-        let rawWindows = [rate["primary_window"], rate["secondary_window"]].compactMap { $0 as? [String: Any] }
-        for window in [quota.weekly, quota.fiveHours] {
-            let raw = rawWindows.first { ($0["limit_window_seconds"] as? NSNumber)?.intValue == window.window.rawValue }
-            let used = (raw?["used_percent"] as? NSNumber)?.doubleValue
-            XCTAssertEqual(window.amount.remainingPercent, used.map { 100 - $0 })
-            let reset = (raw?["reset_at"] as? NSNumber)?.doubleValue
-            XCTAssertEqual(window.resetsAt?.timeIntervalSince1970, reset)
-            let name = window.window == .weekly ? "周" : "5小时"
-            let remaining = window.amount.remainingPercent.map { String($0) + "%" } ?? "未知"
-            let resetText = window.resetsAt.map { Self.time($0) } ?? "未提供"
-            print("T12 | 同次真实平台核对 | \(name)窗口\(window.window.rawValue)秒；剩余\(remaining)；预计重置\(resetText)；平台/解释/保存相同")
+        XCTAssertEqual(subscription.planType, body["plan_type"] as? String)
+        XCTAssertTrue(subscription.observedAt >= startedAt && subscription.observedAt <= Date())
+        print("T12 | 真实套餐 | 平台原始名称=\(subscription.planType)；显示Codex · \(subscription.planType)")
+        if let quota = updated.quotaSnapshot {
+            let rawWindows = [rate["primary_window"], rate["secondary_window"]].compactMap { $0 as? [String: Any] }
+            for window in [quota.weekly, quota.fiveHours] {
+                let raw = rawWindows.first { ($0["limit_window_seconds"] as? NSNumber)?.intValue == window.window.rawValue }
+                let used = (raw?["used_percent"] as? NSNumber)?.doubleValue
+                XCTAssertEqual(window.amount.remainingPercent, used.map { 100 - $0 })
+                let reset = (raw?["reset_at"] as? NSNumber)?.doubleValue
+                XCTAssertEqual(window.resetsAt?.timeIntervalSince1970, reset)
+                let name = window.window == .weekly ? "周" : "5小时"
+                let remaining = window.amount.remainingPercent.map { String($0) + "%" } ?? "未知"
+                let resetText = window.resetsAt.map { Self.time($0) } ?? "未提供"
+                print("T12 | 同次真实平台核对 | \(name)窗口\(window.window.rawValue)秒；剩余\(remaining)；预计重置\(resetText)；平台/解释/保存相同")
+            }
+            XCTAssertTrue(quota.hasKnownQuota)
+            XCTAssertTrue(quota.observedAt >= startedAt && quota.observedAt <= Date())
+        } else {
+            XCTAssertEqual(updated.quotaState, .notApplicable)
+            XCTAssertEqual(subscription.planType.lowercased(), "free")
+            let windows = [rate["primary_window"], rate["secondary_window"]].compactMap { $0 as? [String: Any] }
+            XCTAssertFalse(windows.contains { [18000, 604800].contains(($0["limit_window_seconds"] as? NSNumber)?.intValue ?? 0) })
+            print("T12 | 真实Free无适用额度 | 套餐识别成功；不创建周/5小时快照，不报失败")
         }
-        XCTAssertTrue(quota.hasKnownQuota)
-        XCTAssertTrue(quota.observedAt >= startedAt && quota.observedAt <= Date())
         let reloaded = try await AccountStore.applicationStore().load()
         XCTAssertTrue(reloaded == [updated], "重新实例化后数值、时间与本次作用域一致")
         let credentialAfter = try await vault.load(for: .credential(account.credentialRef))
         XCTAssertTrue(credentialBefore == credentialAfter, "查询没有消费或替换原登录授权")
         XCTAssertTrue(updated.id == account.id && updated.scope == account.scope
             && updated.remoteUserID == account.remoteUserID && updated.verifiedEmail == account.verifiedEmail)
-        print("T12 | 真实保存重读 | 成功时间\(Self.time(quota.observedAt))；身份、两窗口、原始重置时间与成功时间一致；授权未改")
+        print("T12 | 真实保存重读 | 成功时间\(Self.time(subscription.observedAt))；身份、套餐、额度适用性与保存时间一致；授权未改")
     }
 
     private static func time(_ date: Date) -> String {

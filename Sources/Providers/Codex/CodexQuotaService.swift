@@ -87,14 +87,29 @@ struct CodexQuotaService: CodexQuotaUpdating {
                   identity.email == nil || identity.email?.lowercased() == account.verifiedEmail?.lowercased() else {
                 throw CodexQuotaError.failed
             }
-            stage = "解释额度窗口"
-            let snapshot = try CodexUsageParser().parse(data, for: account, observedAt: now())
-            stage = "检查有效额度"
-            guard snapshot.hasKnownQuota else { throw CodexQuotaError.failed }
-            // Only this commit publishes success. Failed requests or writes leave
-            // the previous file, values and original observation time untouched.
-            stage = "保存成功快照"
-            return try await store.saveQuota(snapshot, for: account)
+            stage = "解释套餐资料"
+            let parser = CodexUsageParser()
+            let subscription = try parser.subscription(data, observedAt: now())
+            let observation: AccountStore.QuotaObservation
+            do {
+                stage = "解释额度窗口"
+                let snapshot = try parser.parse(data, for: account, observedAt: subscription.observedAt)
+                if snapshot.hasKnownQuota {
+                    observation = .available(snapshot)
+                } else if try parser.hasNoApplicableQuota(data, subscription: subscription) {
+                    observation = .notApplicable
+                } else {
+                    observation = .failed
+                }
+            } catch {
+                observation = .failed
+            }
+            stage = "保存套餐及额度结果"
+            let updated = try await store.saveObservation(subscription, quota: observation, for: account)
+            // Saving the plan is not proof of quota success. The caller reloads
+            // this independently committed metadata while displaying the failure.
+            if case .failed = observation { throw CodexQuotaError.failed }
+            return updated
         } catch {
             if Task.isCancelled || error is CancellationError || (error as? URLError)?.code == .cancelled {
                 throw CancellationError()
