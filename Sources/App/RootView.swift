@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import WidgetKit
 
 struct RootView: View {
     @AppStorage private var appearance: String
@@ -8,6 +9,8 @@ struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private let onBackground: () -> Void
+    private let publishesWidgetAppearance: Bool
+    @State private var pendingWidgetAdd = false
     private enum Tab: Hashable { case quota, settings }
     @State private var selection: Tab = .quota
     @State private var connectionDetent: PresentationDetent = .height(250)
@@ -15,6 +18,9 @@ struct RootView: View {
 
     init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard, onBackground: @escaping () -> Void = {}) {
         self.onBackground = onBackground
+        self.publishesWidgetAppearance = preferences === UserDefaults.standard
+            && NSClassFromString("XCTestCase") == nil
+            && !ProcessInfo.processInfo.arguments.contains(where: { $0.hasPrefix("--t") || $0 == "--management-ui" })
         _appearance = AppStorage(wrappedValue: "system", "appearance", store: preferences)
         _connection = StateObject(wrappedValue: connection)
     }
@@ -78,9 +84,23 @@ struct RootView: View {
         .background(AppearanceWindowReader(transition: appearanceTransition))
         .preferredColorScheme(appearance == "dark" ? .dark : appearance == "light" ? .light : nil)
         .tint(DashboardStyle.text)
+        .onChange(of: appearance, initial: true) { _, value in
+            guard publishesWidgetAppearance else { return }
+            WidgetAppearance.publish(value, to: WidgetAppearance.defaults()) {
+                WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
+            }
+        }
+        .onOpenURL { url in
+            guard QuotaWidgetContent.isAddAccountURL(url) else { return }
+            selection = .quota
+            pendingWidgetAdd = true
+            openPendingWidgetAdd()
+        }
+        .onChange(of: connection.canConnect) { _, _ in openPendingWidgetAdd() }
         .task {
             connection.sceneActivityChanged(scenePhase == .active)
             await connection.loadAccounts()
+            openPendingWidgetAdd()
         }
         .onChange(of: scenePhase) { _, phase in
             connection.sceneActivityChanged(phase == .active)
@@ -99,6 +119,12 @@ struct RootView: View {
                 }
                 .onChange(of: dynamicTypeSize) { _, _ in connectionDetent = initialConnectionDetent }
         }
+    }
+
+    private func openPendingWidgetAdd() {
+        guard pendingWidgetAdd, connection.canConnect else { return }
+        connection.showPlatformPicker()
+        if connection.isPresented { pendingWidgetAdd = false }
     }
 
     private var initialConnectionDetent: PresentationDetent {

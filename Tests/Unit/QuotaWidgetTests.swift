@@ -32,14 +32,13 @@ final class QuotaWidgetTests: XCTestCase {
         XCTAssertNil(QuotaWidgetContent.usedFraction(.unlimited))
         XCTAssertEqual(QuotaWidgetContent.amountText(.unknown), "未知")
         XCTAssertEqual(QuotaWidgetContent.amountText(.unlimited), "不限量")
-        XCTAssertEqual(QuotaWidgetContent.resetText(nil), "未提供重置时间")
     }
 
     func testEmptyUnfetchedAndFreeRemainDistinct() throws {
         let empty = QuotaWidgetContent.snapshot(.empty)
         let unfetched = QuotaWidgetContent.snapshot(fixture(state: .notFetched))
         let free = QuotaWidgetContent.snapshot(fixture(state: .notApplicable))
-        XCTAssertEqual(empty.message, "未连接账号，无数据")
+        XCTAssertEqual(empty.message, "添加账户")
         XCTAssertEqual(unfetched.message, "尚未获取额度")
         XCTAssertNotNil(unfetched.account)
         XCTAssertNil(free.message)
@@ -69,11 +68,40 @@ final class QuotaWidgetTests: XCTestCase {
         defer { try? FileManager.default.removeItem(at: url) }
         let store = WidgetSnapshotStore(fileURL: url)
         XCTAssertEqual(QuotaWidgetContent.read(from: store), .notPublished)
-        XCTAssertEqual(QuotaWidgetContent.read(from: store).message, "尚未获取额度")
+        XCTAssertEqual(QuotaWidgetContent.read(from: store).message, "添加账户")
         try Data("broken".utf8).write(to: url)
         XCTAssertEqual(QuotaWidgetContent.read(from: store).message, "刷新失败")
         try store.write(.empty)
-        XCTAssertEqual(QuotaWidgetContent.read(from: store).message, "未连接账号，无数据")
+        XCTAssertEqual(QuotaWidgetContent.read(from: store).message, "添加账户")
+    }
+
+    func testCompactIdentityAndAddAccountRoute() {
+        XCTAssertEqual(QuotaWidgetContent.compactIdentity("work@gmail.com"), "work")
+        XCTAssertEqual(QuotaWidgetContent.compactIdentity("work@outlook.com"), "work")
+        XCTAssertEqual(QuotaWidgetContent.compactIdentity("a.b+tag@example.invalid"), "a.b+tag")
+        XCTAssertEqual(QuotaWidgetContent.compactIdentity("Codex 账户"), "Codex 账户")
+        XCTAssertTrue(QuotaWidgetContent.isAddAccountURL(QuotaWidgetContent.addAccountURL))
+        XCTAssertFalse(QuotaWidgetContent.isAddAccountURL(URL(string: "https://add-account")!))
+        XCTAssertTrue(QuotaWidgetContent.notPublished.showsAddAccount)
+        XCTAssertTrue(QuotaWidgetContent.snapshot(.empty).showsAddAccount)
+        XCTAssertFalse(QuotaWidgetContent.unavailable.showsAddAccount)
+        XCTAssertFalse(QuotaWidgetContent.snapshot(fixture(state: .notFetched)).showsAddAccount)
+    }
+
+    func testAppearancePublishesOnlyChangesAndResolvesManualPreference() throws {
+        let suite = "WidgetAppearance-\(UUID())"
+        let preferences = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { preferences.removePersistentDomain(forName: suite) }
+        var reloads = 0
+        WidgetAppearance.publish("dark", to: preferences) { reloads += 1 }
+        WidgetAppearance.publish("dark", to: preferences) { reloads += 1 }
+        XCTAssertEqual(reloads, 1)
+        XCTAssertEqual(WidgetAppearance.colorScheme(preferences.string(forKey: WidgetAppearance.key)!), .dark)
+        WidgetAppearance.publish("light", to: preferences) { reloads += 1 }
+        XCTAssertEqual(WidgetAppearance.colorScheme(preferences.string(forKey: WidgetAppearance.key)!), .light)
+        WidgetAppearance.publish("system", to: preferences) { reloads += 1 }
+        XCTAssertNil(WidgetAppearance.colorScheme(preferences.string(forKey: WidgetAppearance.key)!))
+        XCTAssertEqual(reloads, 3)
     }
 
     func testSmallWidgetIsolatedRendersLightDarkAndMissingFields() throws {
@@ -88,20 +116,23 @@ final class QuotaWidgetTests: XCTestCase {
             ("读取失败", .unavailable)
         ]
         for (name, content) in cases {
+            for medium in [false, true] {
             for dark in [false, true] {
-                let view = SmallQuotaWidgetView(content: content)
-                    .frame(width: 158, height: 158)
+                let width: CGFloat = medium ? 338 : 158
+                let view = SmallQuotaWidgetView(content: content, medium: medium, accountCount: 3)
+                    .frame(width: width, height: 158)
                     .background(Color("DesignCard"))
                     .environment(\.colorScheme, dark ? .dark : .light)
                     .environment(\.locale, Locale(identifier: "zh_CN"))
                 let renderer = ImageRenderer(content: view)
                 renderer.scale = 3
                 let image = try XCTUnwrap(renderer.uiImage)
-                XCTAssertEqual(image.size, CGSize(width: 158, height: 158))
+                XCTAssertEqual(image.size, CGSize(width: width, height: 158))
                 let attachment = XCTAttachment(image: image)
-                attachment.name = "T33-\(name)-\(dark ? "深" : "浅")"
+                attachment.name = "T33修订-\(medium ? "中" : "小")-\(name)-\(dark ? "深" : "浅")"
                 attachment.lifetime = .keepAlways
                 add(attachment)
+            }
             }
         }
     }

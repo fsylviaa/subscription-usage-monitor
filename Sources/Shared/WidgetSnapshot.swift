@@ -5,6 +5,10 @@ import Foundation
 struct WidgetSnapshot: Codable, Equatable, Sendable {
     let schemaVersion: Int
     let account: Account?
+    var accounts: [Account]? = nil
+    var listRevision: UUID? = nil
+
+    var allAccounts: [Account] { accounts ?? account.map { [$0] } ?? [] }
 
     struct Account: Codable, Equatable, Sendable {
         let id: UUID
@@ -52,12 +56,20 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
     }
 
     var emptyMessage: String? {
-        guard let account else { return "未连接账号，无数据" }
+        guard let account else { return "添加账户" }
         return account.state == .notFetched ? "尚未获取额度" : nil
     }
 
     func validate() throws {
         guard schemaVersion == 1 else { throw WidgetSnapshotStore.StoreError.unsupportedSchema }
+        if let accounts {
+            guard accounts.first == account, Set(accounts.map(\.id)).count == accounts.count else {
+                throw WidgetSnapshotStore.StoreError.invalidSnapshot
+            }
+            for value in accounts {
+                try WidgetSnapshot(schemaVersion: schemaVersion, account: value).validate()
+            }
+        }
         guard let account else { return }
         func validText(_ text: String) -> Bool {
             !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty

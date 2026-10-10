@@ -1,4 +1,5 @@
 import Foundation
+import WidgetKit
 
 /// One executor for account files and Keychain commits. No network work runs here.
 @globalActor
@@ -30,12 +31,15 @@ final class AccountStore {
 
     private let fileURL: URL
     private let widgetStore: WidgetSnapshotStore?
+    private let reloadWidgets: @Sendable () -> Void
     private(set) var widgetPublicationFailed = false
 
     /// Explicit URL keeps test data isolated from the App's real account directory.
-    nonisolated init(fileURL: URL, widgetStore: WidgetSnapshotStore? = nil) {
+    nonisolated init(fileURL: URL, widgetStore: WidgetSnapshotStore? = nil,
+                     reloadWidgets: @escaping @Sendable () -> Void = {}) {
         self.fileURL = fileURL
         self.widgetStore = widgetStore
+        self.reloadWidgets = reloadWidgets
     }
 
     nonisolated static func applicationStore() throws -> AccountStore {
@@ -45,7 +49,8 @@ final class AccountStore {
             appropriateFor: nil,
             create: true
         ).appendingPathComponent("SubscriptionUsage", isDirectory: true)
-        return AccountStore(fileURL: directory.appendingPathComponent("accounts.json"), widgetStore: .appGroupStore())
+        return AccountStore(fileURL: directory.appendingPathComponent("accounts.json"), widgetStore: .appGroupStore(),
+                            reloadWidgets: { WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind) })
     }
 
     func load() throws -> [ConnectedAccount] {
@@ -58,8 +63,16 @@ final class AccountStore {
     private func publishWidget(_ accounts: [ConnectedAccount]) {
         guard let widgetStore else { return }
         do {
-            let snapshot = WidgetSnapshot.projecting(accounts)
-            if (try? widgetStore.read()) != snapshot { try widgetStore.write(snapshot) }
+            let previous = try? widgetStore.read()
+            var snapshot = WidgetSnapshot.projecting(accounts)
+            if snapshot.account != nil {
+                snapshot.listRevision = previous?.allAccounts.map(\.id) == snapshot.allAccounts.map(\.id)
+                    ? (previous?.listRevision ?? UUID()) : UUID()
+            }
+            if previous != snapshot {
+                try widgetStore.write(snapshot)
+                reloadWidgets()
+            }
             widgetPublicationFailed = false
         } catch {
             // The account commit may already be durable. Never report a login failure
@@ -67,6 +80,7 @@ final class AccountStore {
             widgetPublicationFailed = true
             // Avoid leaving a removed/replaced identity available to a fresh reader.
             try? widgetStore.remove()
+            reloadWidgets()
         }
     }
 

@@ -3,4 +3,5 @@
 <plist version="1.0"><dict>
 <key>UIBackgroundModes</key><array><string>fetch</string></array>
 <key>BGTaskSchedulerPermittedIdentifiers</key><array><string>com.iceflying.SubscriptionUsage.refresh</string></array>
+<key>CFBundleURLTypes</key><array><dict><key>CFBundleURLSchemes</key><array><string>subscriptionusage</string></array></dict></array>
 </dict></plist>

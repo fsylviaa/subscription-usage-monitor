@@ -65,7 +65,7 @@ app/
 | `Tests/UI/LaunchTests.swift` | 通过测试运行器检查启动、页面往返、操作禁用、顶部同排与重启 | 后续界面测试放 `Tests/UI/`；测试入口不作为产品页面或用户设置 |
 | `docs/` | 已确认需求、原研究证据、任务说明和验收结果 | 保留已有资料及历史；新增功能随对应任务更新进度和证据 |
 
-T33 的小组件入口位于 `Sources/Widget/SubscriptionUsageWidget.swift`，target 为 `SubscriptionUsageWidget`，随 App 嵌入安装。只编入 Shared 的展示快照、读取器、小号视图和现有资源，不依赖主 App 页面、登录流程或钥匙串。静态配置仅支持小号，无账户／窗口／刷新周期选择。timeline 的 30 分钟目标只重读共享文件，不查询网络、不保证系统准点更新；App 主动请求换图留 T35，账户点击路由留 T36。
+T33/T60组件入口位于 `Sources/Widget/SubscriptionUsageWidget.swift`，扩展随App嵌入。共享展示契约支持有效账户列表和列表版本，不共享授权或查询服务；AppIntentConfiguration支持小／中号及“组件编号”。独立选择保存为对应编号的展示ID文件，版本不符回首项；按钮不发网络请求。外观偏好共享，App数据提交后主动请求timeline更新，系统仍决定呈现时机。无账户URL打开添加入口，已有账户点击定位仍留T36。
 
 ## 各部分如何协作
 

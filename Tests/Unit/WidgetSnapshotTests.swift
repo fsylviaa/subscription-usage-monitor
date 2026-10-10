@@ -33,6 +33,80 @@ final class WidgetSnapshotTests: XCTestCase {
         return (AccountStore(fileURL: accountsURL, widgetStore: shared), shared, accountsURL)
     }
 
+    func testPublicationRequestsReloadAfterDurableChangeAndNotUnchangedLoad() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("WidgetReload-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let shared = WidgetSnapshotStore(fileURL: root.appendingPathComponent("shared.json"))
+        let probe = WidgetReloadProbe()
+        let store = AccountStore(fileURL: root.appendingPathComponent("accounts.json"), widgetStore: shared,
+            reloadWidgets: { probe.record(try? shared.read()) })
+        let a = try fixture("a"), b = try fixture("b")
+        try await store.append(a)
+        try await store.append(b)
+        let before = probe.snapshots.count
+        _ = try await store.load()
+        XCTAssertEqual(probe.snapshots.count, before)
+        try await store.reorder([b.id, a.id])
+        XCTAssertEqual(probe.snapshots.last?.account?.id, b.id)
+        XCTAssertEqual(probe.snapshots.last, try shared.read())
+        XCTAssertGreaterThan(probe.snapshots.count, before)
+    }
+
+    func testWidgetNumbersSwitchIndependentlyWithoutChangingAppOrder() async throws {
+        let (store, shared, _) = try stores()
+        let a = try fixture("a"), b = try fixture("b", used: 60), c = try fixture("c", fetched: false)
+        for account in [a, b, c] { try await store.append(account) }
+        let initial = try XCTUnwrap(shared.read())
+        let bytes = try Data(contentsOf: shared.resolvedURL())
+        XCTAssertEqual(shared.selectedAccount(in: initial, number: 1)?.id, a.id)
+        try shared.switchAccount(number: 1, displayedID: a.id, revision: initial.listRevision, direction: 1)
+        XCTAssertEqual(shared.selectedAccount(in: initial, number: 1)?.id, b.id)
+        XCTAssertEqual(shared.selectedAccount(in: initial, number: 2)?.id, a.id)
+        XCTAssertEqual(shared.selectedAccount(in: initial, number: 1)?.weekly?.amount.remainingPercent, 40)
+        try shared.switchAccount(number: 2, displayedID: a.id, revision: initial.listRevision, direction: -1)
+        XCTAssertEqual(shared.selectedAccount(in: initial, number: 2)?.id, c.id)
+        XCTAssertEqual(shared.selectedAccount(in: initial, number: 2)?.state, .notFetched)
+        XCTAssertNil(shared.selectedAccount(in: initial, number: 2)?.weekly)
+        XCTAssertEqual(try Data(contentsOf: shared.resolvedURL()), bytes)
+        let order = try await store.load().map(\.id)
+        XCTAssertEqual(order, [a.id, b.id, c.id])
+    }
+
+    func testReorderDeleteAndStaleButtonCannotRestoreOldSelection() async throws {
+        let (store, shared, _) = try stores()
+        let a = try fixture("a"), b = try fixture("b"), c = try fixture("c")
+        for account in [a, b, c] { try await store.append(account) }
+        let old = try XCTUnwrap(shared.read())
+        try shared.switchAccount(number: 1, displayedID: a.id, revision: old.listRevision, direction: 1)
+        try await store.reorder([c.id, a.id, b.id])
+        let reordered = try XCTUnwrap(shared.read())
+        XCTAssertNotEqual(reordered.listRevision, old.listRevision)
+        XCTAssertEqual(shared.selectedAccount(in: reordered, number: 1)?.id, c.id)
+        try shared.switchAccount(number: 1, displayedID: a.id, revision: old.listRevision, direction: 1)
+        XCTAssertEqual(shared.selectedAccount(in: reordered, number: 1)?.id, c.id)
+        _ = try await store.markForDeletion(c.id); try await store.finishDeletion(c.id)
+        let deleted = try XCTUnwrap(shared.read())
+        XCTAssertEqual(shared.selectedAccount(in: deleted, number: 1)?.id, a.id)
+        for id in [a.id, b.id] { _ = try await store.markForDeletion(id); try await store.finishDeletion(id) }
+        XCTAssertNil(shared.selectedAccount(in: try XCTUnwrap(shared.read()), number: 1))
+    }
+
+    func testRefreshKeepsSelectionAndSingleAccountDoesNotSwitch() async throws {
+        let (store, shared, _) = try stores()
+        let a = try fixture("a"), b = try fixture("b")
+        try await store.append(a)
+        let single = try XCTUnwrap(shared.read())
+        try shared.switchAccount(number: 1, displayedID: a.id, revision: single.listRevision, direction: 1)
+        XCTAssertEqual(shared.selectedAccount(in: single, number: 1)?.id, a.id)
+        try await store.append(b)
+        let two = try XCTUnwrap(shared.read())
+        try shared.switchAccount(number: 1, displayedID: a.id, revision: two.listRevision, direction: 1)
+        _ = try await store.load()
+        let loaded = try XCTUnwrap(shared.read())
+        XCTAssertEqual(loaded.listRevision, two.listRevision)
+        XCTAssertEqual(shared.selectedAccount(in: loaded, number: 1)?.id, b.id)
+    }
+
     func testFirstAccountBothWindowsAndReorderUseOneIdentityAndTarget() async throws {
         let (store, shared, _) = try stores()
         let a = try fixture("a"), b = try fixture("b", used: 70)
@@ -95,11 +169,11 @@ final class WidgetSnapshotTests: XCTestCase {
         try await store.finishDeletion(b.id)
         let empty = try XCTUnwrap(shared.read())
         XCTAssertEqual(empty, .empty)
-        XCTAssertEqual(empty.emptyMessage, "未连接账号，无数据")
+        XCTAssertEqual(empty.emptyMessage, "添加账户")
         XCTAssertNil(empty.clickTarget.query)
         let raw = try String(contentsOf: shared.resolvedURL(), encoding: .utf8)
         XCTAssertFalse(raw.contains("example.invalid")); XCTAssertFalse(raw.contains(a.id.uuidString))
-        print("T32 | 全部断开 | 未连接账号，无数据 | 无旧身份数值时间 | 点击额度页 | 通过")
+        print("T32 | 全部断开 | 添加账户 | 无旧身份数值时间 | 点击额度页 | 通过")
     }
 
     func testSameEmailReconnectionKeepsPositionAndOldSuccessfulValues() async throws {
@@ -175,7 +249,7 @@ final class WidgetSnapshotTests: XCTestCase {
         try await store.append(a)
         let data = try Data(contentsOf: shared.resolvedURL())
         let object = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
-        XCTAssertEqual(Set(object.keys), ["schemaVersion", "account"])
+        XCTAssertEqual(Set(object.keys), ["schemaVersion", "account", "accounts", "listRevision"])
         let account = try XCTUnwrap(object["account"] as? [String: Any])
         XCTAssertEqual(Set(account.keys), ["id", "identity", "plan", "isDemo", "state", "subscriptionObservedAt", "quotaObservedAt", "weekly", "fiveHours"])
         let raw = String(decoding: data, as: UTF8.self)
@@ -313,10 +387,20 @@ final class WidgetSnapshotLocalTests: XCTestCase {
         let actual = try XCTUnwrap(shared.read())
         let expected = WidgetSnapshot.projecting(records)
         // Boolean assertions avoid dumping real account values on a failure.
-        XCTAssertTrue(actual == expected, "正式共享字段必须全部对应已保存首账户")
+        XCTAssertTrue(actual.account == expected.account && actual.allAccounts == expected.allAccounts, "正式共享字段必须全部对应已保存账户")
         XCTAssertTrue(actual.clickTarget == expected.clickTarget, "正式点击目标必须对应首账户")
         XCTAssertTrue(try Data(contentsOf: accountURL) == before, "只读核对不能修改账户文件")
         XCTAssertTrue(try Data(contentsOf: shared.resolvedURL()) == sharedBefore, "只读核对不能补写共享文件")
         print("T32 | 正式版普通启动后的本机快照 | 首账户、套餐、双窗口、原时间与点击目标逐字段一致 | 只读检查通过")
+    }
+}
+
+private final class WidgetReloadProbe: @unchecked Sendable {
+    private let lock = NSLock()
+    private var values: [WidgetSnapshot] = []
+    var snapshots: [WidgetSnapshot] { lock.withLock { values } }
+    func record(_ snapshot: WidgetSnapshot?) {
+        guard let snapshot else { return }
+        lock.withLock { values.append(snapshot) }
     }
 }
