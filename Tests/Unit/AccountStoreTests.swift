@@ -338,3 +338,207 @@ final class AccountStoreTests: XCTestCase {
         }
     }
 }
+
+
+@MainActor
+final class SharedAutomaticRefreshTests: XCTestCase {
+    private func files() throws -> (URL, URL) {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T61-\(UUID())")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        addTeardownBlock { try FileManager.default.removeItem(at: directory) }
+        return (directory.appendingPathComponent("legacy.json"), directory.appendingPathComponent("shared/accounts.json"))
+    }
+    private func account() -> ConnectedAccount {
+        ConnectedAccount(verifiedEmail: "t61@example.invalid", scope: .init(remoteAccountID: "t61", kind: .personal), credentialRef: UUID())
+    }
+
+    func testT61ProductionMigrationPreservesBindingsAndReadableAuthorization() async throws {
+        guard ProcessInfo.processInfo.environment["T61_LIVE_MIGRATION"] == "1" else {
+            throw XCTSkip("只在升级验收时核对真实绑定和授权可读性，不查询额度")
+        }
+        struct Legacy: Decodable { let accounts: [ConnectedAccount] }
+        let legacyURL = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask,
+            appropriateFor: nil, create: false).appendingPathComponent("SubscriptionUsage/accounts.json")
+        let legacyData = try Data(contentsOf: legacyURL)
+        let original = try JSONDecoder().decode(Legacy.self, from: legacyData).accounts
+        let store = try AccountStore.applicationStore()
+        let shared = try await store.load()
+        XCTAssertTrue(original.map(\.id) == shared.map(\.id), "账户与顺序应保留；不输出身份")
+        XCTAssertTrue(zip(original, shared).allSatisfy { old, new in
+            old.credentialRef == new.credentialRef && old.generation == new.generation && old.scope == new.scope
+                && old.remoteUserID == new.remoteUserID && old.verifiedEmail == new.verifiedEmail
+        }, "绑定与授权引用保持")
+        for account in shared where !account.isDemo && account.deletionPending != true {
+            let payload = try await CredentialVault.applicationVault().load(for: .credential(account.credentialRef))
+            XCTAssertTrue(payload != nil, "原授权仍可读取，不输出内容")
+        }
+        XCTAssertTrue(try Data(contentsOf: legacyURL) == legacyData, "保留原文件")
+        print("T61 | 正式升级 | 账户顺序与绑定保持，原授权可读，原文件保留；未查询或比较真实额度")
+    }
+
+    func testMigrationPreservesIdentityAndDoesNotResurrectDeletedAccounts() async throws {
+        let (legacy, shared) = try files(), original = account()
+        try await AccountStore(fileURL: legacy).append(original)
+        let originalBytes = try Data(contentsOf: legacy)
+        let app = AccountStore(fileURL: shared, legacyURL: legacy)
+        let first = try await app.load()
+        XCTAssertEqual(first, [original])
+        let widget = AccountStore(fileURL: shared)
+        let restored = try await widget.load()
+        XCTAssertEqual(restored, first)
+        _ = try await app.markForDeletion(original.id)
+        try await app.finishDeletion(original.id)
+        let restarted = try await AccountStore(fileURL: shared, legacyURL: legacy).load()
+        XCTAssertTrue(restarted.isEmpty)
+        XCTAssertEqual(try Data(contentsOf: legacy), originalBytes)
+    }
+
+    func testUnreadableLegacyCannotMigrateAsAnEmptyInstallation() async throws {
+        let (legacy, shared) = try files()
+        // A directory at the source path produces a real read error, not ENOENT.
+        try FileManager.default.createDirectory(at: legacy, withIntermediateDirectories: true)
+        do { _ = try await AccountStore(fileURL: shared, legacyURL: legacy).load(); XCTFail("Must retain migration failure") }
+        catch { XCTAssertFalse(FileManager.default.fileExists(atPath: shared.path)) }
+    }
+
+    func testCorruptSharedFileDoesNotFallBackToObsoleteLegacyData() async throws {
+        let (legacy, shared) = try files()
+        try await AccountStore(fileURL: legacy).append(account())
+        _ = try await AccountStore(fileURL: shared, legacyURL: legacy).load()
+        try Data("broken".utf8).write(to: shared)
+        do { _ = try await AccountStore(fileURL: shared, legacyURL: legacy).load(); XCTFail("Must preserve the error") }
+        catch { XCTAssertEqual(try Data(contentsOf: shared), Data("broken".utf8)) }
+    }
+
+    func testSeparateFileDescriptorBlocksMutationAndReleasesAfterOwnerExits() async throws {
+        let (_, shared) = try files(), original = account()
+        let app = AccountStore(fileURL: shared)
+        try await app.append(original)
+        var lease: SharedFileLease? = try SharedFileLease(url: shared.appendingPathExtension("lock"))
+        do { _ = try await AccountStore(fileURL: shared).markForDeletion(original.id); XCTFail("Other writer must not enter") }
+        catch SharedFileLease.LockError.busy { }
+        withExtendedLifetime(lease) {}
+        lease = nil
+        let restored = try await app.load()
+        XCTAssertEqual(restored, [original])
+        _ = try await app.markForDeletion(original.id)
+    }
+
+    func testSuspendedQueryClaimExpiresAndOldOwnerCannotWriteOrRemoveNewClaim() async throws {
+        let (_, shared) = try files(), original = account()
+        let url = shared.appendingPathExtension("query")
+        var old: SharedQueryLease? = try SharedQueryLease(url: url, at: Date(timeIntervalSince1970: 100))
+        XCTAssertThrowsError(try SharedQueryLease(url: url, at: Date(timeIntervalSince1970: 101)))
+        let replacement = try SharedQueryLease(url: url, at: Date(timeIntervalSince1970: 191))
+        let store = AccountStore(fileURL: shared)
+        try await store.append(original)
+        let retained = try XCTUnwrap(old)
+        do {
+            _ = try await store.saveObservation(.init(planType: "free", observedAt: Date()), quota: .notApplicable,
+                for: original, validateRequest: { try retained.validate(at: Date(timeIntervalSince1970: 192)) })
+            XCTFail("Expired owner must not commit late success")
+        } catch is CancellationError { }
+        do {
+            try await store.saveQuotaFailure(.refresh, for: original,
+                validateRequest: { try retained.validate(at: Date(timeIntervalSince1970: 192)) })
+            XCTFail("Expired owner must not commit late failure")
+        } catch is CancellationError { }
+        old = nil
+        XCTAssertNoThrow(try replacement.validate(at: Date(timeIntervalSince1970: 192)))
+        let restored = try await store.load()
+        XCTAssertEqual(restored, [original])
+        let failure = try await store.quotaFailure(for: original.id)
+        XCTAssertNil(failure)
+    }
+
+    func testAppAndWidgetMergeConcurrentQueriesAndKeepNewestObservation() async throws {
+        let (_, shared) = try files(), original = account()
+        let app = AccountStore(fileURL: shared), widget = AccountStore(fileURL: shared)
+        try await app.append(original)
+        let worker = RefreshWorker(store: app)
+        let foreground = CoordinatedQuotaUpdater(store: app, service: worker)
+        let background = CoordinatedQuotaUpdater(store: widget, service: worker, opportunistic: true)
+        async let a = foreground.update(original)
+        async let b = background.update(original)
+        let values = try await [a, b]
+        XCTAssertEqual(values[0], values[1])
+        let calls = await worker.calls
+        XCTAssertEqual(calls, 1)
+    }
+
+    func testWaitingForegroundMustNotTreatAnotherProcessPartialFailureAsSuccess() async throws {
+        let (_, shared) = try files(), original = account()
+        let store = AccountStore(fileURL: shared)
+        try await store.append(original)
+        let worker = PartialObservationWorker(store: store)
+        let widget = CoordinatedQuotaUpdater(store: store, service: worker, opportunistic: true)
+        let app = CoordinatedQuotaUpdater(store: store, service: worker)
+        let first = Task { try await widget.update(original) }
+        try await Task.sleep(for: .milliseconds(50))
+        let recovered = try await app.update(original)
+        do { _ = try await first.value; XCTFail("First query must fail") } catch CodexQuotaError.failed {}
+        let calls = await worker.calls
+        XCTAssertEqual(calls, 2, "A changed plan observation does not prove a successful quota query")
+        XCTAssertEqual(recovered.quotaState, .notApplicable)
+    }
+
+    func testAutomaticFailureIsNotSuccessAndManualRetryIsNotThrottled() async throws {
+        let (_, shared) = try files()
+        var original = account()
+        original.subscription = .init(planType: "free", observedAt: Date(timeIntervalSince1970: 100))
+        original.quotaState = .notApplicable
+        let store = AccountStore(fileURL: shared)
+        try await store.append(original)
+        let worker = RefreshWorker(store: store, fail: true)
+        let automatic = CoordinatedQuotaUpdater(store: store, service: worker, opportunistic: true)
+        do { _ = try await automatic.update(original); XCTFail("Expected failure") } catch CodexQuotaError.failed {}
+        let cached = try await automatic.update(original)
+        XCTAssertEqual(cached, original)
+        let manual = CoordinatedQuotaUpdater(store: store, service: worker)
+        do { _ = try await manual.update(original); XCTFail("Expected failure") } catch CodexQuotaError.failed {}
+        let calls = await worker.calls
+        XCTAssertEqual(calls, 2)
+        let stored = try await store.load()
+        XCTAssertEqual(stored, [original])
+    }
+
+    func testDeletedBindingCannotBeQueriedByStaleWidget() async throws {
+        let (_, shared) = try files(), original = account()
+        let store = AccountStore(fileURL: shared)
+        try await store.append(original)
+        _ = try await store.markForDeletion(original.id)
+        let worker = RefreshWorker(store: store)
+        do { _ = try await CoordinatedQuotaUpdater(store: store, service: worker).update(original); XCTFail("Deleted binding") }
+        catch AccountStore.StoreError.staleQuotaContext { }
+        let calls = await worker.calls
+        XCTAssertEqual(calls, 0)
+    }
+}
+
+private actor RefreshWorker: CodexQuotaUpdating {
+    let store: AccountStore
+    let fail: Bool
+    var calls = 0
+    init(store: AccountStore, fail: Bool = false) { self.store = store; self.fail = fail }
+    func update(_ account: ConnectedAccount) async throws -> ConnectedAccount {
+        calls += 1
+        try await Task.sleep(for: .milliseconds(150))
+        if fail { throw CodexQuotaError.failed }
+        return try await store.saveObservation(.init(planType: "free", observedAt: Date()), quota: .notApplicable, for: account)
+    }
+}
+
+private actor PartialObservationWorker: CodexQuotaUpdating {
+    let store: AccountStore
+    var calls = 0
+    init(store: AccountStore) { self.store = store }
+    func update(_ account: ConnectedAccount) async throws -> ConnectedAccount {
+        calls += 1
+        let first = calls == 1
+        try await Task.sleep(for: .milliseconds(150))
+        let result = try await store.saveObservation(.init(planType: "free", observedAt: Date()),
+            quota: first ? .failed : .notApplicable, for: account)
+        if first { throw CodexQuotaError.failed }
+        return result
+    }
+}

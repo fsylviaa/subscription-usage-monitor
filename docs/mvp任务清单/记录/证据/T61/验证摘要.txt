@@ -1,0 +1,37 @@
+t61-unit.log
+	 Executed 375 tests, with 12 tests skipped and 4 failures (0 unexpected) in 72.021 (72.116) seconds
+	 Executed 375 tests, with 12 tests skipped and 4 failures (0 unexpected) in 72.021 (72.117) seconds
+t61-regression.log
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.543 (0.545) seconds
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.543 (0.545) seconds
+** TEST SUCCEEDED **
+t61-final-unit.log
+	 Executed 7 tests, with 1 test skipped and 0 failures (0 unexpected) in 0.530 (0.532) seconds
+	 Executed 48 tests, with 1 test skipped and 0 failures (0 unexpected) in 0.713 (0.723) seconds
+	 Executed 48 tests, with 1 test skipped and 0 failures (0 unexpected) in 0.713 (0.724) seconds
+** TEST SUCCEEDED **
+t61-concurrent-failure.log
+	 Executed 9 tests, with 1 test skipped and 0 failures (0 unexpected) in 0.961 (0.964) seconds
+	 Executed 9 tests, with 1 test skipped and 0 failures (0 unexpected) in 0.961 (0.964) seconds
+	 Executed 9 tests, with 1 test skipped and 0 failures (0 unexpected) in 0.961 (0.965) seconds
+** TEST SUCCEEDED **
+t61-migration.log
+T61 | 正式升级 | 账户顺序与绑定保持，原授权可读，原文件保留；未查询或比较真实额度
+** TEST EXECUTE SUCCEEDED **
+t61-desktop.log
+T61 | backgroundBaseline | desktop=90% | passed=true
+T61 | autonomous | desktop=55% | passed=true
+** TEST EXECUTE SUCCEEDED **
+t61-release-complete.log
+** BUILD SUCCEEDED **
+
+t61-lease.log
+	 Executed 94 tests, with 1 test skipped and 0 failures (0 unexpected) in 11.483 (11.510) seconds
+	 Executed 94 tests, with 1 test skipped and 0 failures (0 unexpected) in 11.483 (11.511) seconds
+** TEST SUCCEEDED **
+
+最终桌面复验
+T61 | backgroundBaseline | desktop=90% | passed=true
+T61 | autonomous | desktop=55% | passed=true
+** TEST EXECUTE SUCCEEDED **
+最终Release构建通过；18:38覆盖安装，18:38:44普通启动成功。

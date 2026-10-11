@@ -1,6 +1,6 @@
 import Foundation
 
-/// App writes; extensions only read. An unavailable group is an error, never a
+/// Both processes publish through AccountStore. An unavailable group is an error, never a
 /// successful fallback to the App's private directory or a fabricated empty list.
 struct WidgetSnapshotStore: Sendable {
     static let appGroupIdentifier = "group.com.iceflying.SubscriptionUsage"
@@ -69,7 +69,10 @@ struct WidgetSnapshotStore: Sendable {
                 $0.lastPathComponent.hasPrefix(prefix)
                     && UUID(uuidString: String($0.lastPathComponent.dropFirst(prefix.count))) != nil
             }
-            for directory in sessions { try FileManager.default.removeItem(at: directory) }
+            for directory in sessions {
+                try WidgetFixtureCredentials.remove(in: directory)
+                try FileManager.default.removeItem(at: directory)
+            }
             print("T35 CLEANUP | markerRemoved=\(!FileManager.default.fileExists(atPath: marker.path)) | removedSessions=\(sessions.count) | completed")
         }
     }

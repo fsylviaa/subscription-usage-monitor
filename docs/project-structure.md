@@ -11,7 +11,7 @@ T01–T07 的工程、页面、账户/授权存储与网络评分基础说明，
 | 工程文件 | `SubscriptionUsage.xcodeproj` |
 | 共享 Scheme | `SubscriptionUsage`；配置保存在工程的 `xcshareddata/xcschemes/`，随 Git 保存 |
 | App target | `SubscriptionUsage`；仅 iPhone，使用 SwiftUI |
-| Widget target | `SubscriptionUsageWidget`；T33 小号静态组件，与 App 同组 App Group；不含登录／网络代码 |
+| Widget target | `SubscriptionUsageWidget`；小／中号组件，与 App 同组 App Group；T61复用额度查询、网络检查及授权续期，不提供登录界面 |
 | 单元测试 target | `SubscriptionUsageTests` |
 | UI 测试 target | `SubscriptionUsageUITests` |
 | Swift 语言模式 | Swift 6 |
@@ -113,3 +113,11 @@ App 与测试 targets 共用同一工程和共享 Scheme。测试代码、固定
 共享 Scheme、工程配置、源码、资源及测试随 Git 保存；构建产物、`DerivedData`、个人 Xcode 状态和签名秘密由忽略规则排除。模拟器运行步骤与检查命令统一维护在[根 README](../README.md)，避免在多处保留不同版本的命令。
 
 T01 的重新打开、构建、启动及测试结果写入[验收记录](mvp任务清单/记录/T01-验收.md)。真机安装、个人开发团队及手机系统核验见 [T02 验收记录](mvp任务清单/记录/T02-验收.md)；此文档不代替必要的真实验证，也不将开发者自检记为用户亲验。
+
+## T61 自动更新数据路径
+
+`SharedAccountAccess.swift`提供跨进程文件互斥及进入后台合并更新请求；`AutomaticWidgetRefresh.swift`复用`CodexQuotaService`与`CodexCredentialRenewal`，按当前组件选择查询账户。Provider返回一次当前结果，并申请约30分钟后的下一次机会，非准点承诺。
+
+可信账户文件移至App Group的`Accounts/accounts.json`；首次由App校验并复制原私有账户文件，原文件保留，后续以共享文件为准。JSON仅含绑定元数据、授权引用和观察结果，不含token。共享文件损坏不会退回过时私有文件。Keychain共享沿用原App默认访问组，原授权无需复制或重新登录。原子写与稳定锁文件保护两进程修改，单账户查询占用记录合并并发请求，90秒后可由其他进程接续；旧占用失效后禁止提交成功或失败。网络等待不持有OS文件锁，自动尝试时间与成功时间分别保存。
+
+组件只查询当前选定／回退首项；多个尺寸不重复查询同一新鲜账户。自动机会按30分钟目标合并，App前台／手动刷新不受这一缓存间隔限制。失败保留可信旧额度和原成功时间。未成功取得的新数据不会展示为成功。

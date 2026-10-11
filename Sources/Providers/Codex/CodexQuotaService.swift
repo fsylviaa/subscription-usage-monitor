@@ -16,6 +16,7 @@ protocol CodexQuotaUpdating: Sendable {
 /// Queries only this App's previously verified credential and scope. Each actual
 /// request gets a fresh network gate; no cookies, desktop credentials or fallback.
 struct CodexQuotaService: CodexQuotaUpdating {
+    private var validateWrite: @Sendable () throws -> Void = {}
     private let store: AccountStore
     private let loadCredential: @Sendable (UUID) async throws -> CredentialPayload?
     private let renewal: (any CodexCredentialPreparing)?
@@ -35,6 +36,12 @@ struct CodexQuotaService: CodexQuotaUpdating {
         self.transport = transport
         self.checkNetwork = checkNetwork
         self.now = now
+    }
+
+    func validatingWrites(_ validate: @escaping @Sendable () throws -> Void) -> Self {
+        var service = self
+        service.validateWrite = validate
+        return service
     }
 
     func update(_ account: ConnectedAccount) async throws -> ConnectedAccount {
@@ -123,7 +130,7 @@ struct CodexQuotaService: CodexQuotaUpdating {
                 throw CodexQuotaError.failed
             }
             try Task.checkCancellation()
-            let updated = try await store.saveObservation(subscription, quota: observation, for: account)
+            let updated = try await store.saveObservation(subscription, quota: observation, for: account, validateRequest: validateWrite)
             // Saving the plan is not proof of quota success. The caller reloads
             // this independently committed metadata while displaying the failure.
             if case .failed = observation { throw CodexQuotaError.failed }
@@ -138,7 +145,7 @@ struct CodexQuotaService: CodexQuotaUpdating {
             let failure = error as? CodexQuotaError ?? .failed
             // Best effort: publication failure must not disguise the original result.
             // The store rejects stale bindings and newer observations atomically.
-            try? await store.saveQuotaFailure(failure == .networkBlocked ? .networkBlocked : .refresh, for: account)
+            try? await store.saveQuotaFailure(failure == .networkBlocked ? .networkBlocked : .refresh, for: account, validateRequest: validateWrite)
             try Task.checkCancellation()
             throw failure
         }

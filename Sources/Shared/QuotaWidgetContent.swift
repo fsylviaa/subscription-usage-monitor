@@ -3,7 +3,7 @@ import SwiftUI
 import WidgetKit
 import AppIntents
 
-/// Only display data enters the extension; timestamps stay in storage, not the card.
+/// Only display data enters the view; timestamps stay in storage, not the card.
 enum QuotaWidgetContent: Equatable, Sendable {
     case snapshot(WidgetSnapshot)
     case notPublished

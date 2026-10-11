@@ -95,6 +95,7 @@ final class CodexAccountBindingStoreTests: XCTestCase {
         fixture.client.afterSuccessfulAdd = {
             // The preflight found no account; make only this test's parent path
             // unavailable before the subsequent account-file transaction.
+            try? FileManager.default.removeItem(at: directory) // preflight now creates the lock directory
             try? Data("blocked".utf8).write(to: directory)
         }
         do {

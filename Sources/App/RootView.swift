@@ -104,7 +104,10 @@ struct RootView: View {
         }
         .onChange(of: scenePhase) { _, phase in
             connection.sceneActivityChanged(phase == .active)
-            if phase == .background { onBackground() }
+            if phase == .background {
+                WidgetPublicationRequests.shared.enteredBackground()
+                onBackground()
+            }
         }
         .sheet(isPresented: $connection.isPresented, onDismiss: { connection.cancel() }) {
             CodexConnectionView(flow: connection)

@@ -238,6 +238,34 @@ final class CodexQuotaUITests: XCTestCase {
     }
 
     @MainActor
+    func testT61WidgetFetchesWithoutAppQueryAndKeepsBothSizes() throws {
+        guard ProcessInfo.processInfo.environment["T61_WIDGET_ACCEPTANCE"] == "1" else {
+            throw XCTSkip("显式启用隔离桌面验收")
+        }
+        let app = XCUIApplication(), session = UUID().uuidString
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        defer {
+            app.terminate()
+            app.launchArguments = ["--t35-widget-fixture", "cleanup", session]
+            app.launch(); app.terminate()
+        }
+        for (scenario, value) in [("backgroundBaseline", "90%"), ("autonomous", "55%")] {
+            app.terminate()
+            app.launchArguments = ["--t35-widget-fixture", scenario, session, "--t35-configured-account"]
+            app.launch()
+            XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 10))
+            Thread.sleep(forTimeInterval: 3)
+            XCUIDevice.shared.press(.home)
+            showT35Desktop(springboard)
+            let predicate = NSPredicate { _, _ in self.t35BothSizesContain(value, on: springboard) }
+            let result = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: nil)], timeout: 90)
+            screenshot(springboard, "T61-桌面-\(scenario)")
+            XCTAssertEqual(result, .completed, "两种尺寸桌面数字必须实际变化")
+            print("T61 | \(scenario) | desktop=\(value) | passed=\(result == .completed)")
+        }
+    }
+
+    @MainActor
     func testT35SystemBackgroundPublishesToDesktop() throws {
         guard ProcessInfo.processInfo.environment["T35_SYSTEM_DEBUG"] == "1" else {
             throw XCTSkip("需要开发者在隔离样例下触发真机系统后台任务")

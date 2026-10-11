@@ -9,7 +9,7 @@ actor AccountPersistenceActor {
 
 /// One instance per App, assembled at the App boundary when login is connected.
 /// Each mutation reads the last committed file, then replaces the whole document atomically.
-/// Methods have no suspension points, so read-modify-write stays serialized by this actor.
+/// The actor serializes local calls; a stable file lease also serializes both processes.
 @AccountPersistenceActor
 final class AccountStore {
     enum StoreError: Error, Equatable {
@@ -31,14 +31,21 @@ final class AccountStore {
         var quotaFailures: [UUID: WidgetSnapshot.Failure]? = nil
     }
 
+    private var needsInitialTimelineRequest: Bool
+    private let legacyURL: URL?
+    private var transactionDepth = 0
+    private var transactionLease: SharedFileLease?
     private let fileURL: URL
     private let widgetStore: WidgetSnapshotStore?
     private let reloadWidgets: @Sendable () -> Void
     private(set) var widgetPublicationFailed = false
 
     /// Explicit URL keeps test data isolated from the App's real account directory.
-    nonisolated init(fileURL: URL, widgetStore: WidgetSnapshotStore? = nil,
+    nonisolated init(fileURL: URL, legacyURL: URL? = nil, widgetStore: WidgetSnapshotStore? = nil,
+                     requestInitialTimeline: Bool = false,
                      reloadWidgets: @escaping @Sendable () -> Void = {}) {
+        self.needsInitialTimelineRequest = requestInitialTimeline
+        self.legacyURL = legacyURL
         self.fileURL = fileURL
         self.widgetStore = widgetStore
         self.reloadWidgets = reloadWidgets
@@ -51,16 +58,55 @@ final class AccountStore {
             appropriateFor: nil,
             create: true
         ).appendingPathComponent("SubscriptionUsage", isDirectory: true)
-        return AccountStore(fileURL: directory.appendingPathComponent("accounts.json"), widgetStore: .appGroupStore(),
-                            reloadWidgets: { WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind) })
+        return AccountStore(fileURL: try sharedFileURL(), legacyURL: directory.appendingPathComponent("accounts.json"),
+                            widgetStore: .appGroupStore(), requestInitialTimeline: true, reloadWidgets: { WidgetPublicationRequests.shared.changed() })
+    }
+
+    nonisolated static func sharedFileURL() throws -> URL {
+        try WidgetSnapshotStore.sharedDirectory().deletingLastPathComponent()
+            .appendingPathComponent("Accounts/accounts.json")
+    }
+
+    nonisolated static func widgetAccountStore() throws -> AccountStore {
+        let url = try sharedFileURL()
+        // Only the App migrates. An extension launched before that must retain
+        // the existing display publication, not publish a fabricated empty list.
+        guard FileManager.default.fileExists(atPath: url.path) else { throw StoreError.accountNotFound }
+        return AccountStore(fileURL: url, widgetStore: .appGroupStore())
+    }
+
+    nonisolated func queryLockURL(for id: UUID) -> URL {
+        fileURL.deletingLastPathComponent().appendingPathComponent("query-\(id).lock")
+    }
+
+    private func beginTransaction() throws {
+        if transactionDepth == 0 {
+            transactionLease = try SharedFileLease(url: fileURL.appendingPathExtension("lock"))
+        }
+        transactionDepth += 1
+    }
+    private func endTransaction() {
+        transactionDepth -= 1
+        if transactionDepth == 0 { transactionLease = nil }
     }
 
     func load() throws -> [ConnectedAccount] {
+        try beginTransaction()
+        defer { endTransaction() }
         let document = try readDocument()
         let accounts = document.accounts
         // Repairs a missed publication after interruption without changing success times.
         publishWidget(accounts, failures: document.quotaFailures ?? [:])
+        // A cold launch/upgrade also wakes widgets whose previous timeline used
+        // .never, even when the saved visible data has not changed.
+        if needsInitialTimelineRequest { requestWidgetReload() }
         return accounts
+    }
+
+    func quotaFailure(for id: UUID) throws -> WidgetSnapshot.Failure? {
+        try beginTransaction()
+        defer { endTransaction() }
+        return try readDocument().quotaFailures?[id]
     }
 
     private func publishWidget(_ accounts: [ConnectedAccount], failures: [UUID: WidgetSnapshot.Failure]) {
@@ -74,7 +120,7 @@ final class AccountStore {
             }
             if previous != snapshot {
                 try widgetStore.write(snapshot)
-                if previous?.hasSameVisibleContent(as: snapshot) != true { reloadWidgets() }
+                if previous?.hasSameVisibleContent(as: snapshot) != true { requestWidgetReload() }
             }
             widgetPublicationFailed = false
         } catch {
@@ -83,8 +129,13 @@ final class AccountStore {
             widgetPublicationFailed = true
             // Avoid leaving a removed/replaced identity available to a fresh reader.
             try? widgetStore.remove()
-            reloadWidgets()
+            requestWidgetReload()
         }
+    }
+
+    private func requestWidgetReload() {
+        needsInitialTimelineRequest = false
+        reloadWidgets()
     }
 
     private func readDocument() throws -> Document {
@@ -92,7 +143,28 @@ final class AccountStore {
         do {
             data = try Data(contentsOf: fileURL)
         } catch CocoaError.fileReadNoSuchFile {
-            return Document(schemaVersion: 1, accounts: [], demoEnabled: false)
+            let document: Document
+            if let legacyURL {
+                // Only ENOENT is an empty installation. A protected/unreadable
+                // legacy file must not be mistaken for no accounts during upgrade.
+                let legacyData: Data?
+                do { legacyData = try Data(contentsOf: legacyURL) }
+                catch CocoaError.fileReadNoSuchFile { legacyData = nil }
+                if let legacyData {
+                    document = try JSONDecoder().decode(Document.self, from: legacyData)
+                    guard document.schemaVersion == 1 else { throw StoreError.unsupportedSchemaVersion(document.schemaVersion) }
+                    try validate(document.accounts)
+                } else {
+                    document = Document(schemaVersion: 1, accounts: [], demoEnabled: false)
+                }
+            } else {
+                document = Document(schemaVersion: 1, accounts: [], demoEnabled: false)
+            }
+            if legacyURL != nil {
+                try JSONEncoder().encode(document).write(to: fileURL,
+                    options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+            }
+            return document
         }
 
         let document = try JSONDecoder().decode(Document.self, from: data)
@@ -105,6 +177,8 @@ final class AccountStore {
 
     /// Raw metadata append is retained for isolated setup; verified login uses commitLogin.
     func append(_ account: ConnectedAccount) throws {
+        try beginTransaction()
+        defer { endTransaction() }
         var accounts = try load()
         accounts.append(account)
         try commit(accounts)
@@ -113,6 +187,8 @@ final class AccountStore {
     /// Cancellation is checked immediately before the atomic append. Existing
     /// rows and their order are retained in the same actor turn.
     func appendUnlessCancelled(_ account: ConnectedAccount) throws {
+        try beginTransaction()
+        defer { endTransaction() }
         try Task.checkCancellation()
         var accounts = try load()
         accounts.append(account)
@@ -123,6 +199,8 @@ final class AccountStore {
     /// Called only after a verified login's fresh credential has been saved.
     /// Email matching and replacement share one actor turn and one atomic write.
     func commitLogin(_ incoming: ConnectedAccount) throws -> ConnectedAccount {
+        try beginTransaction()
+        defer { endTransaction() }
         try Task.checkCancellation()
         var accounts = try load()
         let matches = accounts.filter { $0.hasSameConnectionEmail(as: incoming) }
@@ -168,6 +246,8 @@ final class AccountStore {
     }
 
     func finishCredentialCleanup(_ refs: [UUID], accountID: UUID) throws {
+        try beginTransaction()
+        defer { endTransaction() }
         var accounts = try load()
         guard let index = accounts.firstIndex(where: { $0.id == accountID }) else { return }
         let remaining = (accounts[index].retiredCredentialRefs ?? []).filter { !refs.contains($0) }
@@ -177,6 +257,8 @@ final class AccountStore {
 
     /// Replaces only this local record, keeping its current position and every other record intact.
     func update(_ account: ConnectedAccount) throws {
+        try beginTransaction()
+        defer { endTransaction() }
         var accounts = try load()
         guard let index = accounts.firstIndex(where: { $0.id == account.id }) else {
             throw StoreError.accountNotFound
@@ -188,6 +270,8 @@ final class AccountStore {
     /// Commits quota only to the same verified binding that began the request.
     /// No suspension between the identity check and atomic file replacement.
     func saveQuota(_ snapshot: CodexQuotaSnapshot, for expected: ConnectedAccount) throws -> ConnectedAccount {
+        try beginTransaction()
+        defer { endTransaction() }
         try Task.checkCancellation()
         var accounts = try load()
         guard let index = accounts.firstIndex(where: { $0.id == expected.id }) else {
@@ -207,7 +291,11 @@ final class AccountStore {
 
     /// A failed query can only annotate the binding and observation it started with.
     /// It must not overwrite a newer success, a reconnected identity, or deletion.
-    func saveQuotaFailure(_ failure: WidgetSnapshot.Failure, for expected: ConnectedAccount) throws {
+    func saveQuotaFailure(_ failure: WidgetSnapshot.Failure, for expected: ConnectedAccount,
+                          validateRequest: @Sendable () throws -> Void = {}) throws {
+        try beginTransaction()
+        defer { endTransaction() }
+        try validateRequest()
         try Task.checkCancellation()
         let document = try readDocument()
         guard let current = document.accounts.first(where: { $0.id == expected.id }),
@@ -231,6 +319,8 @@ final class AccountStore {
     /// A failed cleanup may leave an old credential physically present; it still cannot renew.
     func replaceCredential(_ expectedPayload: CredentialPayload, with replacement: CredentialPayload,
                            for expected: ConnectedAccount, vault: CredentialVault) throws -> Bool {
+        try beginTransaction()
+        defer { endTransaction() }
         guard let current = try load().first(where: { $0.id == expected.id }),
               Self.isCurrentBinding(current, expected) else { throw StoreError.staleQuotaContext }
         return try vault.replace(ifMatching: expectedPayload, with: replacement,
@@ -246,7 +336,11 @@ final class AccountStore {
     /// Commit reliable subscription metadata even when quota interpretation fails.
     /// A plan change invalidates old quota; an ordinary same-plan failure preserves it.
     func saveObservation(_ subscription: AccountSubscription, quota: QuotaObservation,
-                         for expected: ConnectedAccount) throws -> ConnectedAccount {
+                         for expected: ConnectedAccount,
+                         validateRequest: @Sendable () throws -> Void = {}) throws -> ConnectedAccount {
+        try beginTransaction()
+        defer { endTransaction() }
+        try validateRequest()
         try Task.checkCancellation()
         var accounts = try load()
         guard let index = accounts.firstIndex(where: { $0.id == expected.id }) else {
@@ -290,6 +384,8 @@ final class AccountStore {
 
     /// Requires an exact permutation: sorting cannot silently add, remove or duplicate accounts.
     func reorder(_ ids: [UUID]) throws {
+        try beginTransaction()
+        defer { endTransaction() }
         let accounts = try load()
         guard ids.count == accounts.count, Set(ids) == Set(accounts.map(\.id)) else {
             throw StoreError.invalidOrder
@@ -327,6 +423,8 @@ final class AccountStore {
     }
 
     func markForDeletion(_ id: UUID) throws -> ConnectedAccount? {
+        try beginTransaction()
+        defer { endTransaction() }
         var accounts = try load()
         guard let index = accounts.firstIndex(where: { $0.id == id }) else { return nil }
         accounts[index].deletionPending = true
@@ -335,15 +433,23 @@ final class AccountStore {
     }
 
     func finishDeletion(_ id: UUID) throws {
+        try beginTransaction()
+        defer { endTransaction() }
         let accounts = try load()
         guard let account = accounts.first(where: { $0.id == id }) else { return }
         guard account.deletionPending == true else { throw StoreError.staleQuotaContext }
         try commit(accounts.filter { $0.id != id })
     }
 
-    func demoModeEnabled() throws -> Bool { try readDocument().demoEnabled ?? false }
+    func demoModeEnabled() throws -> Bool {
+        try beginTransaction()
+        defer { endTransaction() }
+        return try readDocument().demoEnabled ?? false
+    }
 
     func setDemoMode(_ enabled: Bool) throws -> [ConnectedAccount] {
+        try beginTransaction()
+        defer { endTransaction() }
         let accounts = try load().filter { enabled || !$0.isDemo }
         // Mode and cleanup commit together: a crash cannot leave disabled samples behind.
         try commit(accounts, demoEnabled: enabled)
@@ -351,6 +457,8 @@ final class AccountStore {
     }
 
     func addDemo(now: Date) throws -> ConnectedAccount {
+        try beginTransaction()
+        defer { endTransaction() }
         guard try demoModeEnabled() else { throw StoreError.accountNotFound }
         let id = UUID()
         let suffix = id.uuidString.prefix(6).lowercased()
@@ -363,6 +471,8 @@ final class AccountStore {
     }
 
     func refreshDemo(_ expected: ConnectedAccount, now: Date) throws -> ConnectedAccount {
+        try beginTransaction()
+        defer { endTransaction() }
         try Task.checkCancellation()
         guard expected.isDemo, try demoModeEnabled(),
               let account = try load().first(where: { $0.id == expected.id && $0.isDemo }) else {

@@ -46,6 +46,22 @@ final class WidgetSnapshotTests: XCTestCase {
         }
     }
 
+    func testColdLaunchSeedsNewTimelineOnceWhenPublicationIsUnchanged() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("T61-seed-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let file = root.appendingPathComponent("accounts.json")
+        let shared = WidgetSnapshotStore(fileURL: root.appendingPathComponent("shared.json"))
+        let original = try fixture("seed")
+        try await AccountStore(fileURL: file, widgetStore: shared).append(original)
+        let probe = WidgetReloadProbe()
+        let app = AccountStore(fileURL: file, widgetStore: shared, requestInitialTimeline: true,
+            reloadWidgets: { probe.record(try? shared.read()) })
+        _ = try await app.load()
+        _ = try await app.load()
+        XCTAssertEqual(probe.snapshots.count, 1)
+        XCTAssertEqual(probe.snapshots[0].account?.id, original.id)
+    }
+
     func testPublicationRequestsReloadAfterDurableChangeAndNotUnchangedLoad() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("WidgetReload-\(UUID())")
         defer { try? FileManager.default.removeItem(at: root) }
@@ -529,9 +545,7 @@ final class WidgetSnapshotLocalTests: XCTestCase {
         guard ProcessInfo.processInfo.environment["T32_LOCAL_SHARED_CHECK"] == "1" else {
             throw XCTSkip("正式本机快照核对须显式启用；默认只运行隔离样例。")
         }
-        let accountURL = try FileManager.default.url(for: .applicationSupportDirectory,
-            in: .userDomainMask, appropriateFor: nil, create: false)
-            .appendingPathComponent("SubscriptionUsage/accounts.json")
+        let accountURL = try AccountStore.sharedFileURL()
         let before = try Data(contentsOf: accountURL)
         let shared = WidgetSnapshotStore.appGroupStore()
         let sharedBefore = try Data(contentsOf: shared.resolvedURL())

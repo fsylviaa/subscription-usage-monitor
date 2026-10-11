@@ -182,7 +182,7 @@ enum CodexConnectionUITestSupport {
            arguments.indices.contains(index + 1), let id = UUID(uuidString: arguments[index + 1]) {
             accountIDs[1] = id
         }
-        let fixture = T26BatchFixture(scenario: scenario == "failure" ? "blocked" : (scenario == "backgroundBaseline" ? "widget-background" : "success"),
+        let fixture = T26BatchFixture(scenario: scenario == "failure" ? "blocked" : (["backgroundBaseline", "autonomous"].contains(scenario) ? "widget-background" : "success"),
             widgetAccountIDs: accountIDs, useConfiguredAccount: useConfiguredAccount, widgetStore: shared, reloadWidgets: {
                 let amounts = (try? shared.read()?.allAccounts.map { "\($0.identity)=\($0.weekly?.amount.remainingPercent ?? -1)" }) ?? []
                 print("T35 | 请求组件更新 | \(Date().ISO8601Format()) | \(amounts.joined(separator: ","))")
@@ -198,6 +198,14 @@ enum CodexConnectionUITestSupport {
                 try WidgetSnapshotStore.setValidationSession(session)
                 await flow.loadAccounts()
                 switch scenario {
+                case "autonomous":
+                    let directory = try shared.resolvedURL().deletingLastPathComponent()
+                    let widgetAccounts = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"), widgetStore: shared)
+                    for account in original {
+                        try await widgetAccounts.append(account)
+                        try await WidgetFixtureCredentials.prepare(account, in: directory)
+                    }
+                    try Data("T61".utf8).write(to: directory.appendingPathComponent("T61-enabled"), options: .atomic)
                 case "single": flow.refreshQuota(for: original[0].id)
                 case "all", "failure": flow.refreshAllQuota()
                 case "reorder": try await fixture.store.reorder(original.reversed().map(\.id))

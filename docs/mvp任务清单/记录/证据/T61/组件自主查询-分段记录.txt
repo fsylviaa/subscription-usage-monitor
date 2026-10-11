@@ -1,0 +1,62 @@
+T35 TRACE | 2026-10-11T10:24:50Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T10:24:50Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T10:24:50Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T10:24:50Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T10:24:50Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T10:24:50Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T10:24:50Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T10:24:50Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T10:24:50Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T10:24:50Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T10:24:50Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T10:24:50Z | timeline.return | family=systemMedium remaining=90.0
+T35 TRACE | 2026-10-11T10:24:50Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T10:24:50Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T10:24:50Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T10:24:50Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T10:24:56Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T10:24:56Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T10:24:56Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T10:24:56Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T10:24:56Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T10:24:56Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T10:24:56Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T10:24:56Z | timeline.return | family=systemMedium remaining=90.0
+T35 TRACE | 2026-10-11T10:24:56Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T10:24:56Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T10:24:56Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T10:24:56Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T10:25:09Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T10:25:09Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T10:25:09Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T10:25:09Z | reload.request |
+T35 TRACE | 2026-10-11T10:25:09Z | reload.return |
+T35 TRACE | 2026-10-11T10:25:09Z | reload.request | batch-1@example.invalid=90.0
+T35 TRACE | 2026-10-11T10:25:09Z | reload.return |
+T35 TRACE | 2026-10-11T10:25:09Z | reload.request | batch-1@example.invalid=90.0,batch-2@example.invalid=90.0
+T35 TRACE | 2026-10-11T10:25:09Z | reload.return |
+T35 TRACE | 2026-10-11T10:25:09Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T10:25:09Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T10:25:09Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T10:25:09Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T10:25:15Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T10:25:15Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T10:25:15Z | widget.keychain | isolated=true found=true
+T35 TRACE | 2026-10-11T10:25:15Z | widget.networkGate | isolated=true
+T35 TRACE | 2026-10-11T10:25:16Z | widget.transport | isolated=true used=45
+T35 TRACE | 2026-10-11T10:25:16Z | widget.keychain | isolated=true found=true
+T35 TRACE | 2026-10-11T10:25:16Z | widget.queryFinished | isolated=true
+T35 TRACE | 2026-10-11T10:25:16Z | provider.read | remaining=55.0 unavailable=false
+T35 TRACE | 2026-10-11T10:25:16Z | timeline.return | family=systemSmall remaining=55.0
+T35 TRACE | 2026-10-11T10:25:16Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T10:25:16Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T10:25:16Z | widget.queryFinished | isolated=true
+T35 TRACE | 2026-10-11T10:25:16Z | provider.read | remaining=55.0 unavailable=false
+T35 TRACE | 2026-10-11T10:25:16Z | timeline.return | family=systemMedium remaining=55.0
+T35 TRACE | 2026-10-11T10:25:16Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T10:25:16Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T10:25:16Z | widget.queryFinished | isolated=true
+T35 TRACE | 2026-10-11T10:25:16Z | provider.read | remaining=55.0 unavailable=false
+T35 TRACE | 2026-10-11T10:25:16Z | timeline.return | family=systemSmall remaining=55.0
+T35 CLEANUP | markerRemoved=true | removedSessions=1 | completed
+T35 CLEANUP | isolatedBackgroundJournalRemoved=true | removedBatchFixtures=2
