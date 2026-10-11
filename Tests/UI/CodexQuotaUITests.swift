@@ -2,6 +2,56 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT35ResizeFromContextMenu() throws {
+        guard ProcessInfo.processInfo.environment["T35_WIDGET_RESIZE"] == "1" else {
+            throw XCTSkip("显式启用尺寸切换复验；会调整已有组件尺寸")
+        }
+        let app = XCUIApplication(), session = UUID().uuidString
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        defer {
+            app.terminate()
+            app.launchArguments = ["--t35-widget-fixture", "cleanup", session]
+            app.launch(); app.terminate()
+        }
+        app.launchArguments = ["--t35-widget-fixture", "baseline", session]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 10))
+        XCUIDevice.shared.press(.home)
+        let cards = springboard.icons.matching(NSPredicate(format: "label == %@ AND value == %@", "订阅用量", "小组件"))
+        if !cards.firstMatch.waitForExistence(timeout: 5) {
+            springboard.swipeLeft()
+            if !cards.firstMatch.waitForExistence(timeout: 3) {
+                for _ in 0..<3 {
+                    springboard.swipeRight()
+                    if cards.firstMatch.waitForExistence(timeout: 2) { break }
+                }
+            }
+        }
+        XCTAssertTrue(springboard.staticTexts["batch-1"].firstMatch.waitForExistence(timeout: 15),
+                      "截图前必须已显示隔离样例")
+        let toMedium = ProcessInfo.processInfo.environment["T35_RESIZE_TARGET"] != "small"
+        // Width distinguishes the actual SpringBoard icon from the enlarged menu preview.
+        let visibleCards = { cards.allElementsBoundByIndex.filter { $0.frame.width > 100 && $0.frame.height > 100 } }
+        let candidates = visibleCards().filter { ($0.frame.width < 230) == toMedium }
+        let card = try XCTUnwrap(candidates.first, "需要已有待切换尺寸的组件")
+        let before = card.frame
+        let targetCount = { visibleCards().filter { ($0.frame.width > 230) == toMedium }.count }
+        let countBefore = targetCount()
+        screenshot(springboard, "T35-尺寸切换前")
+        print("T35 RESIZE BEFORE targetMedium=\(toMedium) frame=\(before) targetCount=\(countBefore)")
+        card.press(forDuration: 0.7)
+        let option = springboard.buttons[toMedium ? "中尺寸小组件" : "小型小组件"]
+        XCTAssertTrue(option.waitForExistence(timeout: 5))
+        screenshot(springboard, "T35-尺寸菜单")
+        option.tap()
+        let changed = NSPredicate { _, _ in targetCount() == countBefore + 1 }
+        let result = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: changed, object: nil)], timeout: 15)
+        screenshot(springboard, toMedium ? "T35-点中号后" : "T35-点小号后")
+        print("T35 RESIZE AFTER targetMedium=\(toMedium) frames=\(visibleCards().map(\.frame))")
+        XCTAssertEqual(result, .completed, "必须核对实际尺寸变化，不能只判断菜单消失")
+    }
+
+    @MainActor
     func testT35DesktopUsesIsolatedSharedSnapshot() throws {
         guard ProcessInfo.processInfo.environment["T35_WIDGET_DESKTOP"] == "1" else {
             throw XCTSkip("需要已放置两种桌面组件；由开发者显式启用隔离验收")

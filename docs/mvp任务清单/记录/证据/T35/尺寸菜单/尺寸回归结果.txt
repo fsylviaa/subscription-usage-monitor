@@ -1,0 +1,30 @@
+2026-10-11 T35 尺寸菜单回归：仅隔离虚构账户；本文件为本地运行日志摘录。
+手机重启后由用户亲验双向通过，没有冒称为自动化复跑。
+WidgetBundle试验已撤回，正式产品源码保持原实现。
+
+T35-Resize-Device-Baseline.log
+T35 RESIZE BEFORE Attributes: Application, 0x10b3c1f40, pid: 194, label: ' '
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT35ResizeFromContextMenu]' failed (162.056 seconds).
+** TEST EXECUTE FAILED **
+
+T35-Resize-Fresh.log
+T35 RESIZE BEFORE Attributes: Application, 0x117477980, pid: 38729, label: ' '
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT35ResizeFromContextMenu]' passed (136.679 seconds).
+** TEST EXECUTE SUCCEEDED **
+
+T35-Resize-Bundle-Device.log
+T35 RESIZE BEFORE Attributes: Application, 0x118f9df40, pid: 194, label: ' '
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT35ResizeFromContextMenu]' failed (160.959 seconds).
+** TEST EXECUTE FAILED **
+
+T35-Resize-AfterRestart.log
+T35 RESIZE BEFORE Attributes: Application, 0x116c1f700, pid: 65473, label: ' '
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT35ResizeFromContextMenu]' passed (143.099 seconds).
+** TEST EXECUTE SUCCEEDED **
+
+T35-Resize-Sim-Reverse.log
+T35 RESIZE BEFORE targetMedium=false frame=(24.33333333333337, 88.00000000000001, 353.6666666666667, 191.00000000000006) targetCount=0
+T35 RESIZE AFTER targetMedium=false frames=[(24.33333333333337, 88.00000000000001, 168.33333333333334, 191.00000000000006), (24.33333333333337, 288.6666666666667, 353.6666666666667, 191.0), (24.33333333333337, 489.3333333333333, 353.6666666666667, 190.99999999999994)]
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT35ResizeFromContextMenu]' passed (153.037 seconds).
+** TEST EXECUTE SUCCEEDED **
+

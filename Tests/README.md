@@ -157,3 +157,7 @@ T30的四项功能测试覆盖冷后台只恢复缓存（登录事务读取0次�
 桌面检查记录单卡／全量／前台、失败旧值、排序、删除、作用域变化、全部删除及后台路径的实际图片。`background` 场景是直接调用路径，不是系统后台执行。`testT35SystemBackgroundPublishesToDesktop` 默认跳过，只有 UI Runner 的 `T35_SYSTEM_DEBUG=1` 时启用：准备相同隔离样例并退后台，由开发者用 Apple 官方调试命令触发 BGTaskScheduler，核对 `background=true`、两户成功及桌面换图；不可用它代替 T53 自然事件。
 
 实际运行、图片、请求／观察时间与未通过项见 [T35验收](../docs/mvp任务清单/记录/T35-验收.md)。
+
+### T35 长按菜单尺寸回归
+
+`CodexQuotaUITests/testT35ResizeFromContextMenu` 默认跳过；只在明确授权调整组件尺寸时设置 UI Runner 的 `T35_WIDGET_RESIZE=1`。默认检查已有小号 → 系统长按菜单 → 中号，`T35_RESIZE_TARGET=small` 检查反向。采用T35独立样例，不修改正式账户文件、授权或系统保存的账户选择；正常结束清理样例。检查SpringBoard实际组件宽度和目标尺寸数量，菜单消失不算通过。测试会改变所测组件尺寸，不能用来宣称未改桌面布局；源码中的230点只用于当前手机／模拟器的尺寸识别，不是产品布局尺寸。长按菜单的系统动画空闲等待可能各耗时60秒，保留失败和截图，不以增加等待伪造成功。
