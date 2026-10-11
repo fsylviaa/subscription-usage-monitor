@@ -2,6 +2,97 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT35DesktopUsesIsolatedSharedSnapshot() throws {
+        guard ProcessInfo.processInfo.environment["T35_WIDGET_DESKTOP"] == "1" else {
+            throw XCTSkip("需要已放置两种桌面组件；由开发者显式启用隔离验收")
+        }
+        let app = XCUIApplication()
+        let session = UUID().uuidString
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        defer {
+            app.terminate()
+            app.launchArguments = ["--t35-widget-fixture", "cleanup", session]
+            app.launch()
+            app.terminate()
+        }
+        var scenarios = ["baseline", "single", "all", "foreground", "failure", "reorder", "remove", "scope", "empty", "background"]
+        if ProcessInfo.processInfo.environment["T35_SYSTEM_DEBUG"] == "1" { scenarios.append("systemBackground") }
+        for scenario in scenarios {
+            app.terminate()
+            app.launchArguments = ["--t35-widget-fixture", scenario, session]
+            if scenario == "systemBackground" { app.launchArguments.append("--t30-background-debug") }
+            app.launch()
+            XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 10))
+            Thread.sleep(forTimeInterval: 2)
+            XCUIDevice.shared.press(.home)
+            if scenario == "systemBackground" {
+                print("T35 DEBUG READY background")
+                Thread.sleep(forTimeInterval: 35)
+            }
+            let expected = scenario == "empty" ? "添加账户" : (scenario == "reorder" || scenario == "remove" ? "batch-2" : "batch-1")
+            let labels = springboard.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", expected))
+            if !labels.firstMatch.waitForExistence(timeout: 5) {
+                for _ in 0..<3 {
+                    springboard.swipeRight()
+                    if labels.firstMatch.waitForExistence(timeout: 2) { break }
+                }
+            }
+            guard labels.firstMatch.waitForExistence(timeout: 15) else {
+                screenshot(springboard, "T35-桌面未发现样例-\(scenario)")
+                XCTFail("桌面尚未显示隔离组件样例，不能视为换图通过")
+                return
+            }
+            let value: String
+            switch scenario {
+            case "single", "all", "foreground", "background", "systemBackground": value = "55%"
+            case "failure": value = "网络不达标，无法更新"
+            case "reorder", "remove": value = "70%"
+            case "scope": value = "尚未获取额度"
+            case "empty": value = "添加账户"
+            default: value = "90%"
+            }
+            XCTAssertTrue(springboard.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", value))
+                .firstMatch.waitForExistence(timeout: scenario == "systemBackground" ? 120 : 15), "桌面应采用本轮值而非只更新身份")
+            // Keep the actual two-size surface for visual review, not just reader assertions.
+            Thread.sleep(forTimeInterval: 2)
+            screenshot(springboard, "T35-桌面-\(scenario)")
+            print("T35 | 桌面观察 | \(scenario) | \(Date().ISO8601Format())")
+            if scenario == "systemBackground" {
+                app.activate()
+                XCTAssertEqual(app.staticTexts["quota.title"].value as? String, "T30 debug background=true success=2 failed=0")
+                XCUIDevice.shared.press(.home)
+            }
+        }
+    }
+
+    @MainActor
+    func testT35SystemBackgroundPublishesToDesktop() throws {
+        guard ProcessInfo.processInfo.environment["T35_SYSTEM_DEBUG"] == "1" else {
+            throw XCTSkip("需要开发者在隔离样例下触发真机系统后台任务")
+        }
+        let app = XCUIApplication(), session = UUID().uuidString
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        defer {
+            app.terminate()
+            app.launchArguments = ["--t35-widget-fixture", "cleanup", session]
+            app.launch(); app.terminate()
+        }
+        app.launchArguments = ["--t35-widget-fixture", "baseline", session, "--t30-background-debug"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 10))
+        Thread.sleep(forTimeInterval: 2)
+        XCUIDevice.shared.press(.home)
+        print("T35 DEBUG READY background")
+        Thread.sleep(forTimeInterval: 35)
+        XCTAssertTrue(springboard.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "55%"))
+            .firstMatch.waitForExistence(timeout: 15))
+        screenshot(springboard, "T35-真机系统后台后桌面")
+        print("T35 | 系统后台后桌面观察 | \(Date().ISO8601Format())")
+        app.activate()
+        XCTAssertEqual(app.staticTexts["quota.title"].value as? String, "T30 debug background=true success=2 failed=0")
+    }
+
+    @MainActor
     func testT31SystemExpirationKeepsPartialCacheAndBackgroundRunsAgain() throws {
         guard ProcessInfo.processInfo.environment["T30_SYSTEM_DEBUG"] == "1" else {
             throw XCTSkip("需连接手机调试器；隔离样例，不是自然执行")

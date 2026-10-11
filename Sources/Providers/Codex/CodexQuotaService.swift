@@ -135,8 +135,12 @@ struct CodexQuotaService: CodexQuotaUpdating {
             #if DEBUG
             print("T12 | 查询未完成 | 阶段：\(stage)") // Fixed stage only; never raw responses/errors.
             #endif
-            if let failure = error as? CodexQuotaError { throw failure }
-            throw CodexQuotaError.failed
+            let failure = error as? CodexQuotaError ?? .failed
+            // Best effort: publication failure must not disguise the original result.
+            // The store rejects stale bindings and newer observations atomically.
+            try? await store.saveQuotaFailure(failure == .networkBlocked ? .networkBlocked : .refresh, for: account)
+            try Task.checkCancellation()
+            throw failure
         }
     }
 

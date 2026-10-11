@@ -1,0 +1,9 @@
+首次真机调试：后台完成的界面断言通过，但观察窗口内桌面仍90%，未见55%，因此本项未通过；非自然执行。时间为UTC。
+T35 | 请求组件更新 | 2026-10-11T03:20:13Z
+T35 | 请求组件更新 | 2026-10-11T03:20:13Z
+T35 | 请求组件更新 | 2026-10-11T03:20:13Z
+T35 | 桌面样例准备完成 | baseline | 2026-10-11T03:20:13Z
+T35 | 请求组件更新 | 2026-10-11T03:20:29Z
+T35 | 请求组件更新 | 2026-10-11T03:20:29Z
+/Users/iceflying/codex/订阅用量监控/app/Tests/UI/CodexQuotaUITests.swift:75: error: -[SubscriptionUsageUITests.CodexQuotaUITests testT35SystemBackgroundPublishesToDesktop] : XCTAssertTrue failed
+T35 | 系统后台后桌面观察 | 2026-10-11T03:21:09Z

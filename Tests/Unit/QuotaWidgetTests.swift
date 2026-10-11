@@ -105,7 +105,18 @@ final class QuotaWidgetTests: XCTestCase {
     }
 
     func testSmallWidgetIsolatedRendersLightDarkAndMissingFields() throws {
+        var cachedFailure = fixture()
+        cachedFailure = .init(schemaVersion: 1, account: cachedFailure.account.map { value in
+            var value = value; value.failure = .refresh; return value
+        })
+        var blocked = try XCTUnwrap(cachedFailure.account)
+        blocked.failure = .networkBlocked
+        var firstFailure = try XCTUnwrap(fixture(state: .notFetched).account)
+        firstFailure.failure = .refresh
         let cases: [(String, QuotaWidgetContent)] = [
+            ("旧值刷新失败", .snapshot(cachedFailure)),
+            ("旧值网络不达标", .snapshot(.init(schemaVersion: 1, account: blocked))),
+            ("首次获取失败", .snapshot(.init(schemaVersion: 1, account: firstFailure))),
             ("70-85", .snapshot(fixture())),
             ("0-100", .snapshot(fixture(weekly: .limited(usedPercent: 100), five: .limited(usedPercent: 0)))),
             ("长标识-缺窗口时间", .snapshot(fixture(five: .unknown, reset: false, long: true))),

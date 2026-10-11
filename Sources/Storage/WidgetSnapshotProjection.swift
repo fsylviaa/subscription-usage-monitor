@@ -2,8 +2,12 @@ import Foundation
 
 /// Mapping lives in the App target. The extension needs only the display contract.
 extension WidgetSnapshot {
-    static func projecting(_ accounts: [ConnectedAccount]) -> WidgetSnapshot {
-        let values = accounts.filter { $0.deletionPending != true }.compactMap { projectAccount($0) }
+    static func projecting(_ accounts: [ConnectedAccount], failures: [UUID: Failure] = [:]) -> WidgetSnapshot {
+        let values = accounts.filter { $0.deletionPending != true }.compactMap { value -> Account? in
+            guard var projected = projectAccount(value) else { return nil }
+            projected.failure = failures[value.id]
+            return projected
+        }
         guard let first = values.first else { return .empty }
         return WidgetSnapshot(schemaVersion: 1, account: first, accounts: values)
     }

@@ -27,6 +27,8 @@ final class AccountStore {
         /// Array position is the single source of list order; no competing displayOrder field.
         var accounts: [ConnectedAccount]
         var demoEnabled: Bool?
+        // Failure is separate from trusted measurements and their success times.
+        var quotaFailures: [UUID: WidgetSnapshot.Failure]? = nil
     }
 
     private let fileURL: URL
@@ -54,17 +56,18 @@ final class AccountStore {
     }
 
     func load() throws -> [ConnectedAccount] {
-        let accounts = try readDocument().accounts
+        let document = try readDocument()
+        let accounts = document.accounts
         // Repairs a missed publication after interruption without changing success times.
-        publishWidget(accounts)
+        publishWidget(accounts, failures: document.quotaFailures ?? [:])
         return accounts
     }
 
-    private func publishWidget(_ accounts: [ConnectedAccount]) {
+    private func publishWidget(_ accounts: [ConnectedAccount], failures: [UUID: WidgetSnapshot.Failure]) {
         guard let widgetStore else { return }
         do {
             let previous = try? widgetStore.read()
-            var snapshot = WidgetSnapshot.projecting(accounts)
+            var snapshot = WidgetSnapshot.projecting(accounts, failures: failures)
             if snapshot.account != nil {
                 snapshot.listRevision = previous?.allAccounts.map(\.id) == snapshot.allAccounts.map(\.id)
                     ? (previous?.listRevision ?? UUID()) : UUID()
@@ -198,8 +201,23 @@ final class AccountStore {
         accounts[index].quotaSnapshot = snapshot
         accounts[index].quotaState = .available
         try Task.checkCancellation()
-        try commit(accounts)
+        try commit(accounts, clearingFailures: [expected.id])
         return accounts[index]
+    }
+
+    /// A failed query can only annotate the binding and observation it started with.
+    /// It must not overwrite a newer success, a reconnected identity, or deletion.
+    func saveQuotaFailure(_ failure: WidgetSnapshot.Failure, for expected: ConnectedAccount) throws {
+        try Task.checkCancellation()
+        let document = try readDocument()
+        guard let current = document.accounts.first(where: { $0.id == expected.id }),
+              Self.isCurrentBinding(current, expected),
+              current.quotaSnapshot == expected.quotaSnapshot,
+              current.subscription == expected.subscription else { throw StoreError.staleQuotaContext }
+        var failures = document.quotaFailures ?? [:]
+        failures[expected.id] = failure
+        try Task.checkCancellation()
+        try commit(document.accounts, failures: failures)
     }
 
     private static func isCurrentBinding(_ current: ConnectedAccount, _ expected: ConnectedAccount) -> Bool {
@@ -260,7 +278,13 @@ final class AccountStore {
         }
         accounts[index] = current
         try Task.checkCancellation()
-        try commit(accounts)
+        if case .failed = quota {
+            var failures = try readDocument().quotaFailures ?? [:]
+            failures[expected.id] = .refresh
+            try commit(accounts, failures: failures)
+        } else {
+            try commit(accounts, clearingFailures: [expected.id])
+        }
         return current
     }
 
@@ -364,17 +388,27 @@ final class AccountStore {
         return result
     }
 
-    private func commit(_ accounts: [ConnectedAccount], demoEnabled: Bool? = nil) throws {
+    private func commit(_ accounts: [ConnectedAccount], demoEnabled: Bool? = nil,
+                        failures: [UUID: WidgetSnapshot.Failure]? = nil,
+                        clearingFailures: Set<UUID> = []) throws {
         try validate(accounts)
+        let previous = try readDocument()
+        let retainedFailures = (failures ?? previous.quotaFailures ?? [:]).filter { id, _ in
+            guard !clearingFailures.contains(id),
+                  let current = accounts.first(where: { $0.id == id && $0.deletionPending != true }),
+                  let old = previous.accounts.first(where: { $0.id == id }),
+                  Self.isCurrentBinding(current, old) else { return false }
+            return failures != nil || (current.quotaSnapshot == old.quotaSnapshot && current.subscription == old.subscription)
+        }
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
-        let data = try encoder.encode(Document(schemaVersion: 1, accounts: accounts, demoEnabled: try demoEnabled ?? demoModeEnabled()))
+        let data = try encoder.encode(Document(schemaVersion: 1, accounts: accounts, demoEnabled: demoEnabled ?? previous.demoEnabled, quotaFailures: retainedFailures.isEmpty ? nil : retainedFailures))
         try FileManager.default.createDirectory(
             at: fileURL.deletingLastPathComponent(),
             withIntermediateDirectories: true
         )
         // Failure propagates; there is no optimistic cache or success timestamp to roll back.
         try data.write(to: fileURL, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
-        publishWidget(accounts)
+        publishWidget(accounts, failures: retainedFailures)
     }
 }

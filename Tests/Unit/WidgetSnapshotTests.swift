@@ -52,6 +52,97 @@ final class WidgetSnapshotTests: XCTestCase {
         XCTAssertGreaterThan(probe.snapshots.count, before)
     }
 
+    func testT35FailurePersistsSeparatelyClearsOnSuccessAndKeepsOtherAccount() async throws {
+        let (store, shared, url) = try stores()
+        let a = try fixture("a"), b = try fixture("b", used: 60)
+        try await store.append(a); try await store.append(b)
+        let old = try XCTUnwrap(shared.read())
+        try await store.saveQuotaFailure(.networkBlocked, for: a)
+        let failed = QuotaWidgetContent.read(from: shared)
+        XCTAssertEqual(failed.message, "网络不达标，无法更新")
+        XCTAssertEqual(failed.account?.weekly, old.account?.weekly)
+        XCTAssertEqual(failed.account?.quotaObservedAt, time)
+        XCTAssertNil(failed.selecting(accountID: b.id.uuidString).message)
+        let records = try await store.load()
+        XCTAssertEqual(records, [a, b], "失败不改可信账户与成功快照")
+        try shared.remove()
+        _ = try await AccountStore(fileURL: url, widgetStore: shared).load()
+        XCTAssertEqual(QuotaWidgetContent.read(from: shared).message, failed.message)
+        _ = try await store.saveObservation(.init(planType: "Plus", observedAt: time.addingTimeInterval(10)),
+            quota: .available(quota(a, used: 10, at: time.addingTimeInterval(10))), for: a)
+        XCTAssertNil(QuotaWidgetContent.read(from: shared).message)
+        XCTAssertEqual(try shared.read()?.account?.weekly?.amount.remainingPercent, 90)
+    }
+
+    func testT35FirstFailureFreeAndReconnectionDoNotBorrowValuesOrKeepOldError() async throws {
+        let (store, shared, _) = try stores()
+        let a = try fixture("a", fetched: false), b = try fixture("b")
+        try await store.append(a); try await store.append(b)
+        try await store.saveQuotaFailure(.refresh, for: a)
+        XCTAssertEqual(QuotaWidgetContent.read(from: shared).message, "获取失败")
+        XCTAssertNil(try shared.read()?.account?.weekly)
+        let free = try await store.saveObservation(.init(planType: "Free", observedAt: time), quota: .notApplicable, for: a)
+        XCTAssertNil(QuotaWidgetContent.read(from: shared).message)
+        try await store.saveQuotaFailure(.refresh, for: free)
+        XCTAssertEqual(QuotaWidgetContent.read(from: shared).message, "刷新失败")
+        XCTAssertNil(try shared.read()?.account?.weekly)
+        let incoming = try fixture("a", fetched: false)
+        _ = try await store.commitLogin(incoming)
+        XCTAssertNil(try shared.read()?.account?.failure)
+        do { try await store.saveQuotaFailure(.refresh, for: free); XCTFail("旧连接失败不可回写") }
+        catch { XCTAssertEqual(error as? AccountStore.StoreError, .staleQuotaContext) }
+        XCTAssertNil(try shared.read()?.account?.failure)
+    }
+
+    func testT35NewSuccessRejectsOldFailureAndDeletionRejectsBothLateResults() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("T35-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let shared = WidgetSnapshotStore(fileURL: root.appendingPathComponent("shared.json"))
+        let probe = WidgetReloadProbe()
+        let store = AccountStore(fileURL: root.appendingPathComponent("accounts.json"), widgetStore: shared,
+            reloadWidgets: { probe.record(try? shared.read()) })
+        let a = try fixture("a"), b = try fixture("b")
+        try await store.append(a); try await store.append(b)
+        _ = try await store.saveObservation(.init(planType: "Plus", observedAt: time.addingTimeInterval(10)),
+            quota: .available(quota(a, used: 10, at: time.addingTimeInterval(10))), for: a)
+        let before = probe.snapshots.count
+        do { try await store.saveQuotaFailure(.refresh, for: a); XCTFail("较新成功不可被旧失败标记") }
+        catch { XCTAssertEqual(error as? AccountStore.StoreError, .staleQuotaContext) }
+        XCTAssertEqual(probe.snapshots.count, before)
+        for id in [a.id, b.id] { _ = try await store.markForDeletion(id); try await store.finishDeletion(id) }
+        XCTAssertEqual(probe.snapshots.last, .empty)
+        let count = probe.snapshots.count
+        do { _ = try await store.saveQuota(quota(a, used: 0, at: time.addingTimeInterval(20)), for: a); XCTFail("旧成功不得恢复账户") }
+        catch { XCTAssertEqual(error as? AccountStore.StoreError, .accountNotFound) }
+        do { try await store.saveQuotaFailure(.refresh, for: a); XCTFail("旧失败不得恢复账户") }
+        catch { XCTAssertEqual(error as? AccountStore.StoreError, .staleQuotaContext) }
+        XCTAssertEqual(probe.snapshots.count, count)
+        XCTAssertEqual(try shared.read(), .empty)
+    }
+
+    func testT35FailureFollowsPinnedIdentityAcrossSortAndDeletionWithReloadAfterWrite() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("T35-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let shared = WidgetSnapshotStore(fileURL: root.appendingPathComponent("shared.json"))
+        let probe = WidgetReloadProbe()
+        let store = AccountStore(fileURL: root.appendingPathComponent("accounts.json"), widgetStore: shared,
+            reloadWidgets: { probe.record(try? shared.read()) })
+        let a = try fixture("a"), b = try fixture("b", used: 60)
+        try await store.append(a); try await store.append(b)
+        try await store.saveQuotaFailure(.refresh, for: a)
+        XCTAssertEqual(probe.snapshots.last?.account?.failure, .refresh)
+        try await store.reorder([b.id, a.id])
+        let content = QuotaWidgetContent.read(from: shared)
+        XCTAssertNil(content.message)
+        XCTAssertEqual(content.selecting(accountID: a.id.uuidString).message, "刷新失败")
+        XCTAssertEqual(probe.snapshots.last, try shared.read())
+        _ = try await store.markForDeletion(a.id); try await store.finishDeletion(a.id)
+        let fallback = QuotaWidgetContent.read(from: shared).selecting(accountID: a.id.uuidString)
+        XCTAssertEqual(fallback.account?.id, b.id)
+        XCTAssertNil(fallback.message)
+        XCTAssertEqual(probe.snapshots.last, try shared.read())
+    }
+
     func testConfiguredAccountsAreIndependentAndDoNotChangeAppOrder() async throws {
         let (store, shared, _) = try stores()
         let a = try fixture("a"), b = try fixture("b", used: 60), c = try fixture("c", fetched: false)
@@ -406,7 +497,12 @@ final class WidgetSnapshotLocalTests: XCTestCase {
         let actual = try XCTUnwrap(shared.read())
         let expected = WidgetSnapshot.projecting(records)
         // Boolean assertions avoid dumping real account values on a failure.
-        XCTAssertTrue(actual.account == expected.account && actual.allAccounts == expected.allAccounts, "正式共享字段必须全部对应已保存账户")
+        // This read-only check compares trusted account fields; failure metadata is
+        // independently persisted and covered by the isolated T35 round-trip tests.
+        let actualMeasurements = actual.allAccounts.map { value in
+            var value = value; value.failure = nil; return value
+        }
+        XCTAssertTrue(actualMeasurements == expected.allAccounts, "正式共享字段必须全部对应已保存账户")
         XCTAssertTrue(actual.clickTarget == expected.clickTarget, "正式点击目标必须对应首账户")
         XCTAssertTrue(try Data(contentsOf: accountURL) == before, "只读核对不能修改账户文件")
         XCTAssertTrue(try Data(contentsOf: shared.resolvedURL()) == sharedBefore, "只读核对不能补写共享文件")

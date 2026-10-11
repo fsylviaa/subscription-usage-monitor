@@ -1,5 +1,6 @@
 #if DEBUG
 import Foundation
+import WidgetKit
 
 /// Only explicit DEBUG launches can use test support; no product menu or saved
 /// preference enables it. Fixtures make no external requests. The opt-in live
@@ -35,6 +36,19 @@ enum CodexConnectionUITestSupport {
         if NSClassFromString("XCTestCase") != nil {
             return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
                 authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+        }
+        if let marker = arguments.firstIndex(of: "--t35-widget-fixture") {
+            guard arguments.indices.contains(marker + 2), let session = UUID(uuidString: arguments[marker + 2]) else {
+                // Malformed isolation arguments must never fall through to real accounts.
+                return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
+                    authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+            }
+            return widgetValidationFlow(scenario: arguments[marker + 1], session: session)
+        }
+        // A normal launch restores production widget reads even after an interrupted check.
+        if (try? WidgetSnapshotStore.displayStore().resolvedURL()) != (try? WidgetSnapshotStore.appGroupStore().resolvedURL()) {
+            try? WidgetSnapshotStore.setValidationSession(nil)
+            WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
         }
         if let marker = arguments.firstIndex(of: "--t23-card-fixture"), arguments.indices.contains(marker + 1) {
             return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
@@ -119,6 +133,54 @@ enum CodexConnectionUITestSupport {
             transactions: FixtureTransactions(),
             openURL: { $0 == CodexDeviceAuthorization.verificationURL }
         )
+    }
+
+    private static func widgetValidationFlow(scenario: String, session: UUID) -> CodexConnectionFlow {
+        guard scenario != "cleanup", let shared = try? WidgetSnapshotStore.validationStore(session: session) else {
+            try? WidgetSnapshotStore.setValidationSession(nil)
+            WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
+            return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
+                authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+        }
+        let fixture = T26BatchFixture(scenario: scenario == "failure" ? "blocked" : "success",
+            widgetStore: shared, reloadWidgets: {
+                print("T35 | 请求组件更新 | \(Date().ISO8601Format())")
+                WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
+            })
+        let flow = CodexConnectionFlow(transactions: FixtureTransactions(), bindings: fixture, quotaUpdater: fixture,
+                                       foregroundRefreshEnabled: scenario == "foreground")
+        Task {
+            do {
+                let original = try await fixture.load()
+                try WidgetSnapshotStore.setValidationSession(session)
+                await flow.loadAccounts()
+                switch scenario {
+                case "single": flow.refreshQuota(for: original[0].id)
+                case "all", "failure": flow.refreshAllQuota()
+                case "reorder": try await fixture.store.reorder(original.reversed().map(\.id))
+                case "remove": try await fixture.removeAccount(original[0].id)
+                case "scope":
+                    var incoming = original[0]
+                    incoming.scope = .init(remoteAccountID: "t35-new-scope", kind: .workspace)
+                    incoming.credentialRef = UUID()
+                    _ = try await fixture.store.commitLogin(incoming)
+                case "empty":
+                    for account in original { try await fixture.removeAccount(account.id) }
+                    // Late old responses must not repopulate the empty publication.
+                    do { _ = try await fixture.store.saveQuota(original[0].quotaSnapshot!, for: original[0]) }
+                    catch { }
+                    try? await fixture.store.saveQuotaFailure(.refresh, for: original[0])
+                case "background":
+                    _ = await flow.refreshQuotaInBackground()
+                default: break
+                }
+                await flow.waitForInitialQuota()
+                if ["reorder", "remove", "scope", "empty"].contains(scenario) { await flow.loadAccounts() }
+                WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
+                print("T35 | 桌面样例准备完成 | \(scenario) | \(Date().ISO8601Format())")
+            } catch { print("T35 | 桌面样例准备失败") }
+        }
+        return flow
     }
 
     /// UI-only boundary input. No disk, Keychain, network, or product demo entries.
@@ -720,9 +782,11 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
     static let oldTime = Date(timeIntervalSince1970: 1_791_590_400)
     static let newTime = Date(timeIntervalSince1970: 1_791_594_000)
 
-    init(scenario: String, count: Int = 2) {
+    init(scenario: String, count: Int = 2, widgetStore: WidgetSnapshotStore? = nil,
+         reloadWidgets: @escaping @Sendable () -> Void = {}) {
         directory = FileManager.default.temporaryDirectory.appendingPathComponent("T26-\(UUID())")
-        store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
+        store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"),
+                             widgetStore: widgetStore, reloadWidgets: reloadWidgets)
         self.scenario = scenario
         self.count = count
     }

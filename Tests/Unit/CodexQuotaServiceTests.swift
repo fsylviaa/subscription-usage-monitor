@@ -1403,6 +1403,92 @@ final class CodexQuotaServiceTests: XCTestCase {
         XCTAssertTrue(requests.isEmpty)
     }
 
+    func testT35ManualAutomaticAndBackgroundPublishAfterSavingAndClearPartialFailure() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("T35-flow-\(UUID())")
+        directories.append(root)
+        let shared = WidgetSnapshotStore(fileURL: root.appendingPathComponent("shared.json"))
+        let probe = T35ReloadProbe()
+        let fixture = T26BatchFixture(scenario: "partial", widgetStore: shared,
+            reloadWidgets: { probe.record(try? shared.read()) })
+        directories.append(fixture.directory)
+        let flow = CodexConnectionFlow(transactions: QuotaTestTransactions(), bindings: fixture, quotaUpdater: fixture)
+        await flow.loadAccounts()
+        let old = flow.accounts
+        flow.refreshAllQuota()
+        await flow.waitForInitialQuota()
+        var content = QuotaWidgetContent.read(from: shared)
+        XCTAssertEqual(content.account?.weekly?.amount.remainingPercent, 55)
+        XCTAssertEqual(content.selecting(accountID: old[1].id.uuidString).message, "刷新失败")
+        XCTAssertEqual(content.selecting(accountID: old[1].id.uuidString).account?.quotaObservedAt, T26BatchFixture.oldTime)
+        XCTAssertEqual(probe.snapshots.last, try shared.read())
+        let count = probe.snapshots.count
+        flow.refreshQuota(for: old[1].id)
+        await flow.waitForInitialQuota()
+        content = QuotaWidgetContent.read(from: shared)
+        XCTAssertNil(content.selecting(accountID: old[1].id.uuidString).message)
+        XCTAssertGreaterThan(probe.snapshots.count, count)
+        flow.sceneActivityChanged(true)
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(probe.snapshots.last, try shared.read())
+        flow.sceneActivityChanged(false)
+        let coordinator = BackgroundQuotaRefresh(flow: flow, scheduler: T30Scheduler(),
+            journalURL: root.appendingPathComponent("background.json"))
+        let beforeBackground = probe.snapshots.count
+        let result = await coordinator.execute(source: "debug", wasInBackground: true)
+        XCTAssertEqual(result.succeeded, 2)
+        XCTAssertGreaterThan(probe.snapshots.count, beforeBackground)
+        let saved = try await fixture.load()
+        XCTAssertEqual(try shared.read()?.allAccounts, WidgetSnapshot.projecting(saved).allAccounts)
+        XCTAssertEqual(probe.snapshots.last, try shared.read())
+        print("T35 | 单卡/全部/前台/后台回调 | 先写共享再请求更新；部分失败保留，恢复清除 | 隔离通过，非系统自然后台")
+    }
+
+    func testT35NetworkGateFailurePublishesWithoutUsageAndCancellationDoesNotAddError() async throws {
+        for result in [NetworkScoreResult.blocked(score: 50), .unavailable(.transport), .cancelled] {
+            let original = try await setup()
+            let shared = WidgetSnapshotStore(fileURL: original.url.deletingLastPathComponent().appendingPathComponent("shared.json"))
+            let store = AccountStore(fileURL: original.url, widgetStore: shared)
+            _ = try await store.load()
+            let setup: Setup = (store, original.account, original.url)
+            let transport = QuotaTestTransport(data: Self.complete)
+            do { _ = try await service(setup, transport: transport, gate: { result }).update(setup.account); XCTFail("必须阻止查询") }
+            catch { }
+            let requests = await transport.requests.count
+            XCTAssertEqual(requests, 0)
+            let failure = try shared.read()?.account?.failure
+            switch result {
+            case .blocked: XCTAssertEqual(failure, .networkBlocked)
+            case .cancelled: XCTAssertNil(failure)
+            default: XCTAssertEqual(failure, .refresh)
+            }
+            XCTAssertNil(try shared.read()?.account?.weekly)
+        }
+    }
+
+    func testT35DeletedAccountRejectsDelayedServiceSuccessAndFailureWithoutReload() async throws {
+        for status in [200, 500] {
+            let original = try await setup()
+            let shared = WidgetSnapshotStore(fileURL: original.url.deletingLastPathComponent().appendingPathComponent("shared.json"))
+            let probe = T35ReloadProbe()
+            let store = AccountStore(fileURL: original.url, widgetStore: shared,
+                reloadWidgets: { probe.record(try? shared.read()) })
+            _ = try await store.load()
+            let setup: Setup = (store, original.account, original.url)
+            let gate = QuotaTestGate()
+            let transport = QuotaTestTransport(data: Self.complete, status: status, beforeResponse: { await gate.wait() })
+            let work = Task { try await service(setup, transport: transport).update(setup.account) }
+            while await transport.requests.isEmpty { await Task.yield() }
+            _ = try await store.markForDeletion(setup.account.id)
+            try await store.finishDeletion(setup.account.id)
+            XCTAssertEqual(probe.snapshots.last, .empty)
+            let count = probe.snapshots.count
+            await gate.open()
+            do { _ = try await work.value; XCTFail("移除身份不得恢复") } catch { }
+            XCTAssertEqual(try shared.read(), .empty)
+            XCTAssertEqual(probe.snapshots.count, count)
+        }
+    }
+
     private typealias Setup = (store: AccountStore, account: ConnectedAccount, url: URL)
     private func setup(save: Bool = true) async throws -> Setup {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T12-test-\(UUID())")
@@ -1571,4 +1657,14 @@ private actor T30CountTransactions: CodexLoginTransactionStoring {
     func load() -> CodexDeviceAuthorization? { reads += 1; return nil }
     func save(_ authorization: CodexDeviceAuthorization) { }
     func remove(transactionID: UUID) { }
+}
+
+private final class T35ReloadProbe: @unchecked Sendable {
+    private let lock = NSLock()
+    private var values: [WidgetSnapshot] = []
+    var snapshots: [WidgetSnapshot] { lock.withLock { values } }
+    func record(_ snapshot: WidgetSnapshot?) {
+        guard let snapshot else { return }
+        lock.withLock { values.append(snapshot) }
+    }
 }

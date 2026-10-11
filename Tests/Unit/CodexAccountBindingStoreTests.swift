@@ -287,7 +287,11 @@ final class CodexAccountBindingStoreTests: XCTestCase {
         XCTAssertEqual(flow.quotaFailureID, flow.accounts[1].id, "C成功不应清除B的失败与重试入口")
         XCTAssertEqual(Set(flow.quotaFailures.keys), [flow.accounts[1].id])
         let requests = await f.server.requests
-        XCTAssertEqual(requests.map { $0.value(forHTTPHeaderField: "ChatGPT-Account-Id") }, ["t16-1", "t16-2", "t16-3"])
+        // Refreshes are concurrent; transport arrival order is not list order.
+        XCTAssertEqual(requests.count, 3)
+        XCTAssertEqual(requests.compactMap { $0.value(forHTTPHeaderField: "ChatGPT-Account-Id") }.sorted(),
+                       ["t16-1", "t16-2", "t16-3"])
+        XCTAssertEqual(flow.accounts.map(\.scope.remoteAccountID), ["t16-1", "t16-2", "t16-3"])
         XCTAssertNil(flow.accounts[1].quotaSnapshot)
         XCTAssertEqual(flow.accounts[2].quotaSnapshot?.weekly.amount.remainingPercent, 35)
     }

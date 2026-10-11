@@ -33,7 +33,8 @@ enum QuotaWidgetContent: Equatable, Sendable {
         switch self {
         case .notPublished: "添加账户"
         case .unavailable: "刷新失败"
-        case let .snapshot(snapshot): snapshot.emptyMessage
+        case let .snapshot(snapshot):
+            snapshot.account.flatMap { $0.failure?.message(hasFetched: $0.state != .notFetched) } ?? snapshot.emptyMessage
         }
     }
 
@@ -113,7 +114,7 @@ struct WidgetAccountEntity: AppEntity {
 
 struct WidgetAccountQuery: EntityQuery {
     private let store: WidgetSnapshotStore
-    init() { store = .appGroupStore() }
+    init() { store = .displayStore() }
     init(store: WidgetSnapshotStore) { self.store = store }
 
     func entities(for identifiers: [String]) async throws -> [WidgetAccountEntity] {
@@ -156,7 +157,7 @@ struct SmallQuotaWidgetView: View {
                     .font(.system(size: 16, weight: .medium))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                VStack(alignment: .leading, spacing: medium ? 12 : 10) {
+                VStack(alignment: .leading, spacing: medium ? 12 : (content.account?.failure == nil ? 10 : 5)) {
                     if let account = content.account {
                         HStack(spacing: 7) {
                             Image("DesignCodex").resizable().renderingMode(.template)
@@ -177,7 +178,7 @@ struct SmallQuotaWidgetView: View {
                             }
                         }
                         if account.state == .available {
-                            VStack(spacing: medium ? 12 : 10) {
+                            VStack(spacing: medium ? 12 : (account.failure == nil ? 10 : 6)) {
                                 window("每周", value: account.weekly)
                                 window("5 小时", value: account.fiveHours)
                             }
@@ -185,6 +186,7 @@ struct SmallQuotaWidgetView: View {
                     }
                     if let message = content.message {
                         Text(message).font(.system(size: 12)).foregroundStyle(Color("DesignSecondary"))
+                            .lineLimit(2).fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer(minLength: 0)
                 }

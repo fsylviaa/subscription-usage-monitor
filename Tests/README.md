@@ -146,3 +146,14 @@ T30的四项功能测试覆盖冷后台只恢复缓存（登录事务读取0次�
 两项`testT30SystemDebug…`默认跳过，必须给UI测试Runner设置`T30_SYSTEM_DEBUG=1`。它们使用`--t26-isolated-ui`、`--t27-lifecycle`、`--t30-background-debug`，App退后台后由开发者通过真机LLDB执行Apple官方BGTaskScheduler调试触发命令；测试本身不会调用私有API，Release也没有触发入口。记录中必须出现debug、wasInBackground=true及结果，然后返回前台单独验证第三次查询。前台调试回调不能冒充后台通过。
 
 最终自然观察来自普通正式运行的独立BackgroundRefresh记录，留到T53核验。真实五小时余额及相关真实账户对照仍暂缓；以上不访问正式授权、不代替真实额度验收。
+
+
+## T35 组件同步与失败发布（2026-10-11）
+
+`WidgetSnapshotTests/testT35…` 验证失败与可信测量分离、重读／补发保持、成功清除、Free／首次失败、排序／指定账户归属、重连清除及迟到成功／失败拒写；`CodexQuotaServiceTests/testT35…` 经过正式网络门控、查询服务、保存和前台／后台流程，用虚构响应验证先保存再请求换图。临时文件独立，默认不访问真实额度或正式授权。
+
+`CodexQuotaUITests/testT35DesktopUsesIsolatedSharedSnapshot` 需要预先放置两种组件并在 UI Runner 设置 `T35_WIDGET_DESKTOP=1`，默认跳过；使用明确 Debug 参数 `--t35-widget-fixture <scenario> <UUID>`。主App账户文件在独立临时目录；组件样例位于 App Group 的 `Widget/T35-validation-<UUID>/snapshot.json`，不改生产 `first-account.json`。只有 Debug 扩展在存在合法会话标记时读取样例；退出检查通过 `cleanup` 移除标记／样例，并请求恢复普通组件。普通 Debug 启动也清除中断遗留；Release 不读取此标记或提供此入口。不得将此开关写入用户设置。手机必须事先放置小号和中号各一个，截图需复核真实尺寸；自动化不修改用户桌面布局。
+
+桌面检查记录单卡／全量／前台、失败旧值、排序、删除、作用域变化、全部删除及后台路径的实际图片。`background` 场景是直接调用路径，不是系统后台执行。`testT35SystemBackgroundPublishesToDesktop` 默认跳过，只有 UI Runner 的 `T35_SYSTEM_DEBUG=1` 时启用：准备相同隔离样例并退后台，由开发者用 Apple 官方调试命令触发 BGTaskScheduler，核对 `background=true`、两户成功及桌面换图；不可用它代替 T53 自然事件。
+
+实际运行、图片、请求／观察时间与未通过项见 [T35验收](../docs/mvp任务清单/记录/T35-验收.md)。

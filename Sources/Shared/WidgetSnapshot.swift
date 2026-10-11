@@ -20,6 +20,15 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
         let quotaObservedAt: Date?
         let weekly: Window?
         let fiveHours: Window?
+        var failure: Failure? = nil
+    }
+
+    enum Failure: String, Codable, Sendable {
+        case refresh, networkBlocked
+
+        func message(hasFetched: Bool) -> String {
+            self == .networkBlocked ? "网络不达标，无法更新" : (hasFetched ? "刷新失败" : "获取失败")
+        }
     }
 
     enum State: String, Codable, Sendable {

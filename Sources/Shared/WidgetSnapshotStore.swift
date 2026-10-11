@@ -16,6 +16,37 @@ struct WidgetSnapshotStore: Sendable {
     private init() { isolatedURL = nil }
     static func appGroupStore() -> Self { Self() }
 
+    static func displayStore() -> Self {
+        #if DEBUG
+        if let root = try? sharedDirectory(),
+           let text = try? String(contentsOf: root.appendingPathComponent("T35-validation-session"), encoding: .utf8),
+           let session = UUID(uuidString: text) {
+            return Self(fileURL: root.appendingPathComponent("T35-validation-\(session)/snapshot.json"))
+        }
+        #endif
+        return .appGroupStore()
+    }
+
+    #if DEBUG
+    /// Explicit developer-only desktop checks. Never replaces the production snapshot.
+    static func validationStore(session: UUID) throws -> Self {
+        Self(fileURL: try sharedDirectory().appendingPathComponent("T35-validation-\(session)/snapshot.json"))
+    }
+
+    static func setValidationSession(_ session: UUID?) throws {
+        let root = try sharedDirectory()
+        let marker = root.appendingPathComponent("T35-validation-session")
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        if let session {
+            try Data(session.uuidString.utf8).write(to: marker, options: .atomic)
+        } else {
+            let previous = (try? String(contentsOf: marker, encoding: .utf8)).flatMap(UUID.init(uuidString:))
+            if FileManager.default.fileExists(atPath: marker.path) { try FileManager.default.removeItem(at: marker) }
+            if let previous { try? FileManager.default.removeItem(at: root.appendingPathComponent("T35-validation-\(previous)")) }
+        }
+    }
+    #endif
+
     static func sharedDirectory() throws -> URL {
         guard let root = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) else {
             throw StoreError.unavailableContainer

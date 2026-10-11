@@ -19,7 +19,7 @@ struct QuotaWidgetProvider: AppIntentTimelineProvider {
         return Timeline(entries: [entry], policy: .after(entry.date.addingTimeInterval(30 * 60)))
     }
     private func readEntry(accountID: String?) -> QuotaWidgetEntry {
-        let content = QuotaWidgetContent.read(from: .appGroupStore()).selecting(accountID: accountID)
+        let content = QuotaWidgetContent.read(from: .displayStore()).selecting(accountID: accountID)
         return .init(date: .now, content: content,
                      appearance: WidgetAppearance.defaults()?.string(forKey: WidgetAppearance.key) ?? "system")
     }
