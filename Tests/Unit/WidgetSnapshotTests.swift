@@ -52,59 +52,78 @@ final class WidgetSnapshotTests: XCTestCase {
         XCTAssertGreaterThan(probe.snapshots.count, before)
     }
 
-    func testWidgetNumbersSwitchIndependentlyWithoutChangingAppOrder() async throws {
+    func testConfiguredAccountsAreIndependentAndDoNotChangeAppOrder() async throws {
         let (store, shared, _) = try stores()
         let a = try fixture("a"), b = try fixture("b", used: 60), c = try fixture("c", fetched: false)
         for account in [a, b, c] { try await store.append(account) }
-        let initial = try XCTUnwrap(shared.read())
         let bytes = try Data(contentsOf: shared.resolvedURL())
-        XCTAssertEqual(shared.selectedAccount(in: initial, number: 1)?.id, a.id)
-        try shared.switchAccount(number: 1, displayedID: a.id, revision: initial.listRevision, direction: 1)
-        XCTAssertEqual(shared.selectedAccount(in: initial, number: 1)?.id, b.id)
-        XCTAssertEqual(shared.selectedAccount(in: initial, number: 2)?.id, a.id)
-        XCTAssertEqual(shared.selectedAccount(in: initial, number: 1)?.weekly?.amount.remainingPercent, 40)
-        try shared.switchAccount(number: 2, displayedID: a.id, revision: initial.listRevision, direction: -1)
-        XCTAssertEqual(shared.selectedAccount(in: initial, number: 2)?.id, c.id)
-        XCTAssertEqual(shared.selectedAccount(in: initial, number: 2)?.state, .notFetched)
-        XCTAssertNil(shared.selectedAccount(in: initial, number: 2)?.weekly)
+        let content = QuotaWidgetContent.read(from: shared)
+        XCTAssertEqual(content.selecting(accountID: nil).account?.id, a.id)
+        XCTAssertEqual(content.selecting(accountID: WidgetAccountEntity.firstID).account?.id, a.id)
+        XCTAssertEqual(content.selecting(accountID: b.id.uuidString).account?.weekly?.amount.remainingPercent, 40)
+        XCTAssertEqual(content.selecting(accountID: c.id.uuidString).account?.state, .notFetched)
+        XCTAssertNil(content.selecting(accountID: c.id.uuidString).account?.weekly)
+        XCTAssertEqual(content.selecting(accountID: a.id.uuidString).account?.id, a.id)
         XCTAssertEqual(try Data(contentsOf: shared.resolvedURL()), bytes)
         let order = try await store.load().map(\.id)
         XCTAssertEqual(order, [a.id, b.id, c.id])
     }
 
-    func testReorderDeleteAndStaleButtonCannotRestoreOldSelection() async throws {
+    func testPinnedAccountSurvivesReorderAndRefreshWhileDefaultFollowsFirst() async throws {
         let (store, shared, _) = try stores()
         let a = try fixture("a"), b = try fixture("b"), c = try fixture("c")
         for account in [a, b, c] { try await store.append(account) }
-        let old = try XCTUnwrap(shared.read())
-        try shared.switchAccount(number: 1, displayedID: a.id, revision: old.listRevision, direction: 1)
         try await store.reorder([c.id, a.id, b.id])
-        let reordered = try XCTUnwrap(shared.read())
-        XCTAssertNotEqual(reordered.listRevision, old.listRevision)
-        XCTAssertEqual(shared.selectedAccount(in: reordered, number: 1)?.id, c.id)
-        try shared.switchAccount(number: 1, displayedID: a.id, revision: old.listRevision, direction: 1)
-        XCTAssertEqual(shared.selectedAccount(in: reordered, number: 1)?.id, c.id)
-        _ = try await store.markForDeletion(c.id); try await store.finishDeletion(c.id)
-        let deleted = try XCTUnwrap(shared.read())
-        XCTAssertEqual(shared.selectedAccount(in: deleted, number: 1)?.id, a.id)
-        for id in [a.id, b.id] { _ = try await store.markForDeletion(id); try await store.finishDeletion(id) }
-        XCTAssertNil(shared.selectedAccount(in: try XCTUnwrap(shared.read()), number: 1))
+        var content = QuotaWidgetContent.read(from: shared)
+        XCTAssertEqual(content.selecting(accountID: nil).account?.id, c.id)
+        XCTAssertEqual(content.selecting(accountID: b.id.uuidString).account?.id, b.id)
+        _ = try await store.saveObservation(.init(planType: "Plus", observedAt: time.addingTimeInterval(60)),
+            quota: .available(quota(b, used: 60, at: time.addingTimeInterval(60))), for: b)
+        _ = try await store.load()
+        content = QuotaWidgetContent.read(from: shared)
+        XCTAssertEqual(content.selecting(accountID: b.id.uuidString).account?.weekly?.amount.remainingPercent, 40)
+        XCTAssertEqual(content.selecting(accountID: nil).account?.id, c.id)
     }
 
-    func testRefreshKeepsSelectionAndSingleAccountDoesNotSwitch() async throws {
+    func testRemovedSelectionFallsBackWithoutRestoringDeletedData() async throws {
+        let (store, shared, _) = try stores()
+        let a = try fixture("a"), b = try fixture("b", used: 60)
+        try await store.append(a); try await store.append(b)
+        _ = try await store.markForDeletion(b.id); try await store.finishDeletion(b.id)
+        let content = QuotaWidgetContent.read(from: shared).selecting(accountID: b.id.uuidString)
+        XCTAssertEqual(content.account?.id, a.id)
+        XCTAssertEqual(content.account?.weekly?.amount.remainingPercent, 70)
+        _ = try await store.markForDeletion(a.id); try await store.finishDeletion(a.id)
+        XCTAssertTrue(QuotaWidgetContent.read(from: shared).selecting(accountID: b.id.uuidString).showsAddAccount)
+        XCTAssertEqual(QuotaWidgetContent.unavailable.selecting(accountID: b.id.uuidString), .unavailable)
+    }
+
+    func testAccountPickerUsesFullIdentityCurrentOrderAndOnlyValidAccounts() async throws {
+        let (store, shared, _) = try stores()
+        let a = try fixture("same"), b = try fixture("second", fetched: false)
+        try await store.append(a); try await store.append(b)
+        let query = WidgetAccountQuery(store: shared)
+        let options = try await query.suggestedEntities()
+        XCTAssertEqual(options.map(\.id), [WidgetAccountEntity.firstID, a.id.uuidString, b.id.uuidString])
+        XCTAssertEqual(options[1].identity, "same@example.invalid")
+        XCTAssertEqual(options[1].detail, "Codex · Plus")
+        let defaultOption = await query.defaultResult()
+        XCTAssertEqual(defaultOption?.id, WidgetAccountEntity.firstID)
+        _ = try await store.markForDeletion(b.id); try await store.finishDeletion(b.id)
+        let resolved = try await query.entities(for: [b.id.uuidString, a.id.uuidString, WidgetAccountEntity.firstID])
+        XCTAssertEqual(resolved.map(\.id), [a.id.uuidString, WidgetAccountEntity.firstID])
+    }
+
+    func testLegacyNumberFilesDoNotOverrideNewDefaultOrConfiguredAccount() async throws {
         let (store, shared, _) = try stores()
         let a = try fixture("a"), b = try fixture("b")
-        try await store.append(a)
-        let single = try XCTUnwrap(shared.read())
-        try shared.switchAccount(number: 1, displayedID: a.id, revision: single.listRevision, direction: 1)
-        XCTAssertEqual(shared.selectedAccount(in: single, number: 1)?.id, a.id)
-        try await store.append(b)
-        let two = try XCTUnwrap(shared.read())
-        try shared.switchAccount(number: 1, displayedID: a.id, revision: two.listRevision, direction: 1)
-        _ = try await store.load()
-        let loaded = try XCTUnwrap(shared.read())
-        XCTAssertEqual(loaded.listRevision, two.listRevision)
-        XCTAssertEqual(shared.selectedAccount(in: loaded, number: 1)?.id, b.id)
+        try await store.append(a); try await store.append(b)
+        let snapshot = try XCTUnwrap(shared.read())
+        let oldSelection: [String: String] = ["revision": try XCTUnwrap(snapshot.listRevision).uuidString, "accountID": b.id.uuidString]
+        try JSONSerialization.data(withJSONObject: oldSelection).write(to: shared.resolvedURL().deletingLastPathComponent().appendingPathComponent("selection-1.json"))
+        let content = QuotaWidgetContent.read(from: shared)
+        XCTAssertEqual(content.selecting(accountID: nil).account?.id, a.id)
+        XCTAssertEqual(content.selecting(accountID: b.id.uuidString).account?.id, b.id)
     }
 
     func testFirstAccountBothWindowsAndReorderUseOneIdentityAndTarget() async throws {

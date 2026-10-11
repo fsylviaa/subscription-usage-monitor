@@ -119,7 +119,7 @@ final class QuotaWidgetTests: XCTestCase {
             for medium in [false, true] {
             for dark in [false, true] {
                 let width: CGFloat = medium ? 338 : 158
-                let view = SmallQuotaWidgetView(content: content, medium: medium, accountCount: 3)
+                let view = SmallQuotaWidgetView(content: content, medium: medium)
                     .frame(width: width, height: 158)
                     .background(Color("DesignCard"))
                     .environment(\.colorScheme, dark ? .dark : .light)
@@ -129,7 +129,7 @@ final class QuotaWidgetTests: XCTestCase {
                 let image = try XCTUnwrap(renderer.uiImage)
                 XCTAssertEqual(image.size, CGSize(width: width, height: 158))
                 let attachment = XCTAttachment(image: image)
-                attachment.name = "T33修订-\(medium ? "中" : "小")-\(name)-\(dark ? "深" : "浅")"
+                attachment.name = "T60账户选择-\(medium ? "中" : "小")-\(name)-\(dark ? "深" : "浅")"
                 attachment.lifetime = .keepAlways
                 add(attachment)
             }

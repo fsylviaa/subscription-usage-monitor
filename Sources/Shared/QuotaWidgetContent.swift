@@ -81,34 +81,66 @@ enum WidgetAppearance {
     }
 }
 
-struct QuotaWidgetConfiguration: WidgetConfigurationIntent {
-    static let title: LocalizedStringResource = "订阅额度"
-    static let description = IntentDescription("不同编号的组件各自切换账户；相同编号同步切换。")
-    @Parameter(title: "组件编号", default: 1) var number: Int
+/// The system stores this choice separately for each widget instance.
+/// A stable sentinel keeps the default following the list, instead of pinning
+/// whichever account happened to be first when the widget was added.
+struct WidgetAccountEntity: AppEntity {
+    static let typeDisplayRepresentation: TypeDisplayRepresentation = "账户"
+    static let defaultQuery = WidgetAccountQuery()
+    static let firstID = "first-account"
+    static let first = WidgetAccountEntity(id: firstID, identity: "跟随列表首个账户", detail: "")
+
+    let id: String
+    let identity: String
+    let detail: String
+
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: "\(identity)", subtitle: "\(detail)")
+    }
+
+    init(id: String, identity: String, detail: String) {
+        self.id = id
+        self.identity = identity
+        self.detail = detail
+    }
+
+    init(account: WidgetSnapshot.Account) {
+        id = account.id.uuidString
+        identity = (account.isDemo ? "演示 · " : "") + account.identity
+        detail = account.plan.map { "Codex · \($0)" } ?? "Codex"
+    }
 }
 
-struct SwitchQuotaAccountIntent: AppIntent {
-    static let title: LocalizedStringResource = "切换组件账户"
-    static let isDiscoverable: Bool = false
-    @Parameter(title: "组件编号") var number: Int
-    @Parameter(title: "当前账户") var displayedID: String
-    @Parameter(title: "方向") var direction: Int
-    @Parameter(title: "列表版本") var revision: String
+struct WidgetAccountQuery: EntityQuery {
+    private let store: WidgetSnapshotStore
+    init() { store = .appGroupStore() }
+    init(store: WidgetSnapshotStore) { self.store = store }
 
-    init() { }
-    init(number: Int, displayedID: UUID, revision: UUID?, direction: Int) {
-        self.number = number
-        self.displayedID = displayedID.uuidString
-        self.direction = direction
-        self.revision = revision?.uuidString ?? ""
+    func entities(for identifiers: [String]) async throws -> [WidgetAccountEntity] {
+        let options = try await suggestedEntities()
+        return identifiers.compactMap { id in options.first { $0.id == id } }
     }
-    func perform() async throws -> some IntentResult {
-        if let id = UUID(uuidString: displayedID) {
-            // WidgetKit reloads this interaction's timeline after perform returns.
-            // Other numbers keep their own selection, even on a shared reload.
-            try? WidgetSnapshotStore.appGroupStore().switchAccount(number: number, displayedID: id, revision: UUID(uuidString: revision), direction: direction)
-        }
-        return .result()
+
+    func suggestedEntities() async throws -> [WidgetAccountEntity] {
+        [.first] + (try store.read()?.allAccounts ?? []).map(WidgetAccountEntity.init(account:))
+    }
+
+    func defaultResult() async -> WidgetAccountEntity? { .first }
+}
+
+struct QuotaWidgetConfiguration: WidgetConfigurationIntent {
+    static let title: LocalizedStringResource = "订阅额度"
+    static let description = IntentDescription("选择这个组件显示的账户；未选择时跟随列表首个账户。")
+    @Parameter(title: "显示账户") var account: WidgetAccountEntity?
+}
+
+extension QuotaWidgetContent {
+    /// Always resolve against the current trusted publication, never against
+    /// cached entity labels or a former numbered selection file.
+    func selecting(accountID: String?) -> Self {
+        guard case let .snapshot(snapshot) = self else { return self }
+        let selected = snapshot.allAccounts.first { $0.id.uuidString == accountID } ?? snapshot.account
+        return .snapshot(.init(schemaVersion: 1, account: selected))
     }
 }
 
@@ -116,9 +148,6 @@ struct SwitchQuotaAccountIntent: AppIntent {
 struct SmallQuotaWidgetView: View {
     let content: QuotaWidgetContent
     var medium = false
-    var number = 1
-    var accountCount = 1
-    var listRevision: UUID? = nil
 
     var body: some View {
         Group {
@@ -143,16 +172,7 @@ struct SmallQuotaWidgetView: View {
                                         .font(.system(size: 11)).foregroundStyle(Color("DesignSecondary"))
                                         .truncationMode(.tail).privacySensitive()
                                     Spacer(minLength: 0)
-                                    if accountCount > 1 {
-                                        Button(intent: SwitchQuotaAccountIntent(number: number, displayedID: account.id, revision: listRevision, direction: 1)) {
-                                            Image(systemName: "arrow.triangle.2.circlepath")
-                                                .font(.system(size: 12, weight: .medium))
-                                                .frame(width: 24, height: 22)
-                                                .contentShape(Rectangle())
-                                        }
-                                        .buttonStyle(.plain)
-                                        .accessibilityLabel("切换到下一个账户")
-                                    }
+
                                 }
                             }
                         }

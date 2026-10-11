@@ -58,37 +58,3 @@ struct WidgetSnapshotStore: Sendable {
         catch CocoaError.fileNoSuchFile { }
     }
 }
-
-/// Selection files contain local display IDs only. Different configured numbers
-/// have independent files. A new list revision invalidates old selections safely,
-/// even when a tap from a stale widget races a reorder or deletion in the App.
-extension WidgetSnapshotStore {
-    private struct Selection: Codable {
-        let revision: UUID?
-        let accountID: UUID
-    }
-
-    private func selectionURL(number: Int) throws -> URL {
-        try resolvedURL().deletingLastPathComponent()
-            .appendingPathComponent("selection-\(number).json")
-    }
-
-    func selectedAccount(in snapshot: WidgetSnapshot, number: Int) -> WidgetSnapshot.Account? {
-        guard let data = try? Data(contentsOf: selectionURL(number: number)),
-              let selected = try? JSONDecoder().decode(Selection.self, from: data),
-              selected.revision == snapshot.listRevision,
-              let account = snapshot.allAccounts.first(where: { $0.id == selected.accountID }) else {
-            return snapshot.account
-        }
-        return account
-    }
-
-    func switchAccount(number: Int, displayedID: UUID, revision: UUID?, direction: Int) throws {
-        guard let snapshot = try read(), snapshot.listRevision == revision, snapshot.allAccounts.count > 1,
-              let index = snapshot.allAccounts.firstIndex(where: { $0.id == displayedID }) else { return }
-        let accounts = snapshot.allAccounts
-        let target = accounts[(index + (direction < 0 ? -1 : 1) + accounts.count) % accounts.count]
-        let data = try JSONEncoder().encode(Selection(revision: snapshot.listRevision, accountID: target.id))
-        try data.write(to: selectionURL(number: number), options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
-    }
-}

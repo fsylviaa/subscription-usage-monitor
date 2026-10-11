@@ -1,0 +1,15 @@
+{
+  "parameter": "显示账户",
+  "parameterCount": 1,
+  "numberParameterRemoved": true,
+  "circleSwitchIntentRemoved": true,
+  "accountQuery": "SubscriptionUsageWidget.WidgetAccountQuery",
+  "simulatorTests": 30,
+  "deviceTests": 42,
+  "simulatorAndDeviceFailures": 0,
+  "installed": true,
+  "ordinaryLaunch": true,
+  "productionAccountFileExported": false,
+  "productionAccountFileComparison": "not performed; automatic approval rejected export",
+  "systemPickerInteraction": "pending user verification"
+}
