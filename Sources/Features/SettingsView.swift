@@ -6,18 +6,42 @@ struct SettingsView: View {
     var setDemoMode: (Bool) -> Void = { _ in }
     var darkAppearance = false
     var setDarkAppearance: (Bool) -> Void = { _ in }
+    @ObservedObject var reminders: ResetReminderSettings
+    var openNotificationSettings: () -> Void = {}
     var body: some View {
         Form {
             Section("通用") {
                 Toggle("深色模式", isOn: Binding(get: { darkAppearance }, set: setDarkAppearance))
                     .accessibilityIdentifier("settings.darkAppearance")
-                // T38 接入持久化开关与系统通知权限后开放。
-                Toggle(isOn: .constant(false)) {
-                    Label("额度重置通知", systemImage: "bell")
-                        .foregroundStyle(.secondary)
+                Toggle(isOn: Binding(get: { reminders.isEnabled }, set: { enabled in
+                    if enabled && reminders.showsSystemSettings {
+                        openNotificationSettings()
+                    } else {
+                        Task { await reminders.setEnabled(enabled) }
+                    }
+                })) {
+                    Label("重置提醒", systemImage: "bell")
                 }
-                .disabled(true)
+                .disabled(reminders.isRefreshing || reminders.isRequestingAuthorization)
                 .accessibilityIdentifier("settings.resetReminder")
+                if reminders.showsSystemSettings {
+                    Button(action: openNotificationSettings) {
+                        HStack {
+                            Text("通知未允许").foregroundStyle(.secondary)
+                            Spacer()
+                            Text("去设置")
+                        }
+                    }
+                    .accessibilityIdentifier("settings.notificationSettings")
+                } else if reminders.hasError {
+                    Button("重试") {
+                        Task {
+                            if reminders.wantsReminders { await reminders.setEnabled(true) }
+                            else { await reminders.refreshAuthorization() }
+                        }
+                    }
+                    .accessibilityIdentifier("settings.reminderRetry")
+                }
             }
 
             Section("支持") {

@@ -227,7 +227,7 @@ final class LaunchTests: XCTestCase {
             XCTAssertFalse(app.buttons["settings.accounts"].exists)
             let reminder = app.switches["settings.resetReminder"]
             XCTAssertTrue(reminder.exists)
-            XCTAssertFalse(reminder.isEnabled)
+            XCTAssertTrue(reminder.isEnabled)
             XCTAssertEqual(reminder.value as? String, "0")
             saveScreenshot(of: app, name: "设置")
 

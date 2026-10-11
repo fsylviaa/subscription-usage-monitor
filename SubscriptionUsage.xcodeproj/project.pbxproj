@@ -5,6 +5,12 @@
 	};
 	"objectVersion" = "56";
 	"objects" = {
+"A38000000000000000000005" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/UI/ResetReminderUITests.swift"; "sourceTree" = SOURCE_ROOT; };
+"A38000000000000000000006" = { "isa" = "PBXBuildFile"; "fileRef" = "A38000000000000000000005"; };
+"A38000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/ResetReminderSettingsTests.swift"; "sourceTree" = SOURCE_ROOT; };
+"A38000000000000000000004" = { "isa" = "PBXBuildFile"; "fileRef" = "A38000000000000000000003"; };
+"A38000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Services/ResetReminderSettings.swift"; "sourceTree" = SOURCE_ROOT; };
+"A38000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A38000000000000000000001"; };
 "DB5916E37D563DAC75D5F798" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Shared/SharedAccountAccess.swift"; "sourceTree" = SOURCE_ROOT; };
 "B816BBB98BE9CF236B9C075C" = { "isa" = "PBXBuildFile"; "fileRef" = "DB5916E37D563DAC75D5F798"; };
 "16B7B245FC878FC5801CCE32" = { "isa" = "PBXBuildFile"; "fileRef" = "DB5916E37D563DAC75D5F798"; };
@@ -884,7 +890,7 @@
 		"DBD765969E2C480B353169C4" = {
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
-			"files" = ( "B816BBB98BE9CF236B9C075C", "C2A296549EB1F677FE8435D7",
+			"files" = ( "A38000000000000000000002", "B816BBB98BE9CF236B9C075C", "C2A296549EB1F677FE8435D7",
                 "A33000000000000000000015",
                 "A32000000000000000000002",
                 "A32000000000000000000004",
@@ -972,7 +978,7 @@
 		"5B69A3EAFB58604EE5337742" = {
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
-			"files" = (
+			"files" = ( "A38000000000000000000004",
                 "A33000000000000000000029",
                 "A32000000000000000000008",
                 "A12000000000000000000008",
@@ -1048,7 +1054,7 @@
 		"1A24D49A65599DB28FB2B4F4" = {
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
-			"files" = (
+			"files" = ( "A38000000000000000000006",
                 "A12000000000000000000006",
                 "ACC630393D380593150A8C04",
 				"A07000000000000000000092",

@@ -6,6 +6,7 @@ struct RootView: View {
     @AppStorage private var appearance: String
     @Environment(\.colorScheme) private var systemColorScheme
     @StateObject private var connection: CodexConnectionFlow
+    @StateObject private var reminders: ResetReminderSettings
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private let onBackground: () -> Void
@@ -16,13 +17,14 @@ struct RootView: View {
     @State private var connectionDetent: PresentationDetent = .height(250)
     @State private var appearanceTransition = AppearanceTransition()
 
-    init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard, onBackground: @escaping () -> Void = {}) {
+    init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard, onBackground: @escaping () -> Void = {}, reminders: ResetReminderSettings? = nil) {
         self.onBackground = onBackground
         self.publishesWidgetAppearance = preferences === UserDefaults.standard
             && NSClassFromString("XCTestCase") == nil
             && !ProcessInfo.processInfo.arguments.contains(where: { $0.hasPrefix("--t") || $0 == "--management-ui" })
         _appearance = AppStorage(wrappedValue: "system", "appearance", store: preferences)
         _connection = StateObject(wrappedValue: connection)
+        _reminders = StateObject(wrappedValue: reminders ?? ResetReminderSettings(defaults: preferences))
     }
 
     private var connectionDetents: Set<PresentationDetent> {
@@ -61,6 +63,9 @@ struct RootView: View {
                                  appearanceTransition.perform {
                                      appearance = dark ? "dark" : "light"
                                  }
+                             }, reminders: reminders, openNotificationSettings: {
+                                 guard let url = URL(string: UIApplication.openNotificationSettingsURLString) else { return }
+                                 UIApplication.shared.open(url)
                              })
             }
             .tag(Tab.settings).toolbar(.hidden, for: .tabBar)
@@ -97,6 +102,7 @@ struct RootView: View {
             openPendingWidgetAdd()
         }
         .onChange(of: connection.canConnect) { _, _ in openPendingWidgetAdd() }
+        .task { await reminders.refreshAuthorization() }
         .task {
             connection.sceneActivityChanged(scenePhase == .active)
             await connection.loadAccounts()
@@ -104,6 +110,7 @@ struct RootView: View {
         }
         .onChange(of: scenePhase) { _, phase in
             connection.sceneActivityChanged(phase == .active)
+            if phase == .active { Task { await reminders.refreshAuthorization() } }
             if phase == .background {
                 WidgetPublicationRequests.shared.enteredBackground()
                 onBackground()
