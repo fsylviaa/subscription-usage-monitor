@@ -1,0 +1,19 @@
+2026-10-11 T39 手机只读核对（上海时间）
+以下仅为去敏运行输出，无邮箱、余额、内部账户标识或原始账户文件。
+
+本机证据：build/t39-live-readback.log
+T39 REAL | checked=2026-10-11T19:21:52+08:00 | preference=true | permission=authorized | lockScreen=2
+T39 REAL | realAccounts=0 | expected=0 | systemPending=0 | decoded=0
+T39 REAL | snapshotUnchanged=true | preferenceUnchanged=true | permissionUnchanged=true | completed=2026-10-11T19:21:52+08:00 | delivery=notObserved
+结果：1项未通过；断言为缺少真实有效未来窗口，不将0条吻合0条记为通过。
+
+本机证据：build/t39-live-classify.log
+T39 REAL | checked=2026-10-11T19:22:55+08:00 | preference=true | permission=authorized | lockScreen=2
+T39 REAL | totalAccounts=5 | demoAccounts=5 | pendingDeletion=0 | realAccounts=0 | expected=0 | systemPending=0 | decoded=0
+T39 REAL | snapshotUnchanged=true | preferenceUnchanged=true | permissionUnchanged=true | completed=2026-10-11T19:22:55+08:00 | delivery=notObserved
+结果：1项未通过；断言为缺少真实有效未来窗口，不将0条吻合0条记为通过。
+
+当前账户共5个，均为演示；真实账户0个，待删除0个，系统待发0条。
+开关意愿true，系统authorization=authorized；读取期间账户文件字节、开关和权限均保持。
+没有调用通知添加/删除、申请权限、额度查询或Keychain读取。实际投递未观察。
+首次与补充分类两次失败记录保留。Xcode自动失败诊断额外寻找devicectl报告工具路径错误，不影响只读用例已执行及上述结果。

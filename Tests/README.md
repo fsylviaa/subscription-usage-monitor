@@ -187,3 +187,5 @@ UI Runner 可额外设置 `T35_FOREGROUND_CONTROL=1`：在后台观察结束、�
 `ResetReminderPlanTests` 检查可信身份／套餐及窗口时间，`ResetReminderSchedulerTests` 使用虚拟通知中心核对安排、实际回读、失败及异步交错，`ResetReminderNotificationTests` 只构造系统通知对象检查 UTC 时间、内容、非重复触发与隔离装配，绝不提交这些对象到系统。`ResetReminderIntegrationTests` 实际承载 RootView，使用隔离账户文件、偏好、许可和虚拟中心，检查首次读取不清理旧提醒、加载后自动安排、开关变化及文件不变。保留 T38 的 20 项权限单元测试和关闭状态的浅深 UI 回归。
 
 普通 App 装配才注入系统中心；XCTest host、`--t*` 及 `--management-ui` 全部关闭系统调度，演示账户亦从规划输入排除。真实账户的待发请求及自然投递本次按用户指令延期；测试通过不能改写为真实手机通知通过。实际结果见 [T39 验收](../docs/mvp任务清单/记录/T39-验收.md)。
+
+T39 真实只读补验：`ResetReminderNotificationTests/testT39ReadRealPendingRequestsAgainstSavedResetTimes` 仅在本人 iPhone 的 **Debug XCTest 宿主**显式设置 `T39_LIVE_READBACK=1` 才执行；模拟器或未启用默认跳过，不更改共享 Scheme。直接读取 App Group 已有账户文件并在内存解码，避免 `applicationStore.load()` 的迁移／组件发布副作用；读取系统原始待发请求，再逐条核对身份、内容、非重复触发和时间。只输出账户序号、真实／演示数量、上海时间和匹配结果；不输出邮箱、余额、内部标识、原文件或凭据。不申请权限、不添加／删除通知、不联网。缺少真实有效未来窗口时用例不通过，记录为验收准备不足，不能以0条吻合0条宣称通过。手机临时测试构建后恢复既有正式版普通入口。
