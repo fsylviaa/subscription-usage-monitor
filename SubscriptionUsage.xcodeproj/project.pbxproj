@@ -5,6 +5,18 @@
 	};
 	"objectVersion" = "56";
 	"objects" = {
+"A3900000000000000000000B" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/ResetReminderIntegrationTests.swift"; "sourceTree" = SOURCE_ROOT; };
+"A3900000000000000000000C" = { "isa" = "PBXBuildFile"; "fileRef" = "A3900000000000000000000B"; };
+"A39000000000000000000009" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/ResetReminderNotificationTests.swift"; "sourceTree" = SOURCE_ROOT; };
+"A3900000000000000000000A" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000009"; };
+"A39000000000000000000007" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/ResetReminderSchedulerTests.swift"; "sourceTree" = SOURCE_ROOT; };
+"A39000000000000000000008" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000007"; };
+"A39000000000000000000005" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/ResetReminderPlanTests.swift"; "sourceTree" = SOURCE_ROOT; };
+"A39000000000000000000006" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000005"; };
+"A39000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Services/ResetReminderScheduler.swift"; "sourceTree" = SOURCE_ROOT; };
+"A39000000000000000000004" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000003"; };
+"A39000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Services/ResetReminderPlan.swift"; "sourceTree" = SOURCE_ROOT; };
+"A39000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000001"; };
 "A38000000000000000000005" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/UI/ResetReminderUITests.swift"; "sourceTree" = SOURCE_ROOT; };
 "A38000000000000000000006" = { "isa" = "PBXBuildFile"; "fileRef" = "A38000000000000000000005"; };
 "A38000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/ResetReminderSettingsTests.swift"; "sourceTree" = SOURCE_ROOT; };
@@ -890,7 +902,7 @@
 		"DBD765969E2C480B353169C4" = {
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
-			"files" = ( "A38000000000000000000002", "B816BBB98BE9CF236B9C075C", "C2A296549EB1F677FE8435D7",
+			"files" = ( "A38000000000000000000002", "A39000000000000000000004", "A39000000000000000000002", "B816BBB98BE9CF236B9C075C", "C2A296549EB1F677FE8435D7",
                 "A33000000000000000000015",
                 "A32000000000000000000002",
                 "A32000000000000000000004",
@@ -978,7 +990,7 @@
 		"5B69A3EAFB58604EE5337742" = {
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = "2147483647";
-			"files" = ( "A38000000000000000000004",
+			"files" = ( "A38000000000000000000004", "A3900000000000000000000C", "A3900000000000000000000A", "A39000000000000000000008", "A39000000000000000000006",
                 "A33000000000000000000029",
                 "A32000000000000000000008",
                 "A12000000000000000000008",

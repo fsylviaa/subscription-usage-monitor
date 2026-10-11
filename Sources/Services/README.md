@@ -25,3 +25,5 @@ T06 的 `NetworkScoreChecker` 每次从当前设备请求指定来源，返回�
 去敏观察文件为 App 容器 `Library/Application Support/BackgroundRefresh/events.json`，最多保留100条，不含邮箱、账户ID、凭据或余额；只记调度目标、实际起止、结果计数和原／新成功时间。`request`只说明申请，`debug`仅调试触发，普通系统回调为`system`。自然执行是否发生须核对实际started/finished记录，不能把scheduled当作执行。
 
 Debug隔离验收使用独立tmp/T30-debug，Release无测试参数或调试调用。T31将继续核验中断／失败恢复；T53收口自然后台证据。
+
+T39 的 `ResetReminderPlan` 从可信成功快照生成各账户的有效未来周／5 小时提醒；`ResetReminderScheduler` 经注入的中心安排，并回读实际内容与触发时间确认。系统适配器采用非重复 UTC 日历触发，所有模拟验收仅用虚拟中心。RootView 按现有账户与 T38 开关／许可触发，初读和权限未知时暂停新写入，不把空内存当作用户清空账户。包含本次安排所需的最小失效清理；完整后台生命周期、同轮已处理状态及通知点击仍按 T40／T41 单独推进，真实调度见 T39 待验记录。

@@ -9,7 +9,8 @@ struct SubscriptionUsageApp: App {
         WindowGroup {
             RootView(connection: AppBackgroundRuntime.shared.flow,
                      preferences: AppBackgroundRuntime.shared.preferences,
-                     onBackground: { Task { await AppBackgroundRuntime.shared.coordinator.scheduleIfNeeded() } })
+                     onBackground: { Task { await AppBackgroundRuntime.shared.coordinator.scheduleIfNeeded() } },
+                     reminderScheduler: AppBackgroundRuntime.shared.reminderScheduler)
         }
     }
 }

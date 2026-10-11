@@ -163,6 +163,7 @@ final class AppBackgroundRuntime {
     let flow: CodexConnectionFlow
     let preferences: UserDefaults
     let coordinator: BackgroundQuotaRefresh
+    let reminderScheduler: ResetReminderScheduler?
     private let enabled: Bool
     private let source: String
 
@@ -184,6 +185,9 @@ final class AppBackgroundRuntime {
         source = "system"
         let directory = Self.applicationDirectory
         #endif
+        reminderScheduler = ResetReminderRuntime.permitsSystemScheduling(
+            arguments: ProcessInfo.processInfo.arguments, isTestHost: NSClassFromString("XCTestCase") != nil)
+            ? ResetReminderScheduler(center: SystemResetReminderNotificationCenter()) : nil
         coordinator = BackgroundQuotaRefresh(flow: flow, journalURL: directory.appendingPathComponent("events.json"), enabled: enabled)
         #if DEBUG
         if source == "debug" {

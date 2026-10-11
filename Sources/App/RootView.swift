@@ -10,15 +10,18 @@ struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private let onBackground: () -> Void
+    private let reminderScheduler: ResetReminderScheduler?
     private let publishesWidgetAppearance: Bool
     @State private var pendingWidgetAdd = false
+    @State private var reminderAccountsLoaded = false
     private enum Tab: Hashable { case quota, settings }
     @State private var selection: Tab = .quota
     @State private var connectionDetent: PresentationDetent = .height(250)
     @State private var appearanceTransition = AppearanceTransition()
 
-    init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard, onBackground: @escaping () -> Void = {}, reminders: ResetReminderSettings? = nil) {
+    init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard, onBackground: @escaping () -> Void = {}, reminders: ResetReminderSettings? = nil, reminderScheduler: ResetReminderScheduler? = nil) {
         self.onBackground = onBackground
+        self.reminderScheduler = reminderScheduler
         self.publishesWidgetAppearance = preferences === UserDefaults.standard
             && NSClassFromString("XCTestCase") == nil
             && !ProcessInfo.processInfo.arguments.contains(where: { $0.hasPrefix("--t") || $0 == "--management-ui" })
@@ -103,9 +106,16 @@ struct RootView: View {
         }
         .onChange(of: connection.canConnect) { _, _ in openPendingWidgetAdd() }
         .task { await reminders.refreshAuthorization() }
+        .task(id: reminderInput) {
+            guard let reminderScheduler else { return }
+            guard let input = reminderInput else { reminderScheduler.suspend(); return }
+            await reminderScheduler.update(accounts: input.accounts,
+                wantsReminders: input.wantsReminders, authorization: input.authorization)
+        }
         .task {
             connection.sceneActivityChanged(scenePhase == .active)
             await connection.loadAccounts()
+            reminderAccountsLoaded = true
             openPendingWidgetAdd()
         }
         .onChange(of: scenePhase) { _, phase in
@@ -129,6 +139,28 @@ struct RootView: View {
                 }
                 .onChange(of: dynamicTypeSize) { _, _ in connectionDetent = initialConnectionDetent }
         }
+    }
+
+    private struct ReminderInput: Equatable {
+        let accounts: [ConnectedAccount]
+        let wantsReminders: Bool
+        let authorization: ResetReminderAuthorizationStatus
+    }
+
+    private var reminderInput: ReminderInput? {
+        // Closing the switch can invalidate pending requests even while account
+        // reads fail. Initial/temporary loading never masquerades as no accounts.
+        guard reminders.wantsReminders else {
+            return ReminderInput(accounts: [], wantsReminders: false, authorization: .unknown)
+        }
+        guard !reminders.isRefreshing, reminders.authorizationStatus != .unknown else { return nil }
+        guard reminders.authorizationStatus.permitsReminders else {
+            return ReminderInput(accounts: [], wantsReminders: true, authorization: reminders.authorizationStatus)
+        }
+        guard reminderAccountsLoaded || !connection.accounts.isEmpty,
+              !connection.loadingAccounts, !connection.accountLoadFailed else { return nil }
+        return ReminderInput(accounts: connection.accounts, wantsReminders: true,
+            authorization: reminders.authorizationStatus)
     }
 
     private func openPendingWidgetAdd() {

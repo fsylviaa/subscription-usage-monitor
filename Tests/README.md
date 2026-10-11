@@ -181,3 +181,9 @@ UI Runner 可额外设置 `T35_FOREGROUND_CONTROL=1`：在后台观察结束、�
 ## T61 小组件自主更新
 
 `SharedAutomaticRefreshTests`使用临时目录验证迁移、损坏不回退、文件锁、App／组件并发查询、失败非成功及删除保护。跨进程Keychain和桌面通过`T61_WIDGET_ACCEPTANCE=1`显式启用`testT61WidgetFetchesWithoutAppQueryAndKeepsBothSizes`，沿用T35独立UUID显示目录；App保存虚构授权到专属T61测试service，组件读取后通过受控网络输入调用正式查询／解析／保存路径。验收结束按准确service清理虚构授权和目录，真实资料不变。该测试由App请求一次时间线机会，不代表自然后台调度或真实平台查询。
+
+## T39 按预计重置时间安排提醒
+
+`ResetReminderPlanTests` 检查可信身份／套餐及窗口时间，`ResetReminderSchedulerTests` 使用虚拟通知中心核对安排、实际回读、失败及异步交错，`ResetReminderNotificationTests` 只构造系统通知对象检查 UTC 时间、内容、非重复触发与隔离装配，绝不提交这些对象到系统。`ResetReminderIntegrationTests` 实际承载 RootView，使用隔离账户文件、偏好、许可和虚拟中心，检查首次读取不清理旧提醒、加载后自动安排、开关变化及文件不变。保留 T38 的 20 项权限单元测试和关闭状态的浅深 UI 回归。
+
+普通 App 装配才注入系统中心；XCTest host、`--t*` 及 `--management-ui` 全部关闭系统调度，演示账户亦从规划输入排除。真实账户的待发请求及自然投递本次按用户指令延期；测试通过不能改写为真实手机通知通过。实际结果见 [T39 验收](../docs/mvp任务清单/记录/T39-验收.md)。
