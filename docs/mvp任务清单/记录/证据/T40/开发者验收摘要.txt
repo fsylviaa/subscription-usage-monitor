@@ -1,0 +1,17 @@
+T40-Simulator-Summary: {"result": "Passed", "passedTests": 80, "failedTests": 0, "skippedTests": 1, "totalTestCount": 81}
+T40-Device-Summary: {"result": "Passed", "passedTests": 79, "failedTests": 0, "skippedTests": 1, "totalTestCount": 80}
+T40-Device-Background-Summary: {"result": "Passed", "passedTests": 2, "failedTests": 0, "skippedTests": 0, "totalTestCount": 2}
+手机专项79通过＋补验2通过（其中权限集成1项重复），合计80个不同通过用例；真实只读检查1项默认跳过，不算通过。
+模拟器最终专项80通过／1默认跳过／0失败；先前RootViewTests另11项通过，不作为新增通知用例。
+初次默认沙箱无法连接模拟器服务，未运行测试；取得工具访问后首轮编译遇namespace actor隔离错误，修正后全部专项通过。
+所有账户、时钟、偏好及通知中心均隔离；测试没有向系统提交人工通知。
+正式构建通过；覆盖安装及普通启动success，无卸载、正式账户导出或清空、正式通知权限修改。
+产品交互范围未改变；Figma、参考项目及T41未改。
+下表为人工测试数据，非系统实际待发或平台时间：
+T40 TABLE | A | 周/5小时 | 系统拒绝0→允许2，刷新失败旧值保留→拒绝0 | pending=0
+T40 TABLE | A | 作用域变更无有效数据 | pending=0; B两项保持，删除B后总0
+T40 TABLE | A | 周/5小时 | 同轮已处理，清除历史、重开、同邮箱连接 | pending=0
+T40 TABLE | A | 周 | 原+600→新+900秒 | pending=1; B两窗口不变
+T40 TABLE | A/B | 有效未来窗口 | 关闭0，重开A周1+B两项2，排序不变 | pending=3
+T40 TABLE | A | 周/5小时 | 系统拒绝0→允许2，刷新失败旧值保留→拒绝0 | pending=0
+T40 TABLE | A | 周/5小时 | 无前台页面的后台刷新失败，依据可信旧数据恢复 | pending=2

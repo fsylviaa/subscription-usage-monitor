@@ -271,6 +271,248 @@ final class ResetReminderSchedulerTests: XCTestCase {
         XCTAssertEqual(account.quotaSnapshot?.observedAt, now.addingTimeInterval(-60))
     }
 
+    @MainActor
+    func testT40DeliveredRoundPersistsAfterDismissalRelaunchAndSameEmailReconnect() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T40-rounds-\(UUID())")
+        let url = directory.appendingPathComponent("rounds.json")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let original = try account()
+        let center = SchedulerNotificationCenterDouble()
+        center.delivered = plan([original])
+        let first = ResetReminderScheduler(center: center, now: { self.now }, journalURL: url)
+        await first.update(accounts: [original], wantsReminders: true, authorization: .authorized)
+        XCTAssertTrue(center.added.isEmpty)
+        XCTAssertTrue(try XCTUnwrap(first.lastResult).planned.isEmpty)
+        center.delivered = [] // The user cleared Notification Center.
+        let store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
+        var verified = original
+        verified.remoteUserID = "same-verified-user"
+        // Model a genuine same-identity commit, not a manually changed generation.
+        try await store.append(verified)
+        let incoming = ConnectedAccount(remoteUserID: verified.remoteUserID, verifiedEmail: verified.verifiedEmail,
+            scope: verified.scope, credentialRef: UUID())
+        let reconnected = try await store.commitLogin(incoming)
+        // Record this binding's delivered round, then reload with no delivered notifications.
+        center.delivered = plan([verified])
+        let bindingScheduler = ResetReminderScheduler(center: center, now: { self.now }, journalURL: url)
+        await bindingScheduler.update(accounts: [verified], wantsReminders: true, authorization: .authorized)
+        center.delivered = []
+        let relaunched = ResetReminderScheduler(center: center, now: { self.now }, journalURL: url)
+        await relaunched.update(accounts: [reconnected], wantsReminders: true, authorization: .authorized)
+        XCTAssertEqual(reconnected.id, verified.id)
+        XCTAssertEqual(reconnected.generation, verified.generation + 1)
+        XCTAssertTrue(center.added.isEmpty, "重复添加及重开不重放已处理的同轮")
+        XCTAssertTrue(center.pending.isEmpty)
+        let text = try String(contentsOf: url, encoding: .utf8)
+        XCTAssertFalse(text.contains("example.invalid"))
+        XCTAssertFalse(text.contains("same-verified-user"))
+        print("T40 TABLE | A | 周/5小时 | 同轮已处理，清除历史、重开、同邮箱连接 | pending=0")
+    }
+
+    @MainActor
+    func testT40AcceptedElapsedRoundCannotReplayAfterClockRollbackAndRelaunch() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T40-elapsed-\(UUID())")
+        let url = directory.appendingPathComponent("rounds.json")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let accounts = [try account()]
+        let clock = SchedulerTestClock(now)
+        let center = SchedulerNotificationCenterDouble()
+        let scheduler = ResetReminderScheduler(center: center, now: { clock.value }, journalURL: url)
+        await scheduler.update(accounts: accounts, wantsReminders: true, authorization: .authorized)
+        center.pending = [] // Delivery/dismissal is not presented as proven actual delivery.
+        clock.value = now.addingTimeInterval(700)
+        let afterTime = ResetReminderScheduler(center: center, now: { clock.value }, journalURL: url)
+        await afterTime.update(accounts: accounts, wantsReminders: true, authorization: .authorized)
+        clock.value = now
+        let afterRollback = ResetReminderScheduler(center: center, now: { clock.value }, journalURL: url)
+        await afterRollback.update(accounts: accounts, wantsReminders: true, authorization: .authorized)
+        XCTAssertEqual(center.added.count, 2)
+        XCTAssertTrue(center.pending.isEmpty)
+    }
+
+    @MainActor
+    func testT40NewResetReplacesOnlyAffectedWindowAndKeepsOtherAccount() async throws {
+        var a = try account()
+        let b = try account(id: secondID, offset: 60)
+        let center = SchedulerNotificationCenterDouble()
+        let scheduler = ResetReminderScheduler(center: center, now: { self.now })
+        await scheduler.update(accounts: [a, b], wantsReminders: true, authorization: .authorized)
+        let old = center.pending
+        let oldWeekly = try XCTUnwrap(old.first { $0.accountID == a.id && $0.window == .weekly })
+        a = try revised(a, weeklyReset: now.addingTimeInterval(900))
+        await scheduler.update(accounts: [a, b], wantsReminders: true, authorization: .authorized)
+        XCTAssertEqual(center.pending.count, 4)
+        XCTAssertEqual(center.added.count, 5)
+        XCTAssertEqual(center.removedIdentifiers, [oldWeekly.identifier])
+        XCTAssertEqual(center.pending.filter { $0.accountID == b.id }, old.filter { $0.accountID == b.id })
+        XCTAssertEqual(center.pending.first { $0.accountID == a.id && $0.window == .weekly }?.resetsAt,
+                       now.addingTimeInterval(900))
+        print("T40 TABLE | A | 周 | 原+600→新+900秒 | pending=1; B两窗口不变")
+    }
+
+    @MainActor
+    func testT40SwitchReenableDoesNotCatchUpAndNewAccountObeysSwitchAndOrder() async throws {
+        let a = try account()
+        let b = try account(id: secondID, offset: 60)
+        let center = SchedulerNotificationCenterDouble()
+        let clock = SchedulerTestClock(now)
+        let scheduler = ResetReminderScheduler(center: center, now: { clock.value })
+        await scheduler.update(accounts: [a], wantsReminders: true, authorization: .authorized)
+        await scheduler.update(accounts: [a, b], wantsReminders: false, authorization: .authorized)
+        XCTAssertTrue(center.pending.isEmpty)
+        XCTAssertEqual(center.added.count, 2)
+        clock.value = now.addingTimeInterval(350)
+        await scheduler.update(accounts: [b, a], wantsReminders: true, authorization: .authorized)
+        XCTAssertEqual(center.pending.count, 3, "A五小时已过去，不补发；B两窗口仍在未来")
+        let saved = center.pending
+        await scheduler.update(accounts: [a, b], wantsReminders: true, authorization: .authorized)
+        XCTAssertEqual(center.pending, saved)
+        XCTAssertEqual(center.added.count, 5)
+        print("T40 TABLE | A/B | 有效未来窗口 | 关闭0，重开A周1+B两项2，排序不变 | pending=3")
+    }
+
+    @MainActor
+    func testT40DeletionScopeAndSubscriptionInvalidationCancelOnlyAffectedRequests() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T40-scope-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
+        let a = try account()
+        let b = try account(id: secondID, offset: 60)
+        try await store.append(a); try await store.append(b)
+        let center = SchedulerNotificationCenterDouble()
+        let scheduler = ResetReminderScheduler(center: center, now: { self.now })
+        await scheduler.update(accounts: try await store.load(), wantsReminders: true, authorization: .authorized)
+        let bRequests = center.pending.filter { $0.accountID == b.id }
+        let incoming = ConnectedAccount(remoteUserID: a.remoteUserID, verifiedEmail: a.verifiedEmail,
+            scope: .init(remoteAccountID: "new-verified-scope", kind: .personal), credentialRef: UUID())
+        _ = try await store.commitLogin(incoming)
+        await scheduler.update(accounts: try await store.load(), wantsReminders: true, authorization: .authorized)
+        XCTAssertEqual(center.pending, bRequests, "新作用域没有成功数据，不沿用旧A的时间")
+        _ = try await store.markForDeletion(b.id)
+        await scheduler.update(accounts: try await store.load(), wantsReminders: true, authorization: .authorized)
+        XCTAssertTrue(center.pending.isEmpty, "持久删除标记出现时即可取消，无须等待凭据清理")
+        try await store.finishDeletion(b.id)
+        await scheduler.update(accounts: try await store.load(), wantsReminders: true, authorization: .authorized)
+        XCTAssertTrue(center.pending.isEmpty)
+        var changed = a
+        changed.subscription = .init(planType: "free", observedAt: now)
+        changed.quotaSnapshot = nil
+        changed.quotaState = .notApplicable
+        await scheduler.update(accounts: [a], wantsReminders: true, authorization: .authorized)
+        await scheduler.update(accounts: [changed], wantsReminders: true, authorization: .authorized)
+        XCTAssertTrue(center.pending.isEmpty)
+        print("T40 TABLE | A | 作用域变更无有效数据 | pending=0; B两项保持，删除B后总0")
+    }
+
+    @MainActor
+    func testT40NewScopeWithSameTimeDoesNotInheritProcessedRound() async throws {
+        var a = try account()
+        let center = SchedulerNotificationCenterDouble()
+        center.delivered = plan([a])
+        let scheduler = ResetReminderScheduler(center: center, now: { self.now })
+        await scheduler.update(accounts: [a], wantsReminders: true, authorization: .authorized)
+        a.scope = .init(remoteAccountID: "new-scope", kind: .personal)
+        a = try revised(a)
+        await scheduler.update(accounts: [a], wantsReminders: true, authorization: .authorized)
+        XCTAssertEqual(center.pending.count, 2)
+        XCTAssertEqual(center.delivered.count, 2, "取消仅影响待发，不删除系统历史")
+    }
+
+    @MainActor
+    func testT40DurableLatestInputWinsOverStaleForegroundAndLateAdd() async throws {
+        let a = try account()
+        let b = try account(id: secondID, offset: 60)
+        let latest = SchedulerInputBox(.init(accounts: [a, b], wantsReminders: true, authorization: .authorized))
+        let center = SchedulerNotificationCenterDouble()
+        center.suspendsNextAdd = true
+        let scheduler = ResetReminderScheduler(center: center, now: { self.now }, currentInput: { latest.value })
+        let task = Task {
+            await scheduler.update(accounts: [a, b], wantsReminders: true, authorization: .authorized)
+        }
+        await center.waitForSuspendedAdd()
+        latest.value = .init(accounts: [b], wantsReminders: true, authorization: .authorized)
+        center.finishAdd()
+        await task.value
+        XCTAssertEqual(center.pending.count, 2)
+        XCTAssertTrue(center.pending.allSatisfy { $0.accountID == b.id })
+        latest.value = .init(accounts: [b], wantsReminders: false, authorization: .authorized)
+        await scheduler.update(accounts: [a, b], wantsReminders: true, authorization: .authorized)
+        XCTAssertTrue(center.pending.isEmpty, "旧前台快照不得覆盖另一执行者持久保存的关闭状态")
+    }
+
+    @MainActor
+    func testT40TwoExecutorsShareJournalAndCenterWithoutDuplicateAdds() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T40-process-\(UUID())")
+        let url = directory.appendingPathComponent("rounds.json")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let a = try account()
+        let center = SchedulerNotificationCenterDouble()
+        center.suspendsNextAdd = true
+        let foreground = ResetReminderScheduler(center: center, now: { self.now }, journalURL: url)
+        let other = ResetReminderScheduler(center: center, now: { self.now }, journalURL: url)
+        let first = Task { await foreground.update(accounts: [a], wantsReminders: true, authorization: .authorized) }
+        await center.waitForSuspendedAdd()
+        let second = Task { await other.update(accounts: [a], wantsReminders: true, authorization: .authorized) }
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(center.added.count, 1, "第二执行者等待共享通知租约")
+        center.finishAdd()
+        await first.value; await second.value
+        XCTAssertEqual(center.added.count, 2)
+        XCTAssertEqual(center.pending.count, 2)
+        XCTAssertEqual(other.lastResult?.accepted.count, 2)
+    }
+
+    @MainActor
+    func testT40CorruptJournalDoesNotForgetProcessedRoundsOrClaimSuccess() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T40-corrupt-\(UUID())")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent("rounds.json")
+        let original = Data("not valid journal".utf8)
+        try original.write(to: url)
+        let center = SchedulerNotificationCenterDouble()
+        let scheduler = ResetReminderScheduler(center: center, now: { self.now }, journalURL: url)
+        await scheduler.update(accounts: [try account()], wantsReminders: true, authorization: .authorized)
+        XCTAssertTrue(center.added.isEmpty)
+        XCTAssertNil(scheduler.lastResult)
+        XCTAssertEqual(try Data(contentsOf: url), original)
+        center.pending = plan([try account()])
+        await scheduler.update(accounts: [], wantsReminders: false, authorization: .authorized)
+        XCTAssertTrue(center.pending.isEmpty, "去重记录不可读也不能阻止明确关闭取消待发")
+        XCTAssertNil(scheduler.lastResult)
+        XCTAssertEqual(try Data(contentsOf: url), original)
+    }
+
+    @MainActor
+    func testT40SharedPreferenceMigrationKeepsCurrentSwitchAndSurvivesSettingsReload() async throws {
+        let legacySuite = "T40-legacy-\(UUID())"
+        let sharedSuite = "T40-shared-\(UUID())"
+        let legacy = try XCTUnwrap(UserDefaults(suiteName: legacySuite))
+        let shared = try XCTUnwrap(UserDefaults(suiteName: sharedSuite))
+        defer { legacy.removePersistentDomain(forName: legacySuite); shared.removePersistentDomain(forName: sharedSuite) }
+        legacy.set(true, forKey: ResetReminderSettings.preferenceKey)
+        SharedResetReminderRuntime.migratePreference(from: legacy, to: shared)
+        XCTAssertTrue(shared.bool(forKey: ResetReminderSettings.preferenceKey))
+        let model = ResetReminderSettings(defaults: shared)
+        await model.setEnabled(false) // Off never reads/requests real permission.
+        SharedResetReminderRuntime.migratePreference(from: legacy, to: shared)
+        XCTAssertFalse(shared.bool(forKey: ResetReminderSettings.preferenceKey), "旧的独立偏好不得覆盖最新关闭")
+        let reloaded = ResetReminderSettings(defaults: try XCTUnwrap(UserDefaults(suiteName: sharedSuite)))
+        XCTAssertFalse(reloaded.wantsReminders)
+    }
+
+    private func revised(_ account: ConnectedAccount, weeklyReset: Date? = nil) throws -> ConnectedAccount {
+        var result = account
+        let snapshot = try XCTUnwrap(account.quotaSnapshot)
+        result.quotaSnapshot = .init(accountID: account.id, provider: account.provider, product: account.product,
+            scope: account.scope, generation: account.generation, planType: snapshot.planType,
+            observedAt: snapshot.observedAt,
+            weekly: .init(window: .weekly, amount: snapshot.weekly.amount,
+                          resetsAt: weeklyReset ?? snapshot.weekly.resetsAt, observedAt: snapshot.observedAt),
+            fiveHours: snapshot.fiveHours)
+        return result
+    }
+
     private func account(id: UUID? = nil, offset: TimeInterval = 0) throws -> ConnectedAccount {
         let id = id ?? firstID
         var result = ConnectedAccount(id: id, verifiedEmail: "account-\(id.uuidString.suffix(3))@example.invalid",
@@ -325,6 +567,8 @@ private final class SchedulerTestSignal {
 private final class SchedulerNotificationCenterDouble: ResetReminderNotificationCenter {
     enum Failure: Error { case rejected }
     var pending: [ResetReminderRequest] = []
+    var delivered: [ResetReminderRequest] = []
+    func deliveredRequests() async -> [ResetReminderRequest] { delivered }
     var retainsAdds = true
     var failingIdentifiers: Set<String> = []
     var transformAdded: ((ResetReminderRequest) -> ResetReminderRequest)?
@@ -383,4 +627,10 @@ private final class SchedulerNotificationCenterDouble: ResetReminderNotification
         readContinuation?.resume(returning: requests)
         readContinuation = nil
     }
+}
+
+@MainActor
+private final class SchedulerInputBox {
+    var value: ResetReminderScheduler.Input
+    init(_ value: ResetReminderScheduler.Input) { self.value = value }
 }

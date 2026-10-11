@@ -33,7 +33,7 @@ final class ResetReminderIntegrationTests: XCTestCase {
             XCTFail("提醒安排与恢复不能额外查询网络评分")
             return .blocked(score: 0)
         }, transactions: IntegrationTransactions(), bindings: bindings,
-           foregroundRefreshEnabled: false, now: { now })
+           quotaUpdater: IntegrationFailedQuotaUpdater(), foregroundRefreshEnabled: false, now: { now })
         let center = IntegrationNotificationCenter()
         let existing = ResetReminderPlan.requests(accounts: [account], wantsReminders: true,
                                                   authorization: .authorized, now: now)
@@ -90,6 +90,60 @@ final class ResetReminderIntegrationTests: XCTestCase {
                        "提醒接线不能改写账户额度或原成功时间")
         let restored = try await AccountStore(fileURL: fileURL).load()
         XCTAssertEqual(restored, [account])
+
+        authorization.status = .denied
+        await reminders.refreshAuthorization()
+        try await eventually("撤权应通过已有接线取消全部未发提醒") { center.pending.isEmpty }
+        flow.refreshQuota(for: account.id)
+        await flow.waitForInitialQuota()
+        XCTAssertNotNil(flow.quotaFailure, "本次查询失败只保留可信旧快照")
+        authorization.status = .authorized
+        await reminders.refreshAuthorization()
+        try await eventually("恢复许可后即使刷新失败，也应按旧有效时间自动重新安排") {
+            center.pending.count == 2 && scheduler.lastResult?.accepted.count == 2
+        }
+        XCTAssertEqual(center.pending, existing)
+        XCTAssertEqual(flow.accounts, [account])
+        XCTAssertEqual(try Data(contentsOf: fileURL), originalFile)
+        XCTAssertEqual(authorization.requestCount, 0)
+        authorization.status = .denied
+        await reminders.refreshAuthorization()
+        try await eventually("再次撤权取消待发") { center.pending.isEmpty }
+        print("T40 TABLE | A | 周/5小时 | 系统拒绝0→允许2，刷新失败旧值保留→拒绝0 | pending=0")
+    }
+
+    @MainActor
+    func testT40BackgroundFailureStillReconcilesSavedRemindersWithoutRootView() async throws {
+        let now = Date(timeIntervalSince1970: 1_791_700_000)
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T40-background-\(UUID())")
+        let store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
+        let account = try makeAccount(now: now)
+        try await store.append(account)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let bindings = IntegrationAccountBindings(store: store)
+        bindings.finishLoading()
+        let flow = CodexConnectionFlow(checkNetwork: {
+            XCTFail("提醒协调不新增网络检查")
+            return .blocked(score: 0)
+        }, transactions: IntegrationTransactions(), bindings: bindings,
+            quotaUpdater: IntegrationFailedQuotaUpdater(), foregroundRefreshEnabled: false, now: { now })
+        let center = IntegrationNotificationCenter()
+        let scheduler = ResetReminderScheduler(center: center, now: { now }, currentInput: {
+            .init(accounts: try await store.load(), wantsReminders: true, authorization: .authorized)
+        })
+        var coordinated = 0
+        let background = BackgroundQuotaRefresh(flow: flow, journalURL: directory.appendingPathComponent("events.json"),
+            enabled: false, now: { now }, reconcileReminders: {
+                coordinated += 1
+                await scheduler.reconcileSavedInput()
+            })
+        let result = await background.execute(source: "isolated", wasInBackground: true)
+        XCTAssertEqual(result.failed, 1)
+        XCTAssertEqual(coordinated, 1)
+        XCTAssertEqual(center.pending.count, 2)
+        let saved = try await store.load()
+        XCTAssertEqual(saved, [account])
+        print("T40 TABLE | A | 周/5小时 | 无前台页面的后台刷新失败，依据可信旧数据恢复 | pending=2")
     }
 
     @MainActor
@@ -126,7 +180,8 @@ private enum IntegrationFailure: Error { case timedOut, unexpectedLogin }
 @MainActor
 private final class IntegrationAuthorizationService: ResetReminderAuthorizationServing {
     private(set) var requestCount = 0
-    func authorizationStatus() async throws -> ResetReminderAuthorizationStatus { .authorized }
+    var status: ResetReminderAuthorizationStatus = .authorized
+    func authorizationStatus() async throws -> ResetReminderAuthorizationStatus { status }
     func requestAuthorization() async throws {
         requestCount += 1
         XCTFail("隔离授权服务不应收到系统申请")
@@ -187,4 +242,8 @@ private final class IntegrationNotificationCenter: ResetReminderNotificationCent
         removedIdentifiers += identifiers
         pending.removeAll { identifiers.contains($0.identifier) }
     }
+}
+
+private struct IntegrationFailedQuotaUpdater: CodexQuotaUpdating {
+    func update(_ account: ConnectedAccount) async throws -> ConnectedAccount { throw CodexQuotaError.failed }
 }

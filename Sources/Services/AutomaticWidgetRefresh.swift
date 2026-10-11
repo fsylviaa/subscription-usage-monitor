@@ -86,6 +86,7 @@ enum AutomaticWidgetRefresh {
             // The service persists a simple failure without replacing trusted
             // values. Locked storage or expiration of execution keeps the cache.
         }
+        await SharedResetReminderRuntime.reconcile()
     }
 }
 

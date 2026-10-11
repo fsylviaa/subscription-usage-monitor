@@ -50,14 +50,17 @@ final class BackgroundQuotaRefresh {
     private let journalURL: URL
     private let now: () -> Date
     private let enabled: Bool
+    private let reconcileReminders: () async -> Void
     private var scheduling = false
     private(set) var events: [BackgroundRefreshEvent]
     private(set) var journalWriteSucceeded = true
 
     init(flow: CodexConnectionFlow, scheduler: any BackgroundRefreshScheduling = SystemBackgroundRefreshScheduler(),
-         journalURL: URL, enabled: Bool = true, now: @escaping () -> Date = { Date() }) {
+         journalURL: URL, enabled: Bool = true, now: @escaping () -> Date = { Date() },
+         reconcileReminders: @escaping () async -> Void = {}) {
         self.flow = flow; self.scheduler = scheduler; self.journalURL = journalURL
         self.enabled = enabled; self.now = now
+        self.reconcileReminders = reconcileReminders
         events = (try? JSONDecoder().decode([BackgroundRefreshEvent].self, from: Data(contentsOf: journalURL))) ?? []
     }
 
@@ -97,6 +100,7 @@ final class BackgroundQuotaRefresh {
         await scheduleIfNeeded()
         guard !Task.isCancelled else { return .init(total: 0, succeeded: 0, failed: 0, loaded: false) }
         let result = await flow.refreshQuotaInBackground()
+        await reconcileReminders()
         guard !Task.isCancelled else { return result }
         await scheduleIfNeeded()
         guard !Task.isCancelled else { return result }
@@ -185,10 +189,14 @@ final class AppBackgroundRuntime {
         source = "system"
         let directory = Self.applicationDirectory
         #endif
-        reminderScheduler = ResetReminderRuntime.permitsSystemScheduling(
+        let permitsReminders = ResetReminderRuntime.permitsSystemScheduling(
             arguments: ProcessInfo.processInfo.arguments, isTestHost: NSClassFromString("XCTestCase") != nil)
-            ? ResetReminderScheduler(center: SystemResetReminderNotificationCenter()) : nil
-        coordinator = BackgroundQuotaRefresh(flow: flow, journalURL: directory.appendingPathComponent("events.json"), enabled: enabled)
+        if permitsReminders { SharedResetReminderRuntime.migratePreference(from: preferences) }
+        reminderScheduler = permitsReminders ? SharedResetReminderRuntime.liveScheduler() : nil
+        coordinator = BackgroundQuotaRefresh(flow: flow, journalURL: directory.appendingPathComponent("events.json"),
+            enabled: enabled, reconcileReminders: {
+                if permitsReminders { await SharedResetReminderRuntime.reconcile() }
+            })
         #if DEBUG
         if source == "debug" {
             try? FileManager.default.removeItem(at: directory.appendingPathComponent("events.json"))

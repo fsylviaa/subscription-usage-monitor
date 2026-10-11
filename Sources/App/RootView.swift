@@ -27,7 +27,8 @@ struct RootView: View {
             && !ProcessInfo.processInfo.arguments.contains(where: { $0.hasPrefix("--t") || $0 == "--management-ui" })
         _appearance = AppStorage(wrappedValue: "system", "appearance", store: preferences)
         _connection = StateObject(wrappedValue: connection)
-        _reminders = StateObject(wrappedValue: reminders ?? ResetReminderSettings(defaults: preferences))
+        _reminders = StateObject(wrappedValue: reminders ?? ResetReminderSettings(
+            defaults: reminderScheduler == nil ? preferences : (SharedResetReminderRuntime.preferences ?? preferences)))
     }
 
     private var connectionDetents: Set<PresentationDetent> {

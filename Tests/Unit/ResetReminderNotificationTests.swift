@@ -19,7 +19,7 @@ final class ResetReminderNotificationTests: XCTestCase {
         XCTAssertNil(AppBackgroundRuntime.shared.reminderScheduler,
                      "测试宿主不得安排或移除真实提醒")
         let started = Date()
-        let preference = UserDefaults.standard.bool(forKey: ResetReminderSettings.preferenceKey)
+        let preference = (SharedResetReminderRuntime.preferences ?? .standard).bool(forKey: ResetReminderSettings.preferenceKey)
         let authorization = try await SystemResetReminderAuthorizationService().authorizationStatus()
         let settings = await UNUserNotificationCenter.current().notificationSettings()
         print("T39 REAL | checked=\(Self.time(started)) | preference=\(preference) | permission=\(authorization) | lockScreen=\(settings.lockScreenSetting.rawValue)")
@@ -70,7 +70,7 @@ final class ResetReminderNotificationTests: XCTestCase {
             }
         }
         let unchanged = before == (try Data(contentsOf: url))
-        let preferenceUnchanged = preference == UserDefaults.standard.bool(forKey: ResetReminderSettings.preferenceKey)
+        let preferenceUnchanged = preference == (SharedResetReminderRuntime.preferences ?? .standard).bool(forKey: ResetReminderSettings.preferenceKey)
         let permissionUnchanged = authorization == (try await SystemResetReminderAuthorizationService().authorizationStatus())
         XCTAssertTrue(unchanged, "核对期间成功快照改变时应另次重读，不能沿用混合证据")
         XCTAssertTrue(preferenceUnchanged && permissionUnchanged)

@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 
 struct ResetReminderRequest: Equatable, Sendable {
     let identifier: String
@@ -45,11 +46,20 @@ enum ResetReminderPlan {
                           reset > now, reset > window.observedAt else { return nil }
                     let label = expected == .weekly ? "周额度" : "5 小时额度"
                     return ResetReminderRequest(
-                        identifier: "quota-reset.v1.\(account.id.uuidString.lowercased()).\(expected.rawValue).\(seconds)",
+                        identifier: "quota-reset.v1.\(account.id.uuidString.lowercased()).\(bindingKey(account)).\(expected.rawValue).\(seconds)",
                         accountID: account.id, window: expected, resetsAt: reset,
                         title: "Codex · \(identity)", body: "\(label)预计重置，打开查看")
                 }
         }
+    }
+
+    /// Connection renewal/generation and list position are not reminder identity.
+    /// A verified scope change must not inherit the previous scope's processed round.
+    private static func bindingKey(_ account: ConnectedAccount) -> String {
+        let fields = [account.remoteUserID ?? "", account.scope.remoteAccountID,
+                      account.scope.kind.rawValue]
+        let data = Data(fields.map { "\($0.utf8.count):\($0)" }.joined().utf8)
+        return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
 
     private static func identity(for account: ConnectedAccount) -> String? {
