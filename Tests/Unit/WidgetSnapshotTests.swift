@@ -33,6 +33,19 @@ final class WidgetSnapshotTests: XCTestCase {
         return (AccountStore(fileURL: accountsURL, widgetStore: shared), shared, accountsURL)
     }
 
+    func testT35ConcurrentFixtureLoadsWaitForCompleteAccountList() async throws {
+        let fixture = T26BatchFixture(scenario: "success", count: 4)
+        defer { try? FileManager.default.removeItem(at: fixture.directory) }
+        async let first = fixture.load()
+        async let second = fixture.load()
+        async let third = fixture.load()
+        let results = try await [first, second, third]
+        for accounts in results {
+            XCTAssertEqual(accounts.count, 4)
+            XCTAssertEqual(accounts.map(\.id), results[0].map(\.id))
+        }
+    }
+
     func testPublicationRequestsReloadAfterDurableChangeAndNotUnchangedLoad() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("WidgetReload-\(UUID())")
         defer { try? FileManager.default.removeItem(at: root) }

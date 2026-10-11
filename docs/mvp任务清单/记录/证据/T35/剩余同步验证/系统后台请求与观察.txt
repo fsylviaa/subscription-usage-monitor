@@ -1,0 +1,11 @@
+2026-10-11；时间均为UTC，北京时间加8小时。只摘录隔离样例，不是实际订阅余额。
+系统调试由BGTaskScheduler执行，非自然调度。两尺寸先90%，调试就绪后观察窗口180秒结束仍90%（最后请求至截图约172秒）；后台完成summary两户成功断言通过。
+
+T35 | 请求组件更新 | 2026-10-11T05:08:30Z | 
+T35 | 请求组件更新 | 2026-10-11T05:08:30Z | batch-1@example.invalid=90.0
+T35 | 请求组件更新 | 2026-10-11T05:08:30Z | batch-1@example.invalid=90.0,batch-2@example.invalid=70.0
+T35 | 桌面样例准备完成 | baseline | 2026-10-11T05:08:30Z
+T35 | 请求组件更新 | 2026-10-11T05:08:57Z | batch-1@example.invalid=55.0,batch-2@example.invalid=70.0
+T35 | 请求组件更新 | 2026-10-11T05:08:57Z | batch-1@example.invalid=55.0,batch-2@example.invalid=55.0
+/Users/iceflying/codex/订阅用量监控/app/Tests/UI/CodexQuotaUITests.swift:240: error: -[SubscriptionUsageUITests.CodexQuotaUITests testT35SystemBackgroundPublishesToDesktop] : XCTAssertEqual failed: ("XCTWaiterResult(rawValue: 2)") is not equal to ("XCTWaiterResult(rawValue: 1)") - 两种尺寸都要采用新值；已请求更新不能替代实际换图
+T35 | 系统后台后桌面观察 | 2026-10-11T05:11:49Z

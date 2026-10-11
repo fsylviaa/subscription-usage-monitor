@@ -43,7 +43,7 @@ enum CodexConnectionUITestSupport {
                 return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
                     authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
             }
-            return widgetValidationFlow(scenario: arguments[marker + 1], session: session)
+            return widgetValidationFlow(scenario: arguments[marker + 1], session: session, useConfiguredAccount: arguments.contains("--t35-configured-account"))
         }
         // A normal launch restores production widget reads even after an interrupted check.
         if (try? WidgetSnapshotStore.displayStore().resolvedURL()) != (try? WidgetSnapshotStore.appGroupStore().resolvedURL()) {
@@ -135,16 +135,24 @@ enum CodexConnectionUITestSupport {
         )
     }
 
-    private static func widgetValidationFlow(scenario: String, session: UUID) -> CodexConnectionFlow {
+    private static func widgetValidationFlow(scenario: String, session: UUID, useConfiguredAccount: Bool) -> CodexConnectionFlow {
         guard scenario != "cleanup", let shared = try? WidgetSnapshotStore.validationStore(session: session) else {
             try? WidgetSnapshotStore.setValidationSession(nil)
             WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
             return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
                 authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
         }
+        // Keep synthetic identities stable across this session's app relaunches,
+        // so the system's per-widget account choice can be tested across sorting.
+        let accountIDs = [0, 1].map { index -> UUID in
+            var bytes = session.uuid
+            bytes.15 = UInt8(index)
+            return UUID(uuid: bytes)
+        }
         let fixture = T26BatchFixture(scenario: scenario == "failure" ? "blocked" : "success",
-            widgetStore: shared, reloadWidgets: {
-                print("T35 | 请求组件更新 | \(Date().ISO8601Format())")
+            widgetAccountIDs: accountIDs, useConfiguredAccount: useConfiguredAccount, widgetStore: shared, reloadWidgets: {
+                let amounts = (try? shared.read()?.allAccounts.map { "\($0.identity)=\($0.weekly?.amount.remainingPercent ?? -1)" }) ?? []
+                print("T35 | 请求组件更新 | \(Date().ISO8601Format()) | \(amounts.joined(separator: ","))")
                 WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
             })
         let flow = CodexConnectionFlow(transactions: FixtureTransactions(), bindings: fixture, quotaUpdater: fixture,
@@ -158,6 +166,10 @@ enum CodexConnectionUITestSupport {
                 case "single": flow.refreshQuota(for: original[0].id)
                 case "all", "failure": flow.refreshAllQuota()
                 case "reorder": try await fixture.store.reorder(original.reversed().map(\.id))
+                case "reorderRefresh":
+                    try await fixture.store.reorder(original.reversed().map(\.id))
+                    await flow.loadAccounts()
+                    flow.refreshAllQuota()
                 case "remove": try await fixture.removeAccount(original[0].id)
                 case "scope":
                     var incoming = original[0]
@@ -175,7 +187,7 @@ enum CodexConnectionUITestSupport {
                 default: break
                 }
                 await flow.waitForInitialQuota()
-                if ["reorder", "remove", "scope", "empty"].contains(scenario) { await flow.loadAccounts() }
+                if ["reorder", "reorderRefresh", "remove", "scope", "empty"].contains(scenario) { await flow.loadAccounts() }
                 WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
                 print("T35 | 桌面样例准备完成 | \(scenario) | \(Date().ISO8601Format())")
             } catch { print("T35 | 桌面样例准备失败") }
@@ -771,7 +783,7 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
     let store: AccountStore
     let scenario: String
     let count: Int
-    var seeded = false
+    private var seedTask: Task<Void, Error>?
     var attempts: [UUID: Int] = [:]
     var checks: [UUID: Int] = [:]
     var requests: [String: Int] = [:]
@@ -782,28 +794,48 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
     static let oldTime = Date(timeIntervalSince1970: 1_791_590_400)
     static let newTime = Date(timeIntervalSince1970: 1_791_594_000)
 
-    init(scenario: String, count: Int = 2, widgetStore: WidgetSnapshotStore? = nil,
+    private let widgetAccountIDs: [UUID]
+    private let useConfiguredAccount: Bool
+
+    init(scenario: String, count: Int = 2, widgetAccountIDs: [UUID] = [], useConfiguredAccount: Bool = false, widgetStore: WidgetSnapshotStore? = nil,
          reloadWidgets: @escaping @Sendable () -> Void = {}) {
         directory = FileManager.default.temporaryDirectory.appendingPathComponent("T26-\(UUID())")
         store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"),
                              widgetStore: widgetStore, reloadWidgets: reloadWidgets)
         self.scenario = scenario
         self.count = count
+        self.widgetAccountIDs = widgetAccountIDs
+        self.useConfiguredAccount = useConfiguredAccount
     }
 
     func load() async throws -> [ConnectedAccount] {
-        if !seeded {
-            seeded = true
-            for index in 0..<count {
-                var account = ConnectedAccount(remoteUserID: "t26-user-\(index)", verifiedEmail: "batch-\(index + 1)@example.invalid",
-                    scope: .init(remoteAccountID: "t26-account-\(index)", kind: .personal), credentialRef: UUID())
-                account.subscription = .init(planType: "Plus", observedAt: Self.oldTime)
-                account.quotaState = .available
-                account.quotaSnapshot = try CodexUsageParser().parse(Self.body(account.scope.remoteAccountID, used: 10 + index * 20),
-                    for: account, observedAt: Self.oldTime)
-                try await store.append(account)
+        if seedTask == nil {
+            seedTask = Task {
+                var ids = widgetAccountIDs
+                if useConfiguredAccount, !ids.isEmpty {
+                    let configurations: [WidgetInfo] = try await withCheckedThrowingContinuation { continuation in
+                        WidgetCenter.shared.getCurrentConfigurations { continuation.resume(with: $0) }
+                    }
+                    let configured = configurations.filter { $0.kind == WidgetAppearance.kind }
+                        .compactMap { $0.widgetConfigurationIntent(of: QuotaWidgetConfiguration.self)?.account?.id }
+                        .compactMap(UUID.init(uuidString:)).sorted { $0.uuidString < $1.uuidString }
+                    if let pinned = configured.first { ids[0] = pinned }
+                    print("T35 | 已有固定账户配置 | \(!configured.isEmpty)")
+                }
+                for index in 0..<count {
+                    var account = ConnectedAccount(id: ids.indices.contains(index) ? ids[index] : UUID(),
+                        remoteUserID: "t26-user-\(index)", verifiedEmail: "batch-\(index + 1)@example.invalid",
+                        scope: .init(remoteAccountID: "t26-account-\(index)", kind: .personal), credentialRef: UUID())
+                    account.subscription = .init(planType: "Plus", observedAt: Self.oldTime)
+                    account.quotaState = .available
+                    account.quotaSnapshot = try CodexUsageParser().parse(Self.body(account.scope.remoteAccountID, used: 10 + index * 20),
+                        for: account, observedAt: Self.oldTime)
+                    try await store.append(account)
+                }
             }
         }
+        // A second caller must await the complete seed, not observe a partial list.
+        try await seedTask?.value
         return try await store.load()
     }
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount { throw CodexQuotaError.failed }

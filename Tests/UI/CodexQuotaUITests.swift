@@ -2,6 +2,62 @@ import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    private func showT35Desktop(_ springboard: XCUIApplication) {
+        let cards = springboard.icons.matching(NSPredicate(format: "label == %@ AND value == %@", "订阅用量", "小组件"))
+        func visible() -> Bool {
+            cards.allElementsBoundByIndex.contains { $0.isHittable && $0.frame.width > 100 }
+        }
+        if visible() { return }
+        // Home may reopen on any page (including Today View after a previous run).
+        for _ in 0..<3 { springboard.swipeRight(); if visible() { return } }
+        for _ in 0..<6 { springboard.swipeLeft(); if visible() { return } }
+        XCTFail("未找到已有订阅用量组件所在桌面页")
+    }
+
+    @MainActor
+    private func t35BothSizesContain(_ text: String, on springboard: XCUIApplication) -> Bool {
+        let cards = springboard.icons.matching(NSPredicate(format: "label == %@ AND value == %@", "订阅用量", "小组件"))
+            .allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
+        guard cards.contains(where: { $0.frame.width < 230 }), cards.contains(where: { $0.frame.width > 230 }) else { return false }
+        let labels = springboard.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", text)).allElementsBoundByIndex
+        return cards.allSatisfy { card in labels.contains { card.frame.contains(CGPoint(x: $0.frame.midX, y: $0.frame.midY)) } }
+    }
+
+    @MainActor
+    func testT35PinnedAccountFollowsIdentityOnDesktop() throws {
+        guard ProcessInfo.processInfo.environment["T35_WIDGET_PICKER"] == "1" else {
+            throw XCTSkip("显式启用已有固定账户桌面对照")
+        }
+        let app = XCUIApplication(), session = UUID().uuidString
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        defer {
+            app.terminate()
+            app.launchArguments = ["--t35-widget-fixture", "cleanup", session]
+            app.launch(); app.terminate()
+        }
+        // Read an existing system choice through WidgetCenter; only the isolated
+        // snapshot uses that ID. No widget configuration or real account is edited.
+        for scenario in ["baseline", "reorder", "reorderRefresh", "failure", "remove"] {
+            app.terminate()
+            app.launchArguments = ["--t35-widget-fixture", scenario, session, "--t35-configured-account"]
+            app.launch()
+            XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 10))
+            Thread.sleep(forTimeInterval: 2)
+            XCUIDevice.shared.press(.home)
+            showT35Desktop(springboard)
+            let expectedPinned = scenario == "remove" ? "batch-2" : "batch-1"
+            let expectedDefault = ["reorder", "reorderRefresh", "remove"].contains(scenario) ? "batch-2" : "batch-1"
+            XCTAssertTrue(springboard.staticTexts[expectedPinned].firstMatch.waitForExistence(timeout: 30))
+            XCTAssertTrue(springboard.staticTexts[expectedDefault].firstMatch.waitForExistence(timeout: 30))
+            let value = scenario == "failure" ? "网络不达标，无法更新" : (scenario == "reorderRefresh" ? "55%" : (scenario == "remove" ? "70%" : "90%"))
+            XCTAssertTrue(springboard.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", value)).firstMatch.waitForExistence(timeout: 30))
+            Thread.sleep(forTimeInterval: 2)
+            screenshot(springboard, "T35-固定账户-\(scenario)")
+            print("T35 | 固定账户桌面对照 | \(scenario) | \(Date().ISO8601Format())")
+        }
+    }
+
+    @MainActor
     func testT35ResizeFromContextMenu() throws {
         guard ProcessInfo.processInfo.environment["T35_WIDGET_RESIZE"] == "1" else {
             throw XCTSkip("显式启用尺寸切换复验；会调整已有组件尺寸")
@@ -81,12 +137,7 @@ final class CodexQuotaUITests: XCTestCase {
             }
             let expected = scenario == "empty" ? "添加账户" : (scenario == "reorder" || scenario == "remove" ? "batch-2" : "batch-1")
             let labels = springboard.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", expected))
-            if !labels.firstMatch.waitForExistence(timeout: 5) {
-                for _ in 0..<3 {
-                    springboard.swipeRight()
-                    if labels.firstMatch.waitForExistence(timeout: 2) { break }
-                }
-            }
+            showT35Desktop(springboard)
             guard labels.firstMatch.waitForExistence(timeout: 15) else {
                 screenshot(springboard, "T35-桌面未发现样例-\(scenario)")
                 XCTFail("桌面尚未显示隔离组件样例，不能视为换图通过")
@@ -132,10 +183,21 @@ final class CodexQuotaUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 10))
         Thread.sleep(forTimeInterval: 2)
         XCUIDevice.shared.press(.home)
+        let baseline = springboard.staticTexts["batch-1"].firstMatch
+        showT35Desktop(springboard)
+        XCTAssertTrue(baseline.waitForExistence(timeout: 15))
+        let oldValue = NSPredicate { _, _ in self.t35BothSizesContain("90%", on: springboard) }
+        guard XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: oldValue, object: nil)], timeout: 30) == .completed else {
+            screenshot(springboard, "T35-系统后台基线未就绪")
+            XCTFail("两种尺寸必须先实际显示旧值，避免将上一轮55%误算为后台更新")
+            return
+        }
+        screenshot(springboard, "T35-系统后台前桌面")
         print("T35 DEBUG READY background")
-        Thread.sleep(forTimeInterval: 35)
-        XCTAssertTrue(springboard.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "55%"))
-            .firstMatch.waitForExistence(timeout: 15))
+        // Stay on the Home Screen: activating the app would be a separate trigger.
+        let newValue = NSPredicate { _, _ in self.t35BothSizesContain("55%", on: springboard) }
+        let changed = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: newValue, object: nil)], timeout: 180)
+        XCTAssertEqual(changed, .completed, "两种尺寸都要采用新值；已请求更新不能替代实际换图")
         screenshot(springboard, "T35-真机系统后台后桌面")
         print("T35 | 系统后台后桌面观察 | \(Date().ISO8601Format())")
         app.activate()
