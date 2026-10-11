@@ -22,7 +22,10 @@ struct QuotaWidgetProvider: AppIntentTimelineProvider {
         #if DEBUG
         WidgetSnapshotStore.traceValidation("timeline.return", detail: "family=\(context.family) remaining=\(entry.content.account?.weekly?.amount.remainingPercent ?? -1)")
         #endif
-        return Timeline(entries: [entry], policy: .after(entry.date.addingTimeInterval(30 * 60)))
+        // This extension only reads the App's publication. A timer would reread
+        // the same cache and consume reload budget without fetching new data.
+        // AccountStore requests a timeline when visible data or membership changes.
+        return Timeline(entries: [entry], policy: .never)
     }
     private func readEntry(accountID: String?) -> QuotaWidgetEntry {
         let content = QuotaWidgetContent.read(from: .displayStore()).selecting(accountID: accountID)

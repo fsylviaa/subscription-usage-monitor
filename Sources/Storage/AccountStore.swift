@@ -74,7 +74,7 @@ final class AccountStore {
             }
             if previous != snapshot {
                 try widgetStore.write(snapshot)
-                reloadWidgets()
+                if previous?.hasSameVisibleContent(as: snapshot) != true { reloadWidgets() }
             }
             widgetPublicationFailed = false
         } catch {

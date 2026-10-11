@@ -113,17 +113,22 @@ struct WidgetAccountEntity: AppEntity {
 }
 
 struct WidgetAccountQuery: EntityQuery {
-    private let store: WidgetSnapshotStore
-    init() { store = .displayStore() }
+    private let store: WidgetSnapshotStore?
+    init() { store = nil }
     init(store: WidgetSnapshotStore) { self.store = store }
 
     func entities(for identifiers: [String]) async throws -> [WidgetAccountEntity] {
         let options = try await suggestedEntities()
+        #if DEBUG
+        WidgetSnapshotStore.traceValidation("entity.resolve", detail: "requested=\(identifiers.count) missing=\(identifiers.filter { id in !options.contains { $0.id == id } }.count)")
+        #endif
         return identifiers.compactMap { id in options.first { $0.id == id } }
     }
 
     func suggestedEntities() async throws -> [WidgetAccountEntity] {
-        [.first] + (try store.read()?.allAccounts ?? []).map(WidgetAccountEntity.init(account:))
+        // App Intents can retain defaultQuery across isolated validation sessions.
+        // Resolve the current publication at read time, just as the Provider does.
+        [.first] + (try (store ?? .displayStore()).read()?.allAccounts ?? []).map(WidgetAccountEntity.init(account:))
     }
 
     func defaultResult() async -> WidgetAccountEntity? { .first }

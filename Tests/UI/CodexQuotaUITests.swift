@@ -1,6 +1,76 @@
 import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
+    private var t35ObservationPhase = "standard"
+
+    @MainActor
+    private func t35WidgetDeveloperMode(_ desired: Bool? = nil) throws -> Bool {
+        let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
+        settings.activate()
+        if !settings.navigationBars["开发者"].waitForExistence(timeout: 2) {
+            let developer = settings.buttons["com.apple.settings.developer"]
+            for _ in 0..<8 {
+                if developer.exists && developer.isHittable { break }
+                settings.swipeUp()
+            }
+            guard developer.waitForExistence(timeout: 5), developer.isHittable else {
+                throw NSError(domain: "T35.Settings", code: 1)
+            }
+            developer.tap()
+        }
+        let row = settings.cells["WIDGETKIT_DEVELOPER_MODE_ENABLED"]
+        for _ in 0..<10 {
+            if row.exists && row.isHittable { break }
+            if row.exists && row.frame.midY < 100 { settings.swipeDown() }
+            else { settings.swipeUp() }
+        }
+        // The outer row reports a stale value; its child is the actual UISwitch.
+        let toggle = settings.switches["WIDGETKIT_DEVELOPER_MODE_ENABLED"].firstMatch.switches.firstMatch
+        guard row.exists && row.isHittable, toggle.exists,
+              let value = toggle.value as? String, ["0", "1"].contains(value) else {
+            screenshot(settings, "T35-系统预算开关未就绪")
+            throw NSError(domain: "T35.Settings", code: 2)
+        }
+        if let desired, (value == "1") != desired {
+            guard toggle.isHittable else { throw NSError(domain: "T35.Settings", code: 4) }
+            toggle.tap()
+            let expected = NSPredicate(format: "value == %@", desired ? "1" : "0")
+            guard XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: expected, object: toggle)], timeout: 5) == .completed else {
+                screenshot(settings, "T35-系统预算开关切换失败")
+                throw NSError(domain: "T35.Settings", code: 3)
+            }
+        }
+        let enabled = (toggle.value as? String) == "1"
+        print("T35 | WidgetKit开发者模式 | enabled=\(enabled) | \(Date().ISO8601Format())")
+        screenshot(settings, "T35-WidgetKit开发者模式-\(enabled)")
+        XCUIDevice.shared.press(.home)
+        return enabled
+    }
+
+    @MainActor
+    func testT35WidgetBudgetControl() throws {
+        guard ProcessInfo.processInfo.environment["T35_BUDGET_CONTROL"] == "1" else {
+            throw XCTSkip("仅显式启用临时预算对照，结束恢复原设置")
+        }
+        let initial = try t35WidgetDeveloperMode()
+        // A resumed interrupted diagnostic can restore the value recorded before it began.
+        let original = ProcessInfo.processInfo.environment["T35_WIDGET_ORIGINAL_MODE"]
+            .flatMap { $0 == "0" ? false : ($0 == "1" ? true : nil) } ?? initial
+        defer {
+            do { _ = try t35WidgetDeveloperMode(original) }
+            catch { XCTFail("必须恢复WidgetKit开发者模式原设置：\(error)") }
+        }
+        let phases = ProcessInfo.processInfo.environment["T35_BUDGET_SKIP_BEFORE"] == "1"
+            ? [("budget-on", true), ("budget-off-after", false)]
+            : [("budget-off-before", false), ("budget-on", true), ("budget-off-after", false)]
+        for (phase, mode) in phases where ProcessInfo.processInfo.environment["T35_BUDGET_PHASE"].map({ $0 == phase }) ?? true {
+            _ = try t35WidgetDeveloperMode(mode)
+            t35ObservationPhase = phase
+            print("T35 | 预算对照阶段 | \(phase)")
+            try testT35SystemBackgroundPublishesToDesktop()
+        }
+    }
+
     @MainActor
     private func showT35Desktop(_ springboard: XCUIApplication) {
         let cards = springboard.icons.matching(NSPredicate(format: "label == %@ AND value == %@", "订阅用量", "小组件"))
@@ -132,7 +202,8 @@ final class CodexQuotaUITests: XCTestCase {
             Thread.sleep(forTimeInterval: 2)
             XCUIDevice.shared.press(.home)
             if scenario == "systemBackground" {
-                print("T35 DEBUG READY background")
+                if ProcessInfo.processInfo.environment["T35_BASELINE_ONLY"] == "1" { return }
+        print("T35 DEBUG READY background")
                 Thread.sleep(forTimeInterval: 35)
             }
             let expected = scenario == "empty" ? "添加账户" : (scenario == "reorder" || scenario == "remove" ? "batch-2" : "batch-1")
@@ -179,6 +250,13 @@ final class CodexQuotaUITests: XCTestCase {
             app.launch(); app.terminate()
         }
         app.launchArguments = ["--t35-widget-fixture", "baseline", session, "--t30-background-debug"]
+        if ProcessInfo.processInfo.environment["T35_PRESERVE_CONFIGURED_ACCOUNTS"] == "1" {
+            app.launchArguments = ["--t35-widget-fixture", "backgroundBaseline", session,
+                                   "--t30-background-debug", "--t35-configured-account"]
+        }
+        if let preserved = ProcessInfo.processInfo.environment["T35_PRESERVED_ACCOUNT_ID"], UUID(uuidString: preserved) != nil {
+            app.launchArguments += ["--t35-preserved-account-id", preserved]
+        }
         app.launch()
         XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 10))
         Thread.sleep(forTimeInterval: 2)
@@ -192,7 +270,8 @@ final class CodexQuotaUITests: XCTestCase {
             XCTFail("两种尺寸必须先实际显示旧值，避免将上一轮55%误算为后台更新")
             return
         }
-        screenshot(springboard, "T35-系统后台前桌面")
+        screenshot(springboard, "T35-系统后台前桌面-\(t35ObservationPhase)")
+        if ProcessInfo.processInfo.environment["T35_BASELINE_ONLY"] == "1" { return }
         print("T35 DEBUG READY background")
         // Stay on the Home Screen: activating the app would be a separate trigger.
         let newValue = NSPredicate { _, _ in self.t35BothSizesContain("55%", on: springboard) }
@@ -201,8 +280,8 @@ final class CodexQuotaUITests: XCTestCase {
         print("T35 | 桌面观察窗口 | \(observationSeconds)秒 | \(Date().ISO8601Format())")
         let changed = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: newValue, object: nil)], timeout: observationSeconds)
         XCTAssertEqual(changed, .completed, "两种尺寸都要采用新值；已请求更新不能替代实际换图")
-        screenshot(springboard, "T35-真机系统后台后桌面")
-        print("T35 | 系统后台后桌面观察 | \(Date().ISO8601Format())")
+        screenshot(springboard, "T35-真机系统后台后桌面-\(t35ObservationPhase)")
+        print("T35 | 系统后台后桌面观察 | \(Date().ISO8601Format()) | phase=\(t35ObservationPhase) passed=\(changed == .completed)")
         app.activate()
         XCTAssertEqual(app.staticTexts["quota.title"].value as? String, "T30 debug background=true success=2 failed=0")
         if ProcessInfo.processInfo.environment["T35_FOREGROUND_CONTROL"] == "1" {

@@ -1,0 +1,46 @@
+iPhone 11 / iOS 26.5；WidgetKit开发者模式关闭；系统BGTaskScheduler调试触发，不是自然调度。
+日志时间Z为UTC，北京时间加8小时。
+T35 | 已有固定账户配置 | true | configured=3 uniquePinned=1
+T35 | 请求组件更新 | 2026-10-11T09:13:49Z |
+T35 | 请求组件更新 | 2026-10-11T09:13:49Z | batch-1@example.invalid=90.0
+T35 | 请求组件更新 | 2026-10-11T09:13:49Z | batch-1@example.invalid=90.0,batch-2@example.invalid=90.0
+T35 | 桌面样例准备完成 | backgroundBaseline | 2026-10-11T09:13:49Z
+T35 | 请求组件更新 | 2026-10-11T09:14:31Z | batch-1@example.invalid=55.0,batch-2@example.invalid=90.0
+T35 | 请求组件更新 | 2026-10-11T09:14:31Z | batch-1@example.invalid=55.0,batch-2@example.invalid=55.0
+T35 TRACE | 2026-10-11T09:13:49Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T09:13:49Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T09:13:49Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T09:13:49Z | timeline.return | family=systemMedium remaining=90.0
+T35 TRACE | 2026-10-11T09:13:49Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T09:13:49Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T09:13:49Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T09:13:49Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T09:13:50Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T09:13:50Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T09:13:50Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T09:13:50Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T09:13:50Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T09:13:50Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T09:13:50Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T09:13:50Z | timeline.return | family=systemMedium remaining=90.0
+T35 TRACE | 2026-10-11T09:13:50Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T09:13:50Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T09:13:50Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T09:13:50Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T09:13:50Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T09:13:50Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T09:13:50Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T09:13:50Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T09:14:31Z | reload.request | batch-1@example.invalid=55.0,batch-2@example.invalid=90.0
+T35 TRACE | 2026-10-11T09:14:31Z | reload.return |
+T35 TRACE | 2026-10-11T09:14:31Z | reload.request | batch-1@example.invalid=55.0,batch-2@example.invalid=55.0
+T35 TRACE | 2026-10-11T09:14:31Z | reload.return |
+T35 CLEANUP | markerRemoved=true | removedSessions=1 | completed
+T35 CLEANUP | isolatedBackgroundJournalRemoved=true | removedBatchFixtures=1
+T35 | WidgetKit开发者模式 | enabled=false | 2026-10-11T09:13:30Z
+T35 | WidgetKit开发者模式 | enabled=false | 2026-10-11T09:13:36Z
+T35 | 预算对照阶段 | budget-off-before
+T35 | 桌面观察窗口 | 180.0秒 | 2026-10-11T09:14:20Z
+/Users/iceflying/codex/订阅用量监控/app/Tests/UI/CodexQuotaUITests.swift:282: error: -[SubscriptionUsageUITests.CodexQuotaUITests testT35WidgetBudgetControl] : XCTAssertEqual failed: ("XCTWaiterResult(rawValue: 2)") is not equal to ("XCTWaiterResult(rawValue: 1)") - 两种尺寸都要采用新值；已请求更新不能替代实际换图
+T35 | 系统后台后桌面观察 | 2026-10-11T09:17:22Z | phase=budget-off-before passed=false
+T35 | WidgetKit开发者模式 | enabled=false | 2026-10-11T09:17:32Z

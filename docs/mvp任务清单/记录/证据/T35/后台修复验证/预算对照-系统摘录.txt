@@ -1,0 +1,19 @@
+来源：macOS Console连接iPhone设备，过滤SubscriptionUsageQuota；人工读取实际UI文本，非原始logarchive。
+2026-10-11 北京时间，系统BGTaskScheduler调试触发，合成账户，非自然调度。
+
+正常模式（修复版，WidgetKit开发者模式关闭）：
+16:42:31.338242+0800 dasd com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1129412037525099725:739AA3:[ {name: Widget Refresh Policy, policyWeight: 0.010, response: {33, 0.00, [{IndividualBalance == -2147483648}]}} ], Decision: MNP}
+16:42:31.339122+0800 dasd com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1324872403216079463:3CAC74:[ {name: Widget Refresh Policy, policyWeight: 0.010, response: {33, 0.00, [{IndividualBalance == -1}]}} ], Decision: MNP}
+
+恢复关闭后，中号实例也收到后台请求（不能把未执行误写成请求漏发）：
+16:52:19.273437+0800 chronod [D4BCF1ED]: Scheduled DAS budgeted refresh; name: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::-2593946410813916788
+16:52:19.273510+0800 chronod SUBMITTING: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::-2593946410813916788:0D6810
+16:52:19.275698+0800 dasd Submitted: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::-2593946410813916788:0D6810 at priority 30 (Sun Oct 11 18:52:19 2026 - Sun Oct 11 17:07:19 2026)
+时间字段是原文，未将其解释为保证执行时刻。
+
+完整重启后的中号记录（Console UI实际文字摘录）：
+17:13:50.804757+0800 chronod budget: com.apple.dasd.widget_com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::-2593946410813916788, budget: 4.335242190927414
+17:13:50.804924+0800 chronod PowerlogUpdateEntry family: systemMedium; intentHash: -2593946410813916788; location=homescreenPage2; cost=free reason=externalRequest remainingBudget=4 executionTime=0.31187403202056885
+以上是前台建立90%基线，不是后台更新完成证据。
+17:14:32.096503+0800 chronod record reload: [com.iceflying.SubscriptionUsage::com.iceflying.SubscriptionUsage.Widget:SubscriptionUsageQuota:-2593946410813916788] = externalRequest([source:<BSProcessHandle: 0x7899cee50; SubscriptionUsa:532; valid: YES>], reason: WidgetCenterServer)
+17:14:32.107928+0800 chronod Task [94] [com.iceflying.SubscriptionUsage::com.iceflying.SubscriptionUsage.Widget:SubscriptionUsageQuota:-2593946410813916788] Added queued task with configuration [externalRequest([source:<BSProcessHandle: 0x7899cee50; SubscriptionUsa:532; valid: YES>], reason: WidgetCenterServer)-immediate-budgeted-1]

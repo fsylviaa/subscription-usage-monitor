@@ -144,7 +144,14 @@ enum CodexConnectionUITestSupport {
                     if FileManager.default.fileExists(atPath: journal.path) {
                         try FileManager.default.removeItem(at: journal)
                     }
-                    print("T35 CLEANUP | isolatedBackgroundJournalRemoved=true")
+                    // T35 uses T26BatchFixture; remove only its synthetic UUID directories.
+                    let temporary = FileManager.default.temporaryDirectory
+                    let batches = try FileManager.default.contentsOfDirectory(at: temporary, includingPropertiesForKeys: nil).filter {
+                        $0.lastPathComponent.hasPrefix("T26-")
+                            && UUID(uuidString: String($0.lastPathComponent.dropFirst(4))) != nil
+                    }
+                    for batch in batches { try FileManager.default.removeItem(at: batch) }
+                    print("T35 CLEANUP | isolatedBackgroundJournalRemoved=true | removedBatchFixtures=\(batches.count)")
                 }
             } catch { print("T35 CLEANUP | failed") }
             WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
@@ -163,12 +170,19 @@ enum CodexConnectionUITestSupport {
         }
         // Keep synthetic identities stable across this session's app relaunches,
         // so the system's per-widget account choice can be tested across sorting.
-        let accountIDs = [0, 1].map { index -> UUID in
+        var accountIDs = [0, 1].map { index -> UUID in
             var bytes = session.uuid
             bytes.15 = UInt8(index)
             return UUID(uuid: bytes)
         }
-        let fixture = T26BatchFixture(scenario: scenario == "failure" ? "blocked" : "success",
+        // An unresolved saved widget selection may be absent from getCurrentConfigurations.
+        // A diagnostic can explicitly preserve that observed local UUID in synthetic data.
+        let arguments = ProcessInfo.processInfo.arguments
+        if scenario == "backgroundBaseline", let index = arguments.firstIndex(of: "--t35-preserved-account-id"),
+           arguments.indices.contains(index + 1), let id = UUID(uuidString: arguments[index + 1]) {
+            accountIDs[1] = id
+        }
+        let fixture = T26BatchFixture(scenario: scenario == "failure" ? "blocked" : (scenario == "backgroundBaseline" ? "widget-background" : "success"),
             widgetAccountIDs: accountIDs, useConfiguredAccount: useConfiguredAccount, widgetStore: shared, reloadWidgets: {
                 let amounts = (try? shared.read()?.allAccounts.map { "\($0.identity)=\($0.weekly?.amount.remainingPercent ?? -1)" }) ?? []
                 print("T35 | 请求组件更新 | \(Date().ISO8601Format()) | \(amounts.joined(separator: ","))")
@@ -840,8 +854,12 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
                     let configured = configurations.filter { $0.kind == WidgetAppearance.kind }
                         .compactMap { $0.widgetConfigurationIntent(of: QuotaWidgetConfiguration.self)?.account?.id }
                         .compactMap(UUID.init(uuidString:)).sorted { $0.uuidString < $1.uuidString }
-                    if let pinned = configured.first { ids[0] = pinned }
-                    print("T35 | 已有固定账户配置 | \(!configured.isEmpty)")
+                    let unique = Array(Set(configured)).sorted { $0.uuidString < $1.uuidString }
+                    if scenario == "widget-background" {
+                        guard unique.count <= ids.count else { throw CodexQuotaError.failed }
+                        for (index, id) in unique.enumerated() { ids[index] = id }
+                    } else if let pinned = unique.first { ids[0] = pinned }
+                    print("T35 | 已有固定账户配置 | \(!configured.isEmpty) | configured=\(configurations.count) uniquePinned=\(unique.count)")
                 }
                 for index in 0..<count {
                     var account = ConnectedAccount(id: ids.indices.contains(index) ? ids[index] : UUID(),
@@ -849,7 +867,7 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
                         scope: .init(remoteAccountID: "t26-account-\(index)", kind: .personal), credentialRef: UUID())
                     account.subscription = .init(planType: "Plus", observedAt: Self.oldTime)
                     account.quotaState = .available
-                    account.quotaSnapshot = try CodexUsageParser().parse(Self.body(account.scope.remoteAccountID, used: 10 + index * 20),
+                    account.quotaSnapshot = try CodexUsageParser().parse(Self.body(account.scope.remoteAccountID, used: scenario == "widget-background" ? 10 : 10 + index * 20),
                         for: account, observedAt: Self.oldTime)
                     try await store.append(account)
                 }

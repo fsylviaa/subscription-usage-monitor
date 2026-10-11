@@ -10,6 +10,16 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
 
     var allAccounts: [Account] { accounts ?? account.map { [$0] } ?? [] }
 
+    /// The card has no timestamps or countdowns. Keep freshness metadata on disk,
+    /// but don't spend a timeline reload when every selectable card looks the same.
+    func hasSameVisibleContent(as other: Self) -> Bool {
+        schemaVersion == other.schemaVersion && allAccounts.elementsEqual(other.allAccounts) { lhs, rhs in
+            lhs.id == rhs.id && lhs.identity == rhs.identity && lhs.plan == rhs.plan
+                && lhs.isDemo == rhs.isDemo && lhs.state == rhs.state && lhs.failure == rhs.failure
+                && lhs.weekly?.amount == rhs.weekly?.amount && lhs.fiveHours?.amount == rhs.fiveHours?.amount
+        }
+    }
+
     struct Account: Codable, Equatable, Sendable {
         let id: UUID
         let identity: String

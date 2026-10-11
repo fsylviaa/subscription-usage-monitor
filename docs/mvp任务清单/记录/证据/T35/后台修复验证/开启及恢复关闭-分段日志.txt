@@ -1,0 +1,86 @@
+T35 | 已有固定账户配置 | true | configured=3 uniquePinned=1
+T35 | 请求组件更新 | 2026-10-11T08:48:15Z |
+T35 | 请求组件更新 | 2026-10-11T08:48:15Z | batch-1@example.invalid=90.0
+T35 | 请求组件更新 | 2026-10-11T08:48:15Z | batch-1@example.invalid=90.0,batch-2@example.invalid=90.0
+T35 | 桌面样例准备完成 | backgroundBaseline | 2026-10-11T08:48:15Z
+T35 | 请求组件更新 | 2026-10-11T08:48:42Z | batch-1@example.invalid=55.0,batch-2@example.invalid=90.0
+T35 | 请求组件更新 | 2026-10-11T08:48:42Z | batch-1@example.invalid=55.0,batch-2@example.invalid=55.0
+T35 TRACE | 2026-10-11T08:48:15Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T08:48:15Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T08:48:15Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T08:48:15Z | timeline.return | family=systemMedium remaining=90.0
+T35 TRACE | 2026-10-11T08:48:16Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T08:48:16Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T08:48:16Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T08:48:16Z | timeline.return | family=systemMedium remaining=90.0
+T35 TRACE | 2026-10-11T08:48:16Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T08:48:16Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T08:48:16Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T08:48:16Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T08:48:16Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T08:48:16Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T08:48:16Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T08:48:16Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T08:48:21Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T08:48:21Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T08:48:21Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T08:48:21Z | timeline.return | family=systemMedium remaining=90.0
+T35 TRACE | 2026-10-11T08:48:21Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T08:48:21Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T08:48:21Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T08:48:21Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T08:48:21Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T08:48:21Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T08:48:21Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T08:48:21Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T08:48:42Z | reload.request | batch-1@example.invalid=55.0,batch-2@example.invalid=90.0
+T35 TRACE | 2026-10-11T08:48:42Z | reload.return |
+T35 TRACE | 2026-10-11T08:48:42Z | reload.request | batch-1@example.invalid=55.0,batch-2@example.invalid=55.0
+T35 TRACE | 2026-10-11T08:48:42Z | reload.return |
+T35 TRACE | 2026-10-11T08:48:42Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T08:48:42Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T08:48:42Z | provider.read | remaining=55.0 unavailable=false
+T35 TRACE | 2026-10-11T08:48:42Z | timeline.return | family=systemSmall remaining=55.0
+T35 TRACE | 2026-10-11T08:48:42Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T08:48:42Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T08:48:42Z | provider.read | remaining=55.0 unavailable=false
+T35 TRACE | 2026-10-11T08:48:42Z | timeline.return | family=systemSmall remaining=55.0
+T35 TRACE | 2026-10-11T08:48:42Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T08:48:42Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T08:48:42Z | provider.read | remaining=55.0 unavailable=false
+T35 TRACE | 2026-10-11T08:48:42Z | timeline.return | family=systemSmall remaining=55.0
+T35 TRACE | 2026-10-11T08:48:42Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T08:48:42Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T08:48:42Z | provider.read | remaining=55.0 unavailable=false
+T35 TRACE | 2026-10-11T08:48:42Z | timeline.return | family=systemSmall remaining=55.0
+T35 CLEANUP | markerRemoved=true | removedSessions=1 | completed
+T35 CLEANUP | isolatedBackgroundJournalRemoved=true
+T35 | 已有固定账户配置 | true | configured=3 uniquePinned=1
+T35 | 请求组件更新 | 2026-10-11T08:51:52Z |
+T35 | 请求组件更新 | 2026-10-11T08:51:52Z | batch-1@example.invalid=90.0
+T35 | 请求组件更新 | 2026-10-11T08:51:52Z | batch-1@example.invalid=90.0,batch-2@example.invalid=90.0
+T35 | 桌面样例准备完成 | backgroundBaseline | 2026-10-11T08:51:52Z
+T35 | 请求组件更新 | 2026-10-11T08:52:19Z | batch-1@example.invalid=90.0,batch-2@example.invalid=55.0
+T35 | 请求组件更新 | 2026-10-11T08:52:19Z | batch-1@example.invalid=55.0,batch-2@example.invalid=55.0
+T35 TRACE | 2026-10-11T08:51:52Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T08:51:52Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T08:51:52Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T08:51:52Z | timeline.return | family=systemMedium remaining=90.0
+T35 TRACE | 2026-10-11T08:51:57Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T08:51:57Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T08:51:57Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T08:51:57Z | timeline.return | family=systemMedium remaining=90.0
+T35 TRACE | 2026-10-11T08:51:58Z | entity.resolve | requested=1 missing=1
+T35 TRACE | 2026-10-11T08:51:58Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T08:51:58Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T08:51:58Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T08:51:58Z | entity.resolve | requested=1 missing=0
+T35 TRACE | 2026-10-11T08:51:58Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T08:51:58Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T08:51:58Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T08:52:19Z | reload.request | batch-1@example.invalid=90.0,batch-2@example.invalid=55.0
+T35 TRACE | 2026-10-11T08:52:19Z | reload.return |
+T35 TRACE | 2026-10-11T08:52:19Z | reload.request | batch-1@example.invalid=55.0,batch-2@example.invalid=55.0
+T35 TRACE | 2026-10-11T08:52:19Z | reload.return |
+T35 CLEANUP | markerRemoved=true | removedSessions=1 | completed
+T35 CLEANUP | isolatedBackgroundJournalRemoved=true

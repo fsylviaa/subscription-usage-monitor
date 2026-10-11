@@ -65,6 +65,35 @@ final class WidgetSnapshotTests: XCTestCase {
         XCTAssertGreaterThan(probe.snapshots.count, before)
     }
 
+    func testT35MetadataOnlyRefreshPersistsWithoutReloadButVisibleChangesStillReload() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("T35-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let shared = WidgetSnapshotStore(fileURL: root.appendingPathComponent("shared.json"))
+        let probe = WidgetReloadProbe()
+        let store = AccountStore(fileURL: root.appendingPathComponent("accounts.json"), widgetStore: shared,
+            reloadWidgets: { probe.record(try? shared.read()) })
+        let a = try fixture("a"), b = try fixture("b")
+        try await store.append(a); try await store.append(b)
+        let before = probe.snapshots.count
+        let later = time.addingTimeInterval(60)
+        _ = try await store.saveObservation(.init(planType: "Plus", observedAt: later),
+            quota: .available(quota(a, used: 30, at: later)), for: a)
+        XCTAssertEqual(probe.snapshots.count, before, "时间变化不改变无时间的组件画面")
+        XCTAssertEqual(try shared.read()?.account?.quotaObservedAt, later)
+        XCTAssertEqual(try shared.read()?.account?.weekly?.resetsAt, later.addingTimeInterval(86400))
+        let updatedB = try await store.saveObservation(.init(planType: "Plus", observedAt: later),
+            quota: .available(quota(b, used: 60, at: later)), for: b)
+        XCTAssertEqual(probe.snapshots.count, before + 1, "非首账户也可能被组件固定选择")
+        XCTAssertEqual(probe.snapshots.last, try shared.read(), "必须先落盘再请求更新")
+        try await store.saveQuotaFailure(.refresh, for: updatedB)
+        XCTAssertEqual(probe.snapshots.count, before + 2)
+        let recoveredAt = later.addingTimeInterval(60)
+        _ = try await store.saveObservation(.init(planType: "Plus", observedAt: recoveredAt),
+            quota: .available(quota(b, used: 60, at: recoveredAt)), for: updatedB)
+        XCTAssertEqual(probe.snapshots.count, before + 3, "成功清除失败提示仍须更新，即使额度不变")
+        XCTAssertNil(try shared.read()?.allAccounts.last?.failure)
+    }
+
     func testT35FailurePersistsSeparatelyClearsOnSuccessAndKeepsOtherAccount() async throws {
         let (store, shared, url) = try stores()
         let a = try fixture("a"), b = try fixture("b", used: 60)

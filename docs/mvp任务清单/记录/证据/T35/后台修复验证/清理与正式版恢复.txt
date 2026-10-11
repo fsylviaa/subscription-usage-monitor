@@ -1,0 +1,28 @@
+17:08:52  Acquired tunnel connection to device.
+17:08:52  Enabling developer disk image services.
+17:08:52  Acquired usage assertion.
+Launched application with com.iceflying.SubscriptionUsage bundle identifier.
+Waiting for the application to terminate…
+T35 CLEANUP | markerRemoved=true | removedSessions=0 | completed
+T35 CLEANUP | isolatedBackgroundJournalRemoved=true | removedBatchFixtures=111
+App terminated due to signal 2.
+
+T35-Budget-Restore-Install: outcome=success
+
+T35-Budget-Restore-Launch: outcome=success
+
+T35-System-Restart: outcome=success
+
+最终恢复（重启专项之后）：
+17:18:02  Acquired tunnel connection to device.
+17:18:02  Enabling developer disk image services.
+17:18:02  Acquired usage assertion.
+Launched application with com.iceflying.SubscriptionUsage bundle identifier.
+Waiting for the application to terminate…
+T35 CLEANUP | markerRemoved=true | removedSessions=0 | completed
+T35 CLEANUP | isolatedBackgroundJournalRemoved=true | removedBatchFixtures=0
+App terminated due to signal 2.
+
+T35-Final-Restore-Install: outcome=success
+
+T35-Final-Restore-Launch: outcome=success
