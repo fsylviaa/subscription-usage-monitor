@@ -1,0 +1,45 @@
+同一后台55%快照，前台只重新发请求；不代表后台换图通过。时间UTC。
+T35 | 请求组件更新 | 2026-10-11T07:25:31Z |
+T35 | 请求组件更新 | 2026-10-11T07:25:31Z | batch-1@example.invalid=90.0
+T35 | 请求组件更新 | 2026-10-11T07:25:31Z | batch-1@example.invalid=90.0,batch-2@example.invalid=70.0
+T35 | 桌面样例准备完成 | baseline | 2026-10-11T07:25:31Z
+T35 | 请求组件更新 | 2026-10-11T07:25:56Z | batch-1@example.invalid=90.0,batch-2@example.invalid=55.0
+T35 | 请求组件更新 | 2026-10-11T07:25:56Z | batch-1@example.invalid=55.0,batch-2@example.invalid=55.0
+T35 TRACE | 2026-10-11T07:25:32Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T07:25:32Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T07:25:32Z | timeline.return | family=systemMedium remaining=90.0
+T35 TRACE | 2026-10-11T07:25:32Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T07:25:32Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T07:25:32Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T07:25:32Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T07:25:32Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T07:25:32Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T07:25:32Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T07:25:32Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T07:25:32Z | timeline.return | family=systemMedium remaining=90.0
+T35 TRACE | 2026-10-11T07:25:37Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T07:25:37Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T07:25:37Z | timeline.return | family=systemMedium remaining=90.0
+T35 TRACE | 2026-10-11T07:25:37Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T07:25:37Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T07:25:37Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T07:25:37Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T07:25:37Z | provider.read | remaining=90.0 unavailable=false
+T35 TRACE | 2026-10-11T07:25:37Z | timeline.return | family=systemSmall remaining=90.0
+T35 TRACE | 2026-10-11T07:25:56Z | reload.request | batch-1@example.invalid=90.0,batch-2@example.invalid=55.0
+T35 TRACE | 2026-10-11T07:25:56Z | reload.return |
+T35 TRACE | 2026-10-11T07:25:56Z | reload.request | batch-1@example.invalid=55.0,batch-2@example.invalid=55.0
+T35 TRACE | 2026-10-11T07:25:56Z | reload.return |
+T35 TRACE | 2026-10-11T07:28:51Z | foreground.reloadOnly | remaining=[55.0, 55.0]
+T35 TRACE | 2026-10-11T07:28:51Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T07:28:51Z | provider.read | remaining=55.0 unavailable=false
+T35 TRACE | 2026-10-11T07:28:51Z | timeline.return | family=systemMedium remaining=55.0
+T35 TRACE | 2026-10-11T07:28:54Z | timeline.begin | family=systemMedium
+T35 TRACE | 2026-10-11T07:28:54Z | provider.read | remaining=55.0 unavailable=false
+T35 TRACE | 2026-10-11T07:28:54Z | timeline.return | family=systemMedium remaining=55.0
+T35 TRACE | 2026-10-11T07:28:54Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T07:28:54Z | provider.read | remaining=55.0 unavailable=false
+T35 TRACE | 2026-10-11T07:28:54Z | timeline.return | family=systemSmall remaining=55.0
+T35 TRACE | 2026-10-11T07:28:54Z | timeline.begin | family=systemSmall
+T35 TRACE | 2026-10-11T07:28:54Z | provider.read | remaining=55.0 unavailable=false
+T35 TRACE | 2026-10-11T07:28:54Z | timeline.return | family=systemSmall remaining=55.0

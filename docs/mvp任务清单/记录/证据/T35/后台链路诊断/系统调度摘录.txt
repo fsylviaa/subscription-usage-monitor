@@ -1,0 +1,65 @@
+2026-10-11，iPhone 11 / iOS 26.5。以下为 macOS 控制台连接 iPhone 后按本 App/组件筛选的系统日志摘录（通过可访问性文本读取并转录）；不是完整日志归档。时间均为北京时间。
+所有请求使用隔离合成账户；BGTaskScheduler 系统调试触发，不是自然后台。
+
+原 .after(30分钟) 策略，T35-Trace-SystemCapture：
+15:16:49.751348 chronod
+record reload: [com.iceflying.SubscriptionUsage::com.iceflying.SubscriptionUsage.Widget:SubscriptionUsageQuota:1129412037525099725] = externalRequest([source:<BSProcessHandle: 0x83cbc05d0; SubscriptionUsa:1101; valid: YES>], reason: WidgetCenterServer)
+15:16:49.755760 chronod
+Evaluate reload request from <BSProcessHandle: 0x83cbc05d0; SubscriptionUsa:1101; valid: YES>:com.iceflying.SubscriptionUsage for com.iceflying.SubscriptionUsage::com.iceflying.SubscriptionUsage.Widget:SubscriptionUsageQuota.
+15:16:49.761178 chronod
+[com.iceflying.SubscriptionUsage::com.iceflying.SubscriptionUsage.Widget:SubscriptionUsageQuota:1324872403216079463] Reload with configuration [externalRequest([source:<BSProcessHandle: 0x83cbc05d0; SubscriptionUsa:1101; valid: YES>], reason: WidgetCenterServer)-immediate-budgeted-1]
+15:16:49.709450 chronod
+[89842701]: Scheduled DAS budgeted refresh; name: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1129412037525099725
+15:16:49.713624 dasd
+Submitted: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1129412037525099725:272181 at priority 30 (Sun Oct 11 15:46:49 2026 - Sun Oct 11 15:31:49 2026)
+15:16:49.732405 dasd
+Submitted: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1324872403216079463:FD2B2E at priority 30 (Sun Oct 11 15:46:49 2026 - Sun Oct 11 15:31:49 2026)
+15:16:49.768151 chronod
+Task [558] [com.iceflying.SubscriptionUsage::com.iceflying.SubscriptionUsage.Widget:SubscriptionUsageQuota:1324872403216079463] Added queued task with configuration [externalRequest([source:<BSProcessHandle: 0x83cbc05d0; SubscriptionUsa:1101; valid: YES>], reason: WidgetCenterServer)-immediate-budgeted-1]
+15:16:49.768210 chronod
+[0x83ca2da80] '_reloadTimelinesOfKind:completion:': Transaction released
+
+单变量 .never 策略对照，T35-Policy-Never（试验后撤回）：
+15:22:10.790436 chronod
+[3C1F995E]: Scheduled DAS budgeted refresh; name: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::-2593946410813916788
+15:22:10.791424 dasd
+Submitted: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::-2593946410813916788:1E9D00 at priority 30 (Sun Oct 11 17:22:10 2026 - Sun Oct 11 15:37:10 2026)
+15:22:10.805737 dasd
+Submitted: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1129412037525099725:E11C80 at priority 30 (Sun Oct 11 15:52:10 2026 - Sun Oct 11 15:37:10 2026)
+15:22:10.819742 dasd
+Submitted: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1324872403216079463:C2D122 at priority 30 (Sun Oct 11 15:52:10 2026 - Sun Oct 11 15:37:10 2026)
+
+判读边界：可确认请求已进入系统，并被转为 DAS budgeted 调度；观察期没有新的 Provider 时间线调用（对应隔离分段日志）。不能仅由 budgeted 断言每日预算已耗尽，也不臆测 Submitted 括号两个内部时间字段的定义，不把它们当成保证执行时刻。更换 .never 仍未在观察期换图，不能把策略试验当作修复。
+
+恢复原 .after 策略，T35-Extended-Background（35分钟桌面观察）本次请求：
+15:30:13.777010 chronod
+[255DBFEE]: Scheduled DAS budgeted refresh; name: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::-2593946410813916788
+15:30:13.780672 dasd
+Submitted: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::-2593946410813916788:74210B at priority 30 (Sun Oct 11 17:30:13 2026 - Sun Oct 11 15:45:13 2026)
+15:30:13.791456 chronod
+[E37F1E59]: Scheduled DAS budgeted refresh; name: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1129412037525099725
+15:30:13.793555 dasd
+Submitted: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1129412037525099725:C0C124 at priority 30 (Sun Oct 11 16:00:13 2026 - Sun Oct 11 15:45:13 2026)
+15:30:13.810004 chronod
+[D5838EC4]: Scheduled DAS budgeted refresh; name: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1324872403216079463
+15:30:13.812997 dasd
+Submitted: com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1324872403216079463:6F8D19 at priority 30 (Sun Oct 11 16:00:13 2026 - Sun Oct 11 15:45:13 2026)
+
+延长观察期间，Console再次开启后可见（同样为UI文字摘录）：
+15:44:38.225481+0800 powerd Received wake request: scheduledby=com.apple.duetactivityscheduler.com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::-2593946410813916788; time=2026-10-11 07:45:48 +0000
+15:44:38.225581+0800 powerd AutoWakeScheduler: Armed timer for 同上
+15:45:45.263485+0800 powerd Cancelled wake request: 同一scheduledby/time
+仅证明这条系统唤醒请求的建立与取消；未取得取消原因，不能等同于组件已执行或某一预算耗尽。
+
+15:57:17（筛选SubscriptionUsageQuota，Console暂停读取）新增预算证据：
+15:57:17.446809+0800 dasd Increment budget <_DASWidgetBudget com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1324872403216079463: -0.83/1.00> by 0.01
+15:57:17.450773+0800 dasd Increment budget <_DASWidgetBudget com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota: 0.39/5.00> by 0.00
+15:57:17.463160+0800 dasd Increment budget <_DASWidgetBudget com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::-2593946410813916788: 1.50/4.00> by 0.00
+其中1324872403216079463与15:30:13提交的排期一致，该配置确实出现负预算，不再仅有budgeted分类的间接证据；仍不能将这一配置直接等同于所有可见实例，或认定其他配置也预算耗尽。截至15:57尚未取得DAS策略判定原文，故当时负预算是该配置延后原因的支持证据，而非所有实例唯一原因的最终证明。
+
+16:00:17（同一Console筛选，随即暂停保留）调度判定原文：
+16:00:17.409240+0800 dasd com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1129412037525099725:C0C124:[ {name: Widget Refresh Policy, policyWeight: 0.010, response: {33, 0.00, [{IndividualBalance == -2147483648}]}} ], Decision: MNP}
+16:00:17.410996+0800 dasd com.apple.widget.com.iceflying.SubscriptionUsage.Widget::SubscriptionUsageQuota::1324872403216079463:6F8D19:[ {name: Widget Refresh Policy, policyWeight: 0.010, response: {33, 0.00, [{IndividualBalance == -1}]}} ], Decision: MNP}
+两个请求的标识和15:30:13提交项相同。此时刷新策略判定涉及IndividualBalance，未观察到随后Provider进入；不自行解释-2147483648的内部哨兵含义或MNP缩写，只结合执行缺失定位到刷新策略调度判定。
+
+16:02:42.873542 / 16:02:42.875178，以及16:03:22.156022 / 16:03:22.158998，dasd再次分别对C0C124和6F8D19给出相同Widget Refresh Policy、IndividualBalance条件和Decision: MNP。不是仅一次排期打印后无后续证据。

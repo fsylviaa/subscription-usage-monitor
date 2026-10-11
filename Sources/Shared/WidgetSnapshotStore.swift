@@ -28,6 +28,19 @@ struct WidgetSnapshotStore: Sendable {
     }
 
     #if DEBUG
+    /// Only explicit synthetic sessions are journaled, never production data.
+    static func traceValidation(_ stage: String, detail: String = "") {
+        guard let root = try? sharedDirectory(),
+              let text = try? String(contentsOf: root.appendingPathComponent("T35-validation-session"), encoding: .utf8),
+              let session = UUID(uuidString: text) else { return }
+        let directory = root.appendingPathComponent("T35-validation-\(session)/trace")
+        do {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            let line = "T35 TRACE | \(Date().ISO8601Format()) | \(stage) | \(detail)"
+            try Data(line.utf8).write(to: directory.appendingPathComponent("\(Date().timeIntervalSince1970)-\(UUID()).txt"), options: .atomic)
+        } catch { print("T35 TRACE write failed") }
+    }
+
     /// Explicit developer-only desktop checks. Never replaces the production snapshot.
     static func validationStore(session: UUID) throws -> Self {
         Self(fileURL: try sharedDirectory().appendingPathComponent("T35-validation-\(session)/snapshot.json"))
@@ -41,8 +54,23 @@ struct WidgetSnapshotStore: Sendable {
             try Data(session.uuidString.utf8).write(to: marker, options: .atomic)
         } else {
             let previous = (try? String(contentsOf: marker, encoding: .utf8)).flatMap(UUID.init(uuidString:))
+            if let previous {
+                let trace = root.appendingPathComponent("T35-validation-\(previous)/trace")
+                for file in ((try? FileManager.default.contentsOfDirectory(at: trace, includingPropertiesForKeys: nil)) ?? []).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+                    if let line = try? String(contentsOf: file, encoding: .utf8) { print(line) }
+                }
+            }
             if FileManager.default.fileExists(atPath: marker.path) { try FileManager.default.removeItem(at: marker) }
-            if let previous { try? FileManager.default.removeItem(at: root.appendingPathComponent("T35-validation-\(previous)")) }
+            // Also clear orphaned synthetic sessions left by an interrupted run.
+            // Only this explicit prefix plus a valid UUID is eligible; production
+            // snapshots and system widget choices are outside this namespace.
+            let prefix = "T35-validation-"
+            let sessions = try FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil).filter {
+                $0.lastPathComponent.hasPrefix(prefix)
+                    && UUID(uuidString: String($0.lastPathComponent.dropFirst(prefix.count))) != nil
+            }
+            for directory in sessions { try FileManager.default.removeItem(at: directory) }
+            print("T35 CLEANUP | markerRemoved=\(!FileManager.default.fileExists(atPath: marker.path)) | removedSessions=\(sessions.count) | completed")
         }
     }
     #endif

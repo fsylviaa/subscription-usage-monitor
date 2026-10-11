@@ -1,0 +1,8 @@
+2026-10-11 16:06:40 真机Debug专用清理入口输出：
+T35 CLEANUP | markerRemoved=true | removedSessions=0 | completed
+T35 CLEANUP | isolatedBackgroundJournalRemoved=true
+清理后结束调试App，随后覆盖安装Release。
+16:07:04 Release覆盖安装发起，devicectl结果 outcome=success。
+16:07:26 Release普通启动成功，outcome=success，launchOptions.arguments=[]，startStopped=false。
+最终Debug build-for-testing及Release build均成功；Release App/Widget二进制均未发现T35 TRACE、T35 CLEANUP、foreground.reloadOnly、T35-validation-session标记。
+本摘录只含测试清理及构建/启动结果，不导出真实账户或授权。

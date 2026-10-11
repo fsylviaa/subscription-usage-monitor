@@ -137,7 +137,26 @@ enum CodexConnectionUITestSupport {
 
     private static func widgetValidationFlow(scenario: String, session: UUID, useConfiguredAccount: Bool) -> CodexConnectionFlow {
         guard scenario != "cleanup", let shared = try? WidgetSnapshotStore.validationStore(session: session) else {
-            try? WidgetSnapshotStore.setValidationSession(nil)
+            do {
+                try WidgetSnapshotStore.setValidationSession(nil)
+                if scenario == "cleanup" {
+                    let journal = FileManager.default.temporaryDirectory.appendingPathComponent("T30-debug")
+                    if FileManager.default.fileExists(atPath: journal.path) {
+                        try FileManager.default.removeItem(at: journal)
+                    }
+                    print("T35 CLEANUP | isolatedBackgroundJournalRemoved=true")
+                }
+            } catch { print("T35 CLEANUP | failed") }
+            WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
+            return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
+                authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+        }
+        if scenario == "reloadOnly" {
+            // A diagnostic control: reuse exactly the background publication.
+            // No fixture seeding, account writes or quota query is allowed here.
+            try? WidgetSnapshotStore.setValidationSession(session)
+            let amounts = (try? shared.read()?.allAccounts.map { $0.weekly?.amount.remainingPercent ?? -1 }) ?? []
+            WidgetSnapshotStore.traceValidation("foreground.reloadOnly", detail: "remaining=\(amounts)")
             WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
             return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
                 authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
@@ -153,7 +172,9 @@ enum CodexConnectionUITestSupport {
             widgetAccountIDs: accountIDs, useConfiguredAccount: useConfiguredAccount, widgetStore: shared, reloadWidgets: {
                 let amounts = (try? shared.read()?.allAccounts.map { "\($0.identity)=\($0.weekly?.amount.remainingPercent ?? -1)" }) ?? []
                 print("T35 | 请求组件更新 | \(Date().ISO8601Format()) | \(amounts.joined(separator: ","))")
+                WidgetSnapshotStore.traceValidation("reload.request", detail: amounts.joined(separator: ","))
                 WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
+                WidgetSnapshotStore.traceValidation("reload.return")
             })
         let flow = CodexConnectionFlow(transactions: FixtureTransactions(), bindings: fixture, quotaUpdater: fixture,
                                        foregroundRefreshEnabled: scenario == "foreground")

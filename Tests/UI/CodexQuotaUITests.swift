@@ -196,12 +196,29 @@ final class CodexQuotaUITests: XCTestCase {
         print("T35 DEBUG READY background")
         // Stay on the Home Screen: activating the app would be a separate trigger.
         let newValue = NSPredicate { _, _ in self.t35BothSizesContain("55%", on: springboard) }
-        let changed = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: newValue, object: nil)], timeout: 180)
+        let observationSeconds = min(2_400, max(30,
+            Double(ProcessInfo.processInfo.environment["T35_OBSERVATION_SECONDS"] ?? "") ?? 180))
+        print("T35 | 桌面观察窗口 | \(observationSeconds)秒 | \(Date().ISO8601Format())")
+        let changed = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: newValue, object: nil)], timeout: observationSeconds)
         XCTAssertEqual(changed, .completed, "两种尺寸都要采用新值；已请求更新不能替代实际换图")
         screenshot(springboard, "T35-真机系统后台后桌面")
         print("T35 | 系统后台后桌面观察 | \(Date().ISO8601Format())")
         app.activate()
         XCTAssertEqual(app.staticTexts["quota.title"].value as? String, "T30 debug background=true success=2 failed=0")
+        if ProcessInfo.processInfo.environment["T35_FOREGROUND_CONTROL"] == "1" {
+            // Separate control, never evidence that background presentation worked.
+            // Reload the same shared 55% without a new query or fixture reset.
+            app.terminate()
+            app.launchArguments = ["--t35-widget-fixture", "reloadOnly", session]
+            app.launch()
+            XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 10))
+            XCUIDevice.shared.press(.home)
+            showT35Desktop(springboard)
+            let control = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: newValue, object: nil)], timeout: 30)
+            screenshot(springboard, "T35-同一后台数据-前台仅请求更新对照")
+            print("T35 | 前台仅请求更新对照 | \(Date().ISO8601Format()) | passed=\(control == .completed)")
+            XCTAssertEqual(control, .completed)
+        }
     }
 
     @MainActor

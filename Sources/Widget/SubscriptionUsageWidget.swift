@@ -15,11 +15,20 @@ struct QuotaWidgetProvider: AppIntentTimelineProvider {
         readEntry(accountID: configuration.account?.id)
     }
     func timeline(for configuration: QuotaWidgetConfiguration, in context: Context) async -> Timeline<QuotaWidgetEntry> {
+        #if DEBUG
+        WidgetSnapshotStore.traceValidation("timeline.begin", detail: "family=\(context.family)")
+        #endif
         let entry = readEntry(accountID: configuration.account?.id)
+        #if DEBUG
+        WidgetSnapshotStore.traceValidation("timeline.return", detail: "family=\(context.family) remaining=\(entry.content.account?.weekly?.amount.remainingPercent ?? -1)")
+        #endif
         return Timeline(entries: [entry], policy: .after(entry.date.addingTimeInterval(30 * 60)))
     }
     private func readEntry(accountID: String?) -> QuotaWidgetEntry {
         let content = QuotaWidgetContent.read(from: .displayStore()).selecting(accountID: accountID)
+        #if DEBUG
+        WidgetSnapshotStore.traceValidation("provider.read", detail: "remaining=\(content.account?.weekly?.amount.remainingPercent ?? -1) unavailable=\(content == .unavailable)")
+        #endif
         return .init(date: .now, content: content,
                      appearance: WidgetAppearance.defaults()?.string(forKey: WidgetAppearance.key) ?? "system")
     }

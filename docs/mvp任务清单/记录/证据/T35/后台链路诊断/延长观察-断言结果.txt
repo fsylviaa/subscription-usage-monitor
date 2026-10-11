@@ -1,0 +1,6 @@
+T35 | 桌面观察窗口 | 2100.0秒 | 2026-10-11T07:30:05Z
+/Users/iceflying/codex/订阅用量监控/app/Tests/UI/CodexQuotaUITests.swift:203: error: -[SubscriptionUsageUITests.CodexQuotaUITests testT35SystemBackgroundPublishesToDesktop] : XCTAssertEqual failed: ("XCTWaiterResult(rawValue: 2)") is not equal to ("XCTWaiterResult(rawValue: 1)") - 两种尺寸都要采用新值；已请求更新不能替代实际换图
+T35 | 系统后台后桌面观察 | 2026-10-11T08:05:06Z
+	 Executed 1 test, with 1 failure (0 unexpected) in 2129.548 (2129.552) seconds
+	 Executed 1 test, with 1 failure (0 unexpected) in 2129.548 (2129.560) seconds
+	 Executed 1 test, with 1 failure (0 unexpected) in 2129.548 (2129.566) seconds

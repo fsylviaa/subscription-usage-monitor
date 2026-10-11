@@ -1,0 +1,62 @@
+[
+  {
+    "at": "2026-10-11T15:29:47.001326+08:00",
+    "source": "debug",
+    "kind": "debugSession"
+  },
+  {
+    "at": "2026-10-11T15:29:47.009951+08:00",
+    "source": "request",
+    "kind": "registered"
+  },
+  {
+    "target": "2026-10-11T15:55:56.055737+08:00",
+    "at": "2026-10-11T15:29:47.329330+08:00",
+    "source": "request",
+    "kind": "alreadyScheduled"
+  },
+  {
+    "target": "2026-10-11T15:55:56.055737+08:00",
+    "at": "2026-10-11T15:29:52.770153+08:00",
+    "source": "request",
+    "kind": "alreadyScheduled"
+  },
+  {
+    "successTimes": [
+      "2026-10-10T08:00:00+08:00",
+      "2026-10-10T08:00:00+08:00"
+    ],
+    "at": "2026-10-11T15:30:13.441871+08:00",
+    "source": "debug",
+    "kind": "started",
+    "wasInBackground": true
+  },
+  {
+    "target": "2026-10-11T16:00:13.457360+08:00",
+    "at": "2026-10-11T15:30:13.457360+08:00",
+    "source": "request",
+    "kind": "scheduled"
+  },
+  {
+    "target": "2026-10-11T16:00:13.457360+08:00",
+    "at": "2026-10-11T15:30:13.752938+08:00",
+    "source": "request",
+    "kind": "alreadyScheduled"
+  },
+  {
+    "result": {
+      "failed": 0,
+      "loaded": true,
+      "succeeded": 2,
+      "total": 2
+    },
+    "successTimes": [
+      "2026-10-10T09:01:00+08:00",
+      "2026-10-10T09:01:00+08:00"
+    ],
+    "at": "2026-10-11T15:30:13.757197+08:00",
+    "source": "debug",
+    "kind": "finished",
+    "wasInBackground": true
+  }
+]
