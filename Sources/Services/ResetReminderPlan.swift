@@ -55,7 +55,7 @@ enum ResetReminderPlan {
 
     /// Connection renewal/generation and list position are not reminder identity.
     /// A verified scope change must not inherit the previous scope's processed round.
-    private static func bindingKey(_ account: ConnectedAccount) -> String {
+    static func bindingKey(_ account: ConnectedAccount) -> String {
         let fields = [account.remoteUserID ?? "", account.scope.remoteAccountID,
                       account.scope.kind.rawValue]
         let data = Data(fields.map { "\($0.utf8.count):\($0)" }.joined().utf8)

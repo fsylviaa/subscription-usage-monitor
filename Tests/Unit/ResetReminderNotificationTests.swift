@@ -152,3 +152,157 @@ final class ResetReminderNotificationTests: XCTestCase {
             title: "Codex · first@example.invalid", body: "周额度预计重置，打开查看")
     }
 }
+
+
+final class ResetReminderNavigationTests: XCTestCase {
+    @MainActor
+    func testActualPlannerAndSystemAdapterProduceCompatibleTargetsForBothWindows() async throws {
+        let fixture = T26BatchFixture(scenario: "success")
+        defer { try? FileManager.default.removeItem(at: fixture.directory) }
+        let saved = try await fixture.load()
+        let now = try XCTUnwrap(saved.first?.quotaSnapshot?.observedAt).addingTimeInterval(1)
+        let planned = ResetReminderPlan.requests(accounts: saved, wantsReminders: true,
+            authorization: .authorized, now: now)
+        XCTAssertEqual(planned.count, 4)
+        for request in planned {
+            let native = SystemResetReminderNotificationCenter.makeRequest(request)
+            let target = try XCTUnwrap(ResetReminderTarget(request: native))
+            XCTAssertEqual(target.accountID, request.accountID)
+            XCTAssertEqual(target.window, request.window)
+            XCTAssertEqual(target.resetsAt, request.resetsAt)
+            XCTAssertEqual(target.detailTarget(in: Array(saved.reversed()))?.id, request.accountID)
+        }
+    }
+
+    @MainActor
+    func testV1DeliveredWindowTargetsResolveEvenAfterResetAndReordering() throws {
+        let a = account(), b = account()
+        for window in [QuotaWindow.weekly, .fiveHours] {
+            let target = try XCTUnwrap(ResetReminderTarget(request: native(a, window: window)))
+            XCTAssertEqual(target.window, window)
+            XCTAssertEqual(target.resetsAt, Date(timeIntervalSince1970: 1_700_000_000.25))
+            XCTAssertEqual(target.detailTarget(in: [b, a])?.id, a.id)
+        }
+    }
+
+    @MainActor
+    func testSameIdentityReconnectKeepsTargetAndDoesNotRequireQuotaSuccess() throws {
+        var a = account()
+        let target = try XCTUnwrap(ResetReminderTarget(request: native(a)))
+        a.generation += 1; a.credentialRef = UUID(); a.quotaState = .notFetched
+        XCTAssertEqual(target.detailTarget(in: [a])?.id, a.id)
+        XCTAssertNil(a.quotaSnapshot, "路由不伪造成功值")
+    }
+
+    @MainActor
+    func testDeletionAndDeletionPendingNeverChooseAnotherAccount() throws {
+        var a = account(); let b = account()
+        let target = try XCTUnwrap(ResetReminderTarget(request: native(a)))
+        XCTAssertNil(target.detailTarget(in: [b]))
+        XCTAssertNil(target.detailTarget(in: []))
+        a.deletionPending = true
+        XCTAssertNil(target.detailTarget(in: [b, a]))
+    }
+
+    @MainActor
+    func testSameLocalIDWithDifferentUserScopeOrDemoIsRejected() throws {
+        let a = account()
+        let target = try XCTUnwrap(ResetReminderTarget(request: native(a)))
+        var changed = a; changed.remoteUserID = "another-user"
+        XCTAssertNil(target.detailTarget(in: [changed]))
+        changed = a; changed.scope = .init(remoteAccountID: "other", kind: .personal)
+        XCTAssertNil(target.detailTarget(in: [changed]))
+        changed = a; changed.scope = .init(remoteAccountID: a.scope.remoteAccountID, kind: .workspace)
+        XCTAssertNil(target.detailTarget(in: [changed]))
+        changed = a; changed.source = .demo
+        XCTAssertNil(target.detailTarget(in: [changed]))
+    }
+
+    @MainActor
+    func testInvalidIdentityWindowTimeAndMetadataCannotChooseAnAccount() throws {
+        let a = account(), window = QuotaWindow.weekly.rawValue
+        let request = native(a)
+        let prefix = "quota-reset.v1.\(a.id.uuidString.lowercased())."
+        let key = ResetReminderPlan.bindingKey(a)
+        for suffix in ["x.\(window).1700000000", "\(key).99.1700000000", "\(key).\(window).nan", "\(key).\(window).inf", "\(key).\(window).0", "\(key).\(window).253402300800", "\(key).\(window).1700000000.extra"] {
+            XCTAssertNil(ResetReminderTarget(request: UNNotificationRequest(identifier: prefix + suffix,
+                content: request.content, trigger: nil)))
+        }
+        XCTAssertNil(ResetReminderTarget(request: UNNotificationRequest(identifier: "quota-reset.v1.invalid-id.\(key).\(window).1700000000", content: request.content, trigger: nil)))
+        let original = native(a)
+        let content = try XCTUnwrap(original.content.mutableCopy() as? UNMutableNotificationContent)
+        content.userInfo["accountID"] = UUID().uuidString
+        XCTAssertNil(ResetReminderTarget(request: UNNotificationRequest(identifier: original.identifier, content: content, trigger: nil)))
+        content.userInfo["accountID"] = a.id.uuidString; content.userInfo["window"] = QuotaWindow.fiveHours.rawValue
+        XCTAssertNil(ResetReminderTarget(request: UNNotificationRequest(identifier: original.identifier, content: content, trigger: nil)))
+    }
+
+    @MainActor
+    func testOnlyDefaultOwnedTapProducesEventAndMalformedOwnedTapFallsBack() {
+        let request = native(account())
+        XCTAssertNotNil(ResetReminderOpenEvent(request: request, actionIdentifier: UNNotificationDefaultActionIdentifier))
+        XCTAssertNil(ResetReminderOpenEvent(request: request, actionIdentifier: UNNotificationDismissActionIdentifier))
+        XCTAssertNil(ResetReminderOpenEvent(request: request, actionIdentifier: "unhandled-action"))
+        let foreign = UNNotificationRequest(identifier: "unrelated", content: request.content, trigger: nil)
+        XCTAssertNil(ResetReminderOpenEvent(request: foreign, actionIdentifier: UNNotificationDefaultActionIdentifier))
+        let malformed = UNNotificationRequest(identifier: "quota-reset.v1.old", content: request.content, trigger: nil)
+        XCTAssertNil(ResetReminderOpenEvent(request: malformed, actionIdentifier: UNNotificationDefaultActionIdentifier)?.target)
+        XCTAssertNotNil(ResetReminderOpenEvent(request: malformed, actionIdentifier: UNNotificationDefaultActionIdentifier))
+    }
+
+    @MainActor
+    func testColdLaunchEventSurvivesAndOldConsumptionCannotEraseNewTap() throws {
+        let nav = ResetReminderNavigation()
+        let first = try XCTUnwrap(ResetReminderOpenEvent(request: native(account()), actionIdentifier: UNNotificationDefaultActionIdentifier))
+        nav.receive(first); XCTAssertEqual(nav.pending, first)
+        let next = try XCTUnwrap(ResetReminderOpenEvent(request: native(account()), actionIdentifier: UNNotificationDefaultActionIdentifier))
+        nav.receive(next); nav.consume(first.id)
+        XCTAssertEqual(nav.pending, next)
+        nav.consume(next.id); XCTAssertNil(nav.pending)
+    }
+
+    @MainActor
+    func testTapResolutionUsesForegroundMergeAndRetainsOldValuesOnFailure() async throws {
+        for scenario in ["success", "blocked", "unknown", "slow"] {
+            let fixture = T26BatchFixture(scenario: scenario)
+            defer { try? FileManager.default.removeItem(at: fixture.directory) }
+            let saved = try await fixture.load()
+            let flow = CodexConnectionFlow(transactions: T41Transactions(), bindings: fixture, quotaUpdater: fixture)
+            let target = try XCTUnwrap(ResetReminderTarget(request: native(saved[1])))
+            flow.sceneActivityChanged(true); await flow.loadAccounts()
+            for _ in 0..<3 { XCTAssertEqual(target.detailTarget(in: flow.accounts)?.id, saved[1].id) }
+            flow.sceneActivityChanged(true)
+            if scenario == "slow" { await fixture.release() }
+            await flow.waitForInitialQuota()
+            XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+            if scenario == "success" || scenario == "slow" {
+                let requests = await fixture.requests
+                XCTAssertEqual(requests.values.reduce(0, +), 2, "每账户仅查询一次，不新增通知查询")
+            } else {
+                XCTAssertEqual(flow.accounts, saved)
+                XCTAssertEqual(flow.quotaFailure, scenario == "blocked" ? "网络不达标，无法更新" : "刷新失败")
+                let requests = await fixture.requests
+                XCTAssertTrue(requests.isEmpty, "网络检查失败不请求额度")
+            }
+        }
+    }
+
+    private func account() -> ConnectedAccount {
+        ConnectedAccount(remoteUserID: "t41-user-\(UUID())", verifiedEmail: "t41@example.invalid",
+            scope: .init(remoteAccountID: "t41-scope-\(UUID())", kind: .personal), credentialRef: UUID())
+    }
+
+    @MainActor
+    private func native(_ account: ConnectedAccount, window: QuotaWindow = .weekly) -> UNNotificationRequest {
+        let seconds = 1_700_000_000.25
+        return SystemResetReminderNotificationCenter.makeRequest(.init(
+            identifier: "quota-reset.v1.\(account.id.uuidString.lowercased()).\(ResetReminderPlan.bindingKey(account)).\(window.rawValue).\(seconds)",
+            accountID: account.id, window: window, resetsAt: Date(timeIntervalSince1970: seconds),
+            title: "Codex · 隔离账户", body: "预计重置，打开查看"))
+    }
+}
+
+private actor T41Transactions: CodexLoginTransactionStoring {
+    func save(_ authorization: CodexDeviceAuthorization) { }
+    func remove(transactionID: UUID) { }
+}

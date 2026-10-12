@@ -12,6 +12,8 @@ struct RootView: View {
     private let onBackground: () -> Void
     private let reminderScheduler: ResetReminderScheduler?
     private let publishesWidgetAppearance: Bool
+    @ObservedObject private var notificationNavigation: ResetReminderNavigation
+    @State private var pendingNotification: ResetReminderOpenEvent?
     @State private var pendingWidgetRoute: WidgetQuotaRoute?
     @State private var pendingWidgetAdd = false
     @State private var detailTarget: CodexDetailTarget?
@@ -21,7 +23,8 @@ struct RootView: View {
     @State private var connectionDetent: PresentationDetent = .height(250)
     @State private var appearanceTransition = AppearanceTransition()
 
-    init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard, onBackground: @escaping () -> Void = {}, reminders: ResetReminderSettings? = nil, reminderScheduler: ResetReminderScheduler? = nil) {
+    init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard, onBackground: @escaping () -> Void = {}, reminders: ResetReminderSettings? = nil, reminderScheduler: ResetReminderScheduler? = nil, notificationNavigation: ResetReminderNavigation = .shared) {
+        self.notificationNavigation = notificationNavigation
         self.onBackground = onBackground
         self.reminderScheduler = reminderScheduler
         self.publishesWidgetAppearance = preferences === UserDefaults.standard
@@ -103,19 +106,31 @@ struct RootView: View {
             }
         }
         .onOpenURL { url in
+            #if DEBUG
+            if CodexConnectionUITestSupport.injectNotificationURLIfRequested(url) { return }
+            #endif
             guard let route = WidgetQuotaRoute(url: url) else { return }
+            if let event = pendingNotification { notificationNavigation.consume(event.id) }
+            pendingNotification = nil
             selection = .quota
             pendingWidgetRoute = route
-            openPendingWidgetRoute()
+            openPendingAccountRoute()
+        }
+        .onChange(of: notificationNavigation.pending, initial: true) { _, event in
+            guard let event else { return }
+            selection = .quota
+            pendingWidgetRoute = nil
+            pendingNotification = event
+            openPendingAccountRoute()
         }
         .onChange(of: connection.canConnect) { _, _ in
-            openPendingWidgetRoute()
+            openPendingAccountRoute()
             openPendingWidgetAdd()
         }
-        .onChange(of: connection.loadingAccounts) { _, _ in openPendingWidgetRoute() }
-        .onChange(of: connection.cachedAccountsLoaded) { _, _ in openPendingWidgetRoute() }
+        .onChange(of: connection.loadingAccounts) { _, _ in openPendingAccountRoute() }
+        .onChange(of: connection.cachedAccountsLoaded) { _, _ in openPendingAccountRoute() }
         .onChange(of: connection.isPresented) { _, presented in
-            if !presented { openPendingWidgetRoute() }
+            if !presented { openPendingAccountRoute() }
         }
         .task { await reminders.refreshAuthorization() }
         .task(id: reminderInput) {
@@ -128,7 +143,7 @@ struct RootView: View {
             connection.sceneActivityChanged(scenePhase == .active)
             await connection.loadAccounts()
             reminderAccountsLoaded = true
-            openPendingWidgetRoute()
+            openPendingAccountRoute()
             openPendingWidgetAdd()
         }
         .onChange(of: scenePhase) { _, phase in
@@ -196,23 +211,34 @@ struct RootView: View {
             authorization: reminders.authorizationStatus)
     }
 
-    private func openPendingWidgetRoute() {
-        // A cold-start URL can arrive before cached accounts. Empty/loading or a
+    private func openPendingAccountRoute() {
+        // A cold-start URL or notification can precede cache restoration. A
         // failed read must never resolve a valid old target to a guessed account.
-        guard let route = pendingWidgetRoute, connection.cachedAccountsLoaded,
+        guard pendingWidgetRoute != nil || pendingNotification != nil, connection.cachedAccountsLoaded,
               !connection.loadingAccounts, !connection.accountLoadFailed,
               !connection.isPresented else { return }
+        let route = pendingWidgetRoute
+        let notification = pendingNotification
         pendingWidgetRoute = nil
+        pendingNotification = nil
+        if let notification { notificationNavigation.consume(notification.id) }
         let replacingDetail = detailTarget != nil
         detailTarget = nil
         pendingWidgetAdd = false
-        switch route {
-        case .addAccount:
-            pendingWidgetAdd = true
-        case .quota:
-            detailTarget = route.detailTarget(in: connection.accounts)
+        if let notification {
+            detailTarget = notification.target?.detailTarget(in: connection.accounts)
             if detailTarget == nil && connection.accounts.filter({ $0.deletionPending != true }).isEmpty {
                 pendingWidgetAdd = true
+            }
+        } else if let route {
+            switch route {
+            case .addAccount:
+                pendingWidgetAdd = true
+            case .quota:
+                detailTarget = route.detailTarget(in: connection.accounts)
+                if detailTarget == nil && connection.accounts.filter({ $0.deletionPending != true }).isEmpty {
+                    pendingWidgetAdd = true
+                }
             }
         }
         if !replacingDetail || !pendingWidgetAdd { openPendingWidgetAdd() }

@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import UserNotifications
 import XCTest
 @testable import SubscriptionUsage
 
@@ -246,4 +247,60 @@ private final class IntegrationNotificationCenter: ResetReminderNotificationCent
 
 private struct IntegrationFailedQuotaUpdater: CodexQuotaUpdating {
     func update(_ account: ConnectedAccount) async throws -> ConnectedAccount { throw CodexQuotaError.failed }
+}
+
+final class ResetReminderNavigationIntegrationTests: XCTestCase {
+    @MainActor
+    func testColdNotificationWaitsForCacheThenConsumesWithoutWaitingForRefresh() async throws {
+        let fixture = T26BatchFixture(scenario: "blocked")
+        defer { try? FileManager.default.removeItem(at: fixture.directory) }
+        let accounts = try await fixture.load()
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("T41-root-\(UUID())")
+        let store = AccountStore(fileURL: directory.appendingPathComponent("accounts.json"))
+        for account in accounts { try await store.append(account) }
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let bindings = IntegrationAccountBindings(store: store)
+        let flow = CodexConnectionFlow(transactions: IntegrationTransactions(), bindings: bindings, quotaUpdater: fixture)
+        let nav = ResetReminderNavigation()
+        let a = accounts[1], reset = Date(timeIntervalSince1970: 1_700_000_000)
+        let request = ResetReminderRequest(identifier: "quota-reset.v1.\(a.id.uuidString.lowercased()).\(ResetReminderPlan.bindingKey(a)).\(QuotaWindow.weekly.rawValue).\(reset.timeIntervalSince1970)",
+            accountID: a.id, window: .weekly, resetsAt: reset, title: "隔离账户", body: "预计重置")
+        let event = try XCTUnwrap(ResetReminderOpenEvent(request: SystemResetReminderNotificationCenter.makeRequest(request),
+            actionIdentifier: UNNotificationDefaultActionIdentifier))
+        nav.receive(event)
+        let suite = "T41-root-\(UUID())", preferences = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { preferences.removePersistentDomain(forName: suite) }
+        let reminders = ResetReminderSettings(defaults: preferences, authorizationService: IntegrationAuthorizationService())
+        let host = UIHostingController(rootView: RootView(connection: flow, preferences: preferences,
+            reminders: reminders, notificationNavigation: nav))
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.first as? UIWindowScene)
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 414, height: 896)
+        window.rootViewController = host; window.makeKeyAndVisible()
+        defer { bindings.finishLoading(); window.isHidden = true; window.rootViewController = nil }
+        for _ in 0..<250 {
+            if bindings.loadStarted { break }
+            try await Task.sleep(for: .milliseconds(20))
+        }
+        XCTAssertTrue(bindings.loadStarted)
+        XCTAssertTrue(flow.loadingAccounts)
+        XCTAssertEqual(nav.pending, event, "缓存未就绪不能消费冷启动事件")
+        XCTAssertNil(host.presentedViewController)
+        bindings.finishLoading()
+        for _ in 0..<250 {
+            if nav.pending == nil && host.presentedViewController != nil { break }
+            try await Task.sleep(for: .milliseconds(20))
+        }
+        XCTAssertNil(nav.pending, "缓存读回后实际RootView消费事件")
+        XCTAssertNotNil(host.presentedViewController, "实际展示现有详情面板")
+        // A hosted unit-test window may remain inactive; inject the same lifecycle
+        // transition as notification activation, independent of runner focus.
+        flow.sceneActivityChanged(true)
+        await flow.waitForInitialQuota()
+        XCTAssertEqual(flow.accounts, accounts)
+        XCTAssertEqual(flow.quotaFailure, "网络不达标，无法更新")
+        XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+        let persisted = try await store.load()
+        XCTAssertEqual(persisted, accounts, "失败不修改额度及原成功时间")
+    }
 }

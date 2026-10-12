@@ -2,6 +2,117 @@ import XCTest
 import CryptoKit
 
 final class CodexQuotaUITests: XCTestCase {
+    private func notificationFixtureURL(_ target: String) -> URL {
+        URL(string: "subscriptionusage://notification-fixture?target=\(target)")!
+    }
+
+    private func notificationFixtureArguments(_ scenario: String, extra: [String] = []) -> [String] {
+        ["--t26-isolated-ui", scenario, "--t27-lifecycle", "--t41-notification-ui",
+         "--t36-account-ids", UUID().uuidString, UUID().uuidString] + extra
+    }
+
+    @MainActor
+    func testT41ColdNotificationOpensSecondAccountFromCacheThenAutomaticallyUpdates() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = notificationFixtureArguments("ui-foreground")
+        app.launch()
+        XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 8))
+        XCTAssertEqual(app.staticTexts["detail.identity"].label, "batch-2@example.invalid")
+        XCTAssertEqual(app.staticTexts["detail.weekly.remaining"].label, "剩余 70%")
+        XCTAssertFalse(app.descendants(matching: .any)["quota.refreshProgress"].exists)
+        screenshot(app, "T41-冷启动先显示第二账户可信缓存")
+        let updated = NSPredicate(format: "label == %@", "剩余 55%")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: updated,
+            object: app.staticTexts["detail.weekly.remaining"])], timeout: 12), .completed)
+        screenshot(app, "T41-通知打开后自动更新无转圈")
+        app.terminate()
+    }
+
+    @MainActor
+    func testT41BackgroundNotificationReturnsFromSettingsToCorrespondingAccount() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = notificationFixtureArguments("success", extra: ["--t41-warm-only"])
+        app.launch()
+        XCTAssertTrue(app.buttons["tab.settings"].waitForExistence(timeout: 8))
+        app.buttons["tab.settings"].tap()
+        XCUIDevice.shared.press(.home)
+        let background = NSPredicate { _, _ in app.state == .runningBackground }
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: background, object: nil)], timeout: 5), .completed)
+        app.open(notificationFixtureURL("second"))
+        XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 8))
+        XCTAssertEqual(app.staticTexts["detail.identity"].label, "batch-2@example.invalid")
+        screenshot(app, "T41-后台从设置返回通知账户")
+        app.open(notificationFixtureURL("first"))
+        let first = NSPredicate(format: "label == %@", "batch-1@example.invalid")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: first,
+            object: app.staticTexts["detail.identity"])], timeout: 5), .completed)
+        screenshot(app, "T41-新通知目标覆盖旧面板")
+        app.terminate()
+    }
+
+    @MainActor
+    func testT41DeletedChangedAndMalformedNotificationFallBackWithoutOpeningOtherAccount() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = notificationFixtureArguments("success")
+        app.launch()
+        XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 8))
+        for target in ["deleted", "replaced", "malformed"] {
+            app.open(notificationFixtureURL(target))
+            XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 6))
+            XCTAssertFalse(app.buttons["detail.close"].exists)
+            XCTAssertFalse(app.buttons["connection.cancel"].exists)
+            XCTAssertEqual(app.otherElements.matching(identifier: "quota.card").count, 2)
+            screenshot(app, "T41-旧通知安全回退-\(target)")
+        }
+        app.terminate()
+    }
+
+    @MainActor
+    func testT41NoAccountsColdNotificationOpensExistingConnectionPicker() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString, "--t41-notification-ui", "--t41-empty"]
+        app.launch()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 8))
+        XCTAssertFalse(app.buttons["detail.close"].exists)
+        screenshot(app, "T41-无账户旧通知进入连接引导")
+        app.buttons["connection.cancel"].tap()
+        app.terminate()
+    }
+
+    @MainActor
+    func testT41ColdNotificationFailureKeepsOldQuotaAndUsesExistingMessages() {
+        continueAfterFailure = false
+        for scenario in ["blocked", "unknown"] {
+            let app = XCUIApplication()
+            app.launchArguments = notificationFixtureArguments(scenario)
+            app.launch()
+            XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 8))
+            XCTAssertEqual(app.staticTexts["detail.identity"].label, "batch-2@example.invalid")
+            XCTAssertTrue(app.staticTexts["detail.failure"].waitForExistence(timeout: 5))
+            XCTAssertEqual(app.staticTexts["detail.failure"].label, scenario == "blocked" ? "网络不达标，无法更新" : "刷新失败")
+            XCTAssertEqual(app.staticTexts["detail.weekly.remaining"].label, "剩余 70%")
+            XCTAssertFalse(app.buttons["重新登录"].exists)
+            screenshot(app, "T41-失败保留原账户旧值-\(scenario)")
+            app.terminate()
+        }
+    }
+
+    @MainActor
+    func testT41ColdNotificationDoesNotWaitForLoginRestoration() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = notificationFixtureArguments("success", extra: ["--t36-delay-login-read"])
+        app.launch()
+        XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 8))
+        XCTAssertEqual(app.staticTexts["detail.identity"].label, "batch-2@example.invalid")
+        screenshot(app, "T41-通知缓存路由不等登录恢复")
+        app.terminate()
+    }
+
     @MainActor
     func testT36ActualSmallAndMediumWidgetTapColdAndBackground() throws {
         guard ProcessInfo.processInfo.environment["T36_WIDGET_DESKTOP"] == "1" else {

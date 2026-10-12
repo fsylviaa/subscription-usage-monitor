@@ -1,12 +1,52 @@
 #if DEBUG
 import Foundation
 import WidgetKit
+import UserNotifications
 
 /// Only explicit DEBUG launches can use test support; no product menu or saved
 /// preference enables it. Fixtures make no external requests. The opt-in live
 /// flow uses real clients but an entirely separate account directory and vault.
 @MainActor
 enum CodexConnectionUITestSupport {
+    // Explicit DEBUG event injection only; native objects stay in memory.
+    static func injectNotificationLaunchIfRequested() {
+        let args = ProcessInfo.processInfo.arguments
+        guard args.contains("--t41-notification-ui"), !args.contains("--t41-warm-only") else { return }
+        injectNotificationFixture(target: args.contains("--t41-empty") ? "deleted" : "second")
+    }
+
+    static func injectNotificationURLIfRequested(_ url: URL) -> Bool {
+        guard ProcessInfo.processInfo.arguments.contains("--t41-notification-ui"),
+              url.scheme == "subscriptionusage", url.host == "notification-fixture" else { return false }
+        let target = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?
+            .first(where: { $0.name == "target" })?.value ?? "second"
+        injectNotificationFixture(target: target)
+        return true
+    }
+
+    private static func injectNotificationFixture(target: String) {
+        let args = ProcessInfo.processInfo.arguments
+        guard args.contains("--t26-isolated-ui") || args.contains("--management-ui") else { return }
+        let index = target == "first" ? 0 : 1
+        let ids: [UUID]
+        if let marker = args.firstIndex(of: "--t36-account-ids"), args.indices.contains(marker + 2) {
+            ids = [args[marker + 1], args[marker + 2]].compactMap(UUID.init(uuidString:))
+        } else { ids = [] }
+        let account = ConnectedAccount(id: target == "deleted" ? UUID() : (ids.indices.contains(index) ? ids[index] : UUID()),
+            remoteUserID: target == "replaced" ? "old-user" : "t26-user-\(index)",
+            verifiedEmail: "batch-\(index + 1)@example.invalid",
+            scope: .init(remoteAccountID: "t26-account-\(index)", kind: .personal), credentialRef: UUID())
+        let date = Date().addingTimeInterval(-60)
+        let identifier = "quota-reset.v1.\(account.id.uuidString.lowercased()).\(ResetReminderPlan.bindingKey(account)).\(QuotaWindow.weekly.rawValue).\(date.timeIntervalSince1970)"
+        let request = ResetReminderRequest(identifier: target == "malformed" ? "quota-reset.v1.invalid" : identifier,
+            accountID: account.id, window: .weekly, resetsAt: date,
+            title: "Codex · 隔离账户", body: "周额度预计重置，打开查看")
+        if let event = ResetReminderOpenEvent(request: SystemResetReminderNotificationCenter.makeRequest(request),
+                                              actionIdentifier: UNNotificationDefaultActionIdentifier) {
+            ResetReminderNavigation.shared.receive(event)
+        }
+    }
+
     private struct RouteValidationSession: Codable {
         let id: UUID
         let expiresAt: Date
