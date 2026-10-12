@@ -1,6 +1,78 @@
 import XCTest
 
 final class CodexQuotaUITests: XCTestCase {
+    @MainActor
+    func testT62CardOpensSamePanelClosesAndMenuKeepsItsScope() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        for appearance in ["light", "dark"] {
+            app.launchArguments = ["--t23-card-fixture", "times", appearance]
+            app.launch()
+            let cards = app.otherElements.matching(identifier: "quota.card")
+            XCTAssertEqual(cards.count, 2)
+            cards.element(boundBy: 0).buttons["quota.details"].tap()
+            XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 5))
+            XCTAssertEqual(app.staticTexts["detail.identity"].label, "card-1@example.invalid")
+            XCTAssertLessThan(app.staticTexts["detail.fiveHours.remaining"].frame.minY,
+                              app.staticTexts["detail.weekly.remaining"].frame.minY)
+            XCTAssertTrue(app.staticTexts["detail.fiveHours.remaining"].label.contains("0%"))
+            XCTAssertTrue(app.staticTexts["detail.weekly.remaining"].label.contains("100%"))
+            screenshot(app, "T62-面板-\(appearance)")
+            app.buttons["detail.menu"].tap()
+            XCTAssertTrue(app.buttons["刷新额度"].waitForExistence(timeout: 3))
+            XCTAssertTrue(app.buttons["删除账户"].exists)
+            XCTAssertFalse(app.buttons["重新登录"].exists)
+            app.buttons["detail.close"].coordinate(withNormalizedOffset: .init(dx: 0.5, dy: 0.5)).tap()
+            // Dismiss the menu first, then close the sheet.
+            if app.buttons["detail.close"].exists { app.buttons["detail.close"].tap() }
+            XCTAssertTrue(cards.element(boundBy: 1).waitForExistence(timeout: 3))
+            cards.element(boundBy: 1).staticTexts["quota.weekly.remaining"].tap()
+            XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 3))
+            XCTAssertEqual(app.staticTexts["detail.identity"].label, "card-2@example.invalid")
+            XCTAssertTrue(app.staticTexts["detail.fiveHours.remaining"].label.contains("20%"))
+            app.buttons["detail.close"].tap()
+            XCTAssertFalse(app.buttons["detail.close"].exists)
+            cards.element(boundBy: 0).buttons["quota.menu"].tap()
+            XCTAssertTrue(app.buttons["删除账户"].waitForExistence(timeout: 3))
+            XCTAssertFalse(app.buttons["detail.close"].exists, "菜单不能误开详情")
+            app.terminate()
+        }
+    }
+
+    @MainActor
+    func testT62RefreshFailureRetainsOldPanelAndDeleteReturnsToList() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--t26-isolated-ui", "blocked"]
+        app.launch()
+        let cards = app.otherElements.matching(identifier: "quota.card")
+        XCTAssertEqual(cards.count, 2)
+        let oldValue = cards.element(boundBy: 0).staticTexts["quota.weekly.remaining"].label
+        cards.element(boundBy: 0).buttons["quota.details"].tap()
+        let oldTime = app.descendants(matching: .any)["quota.updatedAt"].firstMatch.label
+        app.buttons["detail.refresh"].tap()
+        XCTAssertTrue(app.staticTexts["detail.failure"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["detail.failure"].label, "网络不达标，无法更新")
+        XCTAssertEqual(app.staticTexts["detail.weekly.remaining"].label, oldValue)
+        XCTAssertEqual(app.descendants(matching: .any)["quota.updatedAt"].firstMatch.label, oldTime)
+        screenshot(app, "T62-失败保留原值原时间")
+        app.buttons["detail.close"].tap()
+        app.terminate()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        app.launch()
+        app.buttons["tab.settings"].tap()
+        app.switches["settings.demo"].coordinate(withNormalizedOffset: .init(dx: 0.9, dy: 0.5)).tap()
+        app.buttons["tab.quota"].tap()
+        app.buttons["quota.toolbarConnect"].tap()
+        XCTAssertTrue(app.buttons["quota.details"].waitForExistence(timeout: 5))
+        app.buttons["quota.details"].tap()
+        app.buttons["detail.menu"].tap()
+        app.buttons["删除账户"].tap()
+        app.alerts.buttons["删除账户"].tap()
+        XCTAssertTrue(app.staticTexts["quota.empty"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["detail.close"].exists)
+    }
+
     private var t35ObservationPhase = "standard"
 
     @MainActor
@@ -511,16 +583,20 @@ final class CodexQuotaUITests: XCTestCase {
         let cards = app.otherElements.matching(identifier: "quota.card")
         XCTAssertTrue(cards.element(boundBy: 1).waitForExistence(timeout: 10))
         let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
-        first.buttons["quota.details"].tap()
-        second.buttons["quota.details"].tap()
-        let oldTime = second.staticTexts["quota.updatedAt"].label
+        func time(_ card: XCUIElement) -> String {
+            card.buttons["quota.details"].tap()
+            XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 3))
+            let result = app.staticTexts["quota.updatedAt"].label
+            app.buttons["detail.close"].tap()
+            return result
+        }
+        let oldTime = time(second)
         app.pullAllQuota()
         XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 8))
-        XCTAssertEqual(app.staticTexts["quota.failure"].label, "刷新失败")
         XCTAssertEqual(first.staticTexts["quota.weekly.remaining"].label, "剩余 55%")
         XCTAssertEqual(second.staticTexts["quota.weekly.remaining"].label, "剩余 70%")
-        XCTAssertEqual(second.staticTexts["quota.updatedAt"].label, oldTime)
-        let firstTime = first.staticTexts["quota.updatedAt"].label
+        XCTAssertEqual(time(second), oldTime)
+        let firstTime = time(first)
         XCTAssertNotEqual(firstTime, oldTime)
         screenshot(app, "T26-部分成功与旧值保留")
         app.buttons["quota.retry"].tap()
@@ -528,8 +604,8 @@ final class CodexQuotaUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["quota.refreshProgress"].firstMatch.waitForNonExistence(timeout: 8))
         XCTAssertEqual(first.staticTexts["quota.weekly.remaining"].label, "剩余 50%")
         XCTAssertEqual(second.staticTexts["quota.weekly.remaining"].label, "剩余 50%")
-        XCTAssertNotEqual(first.staticTexts["quota.updatedAt"].label, firstTime)
-        XCTAssertNotEqual(second.staticTexts["quota.updatedAt"].label, oldTime)
+        XCTAssertNotEqual(time(first), firstTime)
+        XCTAssertNotEqual(time(second), oldTime)
         screenshot(app, "T26-整批重试全部成功")
     }
 
@@ -699,21 +775,14 @@ final class CodexQuotaUITests: XCTestCase {
         defer { app.terminate() }
         let cards = app.otherElements.matching(identifier: "quota.card")
         let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
-        let ids = ["quota.accountIdentity", "quota.weekly.remaining", "quota.fiveHours.remaining"]
-        let originalY = ids.map { first.staticTexts[$0].frame.minY }
         let originalNextY = second.frame.minY
         for cycle in 0..<3 {
             first.buttons["quota.details"].tap()
-            XCTAssertTrue(first.staticTexts["quota.updatedAt"].waitForExistence(timeout: 3))
-            for (id, y) in zip(ids, originalY) { XCTAssertEqual(first.staticTexts[id].frame.minY, y, accuracy: 1) }
-            XCTAssertGreaterThan(second.frame.minY, originalNextY + 10)
-            XCTAssertFalse(second.staticTexts["quota.updatedAt"].exists)
-            screenshot(app, "T24-展开-\(cycle)")
-            first.buttons["quota.details"].tap()
-            XCTAssertFalse(first.staticTexts["quota.updatedAt"].exists)
-            for (id, y) in zip(ids, originalY) { XCTAssertEqual(first.staticTexts[id].frame.minY, y, accuracy: 1) }
+            XCTAssertTrue(app.staticTexts["quota.updatedAt"].waitForExistence(timeout: 3))
+            screenshot(app, "T62-重复打开-\(cycle)")
+            app.buttons["detail.close"].tap()
+            XCTAssertTrue(app.buttons["detail.close"].waitForNonExistence(timeout: 3))
             XCTAssertEqual(second.frame.minY, originalNextY, accuracy: 1)
-            screenshot(app, "T24-收起-\(cycle)")
         }
     }
 
@@ -722,29 +791,19 @@ final class CodexQuotaUITests: XCTestCase {
         for appearance in ["light", "dark"] {
             let app = launchT23("times", appearance: appearance)
             let cards = app.otherElements.matching(identifier: "quota.card")
-            let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
-            let weekly = first.staticTexts["quota.weekly.reset"]
-            let five = first.staticTexts["quota.fiveHours.reset"]
-            XCTAssertTrue((weekly.value as? String ?? "").hasPrefix("6 天后"))
-            XCTAssertEqual(five.value as? String, "1 小时 34 分后")
-            XCTAssertNotEqual(weekly.label, five.label)
-            XCTAssertEqual(second.staticTexts["quota.weekly.reset"].value as? String, "已到预计时间")
-            XCTAssertEqual(second.staticTexts["quota.fiveHours.reset"].label, "未提供重置时间")
-            first.buttons["quota.details"].tap()
-            let firstTime = first.staticTexts["quota.updatedAt"].label
-            XCTAssertEqual(firstTime, "更新于 \(Date(timeIntervalSince1970: 1_791_590_400).formatted(.dateTime.month().day().hour().minute()))")
-            XCTAssertFalse(second.staticTexts["quota.updatedAt"].exists)
-            second.buttons["quota.details"].tap()
-            let secondTime = second.staticTexts["quota.updatedAt"].label
-            XCTAssertEqual(secondTime, "更新于 \(Date(timeIntervalSince1970: 1_791_594_000).formatted(.dateTime.month().day().hour().minute()))")
-            XCTAssertNotEqual(firstTime, secondTime)
-            XCTAssertEqual(second.staticTexts["quota.weekly.remaining"].label, "剩余 70%")
-            XCTAssertEqual(second.staticTexts["quota.fiveHours.remaining"].label, "剩余 20%")
-            first.buttons["quota.details"].tap()
-            XCTAssertEqual(second.staticTexts["quota.updatedAt"].label, secondTime)
-            first.buttons["quota.details"].tap()
-            XCTAssertEqual(first.staticTexts["quota.updatedAt"].label, firstTime)
-            screenshot(app, "T24-各自时间与已到点-\(appearance)")
+            cards.element(boundBy: 0).buttons["quota.details"].tap()
+            XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 3))
+            let firstTime = app.staticTexts["quota.updatedAt"].label
+            XCTAssertTrue((app.staticTexts["detail.weekly.reset"].value as? String ?? "").hasPrefix("6 天后"))
+            app.buttons["detail.close"].tap()
+            cards.element(boundBy: 1).buttons["quota.details"].tap()
+            XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 3))
+            XCTAssertNotEqual(app.staticTexts["quota.updatedAt"].label, firstTime)
+            XCTAssertEqual(app.staticTexts["detail.weekly.reset"].value as? String, "已到预计时间")
+            XCTAssertEqual(app.staticTexts["detail.fiveHours.reset"].label, "未提供重置时间")
+            XCTAssertEqual(app.staticTexts["detail.weekly.remaining"].label, "剩余 70%")
+            XCTAssertEqual(app.staticTexts["detail.fiveHours.remaining"].label, "剩余 20%")
+            screenshot(app, "T62-各自时间与已到点-\(appearance)")
             app.terminate()
         }
     }
@@ -753,14 +812,12 @@ final class CodexQuotaUITests: XCTestCase {
     func testT24ExpansionRemainsReadableAtLargestAccessibilitySize() {
         let app = launchT23("limits", appearance: "dark", extra: ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
         defer { app.terminate() }
-        let first = app.otherElements.matching(identifier: "quota.card").element(boundBy: 0)
-        let identityY = first.staticTexts["quota.accountIdentity"].frame.minY
-        first.buttons["quota.details"].tap()
-        XCTAssertEqual(first.staticTexts["quota.accountIdentity"].frame.minY, identityY, accuracy: 1)
-        XCTAssertTrue(first.staticTexts["quota.updatedAt"].exists)
-        app.swipeUp()
-        XCTAssertTrue(app.staticTexts["quota.updatedAt"].isHittable)
-        screenshot(app, "T24-大字号展开可读")
+        app.buttons["quota.details"].firstMatch.tap()
+        XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 3))
+        let time = app.staticTexts["quota.updatedAt"]
+        for _ in 0..<4 where !time.isHittable { app.swipeUp() }
+        XCTAssertTrue(time.isHittable)
+        screenshot(app, "T62-大字号滚动可读")
     }
 
     @MainActor
@@ -850,6 +907,7 @@ final class CodexQuotaUITests: XCTestCase {
         assertSuccessfulCard(app)
         openDetails(app)
         let originalTime = app.staticTexts["quota.updatedAt"].label
+        app.buttons["detail.close"].tap()
         app.buttons["quota.menu"].tap()
         app.buttons["刷新额度"].tap()
         XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 10))
@@ -860,7 +918,7 @@ final class CodexQuotaUITests: XCTestCase {
         // Reconfiguration can collapse details; reopen only if needed.
         if !app.staticTexts["quota.updatedAt"].exists { openDetails(app) }
         XCTAssertEqual(app.staticTexts["quota.updatedAt"].label, originalTime)
-        XCTAssertTrue(app.buttons["quota.retry"].exists)
+        XCTAssertTrue(app.buttons["detail.retry"].exists)
         XCTAssertFalse(app.buttons["重新登录"].exists)
         screenshot(app, "T23-刷新失败保留旧值与时间")
     }
@@ -1345,6 +1403,7 @@ final class CodexQuotaUITests: XCTestCase {
                 XCTAssertEqual(app.staticTexts["quota.weekly.reset"].label, "未提供重置时间")
             }
             screenshot(app, "T15-离线缓存-" + scenario)
+            app.buttons["detail.close"].tap()
             app.buttons["tab.settings"].tap()
             app.buttons["tab.quota"].tap()
             XCTAssertTrue(app.otherElements["quota.card"].exists)

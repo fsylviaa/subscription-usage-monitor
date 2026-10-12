@@ -43,6 +43,7 @@ struct QuotaView: View {
     var canRefresh = false
     var refreshAccount: (UUID) -> Void = { _ in }
     @State private var deleting: ConnectedAccount?
+    var openDetails: (ConnectedAccount) -> Void = { _ in }
     var canReorder = false
     var savingOrder = false
     var move: (IndexSet, Int) -> Void = { _, _ in }
@@ -105,7 +106,8 @@ struct QuotaView: View {
                         QuotaAccountCard(account: account, updating: updatingIDs.contains(account.id),
                                          failed: failedAccountIDs.contains(account.id) || quotaFailureID == account.id,
                                          canManage: canManage, canRefresh: canRefresh,
-                                         refresh: { refreshAccount(account.id) }, delete: { deleting = account })
+                                         refresh: { refreshAccount(account.id) }, delete: { deleting = account },
+                                         openDetails: { openDetails(account) })
                     }
                 }
 
@@ -158,7 +160,7 @@ private struct QuotaAccountCard: View {
     var canRefresh = false
     var refresh: () -> Void = {}
     var delete: () -> Void = {}
-    @State private var expanded = false
+    var openDetails: () -> Void = {}
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .headline) private var titleSize = 17
     @ScaledMetric(relativeTo: .caption2) private var emailSize = 11
@@ -197,14 +199,6 @@ private struct QuotaAccountCard: View {
                         QuotaWindowView(value: snapshot.fiveHours, title: "5 小时", id: "fiveHours", now: context.date)
                     }
                 }
-                if expanded {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Rectangle().fill(Color("DesignLine")).frame(height: 0.5)
-                        Text("更新于 \(QuotaView.dateText(snapshot.observedAt))")
-                            .font(metadataFont).foregroundStyle(DashboardStyle.secondary)
-                            .accessibilityIdentifier("quota.updatedAt")
-                    }
-                }
             } else if account.quotaState == .notFetched {
                 Text(failed ? "获取失败" : "尚未获取额度")
                     .font(metadataFont).foregroundStyle(DashboardStyle.secondary)
@@ -219,6 +213,8 @@ private struct QuotaAccountCard: View {
         .background(DashboardStyle.card, in: RoundedRectangle(cornerRadius: 24))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("quota.card")
+        .contentShape(RoundedRectangle(cornerRadius: 24))
+        .onTapGesture(perform: openDetails)
         // UIKit animates the self-sizing cell and following rows. Do not also
         // interpolate SwiftUI text positions through its intermediate proposals.
         .transaction { $0.animation = nil; $0.disablesAnimations = true }
@@ -232,12 +228,10 @@ private struct QuotaAccountCard: View {
 
     private var planControl: some View {
         HStack(spacing: 6) {
-            if account.quotaSnapshot != nil {
-                Button { expanded.toggle() } label: { planTitle }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier("quota.details")
-                    .accessibilityValue(expanded ? "已展开" : "已收起")
-            } else { planTitle }
+            Button(action: openDetails) { planTitle }
+                .buttonStyle(.plain)
+                .accessibilityHint("查看账户详情")
+                .accessibilityIdentifier("quota.details")
             // Reserve the same small slot when idle so refresh never reflows
             // the plan, chevron or identity. System progress animates independently
             // of the card's disabled layout animations.
@@ -292,21 +286,23 @@ private struct QuotaAccountCard: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("quota.plan")
             if account.quotaSnapshot != nil {
-                DesignIcon(name: expanded ? "Up" : "Down", size: 14)
+                DesignIcon(name: "Down", size: 14)
             }
         }
     }
 }
 
-private struct QuotaWindowView: View {
+struct QuotaWindowView: View {
     let value: QuotaWindowSnapshot
     let title: String
     let id: String
     let now: Date
+    var detail = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .caption) private var labelSize = 12
     @ScaledMetric(relativeTo: .caption2) private var resetSize = 11
     @ScaledMetric(relativeTo: .headline) private var amountSize = 18
+    @ScaledMetric(relativeTo: .largeTitle) private var detailAmountSize = 30
     @ScaledMetric(relativeTo: .title) private var accessibilityMetadataSize = 14
 
     private var secondarySize: CGFloat {
@@ -314,7 +310,19 @@ private struct QuotaWindowView: View {
     }
 
     var body: some View {
-        if dynamicTypeSize.isAccessibilitySize {
+        if detail {
+            VStack(alignment: .leading, spacing: 12) {
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .firstTextBaseline) { windowTitle; Spacer(minLength: 12); amount }
+                    VStack(alignment: .leading, spacing: 8) { windowTitle; amount }
+                }
+                progressBar
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    DesignIcon(name: "Clock", size: 14)
+                    resetTime
+                }.foregroundStyle(DashboardStyle.secondary)
+            }
+        } else if dynamicTypeSize.isAccessibilitySize {
             VStack(alignment: .leading, spacing: 8) {
                 ViewThatFits(in: .horizontal) {
                     HStack(alignment: .firstTextBaseline) {
@@ -357,12 +365,12 @@ private struct QuotaWindowView: View {
             .frame(height: 6)
             .accessibilityElement().accessibilityLabel("\(title)额度条")
             .accessibilityValue("已用 \(valueUsedText)，\(QuotaView.amountText(value.amount))")
-            .accessibilityIdentifier("quota.\(id).bar")
+            .accessibilityIdentifier("\(detail ? "detail" : "quota").\(id).bar")
         }
     }
 
     private var windowTitle: some View {
-        Text(title).font(.system(size: labelSize, weight: .medium)).fixedSize()
+        Text(title).font(detail ? .headline : .system(size: labelSize, weight: .medium)).fixedSize()
             .foregroundStyle(DashboardStyle.secondary)
     }
 
@@ -371,12 +379,12 @@ private struct QuotaWindowView: View {
             .font(.system(size: secondarySize)).fixedSize(horizontal: false, vertical: true)
             .accessibilityLabel(value.resetsAt.map { "预计重置于 \(QuotaView.dateText($0))" } ?? "未提供重置时间")
             .accessibilityValue(QuotaView.resetText(value.resetsAt, now: now))
-            .accessibilityIdentifier("quota.\(id).reset")
+            .accessibilityIdentifier("\(detail ? "detail" : "quota").\(id).reset")
     }
 
     private var reset: some View {
         HStack(spacing: 5) {
-            Text(title).font(.system(size: labelSize, weight: .medium)).fixedSize()
+            Text(title).font(detail ? .headline : .system(size: labelSize, weight: .medium)).fixedSize()
             DesignIcon(name: "Clock", size: 11)
             resetTime
         }
@@ -388,12 +396,12 @@ private struct QuotaWindowView: View {
             if case let .limited(percentage) = value.amount {
                 (Text("剩余 ").font(.system(size: secondarySize)).foregroundColor(DashboardStyle.secondary)
                  + Text("\(percentage.remaining.formatted(.number.precision(.fractionLength(0...2))))%")
-                    .font(.system(size: amountSize, weight: .semibold)))
+                    .font(.system(size: detail ? detailAmountSize : amountSize, weight: .semibold)))
             } else {
                 Text(QuotaView.amountText(value.amount)).font(.system(size: labelSize, weight: .medium))
             }
         }
-        .fixedSize().monospacedDigit().accessibilityIdentifier("quota.\(id).remaining")
+        .fixedSize().monospacedDigit().accessibilityIdentifier("\(detail ? "detail" : "quota").\(id).remaining")
     }
     private var valueUsedText: String {
         guard case let .limited(percentage) = value.amount else { return "未知" }
@@ -738,5 +746,186 @@ final class QuotaReorderLayout: UICollectionViewCompositionalLayout {
         guard movement != nil else { return previousIndexPath }
         let destination = movement!.update(y: position.y)
         return IndexPath(item: destination, section: previousIndexPath.section)
+    }
+}
+
+/// A sheet follows one identity, never a copied row or an array position.
+struct CodexDetailTarget: Identifiable, Equatable {
+    let id: UUID
+    private let email: String?
+    private let remoteUserID: String?
+
+    init?(_ account: ConnectedAccount) {
+        guard account.provider == .openAI, account.product == .codexSubscription,
+              account.deletionPending != true else { return nil }
+        id = account.id
+        email = account.verifiedEmail?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        remoteUserID = account.remoteUserID
+    }
+
+    func resolve(in accounts: [ConnectedAccount]) -> ConnectedAccount? {
+        accounts.first {
+            $0.id == id && $0.deletionPending != true && $0.provider == .openAI
+                && $0.product == .codexSubscription
+                && $0.verifiedEmail?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == email
+                && $0.remoteUserID == remoteUserID
+        }
+    }
+}
+
+/// Display only the established, account-bound observation contract. Optional
+/// supplemental usage fields have no verified persisted contract in this release.
+struct CodexDetailContent {
+    struct Row: Equatable, Identifiable {
+        let id: String
+        let title: String
+        let value: String
+    }
+    let snapshot: CodexQuotaSnapshot?
+    let rows: [Row]
+
+    init(account: ConnectedAccount) {
+        let candidate = account.quotaSnapshot
+        snapshot = candidate.flatMap {
+            guard account.quotaState == .available, $0.accountID == account.id,
+                  $0.provider == account.provider, $0.product == account.product,
+                  $0.scope == account.scope, $0.generation == account.generation,
+                  $0.observedAt.timeIntervalSince1970.isFinite,
+                  $0.observedAt.timeIntervalSince1970 > 0 else { return nil }
+            return $0
+        }
+        var values: [Row] = []
+        if let subscription = account.subscription, subscription.isValid {
+            values.append(Row(id: "plan", title: "套餐", value: subscription.planType))
+        }
+        if let snapshot {
+            values.append(Row(id: "updatedAt", title: "更新时间", value: QuotaView.dateText(snapshot.observedAt)))
+        }
+        rows = values
+    }
+}
+
+struct CodexDetailPanel: View {
+    let account: ConnectedAccount
+    var updating = false
+    var failure: String?
+    var canManage = true
+    var refresh: () -> Void = {}
+    var closeFeedback: () -> Void = {}
+    var delete: () -> Void = {}
+    var close: () -> Void = {}
+    @State private var confirmingDeletion = false
+    private var content: CodexDetailContent { CodexDetailContent(account: account) }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 8) {
+                Button(action: close) {
+                    Image(systemName: "xmark").frame(width: 44, height: 44)
+                }
+                .accessibilityLabel("关闭详情").accessibilityIdentifier("detail.close")
+                Spacer(minLength: 0)
+                Button(action: refresh) {
+                    ZStack {
+                        if updating { ProgressView().controlSize(.small) }
+                        else { Image(systemName: "arrow.clockwise") }
+                    }.frame(width: 44, height: 44)
+                }
+                .disabled(!canManage || updating)
+                .accessibilityLabel(updating ? "正在刷新" : "刷新当前账户")
+                .accessibilityIdentifier("detail.refresh")
+                Menu {
+                    Button("刷新额度", systemImage: "arrow.clockwise", action: refresh).disabled(updating)
+                    Button("删除账户", systemImage: "trash", role: .destructive) { confirmingDeletion = true }
+                } label: {
+                    Image(systemName: "ellipsis").frame(width: 44, height: 44)
+                }
+                .disabled(!canManage)
+                .accessibilityLabel("账户操作").accessibilityIdentifier("detail.menu")
+            }
+            .overlay { Text("Codex").font(.system(size: 20, weight: .semibold)).accessibilityAddTraits(.isHeader).allowsHitTesting(false) }
+            .font(.system(size: 20))
+            .buttonStyle(.plain).padding(.horizontal, 12).padding(.top, 10)
+            if let failure {
+                HStack(spacing: 12) {
+                    Text(failure).font(.subheadline).accessibilityIdentifier("detail.failure")
+                    Spacer(minLength: 0)
+                    Button("重试", action: refresh).disabled(!canManage || updating)
+                        .accessibilityIdentifier("detail.retry")
+                    Button(action: closeFeedback) { Image(systemName: "xmark").frame(width: 44, height: 44) }
+                        .accessibilityLabel("关闭提示")
+                }
+                .buttonStyle(.plain).padding(.leading, 12)
+                .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 14))
+                .padding(.horizontal, 16)
+            }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text(account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户")
+                        .font(.subheadline).foregroundStyle(DashboardStyle.secondary)
+                        .fixedSize(horizontal: false, vertical: true).privacySensitive()
+                        .accessibilityIdentifier("detail.identity")
+                    if account.isDemo {
+                        Text("演示").font(.caption).foregroundStyle(DashboardStyle.secondary)
+                    }
+                    if let snapshot = content.snapshot {
+                        TimelineView(.periodic(from: .now, by: 60)) { context in
+                            VStack(alignment: .leading, spacing: 16) {
+                                detailWindow(snapshot.fiveHours, title: "5 小时", id: "fiveHours", now: context.date)
+                                Text("每周限额").font(.subheadline).foregroundStyle(DashboardStyle.secondary).padding(.leading, 16)
+                                detailWindow(snapshot.weekly, title: "每周", id: "weekly", now: context.date)
+                            }
+                        }
+                    } else if account.quotaState != .notApplicable {
+                        Text(failure == nil ? "尚未获取额度" : "获取失败")
+                            .foregroundStyle(DashboardStyle.secondary)
+                            .accessibilityIdentifier("detail.status")
+                    }
+                    if !content.rows.isEmpty {
+                        Text("详情").font(.subheadline).foregroundStyle(DashboardStyle.secondary).padding(.leading, 16)
+                        VStack(spacing: 0) {
+                            ForEach(content.rows) { row in
+                                if row.id != content.rows.first?.id { Divider() }
+                                ViewThatFits(in: .horizontal) {
+                                    HStack(alignment: .firstTextBaseline, spacing: 16) {
+                                        Text(row.title).foregroundStyle(DashboardStyle.secondary)
+                                        Spacer(minLength: 0)
+                                        Text(row.value).multilineTextAlignment(.trailing)
+                                    }
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text(row.title).foregroundStyle(DashboardStyle.secondary)
+                                        Text(row.value)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .font(.subheadline).padding(.vertical, 16)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .accessibilityElement(children: .combine)
+                                .accessibilityIdentifier(row.id == "updatedAt" ? "quota.updatedAt" : "detail.\(row.id)")
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .background(DashboardStyle.card, in: RoundedRectangle(cornerRadius: 22))
+                    }
+                }
+                .padding(16).padding(.bottom, 20)
+            }
+        }
+        .foregroundStyle(DashboardStyle.text)
+        .background(DashboardStyle.background)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("detail.panel")
+        .alert("删除账户？", isPresented: $confirmingDeletion) {
+            Button("取消", role: .cancel) { }
+            Button("删除账户", role: .destructive, action: delete)
+        } message: { Text("仅断开本 App 的连接，不会取消订阅。") }
+    }
+
+    private func detailWindow(_ value: QuotaWindowSnapshot, title: String, id: String, now: Date) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            QuotaWindowView(value: value, title: title, id: id, now: now, detail: true)
+        }
+        .padding(20).frame(maxWidth: .infinity, alignment: .leading)
+        .background(DashboardStyle.card, in: RoundedRectangle(cornerRadius: 22))
     }
 }

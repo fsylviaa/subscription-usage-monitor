@@ -13,6 +13,7 @@ struct RootView: View {
     private let reminderScheduler: ResetReminderScheduler?
     private let publishesWidgetAppearance: Bool
     @State private var pendingWidgetAdd = false
+    @State private var detailTarget: CodexDetailTarget?
     @State private var reminderAccountsLoaded = false
     private enum Tab: Hashable { case quota, settings }
     @State private var selection: Tab = .quota
@@ -54,6 +55,7 @@ struct RootView: View {
                           closeFeedback: { connection.hideQuotaFeedback() },
                           deleteAccount: { connection.deleteAccount($0) }, canManage: connection.canManageAccounts,
                           canRefresh: connection.canManageAccounts, refreshAccount: { connection.refreshQuota(for: $0) },
+                          openDetails: { detailTarget = CodexDetailTarget($0) },
                           canReorder: connection.canReorderAccounts, savingOrder: connection.reorderingAccounts,
                           move: { connection.moveAccounts(from: $0, to: $1) })
             }
@@ -125,6 +127,26 @@ struct RootView: View {
             if phase == .background {
                 WidgetPublicationRequests.shared.enteredBackground()
                 onBackground()
+            }
+        }
+        .onChange(of: connection.accounts) { _, accounts in
+            if let detailTarget, detailTarget.resolve(in: accounts) == nil { self.detailTarget = nil }
+        }
+        .sheet(item: $detailTarget) { target in
+            if let account = target.resolve(in: connection.accounts) {
+                CodexDetailPanel(account: account,
+                    updating: connection.visibleQuotaUpdatingIDs.contains(account.id),
+                    failure: connection.quotaFeedbackHidden ? nil : connection.quotaFailures[account.id],
+                    canManage: connection.canManageAccounts,
+                    refresh: { connection.refreshQuota(for: account.id) },
+                    closeFeedback: { connection.hideQuotaFeedback() },
+                    delete: { connection.deleteAccount(account.id) },
+                    close: { detailTarget = nil })
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.hidden)
+                    .presentationCornerRadius(28)
+                    .presentationBackground(DashboardStyle.background)
+                    .preferredColorScheme(appearance == "dark" ? .dark : appearance == "light" ? .light : nil)
             }
         }
         .sheet(isPresented: $connection.isPresented, onDismiss: { connection.cancel() }) {

@@ -196,7 +196,7 @@ final class LaunchTests: XCTestCase {
         app.buttons["quota.details"].tap()
         XCTAssertTrue(app.staticTexts["quota.updatedAt"].waitForExistence(timeout: 5))
         saveScreenshot(of: app, name: "新版-手动深色额度详情")
-        app.buttons["quota.menu"].tap()
+        app.buttons["detail.menu"].tap()
         XCTAssertTrue(app.buttons["刷新额度"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["删除账户"].exists)
         saveScreenshot(of: app, name: "新版-手动深色账户菜单")

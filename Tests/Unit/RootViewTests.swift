@@ -4,6 +4,67 @@ import XCTest
 @testable import SubscriptionUsage
 
 final class RootViewTests: XCTestCase {
+    func testT62DetailIdentityAndTrustedRowsNeverBorrowAnotherAccount() throws {
+        let now = Date(timeIntervalSince1970: 1_791_590_400)
+        var first = ConnectedAccount(remoteUserID: "user-a", verifiedEmail: "a@example.invalid",
+            scope: .init(remoteAccountID: "scope-a", kind: .personal), credentialRef: UUID(),
+            quotaState: .available, subscription: .init(planType: "Actual Plan", observedAt: now))
+        first.quotaSnapshot = .init(accountID: first.id, provider: first.provider, product: first.product,
+            scope: first.scope, generation: first.generation, planType: "Actual Plan", observedAt: now,
+            weekly: .init(window: .weekly, amount: .limited(try .init(used: 0)), resetsAt: now, observedAt: now),
+            fiveHours: .init(window: .fiveHours, amount: .limited(try .init(used: 100)), resetsAt: nil, observedAt: now))
+        let target = try XCTUnwrap(CodexDetailTarget(first))
+        var second = first
+        second.verifiedEmail = "b@example.invalid"
+        XCTAssertNil(target.resolve(in: [second]))
+        XCTAssertEqual(target.resolve(in: [second, first]), first)
+        second.deletionPending = true
+        XCTAssertNil(CodexDetailTarget(second))
+        XCTAssertNil(target.resolve(in: []))
+        var content = CodexDetailContent(account: first)
+        XCTAssertEqual(content.rows.map(\.id), ["plan", "updatedAt"])
+        XCTAssertEqual(content.snapshot?.weekly.amount.remainingPercent, 100)
+        XCTAssertEqual(content.snapshot?.fiveHours.amount.remainingPercent, 0)
+        XCTAssertEqual(content.snapshot?.weekly.amount.progress?.usedFraction, 0)
+        XCTAssertEqual(content.snapshot?.fiveHours.amount.progress?.usedFraction, 1)
+        first.scope = .init(remoteAccountID: "new-scope", kind: .personal)
+        content = CodexDetailContent(account: first)
+        XCTAssertNil(content.snapshot)
+        XCTAssertEqual(content.rows.map(\.id), ["plan"])
+        first.subscription = nil; first.quotaSnapshot = nil; first.quotaState = .notApplicable
+        XCTAssertTrue(CodexDetailContent(account: first).rows.isEmpty)
+    }
+
+    @MainActor
+    func testT62PanelRendersLightDarkLargestTextAndUnknownWindows() async throws {
+        let now = Date(timeIntervalSince1970: 1_791_590_400)
+        var account = ConnectedAccount(verifiedEmail: "long-identity-for-detail@example.invalid",
+            scope: .init(remoteAccountID: "detail", kind: .personal), credentialRef: UUID(),
+            quotaState: .available, subscription: .init(planType: "Actual Long Official Plan", observedAt: now))
+        account.quotaSnapshot = .init(accountID: account.id, provider: account.provider, product: account.product,
+            scope: account.scope, generation: 0, planType: nil, observedAt: now,
+            weekly: .init(window: .weekly, amount: .unknown, resetsAt: nil, observedAt: now),
+            fiveHours: .init(window: .fiveHours, amount: .limited(try .init(used: 80)), resetsAt: now, observedAt: now))
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.first as? UIWindowScene)
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 414, height: 896)
+        defer { window.isHidden = true; window.rootViewController = nil }
+        for scheme: ColorScheme in [.light, .dark] {
+            for size: DynamicTypeSize in [.large, .accessibility5] {
+                let host = UIHostingController(rootView: CodexDetailPanel(account: account, failure: "刷新失败")
+                    .environment(\.colorScheme, scheme).environment(\.dynamicTypeSize, size))
+                window.rootViewController = host; window.makeKeyAndVisible()
+                try await Task.sleep(for: .milliseconds(400))
+                window.layoutIfNeeded()
+                XCTAssertGreaterThan(host.view.bounds.height, 800)
+                let attachment = XCTAttachment(image: UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+                    window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+                })
+                attachment.name = "T62-\(scheme)-\(size)"; attachment.lifetime = .keepAlways; add(attachment)
+            }
+        }
+    }
+
     @MainActor
     func testT59HostedListPullPresentationAndReleaseUsesExistingRefreshAction() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("T59-\(UUID())")
