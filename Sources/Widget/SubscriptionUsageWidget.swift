@@ -33,7 +33,7 @@ struct QuotaWidgetProvider: AppIntentTimelineProvider {
         WidgetSnapshotStore.traceValidation("provider.read", detail: "remaining=\(content.account?.weekly?.amount.remainingPercent ?? -1) unavailable=\(content == .unavailable)")
         #endif
         return .init(date: .now, content: content,
-                     appearance: WidgetAppearance.defaults()?.string(forKey: WidgetAppearance.key) ?? "system")
+                     appearance: WidgetAppearance.effectiveValue())
     }
 }
 

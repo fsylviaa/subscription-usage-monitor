@@ -217,3 +217,9 @@ T43弹窗布局修订：`testT43ContentSizedSheetsAndMatchingAnimationRegions`�
 ## T47跨页外观与缺失深色组合
 
 新增RootView单元使用独立偏好／人工双户文件／假授权服务，10个系统或手动浅深、前后台及重建检查点比较完整账户、存档字节和提醒意愿。3个UI仅补深色更新／失败及菜单关闭、连接等待／代码／失败、深色最大字号真实系统静态教程；减少动态提前注册teardown恢复原值。连接用进程参数域`-appearance dark`覆盖读取，不点击正式外观开关，隔离参数关闭正式调度／组件发布；T26与管理使用原隔离套件。原各页基础浅深、T58持久偏好与真实对照沿用，不做全量重跑。
+
+## T37本人手机浅深状态补验
+
+`CodexQuotaUITests/testT37PhoneWidgetLightDarkStateMatrix`仅在UI Runner显式`T37_WIDGET_DESKTOP=1`时运行，复用已有小号／中号，不添加、移除、改选或改尺寸。Debug入口`--t37-widget-fixture <状态> <UUID> <light|dark>`复用T35合法UUID隔离目录和T26临时账户服务；正常70／85、在途更新、普通／网络失败、0／100、Free、未获取、未知／不限量、长身份、无账户各有两种外观桌面图。更新实际启动等待中的刷新；失败通过正式网络门控／查询／持久化保护，夹具核对同户旧值及原成功时间保持。
+
+App使用T37独立偏好；扩展只在Debug合法隔离会话读取该目录`T37-appearance`，不覆盖正式外观偏好。Release沿用正式外观读取且不包含该标记或入口。实际App明暗联动、账户选择及真实额度／重置／两尺寸对照沿用既有通过；边界输入仍是人工样例，不等于真实平台异常。XCTest teardown等待cleanup空页，清理独立偏好、T35会话和T26临时目录并请求普通换图，之后`RootViewTests/testT37ValidationFilesAndAppearanceWereRestored`显式`T37_CLEANUP_CHECK=1`只读核对隔离目录、偏好及正常外观读取，再恢复正式Release。手机图片按实际尺寸目视复核，不能凭UI返回成功当视觉通过。

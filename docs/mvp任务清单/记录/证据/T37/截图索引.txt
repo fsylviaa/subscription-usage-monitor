@@ -1,0 +1,24 @@
+本人iPhone11／iOS26.5；实际桌面截图中的既有两小号＋一中号；全部虚构账户，非真实平台异常。
+原屏幕图及录像留于本机忽略build；Git证据仅按同一区域裁切组件，未重新绘制或改内容。
+浅色前六项沿用首轮；浅色后四项及深色十项来自缺项补验。
+light-normal.png: light / normal
+light-updating.png: light / updating
+light-failure.png: light / failure
+light-blocked.png: light / blocked
+light-endpoints.png: light / endpoints
+light-free.png: light / free
+light-notFetched.png: light / notFetched
+light-unknown.png: light / unknown
+light-long.png: light / long
+light-empty.png: light / empty
+dark-normal.png: dark / normal
+dark-updating.png: dark / updating
+dark-failure.png: dark / failure
+dark-blocked.png: dark / blocked
+dark-endpoints.png: dark / endpoints
+dark-free.png: dark / free
+dark-notFetched.png: dark / notFetched
+dark-unknown.png: dark / unknown
+dark-long.png: dark / long
+dark-empty.png: dark / empty
+历史-未获取样例被自动取数.png: 首轮失败时实际55/55，非“未获取”通过图；从首轮视频209秒提取。

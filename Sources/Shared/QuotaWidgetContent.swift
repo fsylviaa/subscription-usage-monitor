@@ -78,6 +78,16 @@ enum WidgetAppearance {
     static func defaults() -> UserDefaults? {
         UserDefaults(suiteName: WidgetSnapshotStore.appGroupIdentifier)
     }
+    static func effectiveValue() -> String {
+        #if DEBUG
+        let store = WidgetSnapshotStore.displayStore()
+        if let url = try? store.resolvedURL(), url != (try? WidgetSnapshotStore.appGroupStore().resolvedURL()),
+           let value = try? String(contentsOf: url.deletingLastPathComponent().appendingPathComponent("T37-appearance"), encoding: .utf8),
+           ["light", "dark"].contains(value) { return value }
+        #endif
+        return defaults()?.string(forKey: key) ?? "system"
+    }
+
     static func colorScheme(_ value: String) -> ColorScheme? {
         value == "dark" ? .dark : value == "light" ? .light : nil
     }

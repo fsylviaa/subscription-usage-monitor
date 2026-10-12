@@ -1,0 +1,34 @@
+T37 2026-10-12；本人iPhone11／iOS26.5；现有两小号＋一中号，配置未改。
+20组桌面截图、40个必要组合均实际执行且目视通过，全部人工example.invalid输入。
+首轮6浅色有效图；未获取断言1失败223.349s，人工首次自动查询已成功55/55；失败历史保留。
+缺项补验浅色4＋深色10，1UI通过0失败398.870s；只读清理1单元通过0失败0.006s。
+App／组件外观受控隔离输入，正式偏好不改；实际App联动与D-64／真实对照沿用。
+Release构建与完整验签通过；两二进制测试入口和标记均不存在。
+install: success 2026-10-12T22:06:12+08:00
+launch: success（无参数） 2026-10-12T22:06:46+08:00
+Token 仪表盘0.1.0（1）；com.iceflying.SubscriptionUsage。
+新增状态为开发者手机自验，不冒称用户逐项亲验／真实平台故障。
+八份其他文档保护；只存T37进度差异；Figma只读，阶段08未启动。
+T37 | actual desktop both sizes | light | normal | 2026-10-12T13:52:14Z
+T37 | actual desktop both sizes | light | updating | 2026-10-12T13:52:46Z
+T37 | actual desktop both sizes | light | failure | 2026-10-12T13:53:25Z
+T37 | actual desktop both sizes | light | blocked | 2026-10-12T13:54:05Z
+T37 | actual desktop both sizes | light | endpoints | 2026-10-12T13:54:38Z
+T37 | actual desktop both sizes | light | free | 2026-10-12T13:54:59Z
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT37PhoneWidgetLightDarkStateMatrix]' failed (223.349 seconds).
+T37 | actual desktop both sizes | light | notFetched | 2026-10-12T13:57:37Z
+T37 | actual desktop both sizes | light | unknown | 2026-10-12T13:58:07Z
+T37 | actual desktop both sizes | light | long | 2026-10-12T13:58:39Z
+T37 | actual desktop both sizes | light | empty | 2026-10-12T13:58:52Z
+T37 | actual desktop both sizes | dark | normal | 2026-10-12T13:59:23Z
+T37 | actual desktop both sizes | dark | updating | 2026-10-12T13:59:55Z
+T37 | actual desktop both sizes | dark | failure | 2026-10-12T14:00:34Z
+T37 | actual desktop both sizes | dark | blocked | 2026-10-12T14:01:14Z
+T37 | actual desktop both sizes | dark | endpoints | 2026-10-12T14:01:47Z
+T37 | actual desktop both sizes | dark | free | 2026-10-12T14:02:08Z
+T37 | actual desktop both sizes | dark | notFetched | 2026-10-12T14:02:30Z
+T37 | actual desktop both sizes | dark | unknown | 2026-10-12T14:03:00Z
+T37 | actual desktop both sizes | dark | long | 2026-10-12T14:03:31Z
+T37 | actual desktop both sizes | dark | empty | 2026-10-12T14:03:44Z
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT37PhoneWidgetLightDarkStateMatrix]' passed (398.870 seconds).
+Test Case '-[SubscriptionUsageTests.RootViewTests testT37ValidationFilesAndAppearanceWereRestored]' passed (0.006 seconds).

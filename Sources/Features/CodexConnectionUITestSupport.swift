@@ -74,6 +74,12 @@ enum CodexConnectionUITestSupport {
             preferences.set(args.contains("--t26-dark") ? "dark" : "light", forKey: "appearance")
             return preferences
         }
+        if let marker = args.firstIndex(of: "--t37-widget-fixture"), args.indices.contains(marker + 3),
+           let session = UUID(uuidString: args[marker + 2]) {
+            let preferences = UserDefaults(suiteName: "T37-widget-\(session)")!
+            if args[marker + 1] != "cleanup" { preferences.set(args[marker + 3] == "dark" ? "dark" : "light", forKey: "appearance") }
+            return preferences
+        }
         if let marker = args.firstIndex(of: "--t23-card-fixture"), args.indices.contains(marker + 2) {
             let preferences = UserDefaults(suiteName: "T23-card-fixture")!
             preferences.set(args[marker + 2], forKey: "appearance")
@@ -96,6 +102,25 @@ enum CodexConnectionUITestSupport {
         if NSClassFromString("XCTestCase") != nil {
             return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
                 authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+        }
+        if let marker = arguments.firstIndex(of: "--t37-widget-fixture") {
+            guard arguments.indices.contains(marker + 3), let session = UUID(uuidString: arguments[marker + 2]) else {
+                return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) }, authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+            }
+            let scenario = arguments[marker + 1], appearance = arguments[marker + 3]
+            if scenario == "cleanup" {
+                let library = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0]
+                let files = (try? FileManager.default.contentsOfDirectory(at: library.appendingPathComponent("Preferences"), includingPropertiesForKeys: nil)) ?? []
+                for file in files where file.pathExtension == "plist" {
+                    let name = file.deletingPathExtension().lastPathComponent
+                    if name.hasPrefix("T37-widget-"), UUID(uuidString: String(name.dropFirst("T37-widget-".count))) != nil {
+                        UserDefaults.standard.removePersistentDomain(forName: name)
+                    }
+                }
+                UserDefaults.standard.removePersistentDomain(forName: "T37-widget-\(session)")
+                return widgetValidationFlow(scenario: "cleanup", session: session, useConfiguredAccount: false)
+            }
+            return t37WidgetValidationFlow(scenario: scenario, session: session, appearance: appearance)
         }
         if let marker = arguments.firstIndex(of: "--t36-desktop-fixture") {
             guard arguments.indices.contains(marker + 2), let session = UUID(uuidString: arguments[marker + 2]),
@@ -221,6 +246,42 @@ enum CodexConnectionUITestSupport {
             transactions: FixtureTransactions(),
             openURL: { $0 == CodexDeviceAuthorization.verificationURL }
         )
+    }
+
+    /// Reuses the T35 namespace and actual AccountStore failure publication. No real data or settings writes.
+    private static func t37WidgetValidationFlow(scenario: String, session: UUID, appearance: String) -> CodexConnectionFlow {
+        guard let shared = try? WidgetSnapshotStore.validationStore(session: session) else {
+            return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) }, authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+        }
+        let fixture = T26BatchFixture(scenario: "t37-" + scenario, count: 1, widgetAccountIDs: [session], widgetStore: shared)
+        let flow = CodexConnectionFlow(transactions: FixtureTransactions(), bindings: fixture, quotaUpdater: fixture, foregroundRefreshEnabled: false)
+        Task {
+            do {
+                try WidgetSnapshotStore.setValidationSession(session)
+                let directory = try shared.resolvedURL().deletingLastPathComponent()
+                try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+                try Data(appearance.utf8).write(to: directory.appendingPathComponent("T37-appearance"), options: .atomic)
+                let original = try await fixture.load()
+                let before = try shared.read()
+                await flow.loadAccounts()
+                if scenario == "empty" { try await fixture.removeAccount(original[0].id); await flow.loadAccounts() }
+                if scenario == "failure" || scenario == "blocked" {
+                    flow.refreshAllQuota()
+                    await flow.waitForInitialQuota()
+                    guard let after = try shared.read(), let old = before?.account, let current = after.account,
+                          old.id == current.id, old.identity == current.identity,
+                          old.weekly == current.weekly, old.fiveHours == current.fiveHours,
+                          old.quotaObservedAt == current.quotaObservedAt,
+                          old.subscriptionObservedAt == current.subscriptionObservedAt,
+                          current.failure == (scenario == "blocked" ? .networkBlocked : .refresh) else { throw CodexQuotaError.failed }
+                    print("T37 | failure oldValuesAndSuccessTimePreserved=true | \(scenario)")
+                }
+                if scenario == "updating" { flow.refreshAllQuota() }
+                WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
+                print("T37 | ready | \(scenario) | \(appearance) | \(Date().ISO8601Format())")
+            } catch { print("T37 | preparation failed | \(scenario)") }
+        }
+        return flow
     }
 
     private static func widgetValidationFlow(scenario: String, session: UUID, useConfiguredAccount: Bool) -> CodexConnectionFlow {
@@ -966,6 +1027,19 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
                     account.quotaState = .available
                     account.quotaSnapshot = try CodexUsageParser().parse(Self.body(account.scope.remoteAccountID, used: scenario == "widget-background" ? 10 : 10 + index * 20),
                         for: account, observedAt: Self.oldTime)
+                    if scenario.hasPrefix("t37-") {
+                        let name = String(scenario.dropFirst(4))
+                        account.verifiedEmail = "t37-\(name)@example.invalid"
+                        if name == "long" { account.verifiedEmail = "t37-long-account-identifier-with-many-parts-and-very-long-name@example.invalid" }
+                        let weekly: QuotaAmount = name == "endpoints" ? .limited(try .init(used: 100)) : (name == "unknown" ? .unknown : .limited(try .init(used: 30)))
+                        let five: QuotaAmount = name == "endpoints" ? .limited(try .init(used: 0)) : (name == "unknown" ? .unlimited : .limited(try .init(used: 15)))
+                        account.quotaSnapshot = .init(accountID: account.id, provider: account.provider, product: account.product,
+                            scope: account.scope, generation: account.generation, planType: "Plus", observedAt: Self.oldTime,
+                            weekly: .init(window: .weekly, amount: weekly, resetsAt: nil, observedAt: Self.oldTime),
+                            fiveHours: .init(window: .fiveHours, amount: five, resetsAt: nil, observedAt: Self.oldTime))
+                        if name == "free" { account.subscription = .init(planType: "Free", observedAt: Self.oldTime); account.quotaState = .notApplicable; account.quotaSnapshot = nil }
+                        if name == "notFetched" { account.subscription = nil; account.quotaState = .notFetched; account.quotaSnapshot = nil }
+                    }
                     try await store.append(account)
                 }
             }
@@ -999,7 +1073,9 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
     }
     func check(_ account: ConnectedAccount) async -> NetworkScoreResult {
         checks[account.id, default: 0] += 1
-        if (scenario == "t31-expire" && account.scope.remoteAccountID == "t26-account-1" && checks[account.id] == 1) {
+        if scenario == "t37-updating" || scenario == "t37-notFetched" {
+            if !released { await withCheckedContinuation { waiting.append($0) } }
+        } else if (scenario == "t31-expire" && account.scope.remoteAccountID == "t26-account-1" && checks[account.id] == 1) {
             if !released { await withCheckedContinuation { waiting.append($0) } }
         } else if scenario == "cancel" || (scenario == "slow" && account.scope.remoteAccountID == "t26-account-1") {
             if !released { await withCheckedContinuation { waiting.append($0) } }
@@ -1016,7 +1092,7 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
                 Task { try? await Task.sleep(for: .seconds(4)); continuation.resume() }
             }
         } else { try? await Task.sleep(for: .milliseconds(200)) }
-        if scenario == "blocked" { return .blocked(score: 50) }
+        if scenario == "blocked" || scenario == "t37-blocked" { return .blocked(score: 50) }
         if scenario == "unknown" || (scenario == "t31-unknown" && checks[account.id] == 1) { return .unavailable(.transport) }
         return .allowed(score: 51)
     }
@@ -1028,7 +1104,7 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
         let id = request.value(forHTTPHeaderField: "ChatGPT-Account-Id")!
         requests[id, default: 0] += 1
         let attempt = requests[id]!
-        let fails = (scenario == "partial" || scenario == "ui-auto-failure") && id == "t26-account-1" && attempt == 1
+        let fails = scenario == "t37-failure" || ((scenario == "partial" || scenario == "ui-auto-failure") && id == "t26-account-1" && attempt == 1)
         let body = Self.body(id, used: 40 + attempt * 5)
         return (body, HTTPURLResponse(url: request.url!, statusCode: fails ? 500 : 200, httpVersion: nil,
             headerFields: ["Content-Type": "application/json"])!)

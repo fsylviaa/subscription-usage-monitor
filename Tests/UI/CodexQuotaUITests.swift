@@ -3,6 +3,51 @@ import CryptoKit
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT37PhoneWidgetLightDarkStateMatrix() throws {
+        guard ProcessInfo.processInfo.environment["T37_WIDGET_DESKTOP"] == "1" else { throw XCTSkip("仅显式启用本人手机既有两尺寸组件隔离验收") }
+        continueAfterFailure = false
+        let app = XCUIApplication(), springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        let session = UUID().uuidString
+        addTeardownBlock {
+            app.terminate()
+            app.launchArguments = ["--t37-widget-fixture", "cleanup", session, "light"]
+            app.launch()
+            XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 15))
+            XCTAssertTrue(app.staticTexts["quota.empty"].waitForExistence(timeout: 15))
+            app.terminate()
+        }
+        let environment = ProcessInfo.processInfo.environment
+        let appearances = environment["T37_APPEARANCES"]?.split(separator: ",").map(String.init) ?? ["light", "dark"]
+        for appearance in appearances {
+            let scenarios = environment["T37_SCENARIOS"]?.split(separator: ",").map(String.init)
+                ?? (environment["T37_REMAINING_ONLY"] == "1" && appearance == "light" ? ["notFetched", "unknown", "long", "empty"] : ["normal", "updating", "failure", "blocked", "endpoints", "free", "notFetched", "unknown", "long", "empty"])
+            for scenario in scenarios {
+                app.terminate()
+                app.launchArguments = ["--t37-widget-fixture", scenario, session, appearance]
+                app.launch()
+                XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 15))
+                if scenario == "updating" {
+                    XCTAssertTrue(app.descendants(matching: .any)["quota.refreshProgress"].waitForExistence(timeout: 15), "必须实际有在途刷新")
+                }
+                XCUIDevice.shared.press(.home)
+                showT35Desktop(springboard)
+                let expected = scenario == "empty" ? "添加账户" : "t37-" + scenario
+                let ready = NSPredicate { _, _ in self.t35BothSizesContain(expected, on: springboard) }
+                guard XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: nil)], timeout: 40) == .completed else {
+                    screenshot(springboard, "T37-未就绪-\(appearance)-\(scenario)")
+                    XCTFail("两种尺寸未同时显示本状态；不能记通过")
+                    return
+                }
+                for text in (scenario == "failure" ? ["刷新失败", "70%", "85%"] : scenario == "blocked" ? ["网络不达标，无法更新", "70%", "85%"] : scenario == "normal" || scenario == "updating" || scenario == "long" ? ["70%", "85%"] : scenario == "endpoints" ? ["0%", "100%"] : scenario == "unknown" ? ["未知", "不限量"] : scenario == "notFetched" ? ["尚未获取额度"] : scenario == "free" ? ["Free"] : []) {
+                    XCTAssertTrue(t35BothSizesContain(text, on: springboard), "两尺寸应显示\(text)")
+                }
+                screenshot(springboard, "T37-手机桌面-\(appearance)-\(scenario)")
+                print("T37 | actual desktop both sizes | \(appearance) | \(scenario) | \(Date().ISO8601Format())")
+            }
+        }
+    }
+
+    @MainActor
     func testT47DarkUpdatingAndBothFailureMessagesRemainReadable() {
         continueAfterFailure = false
         let updating = launchD60("ui-staggered", extra: ["--t26-dark"])

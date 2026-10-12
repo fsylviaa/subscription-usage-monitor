@@ -4,6 +4,27 @@ import XCTest
 @testable import SubscriptionUsage
 
 final class RootViewTests: XCTestCase {
+    func testT37ValidationFilesAndAppearanceWereRestored() throws {
+        guard ProcessInfo.processInfo.environment["T37_CLEANUP_CHECK"] == "1" else { throw XCTSkip("仅T37手机会话结束后显式只读核对") }
+        #if DEBUG
+        let root = try WidgetSnapshotStore.sharedDirectory()
+        XCTAssertFalse(FileManager.default.fileExists(atPath: root.appendingPathComponent("T35-validation-session").path))
+        XCTAssertEqual(try WidgetSnapshotStore.displayStore().resolvedURL(), try WidgetSnapshotStore.appGroupStore().resolvedURL())
+        XCTAssertEqual(WidgetAppearance.effectiveValue(), WidgetAppearance.defaults()?.string(forKey: WidgetAppearance.key) ?? "system")
+        let files = try FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil)
+        XCTAssertFalse(files.contains { $0.lastPathComponent.hasPrefix("T35-validation-") && UUID(uuidString: String($0.lastPathComponent.dropFirst("T35-validation-".count))) != nil })
+        let library = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0]
+        let preferences = try FileManager.default.contentsOfDirectory(at: library.appendingPathComponent("Preferences"), includingPropertiesForKeys: nil)
+        for file in preferences where file.pathExtension == "plist" {
+            let name = file.deletingPathExtension().lastPathComponent
+            if name.hasPrefix("T37-widget-"), UUID(uuidString: String(name.dropFirst("T37-widget-".count))) != nil {
+                XCTAssertTrue((UserDefaults.standard.persistentDomain(forName: name) ?? [:]).isEmpty)
+            }
+        }
+        print("T37 | cleanup checked | no validation snapshot or preference override; normal appearance source restored")
+        #endif
+    }
+
     @MainActor
     func testT36DesktopValidationMarkersWereCleaned() throws {
         guard ProcessInfo.processInfo.environment["T36_CLEANUP_CHECK"] == "1" else {
