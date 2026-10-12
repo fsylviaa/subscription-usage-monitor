@@ -6,7 +6,7 @@
     {
       "directory": "app",
       "source": "local project",
-      "commit": "197f588a4762fede0dc545c030621c13c8affc17"
+      "commit": "360ebcfb32c36bd19ab81f25e4d508adce6aa603"
     },
     {
       "directory": "reference/CodexBar",
@@ -29,8 +29,8 @@
       "commit": "d4d1c751856e25913bce97bfbd7b254308863239"
     }
   ],
-  "fileCount": 7713,
-  "bytes": 519836413,
+  "fileCount": 7715,
+  "bytes": 519849295,
   "files": [
     {
       "path": "AGENTS.md",
@@ -7048,9 +7048,19 @@
       "sha256": "f1d9efe5db9d200e3318b8693a258355891930231676abfc3e37f772cda8444e"
     },
     {
+      "path": "app/docs/项目维护/构建产物清理-2026-10-13.json",
+      "bytes": 9918,
+      "sha256": "e9032959ddfe8fa76bf4a369418eaef17f3da268d2257dc9abd826f75d5907e4"
+    },
+    {
+      "path": "app/docs/项目维护/构建产物清理-2026-10-13.md",
+      "bytes": 2013,
+      "sha256": "1f2301c44e552f6091020291d690b60d31bdfac8b39ea4e6c865446c8e12db58"
+    },
+    {
       "path": "app/docs/项目进度.md",
-      "bytes": 165249,
-      "sha256": "f40c78bcdc4afc6615f083eb37a053573245f238f795df5e3d87b7d76a0a7b7a"
+      "bytes": 166200,
+      "sha256": "122ca5dfae311c923eb38df6dee0c056248f4b9f2537d32208884d959b1ea991"
     },
     {
       "path": "app/docs/首版平台登录与额度连接方案.md",

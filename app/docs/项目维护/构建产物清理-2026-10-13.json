@@ -1,0 +1,483 @@
+{
+  "date": "2026-10-13",
+  "directory": "app/build",
+  "noActiveBuildTestOrInstall": true,
+  "removedCount": 94,
+  "beforeAllocatedBytes": 24223186944,
+  "afterAllocatedBytes": 4474789888,
+  "releasedAllocatedBytes": 19748397056,
+  "removedLogicalBytes": 19209161844,
+  "removedDirectories": [
+    {
+      "path": "app/build/T07-ReleaseDerivedData",
+      "bytes": 63329499,
+      "files": 221
+    },
+    {
+      "path": "app/build/T30Debug",
+      "bytes": 200929687,
+      "files": 2621
+    },
+    {
+      "path": "app/build/T17-Release",
+      "bytes": 73856210,
+      "files": 230
+    },
+    {
+      "path": "app/build/T11DerivedData",
+      "bytes": 295637743,
+      "files": 2890
+    },
+    {
+      "path": "app/build/T61Device",
+      "bytes": 303260151,
+      "files": 3618
+    },
+    {
+      "path": "app/build/T10-Simulator",
+      "bytes": 159443315,
+      "files": 2531
+    },
+    {
+      "path": "app/build/T40-DeviceDerivedData",
+      "bytes": 314933376,
+      "files": 3725
+    },
+    {
+      "path": "app/build/Adjustment",
+      "bytes": 175713376,
+      "files": 2625
+    },
+    {
+      "path": "app/build/T39-ReleaseDerivedData",
+      "bytes": 161602021,
+      "files": 522
+    },
+    {
+      "path": "app/build/T13-Device",
+      "bytes": 177483704,
+      "files": 2588
+    },
+    {
+      "path": "app/build/T23NoFive",
+      "bytes": 337387463,
+      "files": 3845
+    },
+    {
+      "path": "app/build/T37CleanupDerivedData",
+      "bytes": 326776985,
+      "files": 3692
+    },
+    {
+      "path": "app/build/T62-ReleaseDerived",
+      "bytes": 163595102,
+      "files": 497
+    },
+    {
+      "path": "app/build/T18Release",
+      "bytes": 78395748,
+      "files": 290
+    },
+    {
+      "path": "app/build/T31Debug",
+      "bytes": 203128273,
+      "files": 2626
+    },
+    {
+      "path": "app/build/T13-style-release",
+      "bytes": 71791689,
+      "files": 229
+    },
+    {
+      "path": "app/build/T16-Release",
+      "bytes": 73202297,
+      "files": 230
+    },
+    {
+      "path": "app/build/T35BudgetSimulator",
+      "bytes": 263260480,
+      "files": 3419
+    },
+    {
+      "path": "app/build/T30Release",
+      "bytes": 77385851,
+      "files": 237
+    },
+    {
+      "path": "app/build/FreshDerivedData",
+      "bytes": 73425560,
+      "files": 1851
+    },
+    {
+      "path": "app/build/T16-Simulator",
+      "bytes": 171485748,
+      "files": 2570
+    },
+    {
+      "path": "app/build/T38DeviceVerified",
+      "bytes": 304422897,
+      "files": 3614
+    },
+    {
+      "path": "app/build/T32-Release",
+      "bytes": 78343092,
+      "files": 240
+    },
+    {
+      "path": "app/build/T33-Device",
+      "bytes": 277480035,
+      "files": 3481
+    },
+    {
+      "path": "app/build/T13-style",
+      "bytes": 167093898,
+      "files": 2580
+    },
+    {
+      "path": "app/build/T09-Device",
+      "bytes": 164887836,
+      "files": 2538
+    },
+    {
+      "path": "app/build/T17-Device",
+      "bytes": 189604659,
+      "files": 2631
+    },
+    {
+      "path": "app/build/T39-DeviceDerivedData",
+      "bytes": 315348565,
+      "files": 3753
+    },
+    {
+      "path": "app/build/T36-PhoneDerived",
+      "bytes": 323718280,
+      "files": 3828
+    },
+    {
+      "path": "app/build/T13-style-device",
+      "bytes": 147230696,
+      "files": 2611
+    },
+    {
+      "path": "app/build/T38Release",
+      "bytes": 160618959,
+      "files": 519
+    },
+    {
+      "path": "app/build/T18Device",
+      "bytes": 217952394,
+      "files": 2820
+    },
+    {
+      "path": "app/build/T61Release",
+      "bytes": 158699620,
+      "files": 491
+    },
+    {
+      "path": "app/build/T14-Release",
+      "bytes": 72796858,
+      "files": 230
+    },
+    {
+      "path": "app/build/T12-Fix-Simulator",
+      "bytes": 165419119,
+      "files": 3116
+    },
+    {
+      "path": "app/build/T19Simulator",
+      "bytes": 176203835,
+      "files": 2574
+    },
+    {
+      "path": "app/build/T41-PhoneDerived",
+      "bytes": 324264960,
+      "files": 3774
+    },
+    {
+      "path": "app/build/T39-DerivedData",
+      "bytes": 290432649,
+      "files": 3712
+    },
+    {
+      "path": "app/build/T15-Release",
+      "bytes": 72798403,
+      "files": 230
+    },
+    {
+      "path": "app/build/T35ResizeDevice",
+      "bytes": 299143137,
+      "files": 3651
+    },
+    {
+      "path": "app/build/T33-Release",
+      "bytes": 144434529,
+      "files": 473
+    },
+    {
+      "path": "app/build/T17-Simulator",
+      "bytes": 171499564,
+      "files": 2561
+    },
+    {
+      "path": "app/build/T40-DerivedData",
+      "bytes": 296479268,
+      "files": 3790
+    },
+    {
+      "path": "app/build/T08-UI-simulator",
+      "bytes": 151556668,
+      "files": 2497
+    },
+    {
+      "path": "app/build/T62-PhoneDerived",
+      "bytes": 313427759,
+      "files": 3678
+    },
+    {
+      "path": "app/build/T15-Device",
+      "bytes": 183457372,
+      "files": 2605
+    },
+    {
+      "path": "app/build/Adjustment-Device",
+      "bytes": 192017453,
+      "files": 2647
+    },
+    {
+      "path": "app/build/T43LayoutSimFinal",
+      "bytes": 297282566,
+      "files": 3644
+    },
+    {
+      "path": "app/build/T09-Release",
+      "bytes": 134494134,
+      "files": 395
+    },
+    {
+      "path": "app/build/ReleaseDerivedData",
+      "bytes": 176758182,
+      "files": 618
+    },
+    {
+      "path": "app/build/T16-Picker-Simulator",
+      "bytes": 171385176,
+      "files": 2560
+    },
+    {
+      "path": "app/build/T10-Device",
+      "bytes": 177382259,
+      "files": 2644
+    },
+    {
+      "path": "app/build/Adjustment-Release",
+      "bytes": 75181980,
+      "files": 236
+    },
+    {
+      "path": "app/build/T33-Simulator",
+      "bytes": 256630324,
+      "files": 3436
+    },
+    {
+      "path": "app/build/T10-Release",
+      "bytes": 67675158,
+      "files": 226
+    },
+    {
+      "path": "app/build/T16-Picker-Release",
+      "bytes": 73536136,
+      "files": 230
+    },
+    {
+      "path": "app/build/T36-ReleaseDerived",
+      "bytes": 165296699,
+      "files": 524
+    },
+    {
+      "path": "app/build/T12-Simulator",
+      "bytes": 166236362,
+      "files": 2619
+    },
+    {
+      "path": "app/build/PhoneDerivedData",
+      "bytes": 342631174,
+      "files": 3944
+    },
+    {
+      "path": "app/build/T42-PhoneDerived",
+      "bytes": 328658988,
+      "files": 3832
+    },
+    {
+      "path": "app/build/T63-Simulator",
+      "bytes": 520107535,
+      "files": 1343
+    },
+    {
+      "path": "app/build/T31Release",
+      "bytes": 77416260,
+      "files": 237
+    },
+    {
+      "path": "app/build/T62-DetailFixReleaseDerived",
+      "bytes": 168653494,
+      "files": 576
+    },
+    {
+      "path": "app/build/T40-ReleaseDerivedData",
+      "bytes": 162160404,
+      "files": 497
+    },
+    {
+      "path": "app/build/T43TitleSim",
+      "bytes": 299291270,
+      "files": 3648
+    },
+    {
+      "path": "app/build/T08-Release",
+      "bytes": 134060561,
+      "files": 397
+    },
+    {
+      "path": "app/build/T41-ReleaseDerived",
+      "bytes": 164633095,
+      "files": 497
+    },
+    {
+      "path": "app/build/T12-Device",
+      "bytes": 176448772,
+      "files": 2595
+    },
+    {
+      "path": "app/build/T32-Probe",
+      "bytes": 78016909,
+      "files": 254
+    },
+    {
+      "path": "app/build/T13-Release",
+      "bytes": 69619104,
+      "files": 229
+    },
+    {
+      "path": "app/build/T02-DeviceDerivedData",
+      "bytes": 74418406,
+      "files": 1902
+    },
+    {
+      "path": "app/build/T62-DetailFixDerived",
+      "bytes": 300773004,
+      "files": 3778
+    },
+    {
+      "path": "app/build/T62-DetailFixPhoneDerived",
+      "bytes": 325803896,
+      "files": 3820
+    },
+    {
+      "path": "app/build/T36-Derived",
+      "bytes": 300980645,
+      "files": 3794
+    },
+    {
+      "path": "app/build/T16-Device",
+      "bytes": 188398457,
+      "files": 2639
+    },
+    {
+      "path": "app/build/T62-Derived",
+      "bytes": 298674010,
+      "files": 3784
+    },
+    {
+      "path": "app/build/T32-Simulator",
+      "bytes": 181121028,
+      "files": 2607
+    },
+    {
+      "path": "app/build/T07-DeviceDerivedData",
+      "bytes": 152081738,
+      "files": 2446
+    },
+    {
+      "path": "app/build/T61Migration",
+      "bytes": 301956129,
+      "files": 3608
+    },
+    {
+      "path": "app/build/T12-Fix-Device",
+      "bytes": 177109810,
+      "files": 2586
+    },
+    {
+      "path": "app/build/T32-Device",
+      "bytes": 202585171,
+      "files": 2651
+    },
+    {
+      "path": "app/build/T13-Simulator",
+      "bytes": 163167316,
+      "files": 2547
+    },
+    {
+      "path": "app/build/T44SimDerivedData",
+      "bytes": 311080518,
+      "files": 3802
+    },
+    {
+      "path": "app/build/T38Sim",
+      "bytes": 281593453,
+      "files": 3572
+    },
+    {
+      "path": "app/build/T12-Fix-Release",
+      "bytes": 69522486,
+      "files": 229
+    },
+    {
+      "path": "app/build/DerivedDataCompactFinal",
+      "bytes": 297127320,
+      "files": 3644
+    },
+    {
+      "path": "app/build/DerivedData",
+      "bytes": 948766627,
+      "files": 7308
+    },
+    {
+      "path": "app/build/T16-Picker-Device",
+      "bytes": 186506370,
+      "files": 2598
+    },
+    {
+      "path": "app/build/T12-Release",
+      "bytes": 140098583,
+      "files": 401
+    },
+    {
+      "path": "app/build/T06-DeviceDerivedData",
+      "bytes": 145567073,
+      "files": 2377
+    },
+    {
+      "path": "app/build/T43LayoutSim",
+      "bytes": 298245479,
+      "files": 3645
+    },
+    {
+      "path": "app/build/T42-ReleaseDerived",
+      "bytes": 165735136,
+      "files": 498
+    },
+    {
+      "path": "app/build/T35FinalRelease",
+      "bytes": 150084390,
+      "files": 470
+    },
+    {
+      "path": "app/build/T02-SimulatorDerivedData",
+      "bytes": 138851474,
+      "files": 2307
+    }
+  ],
+  "retained": "historical xcresult bundles, diagnostic logs and images; source code, materials, installed iPhone app and user data untouched"
+}
