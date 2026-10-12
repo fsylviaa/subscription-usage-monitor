@@ -38,3 +38,7 @@ T07 已实现 `CodexDeviceAuthorizationClient` 和 `CodexDeviceAuthorization`：
 - 开始标记、候选和正式包均用 `CredentialVault.replace(ifMatching:)` 原子条件替换；取消查询后仍尽力保存已发续期的结果，但取消的查询不能发布额度。完整账户操作与 generation 生命周期由 T22 后续收口。
 - 查询前网络门槛保留；续期后再取得新评分才发实际查询。401 最多适用续期一次并重查一次，403/429/5xx 不触发该恢复。保存快照前再次比较凭据包，账户存储继续核对原绑定及 generation。
 - 同一授权链的最近两次续期开始／完成／原到期／触发原因与新授权一起保存，不含导出令牌；这里只证明轮换，T54 还需同次成功查询证据。当前真实自然轮换为 0，参见 [T14 验收](../../../docs/mvp任务清单/记录/T14-验收.md)。
+
+## T62 D-67重置卡摘要
+
+既有usage响应的`rate_limit_reset_credits.available_count`表示可用额度重置卡张数；来源为OpenAI官方backend-client类型与读取代码。`subscription`独立解析可选非负Int64并保存到AccountSubscription，缺失／非法保持nil，不破坏主窗口或套餐。UI按明确用户要求将无可信值显示0，不将其写成真实平台确认。沿用已有身份门控／保存上下文、失败保留及重连scope保护；不新增查询或兑换操作。旧文件缺字段正常读取。来源链接及限定见技术方案D-67与T62修订验收。

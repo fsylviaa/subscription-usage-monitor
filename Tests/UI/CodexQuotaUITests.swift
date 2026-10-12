@@ -60,6 +60,26 @@ final class CodexQuotaUITests: XCTestCase {
         app.terminate()
     }
 
+    @MainActor
+    func testT62IdentityNowLivesInDetailsAndResetCardsShowVerifiedTwoOrDefaultZero() {
+        for appearance in ["light", "dark"] {
+            let app = launchT23("resetCards", appearance: appearance)
+            let cards = app.otherElements.matching(identifier: "quota.card")
+            for index in 0..<2 {
+                cards.element(boundBy: index).buttons["quota.details"].tap()
+                XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 3))
+                let identity = app.staticTexts["detail.identity"]
+                XCTAssertEqual(identity.label, "card-\(index + 1)@example.invalid")
+                XCTAssertGreaterThan(identity.frame.minY, app.staticTexts["detail.weekly.remaining"].frame.maxY)
+                let inventory = app.staticTexts["detail.resetCards"]
+                XCTAssertEqual(inventory.label, "重置额度，\(index == 0 ? "2" : "0")")
+                screenshot(app, "T62-账号移入详情-卡数\(index == 0 ? "2" : "0")-\(appearance)")
+                app.buttons["detail.close"].tap()
+            }
+            app.terminate()
+        }
+    }
+
     private func t36URL(id: UUID, identity: String) -> URL {
         let key = SHA256.hash(data: Data("codex:false:\(identity.lowercased())".utf8))
             .map { String(format: "%02x", $0) }.joined()
@@ -946,6 +966,8 @@ final class CodexQuotaUITests: XCTestCase {
         for _ in 0..<4 where !time.isHittable { app.swipeUp() }
         XCTAssertTrue(time.isHittable)
         screenshot(app, "T62-大字号滚动可读")
+        XCTAssertTrue(app.buttons["detail.close"].isHittable, "大字号滚动后顶部关闭必须可用")
+        app.buttons["detail.close"].tap()
     }
 
     @MainActor

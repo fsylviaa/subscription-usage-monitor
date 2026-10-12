@@ -80,6 +80,26 @@ final class RootViewTests: XCTestCase {
         }
     }
 
+    func testT62AccountAndResetCardsUseEachAccountsMetadataAndMissingDefaultsOnlyInUI() {
+        let now = Date()
+        var account = ConnectedAccount(verifiedEmail: "first@example.invalid", scope: .init(remoteAccountID: "first", kind: .personal), credentialRef: UUID(),
+            quotaState: .notApplicable, subscription: .init(planType: "Actual Plan", observedAt: now, resetCardCount: 2))
+        var rows = CodexDetailContent(account: account).rows
+        XCTAssertEqual(rows.map(\.id), ["identity", "plan", "resetCards"])
+        XCTAssertEqual(rows.first?.value, "first@example.invalid")
+        XCTAssertEqual(rows.first { $0.id == "resetCards" }?.value, "2")
+        account.verifiedEmail = "second@example.invalid"
+        account.subscription = .init(planType: "Actual Plan", observedAt: now, resetCardCount: 7)
+        rows = CodexDetailContent(account: account).rows
+        XCTAssertEqual(rows.first?.value, "second@example.invalid")
+        XCTAssertEqual(rows.first { $0.id == "resetCards" }?.value, "7")
+        for count: Int64? in [nil, 0, -1] {
+            account.subscription = .init(planType: "Actual Plan", observedAt: now, resetCardCount: count)
+            XCTAssertEqual(CodexDetailContent(account: account).rows.first { $0.id == "resetCards" }?.value, "0")
+        }
+        XCTAssertNil(account.quotaSnapshot, "补充0不会伪造主窗口成功")
+    }
+
     func testT62DetailIdentityAndTrustedRowsNeverBorrowAnotherAccount() throws {
         let now = Date(timeIntervalSince1970: 1_791_590_400)
         var first = ConnectedAccount(remoteUserID: "user-a", verifiedEmail: "a@example.invalid",
@@ -98,7 +118,7 @@ final class RootViewTests: XCTestCase {
         XCTAssertNil(CodexDetailTarget(second))
         XCTAssertNil(target.resolve(in: []))
         var content = CodexDetailContent(account: first)
-        XCTAssertEqual(content.rows.map(\.id), ["plan", "updatedAt"])
+        XCTAssertEqual(content.rows.map(\.id), ["identity", "plan", "resetCards", "updatedAt"])
         XCTAssertEqual(content.snapshot?.weekly.amount.remainingPercent, 100)
         XCTAssertEqual(content.snapshot?.fiveHours.amount.remainingPercent, 0)
         XCTAssertEqual(content.snapshot?.weekly.amount.progress?.usedFraction, 0)
@@ -106,9 +126,9 @@ final class RootViewTests: XCTestCase {
         first.scope = .init(remoteAccountID: "new-scope", kind: .personal)
         content = CodexDetailContent(account: first)
         XCTAssertNil(content.snapshot)
-        XCTAssertEqual(content.rows.map(\.id), ["plan"])
+        XCTAssertEqual(content.rows.map(\.id), ["identity", "plan", "resetCards"])
         first.subscription = nil; first.quotaSnapshot = nil; first.quotaState = .notApplicable
-        XCTAssertTrue(CodexDetailContent(account: first).rows.isEmpty)
+        XCTAssertEqual(CodexDetailContent(account: first).rows.map(\.id), ["identity", "resetCards"])
     }
 
     @MainActor

@@ -298,7 +298,8 @@ enum CodexConnectionUITestSupport {
                 var result = ConnectedAccount(verifiedEmail: "card-\(index)@example.invalid",
                     scope: .init(remoteAccountID: "t23-\(index)", kind: .personal), credentialRef: UUID(),
                     quotaState: weekly == nil ? .notApplicable : .available,
-                    subscription: .init(planType: plan, observedAt: now))
+                    subscription: .init(planType: plan, observedAt: now,
+                        resetCardCount: scenario == "resetCards" && index == 1 ? 2 : nil))
                 if let weekly, let fiveHours {
                     result.quotaSnapshot = .init(accountID: result.id, provider: result.provider,
                         product: result.product, scope: result.scope, generation: result.generation,

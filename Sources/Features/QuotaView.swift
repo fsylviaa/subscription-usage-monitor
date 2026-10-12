@@ -773,7 +773,7 @@ struct CodexDetailTarget: Identifiable, Equatable {
     }
 }
 
-/// Display only the established, account-bound observation contract. Optional
+/// Display only the established, account-bound observation contract. Other
 /// supplemental usage fields have no verified persisted contract in this release.
 struct CodexDetailContent {
     struct Row: Equatable, Identifiable {
@@ -794,10 +794,16 @@ struct CodexDetailContent {
                   $0.observedAt.timeIntervalSince1970 > 0 else { return nil }
             return $0
         }
-        var values: [Row] = []
+        var values: [Row] = [Row(id: "identity", title: "账号",
+            value: account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户")]
         if let subscription = account.subscription, subscription.isValid {
             values.append(Row(id: "plan", title: "套餐", value: subscription.planType))
         }
+        let count = account.subscription.flatMap { subscription -> Int64? in
+            guard subscription.isValid, let count = subscription.resetCardCount, count >= 0 else { return nil }
+            return count
+        } ?? 0
+        values.append(Row(id: "resetCards", title: "重置额度", value: String(count)))
         if let snapshot {
             values.append(Row(id: "updatedAt", title: "更新时间", value: QuotaView.dateText(snapshot.observedAt)))
         }
@@ -845,6 +851,8 @@ struct CodexDetailPanel: View {
             }
             .overlay { Text("Codex").font(.system(size: 20, weight: .semibold)).accessibilityAddTraits(.isHeader).allowsHitTesting(false) }
             .font(.system(size: 20))
+            .fixedSize(horizontal: false, vertical: true)
+            .layoutPriority(1)
             .buttonStyle(.plain).padding(.horizontal, 12).padding(.top, 10)
             if let failure {
                 HStack(spacing: 12) {
@@ -861,10 +869,6 @@ struct CodexDetailPanel: View {
             }
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text(account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户")
-                        .font(.subheadline).foregroundStyle(DashboardStyle.secondary)
-                        .fixedSize(horizontal: false, vertical: true).privacySensitive()
-                        .accessibilityIdentifier("detail.identity")
                     if account.isDemo {
                         Text("演示").font(.caption).foregroundStyle(DashboardStyle.secondary)
                     }
@@ -900,7 +904,9 @@ struct CodexDetailPanel: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .font(.subheadline).padding(.vertical, 16)
                                 .fixedSize(horizontal: false, vertical: true)
+                                .privacySensitive(row.id == "identity")
                                 .accessibilityElement(children: .combine)
+                                .accessibilityLabel(row.id == "identity" ? row.value : "\(row.title)，\(row.value)")
                                 .accessibilityIdentifier(row.id == "updatedAt" ? "quota.updatedAt" : "detail.\(row.id)")
                             }
                         }

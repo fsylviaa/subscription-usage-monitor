@@ -7,9 +7,25 @@ struct CodexUsageParser {
         // Decode independently: malformed quota fields must not discard reliable plan metadata.
         struct Metadata: Decodable { let plan_type: String }
         let metadata = try JSONDecoder().decode(Metadata.self, from: data)
-        let value = AccountSubscription(planType: metadata.plan_type, observedAt: observedAt)
+        let value = AccountSubscription(planType: metadata.plan_type, observedAt: observedAt,
+            resetCardCount: resetCardCount(data))
         guard value.isValid else { throw CodexQuotaError.failed }
         return value
+    }
+
+    /// Official usage summary: rate_limit_reset_credits.available_count (cards).
+    /// Decode separately so malformed optional inventory never breaks the plan
+    /// or the two primary quota windows. It is not credits.balance or a reset date.
+    private func resetCardCount(_ data: Data) -> Int64? {
+        struct Summary: Decodable {
+            let available_count: Int64?
+        }
+        struct Metadata: Decodable {
+            let rate_limit_reset_credits: Summary?
+        }
+        guard let value = try? JSONDecoder().decode(Metadata.self, from: data),
+              let count = value.rate_limit_reset_credits?.available_count, count >= 0 else { return nil }
+        return count
     }
 
     func hasNoApplicableQuota(_ data: Data, subscription: AccountSubscription) throws -> Bool {

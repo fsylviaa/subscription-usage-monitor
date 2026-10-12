@@ -13,6 +13,43 @@ final class CodexQuotaServiceTests: XCTestCase {
         directories = []
     }
 
+    func testT62ResetCardsPersistAcrossReopenFailureReconnectionAndRemainPerAccount() async throws {
+        let setup = try await self.setup()
+        func body(count: Int, scope: String = "quota-test-account") throws -> Data {
+            var object = try XCTUnwrap(JSONSerialization.jsonObject(with: Self.complete) as? [String: Any])
+            object["account_id"] = scope
+            object["rate_limit_reset_credits"] = ["available_count": count]
+            return try JSONSerialization.data(withJSONObject: object)
+        }
+        let transport = QuotaTestTransport(data: try body(count: 2))
+        let first = try await service(setup, transport: transport).update(setup.account)
+        XCTAssertEqual(first.subscription?.resetCardCount, 2)
+        let requests = await transport.requests
+        XCTAssertEqual(requests.count, 1)
+        XCTAssertEqual(requests.first?.url, CodexIdentityVerifier.usageURL, "不新增独立查询")
+        let reopened = try await AccountStore(fileURL: setup.url).load()
+        XCTAssertEqual(reopened.first?.subscription?.resetCardCount, 2)
+        let failing = QuotaTestTransport(data: try body(count: 99), status: 500)
+        do { _ = try await service(setup, transport: failing).update(first); XCTFail("应失败") } catch { }
+        let afterFailure = try await setup.store.load()
+        XCTAssertEqual(afterFailure.first?.subscription, first.subscription)
+        XCTAssertEqual(afterFailure.first?.quotaSnapshot, first.quotaSnapshot)
+        let other = ConnectedAccount(remoteUserID: "other", verifiedEmail: "other@example.invalid",
+            scope: .init(remoteAccountID: "quota-test-other", kind: .personal), credentialRef: UUID())
+        try await setup.store.append(other)
+        let second = try await service((setup.store, other, setup.url),
+            transport: QuotaTestTransport(data: try body(count: 7, scope: "quota-test-other"))).update(other)
+        XCTAssertEqual(second.subscription?.resetCardCount, 7)
+        let saved = try await setup.store.load()
+        XCTAssertEqual(saved.map { $0.subscription?.resetCardCount }, [2, 7])
+        var incoming = setup.account; incoming.credentialRef = UUID()
+        let sameIdentity = try await setup.store.commitLogin(incoming)
+        XCTAssertEqual(sameIdentity.subscription?.resetCardCount, 2)
+        incoming.scope = .init(remoteAccountID: "new-scope", kind: .personal)
+        let changed = try await setup.store.commitLogin(incoming)
+        XCTAssertNil(changed.subscription, "不同作用域不借用原卡数")
+    }
+
     func testGatedQueryStoresCorrectScopeWindowsAndResponseTimeWithoutSecrets() async throws {
         let setup = try await self.setup()
         let before = time.addingTimeInterval(-60)

@@ -9,6 +9,34 @@ final class CodexUsageParserTests: XCTestCase {
     private let fiveHourReset: Int64 = 1_791_608_400
     private let weeklyReset: Int64 = 1_792_195_200
 
+    func testT62ResetCardsDecodeOptionalInventoryWithoutChangingMainQuota() throws {
+        let cases: [(String, Int64?)] = [
+            (#""rate_limit_reset_credits":{"available_count":2}"#, 2),
+            (#""rate_limit_reset_credits":{"available_count":0}"#, 0),
+            (#""rate_limit_reset_credits":{"available_count":-1}"#, nil),
+            (#""rate_limit_reset_credits":{"available_count":2.5}"#, nil),
+            (#""rate_limit_reset_credits":{"available_count":true}"#, nil),
+            (#""rate_limit_reset_credits":{"available_count":"2"}"#, nil),
+            (#""rate_limit_reset_credits":{"available_count":9223372036854775808}"#, nil),
+            (#""rate_limit_reset_credits":{"available_count":null}"#, nil),
+            (#""rate_limit_reset_credits":[]"#, nil),
+            (#""rate_limit_reset_credits":null"#, nil),
+            (#""credits":{"balance":"2","unlimited":true},"reset_at":2"#, nil)
+        ]
+        for (extra, count) in cases {
+            let json = "{\"plan_type\":\"Actual Plan\",\"rate_limit\":{\"primary_window\":\(window(seconds: 18_000, used: "80")),\"secondary_window\":\(window(seconds: 604_800, used: "30"))},\(extra)}"
+            let metadata = try CodexUsageParser().subscription(Data(json.utf8), observedAt: observedAt)
+            XCTAssertEqual(metadata.resetCardCount, count, extra)
+            XCTAssertEqual(metadata.planType, "Actual Plan")
+            let main = try parse(json)
+            XCTAssertEqual(main.fiveHours.amount.remainingPercent, 20)
+            XCTAssertEqual(main.weekly.amount.remainingPercent, 70)
+        }
+        let legacy = try JSONDecoder().decode(AccountSubscription.self,
+            from: Data(#"{"planType":"Actual Plan","observedAt":0}"#.utf8))
+        XCTAssertNil(legacy.resetCardCount, "旧文件读回保持内部未知")
+    }
+
     func testTwoNormalWindowsKeepIndependentRemainingResetAndObservation() throws {
         let result = try parse(response(
             primary: window(seconds: 18_000, used: "80", reset: fiveHourReset),

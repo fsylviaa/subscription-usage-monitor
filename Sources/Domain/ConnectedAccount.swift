@@ -65,6 +65,15 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
 struct AccountSubscription: Codable, Equatable, Sendable {
     let planType: String
     let observedAt: Date
+    /// Optional verified inventory metadata, independent of subscription windows.
+    /// Nil stays unknown in storage; only the detail presentation defaults it to 0.
+    let resetCardCount: Int64?
+
+    init(planType: String, observedAt: Date, resetCardCount: Int64? = nil) {
+        self.planType = planType
+        self.observedAt = observedAt
+        self.resetCardCount = resetCardCount
+    }
 
     var isValid: Bool {
         !planType.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
