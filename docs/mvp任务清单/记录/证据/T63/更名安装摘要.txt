@@ -1,0 +1,15 @@
+T63 D-70 名称与手机覆盖更新检查（2026-10-12）
+基线：d689c4b；本人iPhone11已连接；原应用bundleIdentifier=com.iceflying.SubscriptionUsage。
+主App及组件Debug/Release：4处CFBundleDisplayName均为Token 仪表盘。
+签名Release：build/T63-brand-release.log，BUILD SUCCEEDED；保留原SettingsView警告，无图标相关错误。
+主App/组件产物显示名、Bundle身份及AppIcon声明核验通过；图标资源SHA-256未改变。
+主App及组件签名：完整本机环境codesign --verify --deep --strict通过。
+覆盖安装：build/T63-brand-install.json outcome=success，安装开始16:07:48（+08:00），未卸载。
+手机只读元数据：安装前订阅用量，安装后Token 仪表盘，bundleIdentifier前后相同；build/T63-before-app.json / T63-after-app.json。
+普通启动：2026-10-12 16:09:20（+08:00），build/T63-brand-launch.json outcome=success；arguments=[]，无隔离测试参数。
+失败历史：首次构建使用了错误设备标识，退出70；核对连接设备真实UDID后重新构建通过，未用失败尝试执行安装。
+失败历史：沙箱内codesign验证返回CSSMERR_TP_NOT_TRUSTED；完整本机签名环境验证通过，无证书配置修改。
+没有读取、导出或清理正式账户文件，没有卸载、修改应用数据身份、权限或任何已有组件配置；正式文件未做前后字节比较。
+实际主屏幕图标缓存/名称排版未目视或亲验，不能把安装元数据当作手机桌面视觉亲验；App已安装新图标产物。
+文档核对：63个任务行／38完成／10待验／13未开始／2取消，686条本地文件及行号链接有效；工程变更仅4处显示名，git diff --check通过。
+后续手机反馈：用户认为图标不饱满／白色占比高，明确外侧白边与内部空白都减少；当前仅对齐，未改图或再次安装。
