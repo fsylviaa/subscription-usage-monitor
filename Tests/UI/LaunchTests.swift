@@ -123,7 +123,8 @@ final class LaunchTests: XCTestCase {
                 saveScreenshot(of: app, name: "T43R-第一动画-\(dark ? "深" : "浅")-连续\(capture)")
                 Thread.sleep(forTimeInterval: 1)
             }
-            XCTAssertEqual(demo.value as? String, "画面 8，共 8 个")
+            let cycle = Int((demo.value as? String)?.components(separatedBy: "循环 ").last ?? "") ?? 0
+            XCTAssertGreaterThanOrEqual(cycle, 2, "第一动画必须重复播放，不保留终点")
             assertT42Step(in: app, second: false)
             app.buttons["tutorial.close"].tap()
             XCTAssertTrue(app.buttons["tab.settings"].isSelected)
@@ -213,7 +214,7 @@ final class LaunchTests: XCTestCase {
                     saveScreenshot(of: app, name: "T43-动画-第\(page + 1)步-开始")
                     let final = "画面 \(page == 0 ? 8 : 4)，共 \(page == 0 ? 8 : 4) 个"
                     XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(
-                        predicate: NSPredicate(format: "value == %@", final), object: demo)], timeout: 30), .completed)
+                        predicate: NSPredicate(format: "value BEGINSWITH %@", final), object: demo)], timeout: 30), .completed)
                     saveScreenshot(of: app, name: "T43-动画-第\(page + 1)步-结束")
                 }
                 app.buttons["tutorial.next"].tap()
@@ -236,6 +237,10 @@ final class LaunchTests: XCTestCase {
             entry.tap()
             swipeTutorial(in: app, forward: true); assertT42Step(in: app, second: true)
             swipeTutorial(in: app, forward: false); assertT42Step(in: app, second: false)
+            XCUIDevice.shared.press(.home); app.activate()
+            assertT42Step(in: app, second: false)
+            let firstDemo = app.descendants(matching: .any).matching(identifier: "tutorial.demo.0").firstMatch
+            XCTAssertTrue((firstDemo.value as? String)?.contains("循环 ") == true)
             app.buttons["tutorial.close"].tap()
             XCTAssertTrue(entry.waitForExistence(timeout: 5))
             entry.tap(); app.buttons["tutorial.next"].tap()
