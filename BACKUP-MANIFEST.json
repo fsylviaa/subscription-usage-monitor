@@ -6,7 +6,7 @@
     {
       "directory": "app",
       "source": "local project",
-      "commit": "bc000f36d57a600ed7ee265d4a7fe129e03d2ba2"
+      "commit": "197f588a4762fede0dc545c030621c13c8affc17"
     },
     {
       "directory": "reference/CodexBar",
@@ -30,12 +30,12 @@
     }
   ],
   "fileCount": 7712,
-  "bytes": 519830005,
+  "bytes": 519835910,
   "files": [
     {
       "path": "AGENTS.md",
-      "bytes": 4567,
-      "sha256": "37274b058235d05a2c1bca9e0684c01a0b81a4ed5d5c638db67d0d2a2a949f65"
+      "bytes": 6500,
+      "sha256": "3d521309a13cdd2212a93616f9bc382198c5d5668b99abbd27a8b7898b51bf48"
     },
     {
       "path": "app/.gitignore",
@@ -44,8 +44,8 @@
     },
     {
       "path": "app/AGENTS.md",
-      "bytes": 25569,
-      "sha256": "1dcb956ee9adac8efe4ab92c539c2c147afa7ec0dd83ace9f9b668691ad14c64"
+      "bytes": 27502,
+      "sha256": "abe67eaad40449603d10fe583c3bcd61ece29db626e6543f2c1bbebd48dcca52"
     },
     {
       "path": "app/Config/Info.plist",
@@ -1494,8 +1494,8 @@
     },
     {
       "path": "app/docs/mvp任务清单/执行约定.md",
-      "bytes": 11388,
-      "sha256": "27d7b6989aa2c207b80ce50cfb8358320ebe342aacf658a0542a750e141caa82"
+      "bytes": 12388,
+      "sha256": "20e27914e2b0befa9417ef5fa373f06964d74d54cfafaf1cc6310c4dbda70218"
     },
     {
       "path": "app/docs/mvp任务清单/规划检查记录.md",
@@ -7049,8 +7049,8 @@
     },
     {
       "path": "app/docs/项目进度.md",
-      "bytes": 164206,
-      "sha256": "e4e5ab029564ecb6c533443308c8a61185310ac02f65e16bbd1866f896e6b8f3"
+      "bytes": 165249,
+      "sha256": "f40c78bcdc4afc6615f083eb37a053573245f238f795df5e3d87b7d76a0a7b7a"
     },
     {
       "path": "app/docs/首版平台登录与额度连接方案.md",
@@ -30119,13 +30119,13 @@
     },
     {
       "path": "reference/ccusage/LICENSE",
-      "bytes": 22,
-      "sha256": "1720efb13e27e2c5c12a65bf997c68b02ddcf6e0d0e95958f9d0e8d968f0780c"
+      "bytes": 20,
+      "sha256": "ee56cc365cf280509130cbe95b73b8054176c074df4b9d87450a8bebc09b09c3"
     },
     {
       "path": "reference/ccusage/README.md",
-      "bytes": 24,
-      "sha256": "44565c25ed8434f7b82f1150d233d462a5e2e42fc5b664c6dc8e7a4d23e977c0"
+      "bytes": 22,
+      "sha256": "766f273c7607f61ae8df4f880f4d7dd16c25d6e8ceda3372d480463ba57dfd85"
     },
     {
       "path": "reference/ccusage/apps/ccusage/AGENTS.md",
@@ -38592,5 +38592,6 @@
       "bytes": 270620,
       "sha256": "e7e7c6eab13ae487da739b7278893ce0b7cc273c1ee9af21917a13b746bb823b"
     }
-  ]
+  ],
+  "appHistoryBranch": "app-history"
 }
