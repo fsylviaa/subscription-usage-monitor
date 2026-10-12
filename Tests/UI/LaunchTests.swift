@@ -1,6 +1,55 @@
 import XCTest
 
 final class LaunchTests: XCTestCase {
+    @MainActor
+    func testT44HelpNavigationLightAndDark() {
+        checkT44Help(maximumText: false)
+    }
+
+    @MainActor
+    func testT44HelpMaximumTextRemainsScrollable() {
+        checkT44Help(maximumText: true)
+    }
+
+    @MainActor
+    private func checkT44Help(maximumText: Bool) {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        if maximumText {
+            app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        }
+        app.launch()
+        defer { app.terminate() }
+        app.buttons["tab.settings"].tap()
+        for dark in [false, true] {
+            if dark { app.switches["settings.darkAppearance"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap() }
+            let entry = app.buttons["settings.help"]
+            for _ in 0..<6 { if entry.isHittable { break }; app.swipeUp() }
+            XCTAssertTrue(entry.isHittable); entry.tap()
+            XCTAssertTrue(app.navigationBars["帮助与说明"].waitForExistence(timeout: 5))
+            for identifier in ["quota", "refresh", "reminders", "widgets"] {
+                let text = app.staticTexts["help.\(identifier)"]
+                for _ in 0..<12 { if text.isHittable { break }; app.swipeUp() }
+                XCTAssertTrue(text.isHittable, identifier)
+                XCTAssertGreaterThanOrEqual(text.frame.minX, 0)
+                XCTAssertLessThanOrEqual(text.frame.maxX, app.frame.maxX)
+                saveScreenshot(of: app, name: "T44-\(maximumText ? "大字号" : "正常")-\(dark ? "深" : "浅")-\(identifier)")
+                for _ in 0..<12 {
+                    if text.frame.maxY < app.buttons["tab.settings"].frame.minY { break }
+                    app.swipeUp()
+                }
+                XCTAssertLessThan(text.frame.maxY, app.buttons["tab.settings"].frame.minY)
+                saveScreenshot(of: app, name: "T44-\(maximumText ? "大字号" : "正常")-\(dark ? "深" : "浅")-\(identifier)-末尾")
+            }
+            app.navigationBars["帮助与说明"].buttons.firstMatch.tap()
+            XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
+            for _ in 0..<8 { if app.switches["settings.darkAppearance"].isHittable { break }; app.swipeDown() }
+        }
+        app.buttons["tab.quota"].tap()
+        assertEmptyQuota(in: app)
+    }
+
     /// Read-only by default; explicit T43_LAYOUT_ADD checks and cleans one new instance.
     @MainActor
     func testT43ReadActualAddingPageLayouts() throws {
@@ -792,7 +841,8 @@ final class LaunchTests: XCTestCase {
             XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
             XCTAssertTrue(app.buttons["tab.settings"].isSelected)
 
-            for identifier in ["settings.help", "settings.privacy", "settings.licenses"] {
+            XCTAssertTrue(app.buttons["settings.help"].isEnabled)
+            for identifier in ["settings.privacy", "settings.licenses"] {
                 let action = app.buttons[identifier]
                 XCTAssertTrue(action.exists, identifier)
                 XCTAssertFalse(action.isEnabled, identifier)

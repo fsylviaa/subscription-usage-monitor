@@ -27,6 +27,7 @@ struct RootView: View {
     @State private var tutorialSource: TutorialSource?
     @State private var connectionDetent: PresentationDetent = .height(250)
     @State private var appearanceTransition = AppearanceTransition()
+    @State private var supportBottomInset: CGFloat = 60
 
     init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard, onBackground: @escaping () -> Void = {}, reminders: ResetReminderSettings? = nil, reminderScheduler: ResetReminderScheduler? = nil, notificationNavigation: ResetReminderNavigation = .shared) {
         self.notificationNavigation = notificationNavigation
@@ -71,7 +72,7 @@ struct RootView: View {
             .tag(Tab.quota).toolbar(.hidden, for: .tabBar)
 
             NavigationStack {
-                SettingsView(demoEnabled: connection.demoEnabled, canManage: connection.canManageAccounts,
+                SettingsView(supportBottomInset: supportBottomInset, demoEnabled: connection.demoEnabled, canManage: connection.canManageAccounts,
                              setDemoMode: { connection.setDemoMode($0) },
                              darkAppearance: appearance == "dark" || (appearance == "system" && systemColorScheme == .dark),
                              setDarkAppearance: { dark in
@@ -103,6 +104,7 @@ struct RootView: View {
                 }
                 .padding(.top, 6).padding(.bottom, 4)
             }
+            .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { supportBottomInset = $0 }
             .background(DashboardStyle.background.ignoresSafeArea(edges: .bottom))
         }
         .alert("排序未保存，请重试", isPresented: Binding(get: { connection.accountOrderFailed },
