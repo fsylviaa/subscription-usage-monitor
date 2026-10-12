@@ -1,0 +1,2103 @@
+{
+  "date": "2026-10-12",
+  "browser": "Chrome",
+  "initial": [
+    {
+      "kind": "skala",
+      "windows": [
+        {
+          "input": 73,
+          "key": "week",
+          "number": "73%",
+          "value": 73,
+          "width": 270
+        },
+        {
+          "input": 50,
+          "key": "five",
+          "number": "50%",
+          "value": 50,
+          "width": 500
+        }
+      ]
+    },
+    {
+      "kind": "capsule",
+      "windows": [
+        {
+          "input": 73,
+          "key": "week",
+          "number": "73%",
+          "pill": "270.0000",
+          "value": 73,
+          "width": 270
+        },
+        {
+          "input": 50,
+          "key": "five",
+          "number": "50%",
+          "pill": "500.0000",
+          "value": 50,
+          "width": 500
+        }
+      ]
+    },
+    {
+      "kind": "ticks",
+      "windows": [
+        {
+          "input": 73,
+          "key": "week",
+          "number": "73%",
+          "value": 73,
+          "width": 270
+        },
+        {
+          "input": 50,
+          "key": "five",
+          "number": "50%",
+          "value": 50,
+          "width": 500
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "test": "独立滑块 1/week",
+      "before": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "pill": "270.0000",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "pill": "500.0000",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "pill": "270.0000",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "pill": "500.0000",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ],
+      "pass": true
+    },
+    {
+      "test": "独立滑块 1/five",
+      "before": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "pill": "270.0000",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "pill": "500.0000",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "pill": "270.0000",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "pill": "500.0000",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ],
+      "pass": true
+    },
+    {
+      "test": "独立滑块 2/week",
+      "before": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "pill": "270.0000",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "pill": "500.0000",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "pill": "269.0000",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "pill": "500.0000",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ],
+      "pass": true
+    },
+    {
+      "test": "独立滑块 2/five",
+      "before": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "pill": "269.0000",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "pill": "500.0000",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "pill": "269.0000",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "pill": "499.0000",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ],
+      "pass": true
+    },
+    {
+      "test": "独立滑块 3/week",
+      "before": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "pill": "269.0000",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "pill": "499.0000",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73,
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 270
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "pill": "269.0000",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "pill": "499.0000",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ],
+      "pass": true
+    },
+    {
+      "test": "独立滑块 3/five",
+      "before": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "pill": "269.0000",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "pill": "499.0000",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "pill": "269.0000",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "pill": "499.0000",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73.1,
+              "key": "week",
+              "number": "73.1%",
+              "value": 73.1,
+              "width": 269
+            },
+            {
+              "input": 50.1,
+              "key": "five",
+              "number": "50.1%",
+              "value": 50.1,
+              "width": 499
+            }
+          ]
+        }
+      ],
+      "pass": true
+    },
+    {
+      "test": "边界 1/week 0",
+      "actual": {
+        "input": 0,
+        "key": "week",
+        "number": "0%",
+        "value": 0,
+        "width": 1000
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 1/week 100",
+      "actual": {
+        "input": 100,
+        "key": "week",
+        "number": "100%",
+        "value": 100,
+        "width": 0
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 1/week 99.9",
+      "actual": {
+        "input": 99.9,
+        "key": "week",
+        "number": "99.9%",
+        "value": 99.9,
+        "width": 1
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 1/week 0.1",
+      "actual": {
+        "input": 0.1,
+        "key": "week",
+        "number": "0.1%",
+        "value": 0.1,
+        "width": 999
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 1/week 0.3",
+      "actual": {
+        "input": 0.3,
+        "key": "week",
+        "number": "0.3%",
+        "value": 0.3,
+        "width": 997
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 1/five 0",
+      "actual": {
+        "input": 0,
+        "key": "five",
+        "number": "0%",
+        "value": 0,
+        "width": 1000
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 1/five 100",
+      "actual": {
+        "input": 100,
+        "key": "five",
+        "number": "100%",
+        "value": 100,
+        "width": 0
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 1/five 99.9",
+      "actual": {
+        "input": 99.9,
+        "key": "five",
+        "number": "99.9%",
+        "value": 99.9,
+        "width": 1
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 1/five 0.1",
+      "actual": {
+        "input": 0.1,
+        "key": "five",
+        "number": "0.1%",
+        "value": 0.1,
+        "width": 999
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 1/five 0.3",
+      "actual": {
+        "input": 0.3,
+        "key": "five",
+        "number": "0.3%",
+        "value": 0.3,
+        "width": 997
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 2/week 0",
+      "actual": {
+        "input": 0,
+        "key": "week",
+        "number": "0%",
+        "pill": "1000.0000",
+        "value": 0,
+        "width": 1000
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 2/week 100",
+      "actual": {
+        "input": 100,
+        "key": "week",
+        "number": "100%",
+        "pill": "0.0000",
+        "value": 100,
+        "width": 0
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 2/week 99.9",
+      "actual": {
+        "input": 99.9,
+        "key": "week",
+        "number": "99.9%",
+        "pill": "1.0000",
+        "value": 99.9,
+        "width": 1
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 2/week 0.1",
+      "actual": {
+        "input": 0.1,
+        "key": "week",
+        "number": "0.1%",
+        "pill": "999.0000",
+        "value": 0.1,
+        "width": 999
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 2/week 0.3",
+      "actual": {
+        "input": 0.3,
+        "key": "week",
+        "number": "0.3%",
+        "pill": "997.0000",
+        "value": 0.3,
+        "width": 997
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 2/five 0",
+      "actual": {
+        "input": 0,
+        "key": "five",
+        "number": "0%",
+        "pill": "1000.0000",
+        "value": 0,
+        "width": 1000
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 2/five 100",
+      "actual": {
+        "input": 100,
+        "key": "five",
+        "number": "100%",
+        "pill": "0.0000",
+        "value": 100,
+        "width": 0
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 2/five 99.9",
+      "actual": {
+        "input": 99.9,
+        "key": "five",
+        "number": "99.9%",
+        "pill": "1.0000",
+        "value": 99.9,
+        "width": 1
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 2/five 0.1",
+      "actual": {
+        "input": 0.1,
+        "key": "five",
+        "number": "0.1%",
+        "pill": "999.0000",
+        "value": 0.1,
+        "width": 999
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 2/five 0.3",
+      "actual": {
+        "input": 0.3,
+        "key": "five",
+        "number": "0.3%",
+        "pill": "997.0000",
+        "value": 0.3,
+        "width": 997
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 3/week 0",
+      "actual": {
+        "input": 0,
+        "key": "week",
+        "number": "0%",
+        "value": 0,
+        "width": 1000
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 3/week 100",
+      "actual": {
+        "input": 100,
+        "key": "week",
+        "number": "100%",
+        "value": 100,
+        "width": 0
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 3/week 99.9",
+      "actual": {
+        "input": 99.9,
+        "key": "week",
+        "number": "99.9%",
+        "value": 99.9,
+        "width": 1
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 3/week 0.1",
+      "actual": {
+        "input": 0.1,
+        "key": "week",
+        "number": "0.1%",
+        "value": 0.1,
+        "width": 999
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 3/week 0.3",
+      "actual": {
+        "input": 0.3,
+        "key": "week",
+        "number": "0.3%",
+        "value": 0.3,
+        "width": 997
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 3/five 0",
+      "actual": {
+        "input": 0,
+        "key": "five",
+        "number": "0%",
+        "value": 0,
+        "width": 1000
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 3/five 100",
+      "actual": {
+        "input": 100,
+        "key": "five",
+        "number": "100%",
+        "value": 100,
+        "width": 0
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 3/five 99.9",
+      "actual": {
+        "input": 99.9,
+        "key": "five",
+        "number": "99.9%",
+        "value": 99.9,
+        "width": 1
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 3/five 0.1",
+      "actual": {
+        "input": 0.1,
+        "key": "five",
+        "number": "0.1%",
+        "value": 0.1,
+        "width": 999
+      },
+      "pass": true
+    },
+    {
+      "test": "边界 3/five 0.3",
+      "actual": {
+        "input": 0.3,
+        "key": "five",
+        "number": "0.3%",
+        "value": 0.3,
+        "width": 997
+      },
+      "pass": true
+    },
+    {
+      "test": "鼠标图形拖动 方案1 每周额度剩余百分比",
+      "actual": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 27,
+              "key": "week",
+              "number": "27%",
+              "value": 27,
+              "width": 730
+            },
+            {
+              "input": 0.3,
+              "key": "five",
+              "number": "0.3%",
+              "value": 0.3,
+              "width": 997
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 0.3,
+              "key": "week",
+              "number": "0.3%",
+              "pill": "997.0000",
+              "value": 0.3,
+              "width": 997
+            },
+            {
+              "input": 0.3,
+              "key": "five",
+              "number": "0.3%",
+              "pill": "997.0000",
+              "value": 0.3,
+              "width": 997
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 0.3,
+              "key": "week",
+              "number": "0.3%",
+              "value": 0.3,
+              "width": 997
+            },
+            {
+              "input": 0.3,
+              "key": "five",
+              "number": "0.3%",
+              "value": 0.3,
+              "width": 997
+            }
+          ]
+        }
+      ],
+      "pass": true
+    },
+    {
+      "test": "反向及越界拖动 方案1 每周额度剩余百分比",
+      "pass": true
+    },
+    {
+      "test": "鼠标图形拖动 方案1 5小时额度剩余百分比",
+      "actual": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 0,
+              "key": "week",
+              "number": "0%",
+              "value": 0,
+              "width": 1000
+            },
+            {
+              "input": 27,
+              "key": "five",
+              "number": "27%",
+              "value": 27,
+              "width": 730
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 0.3,
+              "key": "week",
+              "number": "0.3%",
+              "pill": "997.0000",
+              "value": 0.3,
+              "width": 997
+            },
+            {
+              "input": 0.3,
+              "key": "five",
+              "number": "0.3%",
+              "pill": "997.0000",
+              "value": 0.3,
+              "width": 997
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 0.3,
+              "key": "week",
+              "number": "0.3%",
+              "value": 0.3,
+              "width": 997
+            },
+            {
+              "input": 0.3,
+              "key": "five",
+              "number": "0.3%",
+              "value": 0.3,
+              "width": 997
+            }
+          ]
+        }
+      ],
+      "pass": true
+    },
+    {
+      "test": "反向及越界拖动 方案1 5小时额度剩余百分比",
+      "pass": true
+    },
+    {
+      "test": "鼠标图形拖动 方案2 每周额度剩余百分比",
+      "actual": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 0,
+              "key": "week",
+              "number": "0%",
+              "value": 0,
+              "width": 1000
+            },
+            {
+              "input": 0,
+              "key": "five",
+              "number": "0%",
+              "value": 0,
+              "width": 1000
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 27,
+              "key": "week",
+              "number": "27%",
+              "pill": "730.0000",
+              "value": 27,
+              "width": 730
+            },
+            {
+              "input": 0.3,
+              "key": "five",
+              "number": "0.3%",
+              "pill": "997.0000",
+              "value": 0.3,
+              "width": 997
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 0.3,
+              "key": "week",
+              "number": "0.3%",
+              "value": 0.3,
+              "width": 997
+            },
+            {
+              "input": 0.3,
+              "key": "five",
+              "number": "0.3%",
+              "value": 0.3,
+              "width": 997
+            }
+          ]
+        }
+      ],
+      "pass": true
+    },
+    {
+      "test": "反向及越界拖动 方案2 每周额度剩余百分比",
+      "pass": true
+    },
+    {
+      "test": "鼠标图形拖动 方案2 5小时额度剩余百分比",
+      "actual": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 0,
+              "key": "week",
+              "number": "0%",
+              "value": 0,
+              "width": 1000
+            },
+            {
+              "input": 0,
+              "key": "five",
+              "number": "0%",
+              "value": 0,
+              "width": 1000
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 0,
+              "key": "week",
+              "number": "0%",
+              "pill": "1000.0000",
+              "value": 0,
+              "width": 1000
+            },
+            {
+              "input": 27,
+              "key": "five",
+              "number": "27%",
+              "pill": "730.0000",
+              "value": 27,
+              "width": 730
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 0.3,
+              "key": "week",
+              "number": "0.3%",
+              "value": 0.3,
+              "width": 997
+            },
+            {
+              "input": 0.3,
+              "key": "five",
+              "number": "0.3%",
+              "value": 0.3,
+              "width": 997
+            }
+          ]
+        }
+      ],
+      "pass": true
+    },
+    {
+      "test": "反向及越界拖动 方案2 5小时额度剩余百分比",
+      "pass": true
+    },
+    {
+      "test": "鼠标图形拖动 方案3 每周额度剩余百分比",
+      "actual": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 0,
+              "key": "week",
+              "number": "0%",
+              "value": 0,
+              "width": 1000
+            },
+            {
+              "input": 0,
+              "key": "five",
+              "number": "0%",
+              "value": 0,
+              "width": 1000
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 0,
+              "key": "week",
+              "number": "0%",
+              "pill": "1000.0000",
+              "value": 0,
+              "width": 1000
+            },
+            {
+              "input": 0,
+              "key": "five",
+              "number": "0%",
+              "pill": "1000.0000",
+              "value": 0,
+              "width": 1000
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 27,
+              "key": "week",
+              "number": "27%",
+              "value": 27,
+              "width": 730
+            },
+            {
+              "input": 0.3,
+              "key": "five",
+              "number": "0.3%",
+              "value": 0.3,
+              "width": 997
+            }
+          ]
+        }
+      ],
+      "pass": true
+    },
+    {
+      "test": "反向及越界拖动 方案3 每周额度剩余百分比",
+      "pass": true
+    },
+    {
+      "test": "鼠标图形拖动 方案3 5小时额度剩余百分比",
+      "actual": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 0,
+              "key": "week",
+              "number": "0%",
+              "value": 0,
+              "width": 1000
+            },
+            {
+              "input": 0,
+              "key": "five",
+              "number": "0%",
+              "value": 0,
+              "width": 1000
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 0,
+              "key": "week",
+              "number": "0%",
+              "pill": "1000.0000",
+              "value": 0,
+              "width": 1000
+            },
+            {
+              "input": 0,
+              "key": "five",
+              "number": "0%",
+              "pill": "1000.0000",
+              "value": 0,
+              "width": 1000
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 0,
+              "key": "week",
+              "number": "0%",
+              "value": 0,
+              "width": 1000
+            },
+            {
+              "input": 27,
+              "key": "five",
+              "number": "27%",
+              "value": 27,
+              "width": 730
+            }
+          ]
+        }
+      ],
+      "pass": true
+    },
+    {
+      "test": "反向及越界拖动 方案3 5小时额度剩余百分比",
+      "pass": true
+    },
+    {
+      "test": "三款演示首组终值",
+      "pass": true
+    },
+    {
+      "test": "连续两次演示终值",
+      "pass": true
+    },
+    {
+      "test": "动画接管首轮定位",
+      "pass": false,
+      "note": "重载保留滚动位置，旧坐标未命中轨道；页面代码无异常，改用当轮实际边界复验"
+    },
+    {
+      "test": "动画拖动接管复验",
+      "pass": true,
+      "actual": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 3,
+              "key": "week",
+              "number": "3%",
+              "value": 3,
+              "width": 970
+            },
+            {
+              "input": 1,
+              "key": "five",
+              "number": "1%",
+              "value": 1,
+              "width": 990
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 55,
+              "key": "week",
+              "number": "55%",
+              "pill": "450.0000",
+              "value": 55,
+              "width": 450
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "pill": "500.0000",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 3,
+              "key": "week",
+              "number": "3%",
+              "value": 3,
+              "width": 970
+            },
+            {
+              "input": 1,
+              "key": "five",
+              "number": "1%",
+              "value": 1,
+              "width": 990
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "test": "详情入口与关闭 1",
+      "pass": true,
+      "actual": {
+        "detail": {
+          "image": "screenshots/11.jpg",
+          "loaded": true,
+          "note": "已制作网页交互样机，正式 App 尚未采用；此处保留原图和原适配说明。拖动与滑块仅用于网页模拟，数字显示剩余、实色表示已用；下文禁止拖动指正式 App，原作动画未验证。",
+          "open": true,
+          "sections": 8,
+          "title": "1 Skala progress bar",
+          "url": "https://dribbble.com/shots/21752734-Skala-progress-bar"
+        },
+        "close": {
+          "focused": "原图与适配说明",
+          "open": 0,
+          "overflow": ""
+        }
+      }
+    },
+    {
+      "test": "详情入口与关闭 2",
+      "pass": true,
+      "actual": {
+        "detail": {
+          "image": "screenshots/17.jpg",
+          "loaded": true,
+          "note": "已制作网页交互样机，正式 App 尚未采用；此处保留原图和原适配说明。拖动与滑块仅用于网页模拟，数字显示剩余、实色表示已用；下文禁止拖动指正式 App，原作动画未验证。",
+          "open": true,
+          "sections": 8,
+          "title": "2 发光胶囊进度卡片（原 Pin 未命名）",
+          "url": "https://www.pinterest.com/pin/350577152263222155/"
+        },
+        "close": {
+          "focused": "原图与适配说明",
+          "open": 0,
+          "overflow": ""
+        }
+      }
+    },
+    {
+      "test": "详情入口与关闭 3",
+      "pass": true,
+      "actual": {
+        "detail": {
+          "image": "screenshots/19.jpg",
+          "loaded": true,
+          "note": "已制作网页交互样机，正式 App 尚未采用；此处保留原图和原适配说明。拖动与滑块仅用于网页模拟，数字显示剩余、实色表示已用；下文禁止拖动指正式 App，原作动画未验证。",
+          "open": true,
+          "sections": 8,
+          "title": "3 密集分段刻度卡片（原 Pin 未命名）",
+          "url": "https://www.pinterest.com/pin/592504894770745443/"
+        },
+        "close": {
+          "focused": "原图与适配说明",
+          "open": 0,
+          "overflow": ""
+        }
+      }
+    },
+    {
+      "test": "标签 第一批30个",
+      "pass": true
+    },
+    {
+      "test": "标签 第二批30个",
+      "pass": true
+    },
+    {
+      "test": "标签 选中的",
+      "pass": true
+    },
+    {
+      "test": "详情及标签往返保持模拟值",
+      "pass": true
+    },
+    {
+      "test": "实际原作链接独立打开",
+      "pass": true,
+      "url": "https://dribbble.com/shots/21752734-Skala-progress-bar",
+      "note": "新标签目标正确，未误开说明；未复核远端原作动画"
+    },
+    {
+      "test": "窄屏390单列无横向溢出",
+      "pass": true
+    },
+    {
+      "test": "窄屏控制 1",
+      "pass": true
+    },
+    {
+      "test": "窄屏控制 2",
+      "pass": true
+    },
+    {
+      "test": "窄屏控制 3",
+      "pass": true
+    },
+    {
+      "test": "刻度动效中间值及亮暗采样",
+      "pass": true,
+      "samples": [
+        {
+          "accent": [
+            "0.06467766925448881",
+            "0.06467766925448881"
+          ],
+          "values": [
+            "75.9",
+            "54.2"
+          ]
+        },
+        {
+          "accent": [
+            "0.11688231889032055",
+            "0.11688231889032055"
+          ],
+          "values": [
+            "78.1",
+            "57.4"
+          ]
+        },
+        {
+          "accent": [
+            "0.16625335236341993",
+            "0.16625335236341993"
+          ],
+          "values": [
+            "80.0",
+            "60.2"
+          ]
+        },
+        {
+          "accent": [
+            "0.2122701981681348",
+            "0.2122701981681348"
+          ],
+          "values": [
+            "81.8",
+            "62.8"
+          ]
+        },
+        {
+          "accent": [
+            "0.2598027900786978",
+            "0.2598027900786978"
+          ],
+          "values": [
+            "83.6",
+            "65.4"
+          ]
+        },
+        {
+          "accent": [
+            "0.3028556309094157",
+            "0.3028556309094157"
+          ],
+          "values": [
+            "85.2",
+            "67.7"
+          ]
+        },
+        {
+          "accent": [
+            "0.3366986896691409",
+            "0.3366986896691409"
+          ],
+          "values": [
+            "86.4",
+            "69.5"
+          ]
+        },
+        {
+          "accent": [
+            "0.3700054601388575",
+            "0.3700054601388575"
+          ],
+          "values": [
+            "87.7",
+            "71.4"
+          ]
+        },
+        {
+          "accent": [
+            "0.39918783857350565",
+            "0.39918783857350565"
+          ],
+          "values": [
+            "88.9",
+            "73.1"
+          ]
+        },
+        {
+          "accent": [
+            "0.42185151136443144",
+            "0.42185151136443144"
+          ],
+          "values": [
+            "89.9",
+            "74.6"
+          ]
+        },
+        {
+          "accent": [
+            "0.4358624224507311",
+            "0.4358624224507311"
+          ],
+          "values": [
+            "90.7",
+            "75.8"
+          ]
+        },
+        {
+          "accent": [
+            "0.44691845636866717",
+            "0.44691845636866717"
+          ],
+          "values": [
+            "91.6",
+            "77.0"
+          ]
+        }
+      ]
+    },
+    {
+      "test": "三款73.4%连续裁切",
+      "pass": true,
+      "actual": [
+        {
+          "kind": "skala",
+          "windows": [
+            {
+              "input": 73.4,
+              "key": "week",
+              "number": "73.4%",
+              "value": 73.4,
+              "width": 266
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "capsule",
+          "windows": [
+            {
+              "input": 73.4,
+              "key": "week",
+              "number": "73.4%",
+              "pill": "266.0000",
+              "value": 73.4,
+              "width": 266
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "pill": "500.0000",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "kind": "ticks",
+          "windows": [
+            {
+              "input": 73.4,
+              "key": "week",
+              "number": "73.4%",
+              "value": 73.4,
+              "width": 266
+            },
+            {
+              "input": 50,
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "test": "Chrome控制台无警告或错误",
+      "pass": true,
+      "actual": []
+    }
+  ],
+  "animationSamples": [
+    {
+      "n": 1,
+      "values": [
+        [
+          94.6,
+          81.7
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "effects": [
+        {
+          "opacity": "0.14620859035306022",
+          "transform": "translate(0 -0.6498159571247121)"
+        },
+        {
+          "opacity": "0.14709961323851853",
+          "transform": "translate(0 -0.65377605883786)"
+        },
+        {
+          "opacity": "0.25",
+          "transform": null
+        },
+        {
+          "opacity": "0.25",
+          "transform": null
+        },
+        {
+          "opacity": "0",
+          "transform": null
+        },
+        {
+          "opacity": "0",
+          "transform": null
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "values": [
+        [
+          95,
+          82
+        ],
+        [
+          87,
+          75
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "effects": [
+        {
+          "opacity": "5.5109105961630896e-17",
+          "transform": "translate(0 -2.4492935982947064e-16)"
+        },
+        {
+          "opacity": "5.5109105961630896e-17",
+          "transform": "translate(0 -2.4492935982947064e-16)"
+        },
+        {
+          "opacity": "0.4922323633630945",
+          "transform": null
+        },
+        {
+          "opacity": "0.49231846419452713",
+          "transform": null
+        },
+        {
+          "opacity": "0",
+          "transform": null
+        },
+        {
+          "opacity": "0",
+          "transform": null
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "values": [
+        [
+          95,
+          82
+        ],
+        [
+          95,
+          82
+        ],
+        [
+          95,
+          82
+        ]
+      ],
+      "effects": [
+        {
+          "opacity": "5.5109105961630896e-17",
+          "transform": "translate(0 -2.4492935982947064e-16)"
+        },
+        {
+          "opacity": "5.5109105961630896e-17",
+          "transform": "translate(0 -2.4492935982947064e-16)"
+        },
+        {
+          "opacity": "0.25000000000000006",
+          "transform": null
+        },
+        {
+          "opacity": "0.25000000000000006",
+          "transform": null
+        },
+        {
+          "opacity": "5.5109105961630896e-17",
+          "transform": null
+        },
+        {
+          "opacity": "5.5109105961630896e-17",
+          "transform": null
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Safari启动超时，未完成补验",
+    "未使用实际触屏设备",
+    "系统减少动态分支已实现，未切换系统偏好实际运行"
+  ],
+  "notes": [
+    "滑块AX setValue无法设置，改用原生键盘和鼠标检查",
+    "一次原链接检查因焦点在标签时Home切至第一批而未命中；切回选中后复验目标链接与无弹窗通过"
+  ],
+  "screenshots": [
+    "verification-prototype-desktop.jpg",
+    "verification-prototype-narrow.jpg"
+  ],
+  "staticChecks": {
+    "twoBatchesMarkupUnchanged": true,
+    "otherEightCardsAndDialogsUnchanged": true,
+    "firstThreeDetailsOnlyNoticeChanged": true,
+    "unchangedSourceAndImageFiles": 64,
+    "sourceSyntax": "Python AST and node --check pass",
+    "repeatBuildIdentical": true,
+    "htmlSHA256": "479fe3af46e040efd45297417a0737b948b880e0931c7f1c34f010fded32f46d",
+    "externalScriptOrFetch": false
+  }
+}
