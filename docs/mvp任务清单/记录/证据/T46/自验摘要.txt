@@ -1,0 +1,5 @@
+T46 2026-10-12；两端连续整合UI与六张人工截图目视通过；无产品源码改动。
+Test Case '-[SubscriptionUsageUITests.LaunchTests testT46IntegratedSettingsRoutesCancelAndDemoCleanup]' passed (88.442 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testT46IntegratedSettingsRoutesCancelAndDemoCleanup]' passed (68.545 seconds).
+install: success；2026-10-12T21:28:11.588298+08:00
+launch: success；2026-10-12T21:28:46.845659+08:00

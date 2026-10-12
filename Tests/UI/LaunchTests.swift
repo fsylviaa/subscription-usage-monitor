@@ -2,6 +2,90 @@ import XCTest
 
 final class LaunchTests: XCTestCase {
     @MainActor
+    func testT46IntegratedSettingsRoutesCancelAndDemoCleanup() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        app.launch()
+        defer { app.terminate() }
+        XCTAssertTrue(app.buttons["tab.settings"].waitForExistence(timeout: 8))
+        app.buttons["tab.settings"].tap()
+        let reminder = app.switches["settings.resetReminder"]
+        XCTAssertEqual(reminder.value as? String, "0")
+        for identifier in ["settings.accounts", "settings.connect", "settings.refreshFrequency", "settings.quotaPerspective"] {
+            XCTAssertFalse(app.descendants(matching: .any)[identifier].exists)
+        }
+        // Existing pages are checked here as one interleaved navigation session.
+        for (entry, title) in [("help", "帮助与说明"), ("privacy", "隐私说明"), ("licenses", "开源许可")] {
+            openT45Entry(entry, in: app)
+            XCTAssertTrue(app.navigationBars[title].waitForExistence(timeout: 5))
+            app.buttons["tab.quota"].tap()
+            XCTAssertTrue(app.staticTexts["未连接账户"].waitForExistence(timeout: 5))
+            app.buttons["tab.settings"].tap()
+            XCTAssertTrue(app.navigationBars[title].waitForExistence(timeout: 5))
+            if entry == "help" {
+                // Visit the system app without changing permission or any switch.
+                let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
+                settings.activate()
+                XCTAssertTrue(settings.wait(for: .runningForeground, timeout: 8))
+                app.activate()
+                XCTAssertTrue(app.navigationBars[title].waitForExistence(timeout: 5))
+            }
+            if entry == "licenses" {
+                app.buttons["licenses.codexBar"].tap()
+                XCTAssertTrue(app.navigationBars["CodexBar 许可"].waitForExistence(timeout: 5))
+                app.navigationBars["CodexBar 许可"].buttons.firstMatch.tap()
+                XCTAssertTrue(app.navigationBars[title].waitForExistence(timeout: 5))
+            }
+            app.navigationBars[title].buttons.firstMatch.tap()
+            XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
+        }
+        for _ in 0..<8 { if app.buttons["settings.widgetTutorial"].isHittable { break }; app.swipeDown() }
+        for second in [false, true] {
+            app.buttons["settings.widgetTutorial"].tap()
+            assertT42Step(in: app, second: false)
+            if second { app.buttons["tutorial.next"].tap(); assertT42Step(in: app, second: true) }
+            app.buttons["tutorial.close"].tap()
+            XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.buttons["tab.settings"].isSelected)
+        }
+        for _ in 0..<8 { if app.switches["settings.demo"].isHittable { break }; app.swipeUp() }
+        app.switches["settings.demo"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        app.buttons["tab.quota"].tap()
+        for count in 1...2 {
+            app.buttons["quota.toolbarConnect"].tap()
+            let ready = NSPredicate { _, _ in MainActor.assumeIsolated {
+                app.staticTexts.matching(identifier: "quota.accountIdentity").count == count
+            }}
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: nil)], timeout: 5), .completed)
+        }
+        let before = app.staticTexts.matching(identifier: "quota.accountIdentity").allElementsBoundByIndex.map(\.label)
+        app.buttons.matching(identifier: "quota.menu").firstMatch.tap()
+        app.buttons["删除账户"].tap()
+        app.alerts.buttons["取消"].tap()
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").allElementsBoundByIndex.map(\.label), before)
+        saveScreenshot(of: app, name: "T46-额度菜单删除取消后两户保持")
+        app.buttons["tab.settings"].tap()
+        XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
+        XCTAssertEqual(reminder.value as? String, "0")
+        app.switches["settings.demo"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        saveScreenshot(of: app, name: "T46-返回设置关闭演示")
+        app.buttons["tab.quota"].tap()
+        XCTAssertTrue(app.staticTexts["未连接账户"].waitForExistence(timeout: 5))
+        app.buttons["quota.toolbarConnect"].tap()
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+        app.buttons["connection.cancel"].tap()
+        XCTAssertTrue(app.buttons["tab.quota"].isSelected)
+        app.terminate(); app.launch()
+        XCTAssertTrue(app.staticTexts["未连接账户"].waitForExistence(timeout: 5))
+        app.buttons["tab.settings"].tap()
+        XCTAssertEqual(app.switches["settings.demo"].value as? String, "0")
+        XCTAssertEqual(reminder.value as? String, "0")
+        XCTAssertTrue(app.buttons["settings.widgetTutorial"].isEnabled)
+        saveScreenshot(of: app, name: "T46-重开设置入口仍可用")
+    }
+
+    @MainActor
     func testT44HelpNavigationLightAndDark() {
         checkT44Help(maximumText: false)
     }
