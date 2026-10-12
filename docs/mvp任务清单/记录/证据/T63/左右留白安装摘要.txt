@@ -1,0 +1,15 @@
+T63 左右留白微调安装检查（2026-10-12）
+基线55c0a71；用户反馈左右贴边，明确直接微调并更新手机，不需要本轮预览确认。
+内置ImageGen基于饱满版编辑，仅要求整套图案轻微缩小；目视新图左右白边增加，厚实比例／配色／五刻度／黑指针保留。
+源图1254x1254与本轮生成结果逐字节一致；实际图1024x1024不透明PNG，hasAlpha=no，实际资源已目视，无裁切。
+源图SHA-256=9cee7b3ba0b53936564000f37b0b9e8e2c6a3a08a3fbe215cf2140bcf9c46e5e
+1024图SHA-256=6cc267d803a3a499cf499a208c4680407d4536d98ae011ea047242551f71e5a0
+签名Release build/T63-margin-release.log：BUILD SUCCEEDED；原SettingsView警告保持。
+完整环境codesign --verify --deep --strict通过；AppIcon产物声明及编译图存在。
+主App／组件显示名保持Token 仪表盘，原Bundle和工程配置逐字节未改；Sources/Config无修改。
+手机覆盖安装：build/T63-margin-install.json outcome=success，开始16:55:11（+08:00），没有卸载。
+手机App元数据：build/T63-margin-after-app.json outcome=success，名称和原Bundle保持。
+普通启动：16:56:00（+08:00），build/T63-margin-launch.json outcome=success，arguments=[]。
+本轮未操作／导出／清理正式账户、权限或已有组件配置，没有正式文件前后字节比较。
+用户55c0a71左右留白亲验未通过，新版桌面视觉尚未反馈；历史各轮通过／失败保留，不以安装通过替代用户视觉验收。
+最终文档检查：63项状态统计一致，254条本地／行号链接有效；资源SHA与品牌说明匹配；工程／业务／配置无差异。
