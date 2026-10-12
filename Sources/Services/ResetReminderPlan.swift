@@ -38,7 +38,7 @@ enum ResetReminderPlan {
 
             return [(QuotaWindow.weekly, snapshot.weekly), (.fiveHours, snapshot.fiveHours)]
                 .compactMap { expected, window in
-                    guard window.window == expected, window.amount != .unknown,
+                    guard window.window == expected, window.shouldDisplay, window.amount != .unknown,
                           window.observedAt == snapshot.observedAt,
                           let reset = window.resetsAt else { return nil }
                     let seconds = reset.timeIntervalSince1970

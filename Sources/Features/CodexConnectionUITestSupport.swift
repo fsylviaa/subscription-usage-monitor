@@ -412,6 +412,14 @@ enum CodexConnectionUITestSupport {
                 }
                 return result
             }
+            if scenario == "noFive" {
+                var pro = account(1, plan: "Pro", weekly: .limited(try .init(used: 30)), fiveHours: .unknown)
+                let body = #"{"plan_type":"pro","rate_limit":{"primary_window":{"limit_window_seconds":604800,"used_percent":30},"secondary_window":null}}"#
+                let parsed = try CodexUsageParser().parse(Data(body.utf8), for: pro, observedAt: now)
+                pro.subscription = .init(planType: "pro", observedAt: now)
+                pro.quotaSnapshot = parsed
+                return [pro, account(2, plan: "Plus", weekly: .limited(try .init(used: 30)), fiveHours: .unknown)]
+            }
             if scenario == "states" {
                 return [account(1, plan: "Pro", weekly: .unknown, fiveHours: .unlimited),
                         account(2, plan: "Free", weekly: nil, fiveHours: nil)]

@@ -88,9 +88,19 @@ struct CodexUsageParser {
             )
         }
 
+        // A complete, successful window list with an identified weekly limit and
+        // an explicit empty slot proves absence. A missing percentage in an actual
+        // 5-hour object, an omitted container or unidentified object stays unknown.
+        let rate = response.rateLimit
+        let rawWindows = [rate?.primaryWindow, rate?.secondaryWindow].compactMap { $0 }
+        let noFiveHourLimit = rate?.hasBothWindowFields == true
+            && windows[.weekly]?.amount.usedPercent != nil && windows[.fiveHours] == nil
+            && rawWindows.allSatisfy { $0.seconds == QuotaWindow.weekly.rawValue }
+
         func snapshot(_ window: QuotaWindow) -> QuotaWindowSnapshot {
             windows[window] ?? QuotaWindowSnapshot(
-                window: window, amount: .unknown, resetsAt: nil, observedAt: observedAt
+                window: window, amount: .unknown, resetsAt: nil, observedAt: observedAt,
+                isApplicable: window == .fiveHours && noFiveHourLimit ? false : nil
             )
         }
         return CodexQuotaSnapshot(

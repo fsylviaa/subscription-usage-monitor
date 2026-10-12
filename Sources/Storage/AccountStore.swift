@@ -407,7 +407,8 @@ final class AccountStore {
                 }
                 continue
             }
-            guard account.quotaState == .available, quota.hasKnownQuota,
+            guard quota.weekly.hasValidApplicability, quota.fiveHours.hasValidApplicability,
+                  account.quotaState == .available, quota.hasKnownQuota,
                   account.subscription.map({ $0.planType == quota.planType && $0.observedAt >= quota.observedAt }) ?? true,
                   quota.accountID == account.id, quota.provider == account.provider,
                   quota.product == account.product, quota.scope == account.scope,

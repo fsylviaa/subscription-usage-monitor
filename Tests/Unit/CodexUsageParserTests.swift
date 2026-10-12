@@ -37,6 +37,32 @@ final class CodexUsageParserTests: XCTestCase {
         XCTAssertNil(legacy.resetCardCount, "旧文件读回保持内部未知")
     }
 
+    func testT23AbsentFiveHourLimitIsDistinctFromAnUnknownExistingLimit() throws {
+        for swapped in [false, true] {
+            let weekly = window(seconds: 604_800, used: "30")
+            let value = try parse(response(primary: swapped ? "null" : weekly, secondary: swapped ? weekly : "null"))
+            XCTAssertFalse(value.fiveHours.shouldDisplay)
+            XCTAssertEqual(value.weekly.amount.remainingPercent, 70)
+            XCTAssertEqual(value.observedAt, observedAt)
+            XCTAssertEqual(value.fiveHours.amount, .unknown, "不伪造不限量比例")
+            XCTAssertEqual(try JSONDecoder().decode(CodexQuotaSnapshot.self, from: JSONEncoder().encode(value)), value)
+        }
+        let unknown = try parse(response(primary: #"{"limit_window_seconds":18000}"#, secondary: window(seconds: 604_800, used: "30")))
+        XCTAssertTrue(unknown.fiveHours.shouldDisplay, "实际窗口存在但比例缺失，仍显示未知")
+        for json in [#"{"plan_type":"pro"}"#,
+                     #"{"rate_limit":{"primary_window":{"limit_window_seconds":604800,"used_percent":30}}}"#,
+                     #"{"rate_limit":{"primary_window":{"used_percent":20},"secondary_window":{"limit_window_seconds":604800,"used_percent":30}}}"#] {
+            XCTAssertTrue(try parse(json).fiveHours.shouldDisplay, "不完整响应不能证明不存在")
+        }
+        let realFive = try parse(#"{"plan_type":"pro","rate_limit":{"primary_window":{"limit_window_seconds":18000,"used_percent":80},"secondary_window":{"limit_window_seconds":604800,"used_percent":30}}}"#)
+        XCTAssertTrue(realFive.fiveHours.shouldDisplay, "不按套餐名称隐藏实际存在的限额")
+        XCTAssertEqual(realFive.fiveHours.amount.remainingPercent, 20)
+        let legacy = try JSONDecoder().decode(QuotaWindowSnapshot.self, from: Data(#"{"window":18000,"amount":{"unknown":{}},"observedAt":0}"#.utf8))
+        XCTAssertNil(legacy.isApplicable)
+        XCTAssertTrue(legacy.shouldDisplay)
+    }
+
+
     func testTwoNormalWindowsKeepIndependentRemainingResetAndObservation() throws {
         let result = try parse(response(
             primary: window(seconds: 18_000, used: "80", reset: fiveHourReset),

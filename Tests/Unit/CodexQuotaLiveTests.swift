@@ -6,6 +6,46 @@ import XCTest
 /// refresh-token exchange, new login or hidden bypass of the network gate.
 @MainActor
 final class CodexQuotaLiveTests: XCTestCase {
+    func testT23RealProWindowShapeWithoutChangingFormalAccountOrAuthorization() async throws {
+        guard ProcessInfo.processInfo.environment["T23_LIVE_SHAPE"] == "1" else {
+            throw XCTSkip("修复结构核对仅显式启用；默认不读取正式账户或联网。")
+        }
+        let formal = try AccountStore.applicationStore()
+        let before = try await formal.load()
+        guard let account = before.first(where: { !$0.isDemo && $0.subscription?.planType.lowercased() == "pro" }) else {
+            print("T23 | 真实结构待核 | 当前保存资料未找到明确Pro账户；不猜身份或改写套餐")
+            throw XCTSkip("当前本机保存资料没有明确Pro账户，不能报告其真实响应核对通过。")
+        }
+        let vault = CredentialVault.applicationVault()
+        let credential = try await vault.load(for: .credential(account.credentialRef))
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("T23-shape-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let copy = AccountStore(fileURL: root.appendingPathComponent("accounts.json"))
+        try await copy.append(account)
+        let transport = T23ShapeTransport()
+        let service = CodexQuotaService(store: copy,
+            loadCredential: { try await vault.load(for: .credential($0)) }, transport: transport)
+        let result = try await service.update(account)
+        let captured = await transport.capturedBody()
+        let body = try XCTUnwrap(captured)
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
+        let rate = try XCTUnwrap(json["rate_limit"] as? [String: Any])
+        for name in ["primary_window", "secondary_window"] {
+            let shape = rate[name] == nil ? "omitted" : rate[name] is NSNull ? "null" : "object"
+            let seconds = (rate[name] as? [String: Any])?["limit_window_seconds"] as? Int
+            print("T23 | Pro真实窗口结构 | \(name)=\(shape), duration=\(seconds.map(String.init) ?? "none")")
+        }
+        let quota = try XCTUnwrap(result.quotaSnapshot)
+        XCTAssertFalse(quota.fiveHours.shouldDisplay)
+        XCTAssertNotNil(quota.weekly.amount.usedPercent)
+        let after = try await formal.load()
+        XCTAssertEqual(after, before, "正式账户／数据未写回")
+        let credentialAfter = try await vault.load(for: .credential(account.credentialRef))
+        XCTAssertTrue(credentialAfter == credential, "授权未续期／替换")
+        print("T23 | 真实结构修复核对通过；只核窗口适用性，不重复额度数值／重置对照")
+    }
+
+
     func testExistingRealLoginAutomaticallyFetchesAndPersistsFirstQuota() async throws {
         guard ProcessInfo.processInfo.environment["T12_LIVE_QUERY"] == "1" else {
             throw XCTSkip("真实额度查询需要显式启用；默认隔离检查不联网。")
@@ -295,4 +335,14 @@ private actor T15ReadProbe {
     func networkCheck() { checks += 1 }
     func credentialRead() { credentials += 1 }
     func counts() -> (Int, Int) { (checks, credentials) }
+}
+
+private actor T23ShapeTransport: CodexDeviceAuthorizationTransport {
+    private var body: Data?
+    func capturedBody() -> Data? { body }
+    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+        let response = try await URLSessionCodexDeviceAuthorizationTransport().data(for: request)
+        body = response.0
+        return response
+    }
 }

@@ -17,6 +17,7 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
             lhs.id == rhs.id && lhs.identity == rhs.identity && lhs.plan == rhs.plan
                 && lhs.isDemo == rhs.isDemo && lhs.state == rhs.state && lhs.failure == rhs.failure
                 && lhs.weekly?.amount == rhs.weekly?.amount && lhs.fiveHours?.amount == rhs.fiveHours?.amount
+                && lhs.fiveHours?.isApplicable == rhs.fiveHours?.isApplicable
         }
     }
 
@@ -49,6 +50,9 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
         let amount: Amount
         let resetsAt: Date?
         let observedAt: Date
+        var isApplicable: Bool? = nil
+
+        var showsFiveHourLimit: Bool { isApplicable != false && amount != .unlimited }
     }
 
     enum Amount: Codable, Equatable, Sendable {
@@ -109,8 +113,11 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
                   weekly.amount != .unknown || fiveHours.amount != .unknown else {
                 throw WidgetSnapshotStore.StoreError.invalidSnapshot
             }
+            guard weekly.isApplicable != false else { throw WidgetSnapshotStore.StoreError.invalidSnapshot }
             for window in [weekly, fiveHours] {
-                guard window.observedAt == time, window.resetsAt.map({
+                guard window.observedAt == time,
+                      window.isApplicable != false || (window == fiveHours && window.amount == .unknown && window.resetsAt == nil),
+                      window.resetsAt.map({
                     $0.timeIntervalSince1970.isFinite && (1...253_402_300_799).contains($0.timeIntervalSince1970)
                 }) ?? true else { throw WidgetSnapshotStore.StoreError.invalidSnapshot }
                 if case let .limited(used) = window.amount, !used.isFinite || !(0...100).contains(used) {

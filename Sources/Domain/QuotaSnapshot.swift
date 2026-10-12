@@ -72,7 +72,20 @@ struct QuotaWindowSnapshot: Codable, Equatable, Sendable {
     let amount: QuotaAmount
     let resetsAt: Date?
     let observedAt: Date
+    /// nil preserves legacy / ambiguous missing data; false is verified absence.
+    var isApplicable: Bool? = nil
     var unit: QuotaUnit { .percent }
+
+    var hasValidApplicability: Bool {
+        guard isApplicable == false else { return true }
+        guard window == QuotaWindow.fiveHours else { return false }
+        guard amount == QuotaAmount.unknown else { return false }
+        return resetsAt == nil
+    }
+
+    var shouldDisplay: Bool {
+        isApplicable != false && !(window == .fiveHours && amount == .unlimited)
+    }
 
     /// Crossing a reported reset point changes only freshness, never the measured amount.
     func isAwaitingUpdate(at date: Date) -> Bool {

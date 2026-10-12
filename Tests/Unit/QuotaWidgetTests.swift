@@ -18,6 +18,30 @@ final class QuotaWidgetTests: XCTestCase {
             fiveHours: state == .available ? .init(amount: five, resetsAt: reset ? time.addingTimeInterval(3600 * 4) : nil, observedAt: time) : nil))
     }
 
+    func testT23NoFiveHourLimitRendersBothWidgetSizesInBothAppearances() throws {
+        let snapshot = WidgetSnapshot(schemaVersion: 1, account: .init(id: UUID(),
+            identity: "pro@example.invalid", plan: "Pro", isDemo: false, state: .available,
+            subscriptionObservedAt: time, quotaObservedAt: time,
+            weekly: .init(amount: .limited(usedPercent: 30), resetsAt: nil, observedAt: time),
+            fiveHours: .init(amount: .unknown, resetsAt: nil, observedAt: time, isApplicable: false)))
+        try snapshot.validate()
+        for medium in [false, true] {
+            for dark in [false, true] {
+                let width: CGFloat = medium ? 338 : 158
+                let view = SmallQuotaWidgetView(content: .snapshot(snapshot), medium: medium)
+                    .frame(width: width, height: 158)
+                    .background(Color("DesignCard"))
+                    .environment(\.colorScheme, dark ? .dark : .light)
+                let renderer = ImageRenderer(content: view); renderer.scale = 2
+                let image = try XCTUnwrap(renderer.uiImage)
+                let attachment = XCTAttachment(image: image)
+                attachment.name = "T23-无5小时组件-\(medium ? "中" : "小")-\(dark ? "深" : "浅")"
+                attachment.lifetime = .keepAlways; add(attachment)
+            }
+        }
+    }
+
+
     func testRemainingAndUsedBarAgreeAtBoundariesAndMatchApp() throws {
         for used in [0.0, 30, 99.75, 100] {
             let amount = WidgetSnapshot.Amount.limited(usedPercent: used)

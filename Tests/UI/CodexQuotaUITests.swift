@@ -38,7 +38,7 @@ final class CodexQuotaUITests: XCTestCase {
                     XCTFail("两种尺寸未同时显示本状态；不能记通过")
                     return
                 }
-                for text in (scenario == "failure" ? ["刷新失败", "70%", "85%"] : scenario == "blocked" ? ["网络不达标，无法更新", "70%", "85%"] : scenario == "normal" || scenario == "updating" || scenario == "long" ? ["70%", "85%"] : scenario == "endpoints" ? ["0%", "100%"] : scenario == "unknown" ? ["未知", "不限量"] : scenario == "notFetched" ? ["尚未获取额度"] : scenario == "free" ? ["Free"] : []) {
+                for text in (scenario == "failure" ? ["刷新失败", "70%", "85%"] : scenario == "blocked" ? ["网络不达标，无法更新", "70%", "85%"] : scenario == "normal" || scenario == "updating" || scenario == "long" ? ["70%", "85%"] : scenario == "endpoints" ? ["0%", "100%"] : scenario == "unknown" ? ["未知"] : scenario == "notFetched" ? ["尚未获取额度"] : scenario == "free" ? ["Free"] : []) {
                     XCTAssertTrue(t35BothSizesContain(text, on: springboard), "两尺寸应显示\(text)")
                 }
                 screenshot(springboard, "T37-手机桌面-\(appearance)-\(scenario)")
@@ -1268,6 +1268,33 @@ final class CodexQuotaUITests: XCTestCase {
     }
 
     @MainActor
+    func testT23NoFiveHourLimitHidesOnlyThatWindowOnCardAndDetails() {
+        for appearance in ["light", "dark"] {
+            let app = launchT23("noFive", appearance: appearance)
+            let cards = app.otherElements.matching(identifier: "quota.card")
+            let pro = cards.element(boundBy: 0), plus = cards.element(boundBy: 1)
+            XCTAssertEqual(pro.staticTexts["quota.weekly.remaining"].label, "剩余 70%")
+            for id in ["remaining", "bar", "reset"] {
+                XCTAssertFalse(pro.descendants(matching: .any)["quota.fiveHours.\(id)"].exists)
+            }
+            XCTAssertEqual(plus.staticTexts["quota.fiveHours.remaining"].label, "未知")
+            screenshot(app, "T23-无5小时与真实未知区分-\(appearance)")
+            pro.buttons["quota.details"].tap()
+            XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 5))
+            XCTAssertEqual(app.staticTexts["detail.weekly.remaining"].label, "剩余 70%")
+            XCTAssertFalse(app.staticTexts["detail.fiveHours.remaining"].exists)
+            XCTAssertTrue(app.staticTexts["quota.updatedAt"].exists)
+            screenshot(app, "T23-无5小时详情-\(appearance)")
+            app.buttons["detail.close"].tap()
+            plus.buttons["quota.details"].tap()
+            XCTAssertTrue(app.staticTexts["detail.fiveHours.remaining"].waitForExistence(timeout: 5))
+            XCTAssertEqual(app.staticTexts["detail.fiveHours.remaining"].label, "未知")
+            app.terminate()
+        }
+    }
+
+
+    @MainActor
     func testT23UnknownUnlimitedAndFreeHaveNoInventedBarsInBothAppearances() {
         for appearance in ["light", "dark"] {
             let app = launchT23("states", appearance: appearance)
@@ -1275,10 +1302,10 @@ final class CodexQuotaUITests: XCTestCase {
             XCTAssertEqual(cards.count, 2)
             let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
             XCTAssertEqual(first.staticTexts["quota.weekly.remaining"].label, "未知")
-            XCTAssertEqual(first.staticTexts["quota.fiveHours.remaining"].label, "不限量")
+            XCTAssertFalse(first.staticTexts["quota.fiveHours.remaining"].exists, "无5小时限额不展示")
             XCTAssertFalse(app.otherElements["quota.weekly.bar"].exists)
             XCTAssertFalse(app.otherElements["quota.fiveHours.bar"].exists)
-            XCTAssertEqual(second.staticTexts["quota.plan"].label, "Codex · Free")
+            XCTAssertEqual(second.buttons["quota.details"].label, "Codex · Free")
             XCTAssertEqual(second.staticTexts["quota.accountIdentity"].label, "card-2@example.invalid")
             for id in ["quota.weekly.remaining", "quota.fiveHours.remaining", "quota.weekly.reset",
                        "quota.fiveHours.reset", "quota.notFetched", "quota.accountStatus", "quota.updatedAt"] {

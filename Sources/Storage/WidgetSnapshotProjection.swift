@@ -22,7 +22,8 @@ extension WidgetSnapshot {
             case .unlimited: amount = .unlimited
             case let .limited(value): amount = .limited(usedPercent: value.used)
             }
-            return Window(amount: amount, resetsAt: input.resetsAt, observedAt: input.observedAt)
+            return Window(amount: amount, resetsAt: input.resetsAt, observedAt: input.observedAt,
+                          isApplicable: input.isApplicable)
         }
         let state: State
         switch first.quotaState {

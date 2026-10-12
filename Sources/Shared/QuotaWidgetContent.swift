@@ -203,7 +203,9 @@ struct SmallQuotaWidgetView: View {
                         if account.state == .available {
                             VStack(spacing: medium ? 12 : (account.failure == nil ? 10 : 6)) {
                                 window("每周", value: account.weekly)
-                                window("5 小时", value: account.fiveHours)
+                                if account.fiveHours?.showsFiveHourLimit == true {
+                                    window("5 小时", value: account.fiveHours)
+                                }
                             }
                         }
                     }

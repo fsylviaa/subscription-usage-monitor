@@ -33,6 +33,32 @@ final class WidgetSnapshotTests: XCTestCase {
         return (AccountStore(fileURL: accountsURL, widgetStore: shared), shared, accountsURL)
     }
 
+    func testT23AbsentWindowPersistsAndPublishesVisibilityWithoutLosingOldDataOnFailure() async throws {
+        let (store, shared, _) = try stores()
+        var account = try fixture("no-five")
+        let json = #"{"plan_type":"Plus","rate_limit":{"primary_window":{"limit_window_seconds":604800,"used_percent":30},"secondary_window":null}}"#
+        account.quotaSnapshot = try CodexUsageParser().parse(Data(json.utf8), for: account, observedAt: time)
+        try await store.append(account)
+        let saved = try await store.load()
+        XCTAssertEqual(saved, [account])
+        let published = try XCTUnwrap(shared.read())
+        XCTAssertFalse(try XCTUnwrap(published.account?.fiveHours).showsFiveHourLimit)
+        XCTAssertEqual(published.account?.weekly?.amount.remainingPercent, 70)
+        XCTAssertEqual(published.account?.quotaObservedAt, time)
+        var legacy = try XCTUnwrap(account.quotaSnapshot)
+        legacy = .init(accountID: legacy.accountID, provider: legacy.provider, product: legacy.product,
+            scope: legacy.scope, generation: legacy.generation, planType: legacy.planType, observedAt: time,
+            weekly: legacy.weekly, fiveHours: .init(window: .fiveHours, amount: .unknown, resetsAt: nil, observedAt: time))
+        var oldAccount = account; oldAccount.quotaSnapshot = legacy
+        XCTAssertFalse(published.hasSameVisibleContent(as: .projecting([oldAccount])))
+        _ = try await store.saveObservation(.init(planType: "Plus", observedAt: time.addingTimeInterval(60)), quota: .failed, for: account)
+        let failed = try await store.load()
+        XCTAssertEqual(failed.first?.quotaSnapshot, account.quotaSnapshot)
+        XCTAssertEqual(failed.first?.quotaSnapshot?.observedAt, time)
+        XCTAssertFalse(try XCTUnwrap(shared.read()?.account?.fiveHours).showsFiveHourLimit)
+    }
+
+
     func testT35ConcurrentFixtureLoadsWaitForCompleteAccountList() async throws {
         let fixture = T26BatchFixture(scenario: "success", count: 4)
         defer { try? FileManager.default.removeItem(at: fixture.directory) }

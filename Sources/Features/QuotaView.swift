@@ -198,7 +198,9 @@ private struct QuotaAccountCard: View {
                 TimelineView(.periodic(from: .now, by: 60)) { context in
                     VStack(spacing: 10) {
                         QuotaWindowView(value: snapshot.weekly, title: "每周", id: "weekly", now: context.date)
-                        QuotaWindowView(value: snapshot.fiveHours, title: "5 小时", id: "fiveHours", now: context.date)
+                        if snapshot.fiveHours.shouldDisplay {
+                            QuotaWindowView(value: snapshot.fiveHours, title: "5 小时", id: "fiveHours", now: context.date)
+                        }
                     }
                 }
             } else if account.quotaState == .notFetched {
@@ -868,7 +870,9 @@ struct CodexDetailPanel: View {
                     if let snapshot = content.snapshot {
                         TimelineView(.periodic(from: .now, by: 60)) { context in
                             VStack(alignment: .leading, spacing: 16) {
-                                detailWindow(snapshot.fiveHours, title: "5 小时", id: "fiveHours", now: context.date)
+                                if snapshot.fiveHours.shouldDisplay {
+                                    detailWindow(snapshot.fiveHours, title: "5 小时", id: "fiveHours", now: context.date)
+                                }
                                 detailWindow(snapshot.weekly, title: "每周", id: "weekly", now: context.date)
                             }
                         }
