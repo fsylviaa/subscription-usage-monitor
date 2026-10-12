@@ -4,6 +4,11 @@ import SwiftUI
 struct WidgetTutorialView: View {
     var close: () -> Void
     @State private var step = 0
+    @State private var pageHeights: [Int: CGFloat] = [:]
+    @State private var headerHeight: CGFloat = 52
+    @State private var footerHeight: CGFloat = 100
+
+    private var pageHeight: CGFloat { pageHeights[step] ?? 440 }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -20,14 +25,15 @@ struct WidgetTutorialView: View {
                 Color.clear.frame(width: 44, height: 44).accessibilityHidden(true)
             }
             .padding(.horizontal, 8).padding(.top, 8)
+            .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { headerHeight = $0 }
 
             TabView(selection: $step) {
                 ForEach(0..<2) { page in
                     ScrollView {
-                        VStack(alignment: .leading, spacing: 18) {
+                        VStack(alignment: .leading, spacing: 12) {
                             WidgetOperationIllustration(page: page, active: step == page)
                                 .frame(maxWidth: .infinity)
-                                .padding(page == 0 ? 10 : 24)
+                                .padding(10)
                                 .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 26))
 
                             Text(page == 0
@@ -39,7 +45,9 @@ struct WidgetTutorialView: View {
                                 .accessibilityIdentifier("tutorial.instructions.\(page)")
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(16)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { pageHeights[page] = $0 }
                     }
                     .clipped()
                     .tag(page)
@@ -48,8 +56,9 @@ struct WidgetTutorialView: View {
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .accessibilityIdentifier("tutorial.pages")
+            .frame(maxHeight: pageHeight)
 
-            VStack(spacing: 14) {
+            VStack(spacing: 10) {
                 HStack(spacing: 6) {
                     Capsule().fill(step == 1 ? DashboardStyle.track : DashboardStyle.text)
                         .frame(width: step == 1 ? 6 : 18, height: 6)
@@ -65,8 +74,13 @@ struct WidgetTutorialView: View {
                 .buttonStyle(DashboardButtonStyle())
                 .accessibilityIdentifier("tutorial.next")
             }
-            .padding(16)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { footerHeight = $0 }
         }
+        // iOS caps this content-sized detent at the available height. The pager
+        // yields space to the controls; long text/static frames scroll inside it.
+        .presentationDetents([.height(headerHeight + pageHeight + footerHeight)])
         .foregroundStyle(DashboardStyle.text)
         .background(DashboardStyle.background)
         .buttonStyle(.plain)
@@ -82,7 +96,7 @@ private struct WidgetOperationIllustration: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var frame = 0
     @State private var cycle = 0
-    @ScaledMetric(relativeTo: .subheadline) private var contentHeight = 240
+    @ScaledMetric(relativeTo: .body) private var preferredWidth = 250
 
     private var count: Int { page == 0 ? 8 : 4 }
     private var appName: String {
@@ -134,20 +148,23 @@ private struct WidgetOperationIllustration: View {
         if page == 0 {
             WidgetAddingSystemPage(index: index, appName: appName, moving: moving)
         } else {
-            VStack(spacing: 16) {
-                Capsule().fill(DashboardStyle.text).frame(width: 48, height: 5)
-                choosing(index, moving: moving)
-                    .id(index)
-                    .transition(.opacity)
-                    .frame(maxWidth: .infinity, minHeight: moving ? contentHeight : 190,
-                           maxHeight: moving ? contentHeight : nil)
-                Capsule().fill(DashboardStyle.secondary).frame(width: 62, height: 4)
+            GeometryReader { geometry in
+                VStack(spacing: 16) {
+                    Capsule().fill(DashboardStyle.text).frame(width: 48, height: 5)
+                    choosing(index, moving: moving)
+                        .id(index)
+                        .transition(.opacity)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    Capsule().fill(DashboardStyle.secondary).frame(width: 62, height: 4)
+                }
+                .font(.subheadline)
+                .padding(18)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .background(DashboardStyle.background, in: RoundedRectangle(cornerRadius: 30))
+                .overlay(RoundedRectangle(cornerRadius: 30).strokeBorder(DashboardStyle.track, lineWidth: 2))
             }
-            .font(.subheadline)
-            .padding(18)
-            .frame(maxWidth: 280)
-            .background(DashboardStyle.background, in: RoundedRectangle(cornerRadius: 30))
-            .overlay(RoundedRectangle(cornerRadius: 30).strokeBorder(DashboardStyle.track, lineWidth: 2))
+            .aspectRatio(414.0 / 520, contentMode: .fit)
+            .frame(maxWidth: preferredWidth)
         }
     }
 

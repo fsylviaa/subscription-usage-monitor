@@ -131,6 +131,60 @@ final class LaunchTests: XCTestCase {
         }
     }
 
+    @MainActor
+    func testT43ContentSizedSheetsAndMatchingAnimationRegions() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        cleanT42Fixture(in: app); app.launch()
+        defer { app.terminate() }
+        for dark in [false, true] {
+            app.buttons["tab.settings"].tap()
+            let toggle = app.switches["settings.darkAppearance"]
+            if toggle.value as? String != (dark ? "1" : "0") {
+                toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            }
+            app.buttons["settings.widgetTutorial"].tap()
+            var firstSize = CGSize.zero
+            for page in 0..<2 {
+                assertT42Step(in: app, second: page == 1)
+                // Wait for the native sheet's content-sized detent to settle.
+                Thread.sleep(forTimeInterval: 1)
+                let demo = app.descendants(matching: .any).matching(identifier: "tutorial.demo.\(page)").firstMatch
+                let text = app.staticTexts["tutorial.instructions.\(page)"]
+                let close = app.buttons["tutorial.close"]
+                let next = app.buttons["tutorial.next"]
+                let height = app.frame.maxY - close.frame.minY
+                let gap = next.frame.minY - text.frame.maxY
+                XCTAssertLessThan(height, app.frame.height * 0.65, "正常字号弹窗应接近半屏")
+                XCTAssertGreaterThan(height, app.frame.height * 0.45)
+                XCTAssertGreaterThanOrEqual(gap, 14)
+                XCTAssertLessThan(gap, 80, "正文与底部按钮不应有大块空白")
+                XCTAssertGreaterThanOrEqual(text.frame.minX, 0)
+                XCTAssertLessThanOrEqual(text.frame.maxX, app.frame.maxX)
+                XCTAssertLessThanOrEqual(text.frame.maxY, next.frame.minY)
+                XCTAssertTrue(text.isHittable)
+                XCTAssertLessThanOrEqual(next.frame.maxY, app.frame.maxY)
+                if page == 0 { firstSize = demo.frame.size } else {
+                    XCTAssertEqual(demo.frame.width, firstSize.width, accuracy: 1)
+                    XCTAssertEqual(demo.frame.height, firstSize.height, accuracy: 1)
+                }
+                print("T43 LAYOUT | \(dark ? "dark" : "light") page=\(page + 1) height=\(height) screen=\(app.frame.height) gap=\(gap) animation=\(demo.frame.size)")
+                saveScreenshot(of: app, name: "T43L-\(dark ? "深" : "浅")-第\(page + 1)页")
+                if page == 1 {
+                    // Include intermediate content as the second demonstration advances.
+                    for capture in 0..<8 {
+                        saveScreenshot(of: app, name: "T43L-\(dark ? "深" : "浅")-第二动画-\(capture)")
+                        Thread.sleep(forTimeInterval: 1)
+                    }
+                    XCTAssertEqual(demo.value as? String, "画面 4，共 4 个")
+                }
+                app.buttons["tutorial.next"].tap()
+            }
+            XCTAssertTrue(app.buttons["tab.settings"].isSelected)
+        }
+    }
+
     /// Changes only Motion, restores its exact original value even on test failure.
     @MainActor
     func testT43SystemMotionPreferenceAnimationAndStaticKeyframes() throws {
@@ -493,7 +547,7 @@ final class LaunchTests: XCTestCase {
 
     @MainActor
     private func swipeTutorial(in app: XCUIApplication, forward: Bool) {
-        let pager = app
+        let pager = app.descendants(matching: .any).matching(identifier: "tutorial.pages").firstMatch
         let start = pager.coordinate(withNormalizedOffset: CGVector(dx: forward ? 0.85 : 0.15, dy: 0.5))
         let end = pager.coordinate(withNormalizedOffset: CGVector(dx: forward ? 0.15 : 0.85, dy: 0.5))
         start.press(forDuration: 0.05, thenDragTo: end)

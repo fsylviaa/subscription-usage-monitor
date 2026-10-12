@@ -178,7 +178,6 @@ struct RootView: View {
         }
         .sheet(item: $tutorialSource, onDismiss: { openPendingAccountRoute() }) { _ in
             WidgetTutorialView(close: { tutorialSource = nil })
-                .presentationDetents([.large])
                 .presentationDragIndicator(.hidden)
                 .presentationCornerRadius(28)
                 .presentationBackground(DashboardStyle.background)
