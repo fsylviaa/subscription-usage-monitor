@@ -6,11 +6,17 @@
 <title>首页卡片 · 设计参考初筛</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f4f4;color:#202020;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:1560px;margin:auto;padding:32px 24px}header{margin-bottom:24px}h1{margin:0 0 8px;font-size:26px}header p{margin:0;color:#666;font-size:15px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.card{overflow:hidden;background:white;border:1px solid #ddd;border-radius:10px}.preview{display:flex;align-items:center;justify-content:center;height:300px;background:#fafafa}.preview img{display:block;width:100%;height:100%;object-fit:contain}.caption{padding:14px 16px 16px}h2{margin:0;font-size:16px;line-height:1.5;font-weight:600;overflow-wrap:anywhere}h2 span{color:#777}.caption p{margin:8px 0 0;font-size:14px;color:#666}a{color:#2458b5;text-underline-offset:3px}.empty{grid-column:1/-1;color:#666}@media(max-width:1050px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){main{padding:24px 16px}.grid{grid-template-columns:1fr}.preview{height:280px}}
+.tabs{display:flex;gap:8px;margin-bottom:20px}.tab{padding:10px 16px;border:1px solid #ccc;border-radius:8px;background:transparent;color:#555;font:inherit;cursor:pointer}.tab[aria-selected="true"]{background:#202020;border-color:#202020;color:white}.tab:focus-visible{outline:2px solid #2458b5;outline-offset:3px}
 </style>
 </head>
 <body>
 <main>
-<header><h1>首页卡片 · 设计参考初筛</h1><p>30 个原作参考 · 点击截图或原作链接查看详情</p></header>
+<header><h1>首页卡片 · 设计参考初筛</h1><p>60 个原作参考 · 点击截图或原作链接查看详情</p></header>
+<div class="tabs" role="tablist" aria-label="参考批次">
+<button class="tab" type="button" role="tab" id="batch-1-tab" aria-controls="batch-1" aria-selected="false" tabindex="-1">第一批30个</button>
+<button class="tab" type="button" role="tab" id="batch-2-tab" aria-controls="batch-2" aria-selected="true" tabindex="0">第二批30个</button>
+</div>
+<section role="tabpanel" id="batch-1" aria-labelledby="batch-1-tab" hidden>
 <div class="grid">
 <article class="card" id="reference-01">
   <a class="preview" href="https://dribbble.com/shots/26526105-Progress-Loader" target="_blank" rel="noopener noreferrer"><img src="screenshots/01.jpg" alt="01 · Progress Loader" decoding="async"></a>
@@ -133,6 +139,158 @@
   <div class="caption"><h2><span>30</span> Figma Charts UI kit - Gauge templates</h2><p>Dribbble · <a href="https://dribbble.com/shots/14711130-Figma-Charts-UI-kit-Gauge-templates" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
 </article>
 </div>
+</section>
+<section role="tabpanel" id="batch-2" aria-labelledby="batch-2-tab">
+<div class="grid">
+<article class="card" id="reference-batch-2-01">
+  <a class="preview" href="https://dribbble.com/shots/26613948-Cloud-Storage-Dashboard" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/01.jpg" alt="01 · Cloud Storage Dashboard" decoding="async"></a>
+  <div class="caption"><h2><span>01</span> Cloud Storage Dashboard</h2><p>Dribbble · <a href="https://dribbble.com/shots/26613948-Cloud-Storage-Dashboard" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-02">
+  <a class="preview" href="https://dribbble.com/shots/25623109-Research-Data-Storage-Dashboard" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/02.jpg" alt="02 · Research &amp; Data Storage Dashboard" decoding="async"></a>
+  <div class="caption"><h2><span>02</span> Research &amp; Data Storage Dashboard</h2><p>Dribbble · <a href="https://dribbble.com/shots/25623109-Research-Data-Storage-Dashboard" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-03">
+  <a class="preview" href="https://dribbble.com/shots/14161168-Cloud-Storage-App-Beyond-Neumorphism" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/03.jpg" alt="03 · Cloud Storage App ☁️ | Beyond Neumorphism" decoding="async"></a>
+  <div class="caption"><h2><span>03</span> Cloud Storage App ☁️ | Beyond Neumorphism</h2><p>Dribbble · <a href="https://dribbble.com/shots/14161168-Cloud-Storage-App-Beyond-Neumorphism" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-04">
+  <a class="preview" href="https://dribbble.com/shots/19280594-Storage-Mobile-UI" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/04.jpg" alt="04 · Storage - Mobile UI" decoding="async"></a>
+  <div class="caption"><h2><span>04</span> Storage - Mobile UI</h2><p>Dribbble · <a href="https://dribbble.com/shots/19280594-Storage-Mobile-UI" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-05">
+  <a class="preview" href="https://dribbble.com/shots/27285113-Cloud-Storage-Platform" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/05.jpg" alt="05 · Cloud Storage Platform" decoding="async"></a>
+  <div class="caption"><h2><span>05</span> Cloud Storage Platform</h2><p>Dribbble · <a href="https://dribbble.com/shots/27285113-Cloud-Storage-Platform" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-06">
+  <a class="preview" href="https://dribbble.com/shots/19810025-Blockchain-Cloud-Storage-Dashboard" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/06.jpg" alt="06 · Blockchain Cloud Storage Dashboard" decoding="async"></a>
+  <div class="caption"><h2><span>06</span> Blockchain Cloud Storage Dashboard</h2><p>Dribbble · <a href="https://dribbble.com/shots/19810025-Blockchain-Cloud-Storage-Dashboard" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-07">
+  <a class="preview" href="https://dribbble.com/shots/27627469-Mobile-Data-Usage-Tracking-App-Internet-Packages-Top-Up" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/07.jpg" alt="07 · Mobile Data &amp; Usage Tracking App | Internet Packages &amp; Top-Up" decoding="async"></a>
+  <div class="caption"><h2><span>07</span> Mobile Data &amp; Usage Tracking App | Internet Packages &amp; Top-Up</h2><p>Dribbble · <a href="https://dribbble.com/shots/27627469-Mobile-Data-Usage-Tracking-App-Internet-Packages-Top-Up" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-08">
+  <a class="preview" href="https://dribbble.com/shots/27290425-Telecom-App-UI-Design-Data-Usage-Plan-Management" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/08.jpg" alt="08 · Telecom App UI Design — Data Usage &amp; Plan Management 📱" decoding="async"></a>
+  <div class="caption"><h2><span>08</span> Telecom App UI Design — Data Usage &amp; Plan Management 📱</h2><p>Dribbble · <a href="https://dribbble.com/shots/27290425-Telecom-App-UI-Design-Data-Usage-Plan-Management" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-09">
+  <a class="preview" href="https://dribbble.com/shots/26807048-SwiftNet-Data-Usage-Speedtest-App" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/09.jpg" alt="09 · SwiftNet: Data Usage &amp; Speedtest App" decoding="async"></a>
+  <div class="caption"><h2><span>09</span> SwiftNet: Data Usage &amp; Speedtest App</h2><p>Dribbble · <a href="https://dribbble.com/shots/26807048-SwiftNet-Data-Usage-Speedtest-App" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-10">
+  <a class="preview" href="https://dribbble.com/shots/27523393-Data-usage-calculator" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/10.jpg" alt="10 · Data usage calculator" decoding="async"></a>
+  <div class="caption"><h2><span>10</span> Data usage calculator</h2><p>Dribbble · <a href="https://dribbble.com/shots/27523393-Data-usage-calculator" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-11">
+  <a class="preview" href="https://www.pinterest.com/pin/30047522509762503/" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/11.jpg" alt="11 · Battery Charging UI with Dynamic Island | iOS Energy Status Design" decoding="async"></a>
+  <div class="caption"><h2><span>11</span> Battery Charging UI with Dynamic Island | iOS Energy Status Design</h2><p>Pinterest · <a href="https://www.pinterest.com/pin/30047522509762503/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-12">
+  <a class="preview" href="https://www.pinterest.com/pin/4433299630770565/" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/12.jpg" alt="12 · Battery UI UX Design" decoding="async"></a>
+  <div class="caption"><h2><span>12</span> Battery UI UX Design</h2><p>Pinterest · <a href="https://www.pinterest.com/pin/4433299630770565/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-13">
+  <a class="preview" href="https://www.pinterest.com/pin/13510867627884208/" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/13.jpg" alt="13 · 紫色分段电量卡片（原 Pin 未命名）" decoding="async"></a>
+  <div class="caption"><h2><span>13</span> 紫色分段电量卡片（原 Pin 未命名）</h2><p>Pinterest · <a href="https://www.pinterest.com/pin/13510867627884208/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-14">
+  <a class="preview" href="https://www.pinterest.com/pin/869194796817868888/" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/14.jpg" alt="14 · 绿色液体电量填充（原 Pin 未命名）" decoding="async"></a>
+  <div class="caption"><h2><span>14</span> 绿色液体电量填充（原 Pin 未命名）</h2><p>Pinterest · <a href="https://www.pinterest.com/pin/869194796817868888/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-15">
+  <a class="preview" href="https://www.pinterest.com/pin/4574037118916199/" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/15.jpg" alt="15 · 红色放射刻度进度（原 Pin 未命名）" decoding="async"></a>
+  <div class="caption"><h2><span>15</span> 红色放射刻度进度（原 Pin 未命名）</h2><p>Pinterest · <a href="https://www.pinterest.com/pin/4574037118916199/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-16">
+  <a class="preview" href="https://www.pinterest.com/pin/682365781016400631/" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/16.jpg" alt="16 · Circular Progress Bar PNG Image, Vector Cartoon Circular Progress Bar Material, Vector Progress Bar, Circular Progress Bar, Cartoon Progress Bar PNG Image For Free Download" decoding="async"></a>
+  <div class="caption"><h2><span>16</span> Circular Progress Bar PNG Image, Vector Cartoon Circular Progress Bar Material, Vector Progress Bar, Circular Progress Bar, Cartoon Progress Bar PNG Image For Free Download</h2><p>Pinterest · <a href="https://www.pinterest.com/pin/682365781016400631/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-17">
+  <a class="preview" href="https://www.pinterest.com/pin/9218374233154519/" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/17.jpg" alt="17 · 霓虹多层圆环指标（原 Pin 未命名）" decoding="async"></a>
+  <div class="caption"><h2><span>17</span> 霓虹多层圆环指标（原 Pin 未命名）</h2><p>Pinterest · <a href="https://www.pinterest.com/pin/9218374233154519/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-18">
+  <a class="preview" href="https://www.pinterest.com/pin/712765078518396017/" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/18.jpg" alt="18 · circle_wave_progress | Flutter package" decoding="async"></a>
+  <div class="caption"><h2><span>18</span> circle_wave_progress | Flutter package</h2><p>Pinterest · <a href="https://www.pinterest.com/pin/712765078518396017/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-19">
+  <a class="preview" href="https://huaban.com/pins/6830690582" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/19.jpg" alt="19 · 常规内容-图标系列扁平风加载进度条元素" decoding="async"></a>
+  <div class="caption"><h2><span>19</span> 常规内容-图标系列扁平风加载进度条元素</h2><p>花瓣 · <a href="https://huaban.com/pins/6830690582" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-20">
+  <a class="preview" href="https://huaban.com/pins/6385482101" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/20.jpg" alt="20 · 小红书爆款加载中卡通涂鸦风标记文字" decoding="async"></a>
+  <div class="caption"><h2><span>20</span> 小红书爆款加载中卡通涂鸦风标记文字</h2><p>花瓣 · <a href="https://huaban.com/pins/6385482101" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-21">
+  <a class="preview" href="https://huaban.com/pins/6271331369" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/21.jpg" alt="21 · 图标系列-通用-发光进度码通用贴纸" decoding="async"></a>
+  <div class="caption"><h2><span>21</span> 图标系列-通用-发光进度码通用贴纸</h2><p>花瓣 · <a href="https://huaban.com/pins/6271331369" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-22">
+  <a class="preview" href="https://huaban.com/pins/6723437855" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/22.jpg" alt="22 · UI，黄色，棕色，条纹，进度条，加载，卡通可爱，游戏" decoding="async"></a>
+  <div class="caption"><h2><span>22</span> UI，黄色，棕色，条纹，进度条，加载，卡通可爱，游戏</h2><p>花瓣 · <a href="https://huaban.com/pins/6723437855" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-23">
+  <a class="preview" href="https://www.behance.net/gallery/251974081/AI-Workout-Mobile-App-Fitness-UIUX-Design-Case-Study" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/23.jpg" alt="23 · AI Workout Mobile App | Fitness UI/UX Design Case Study" decoding="async"></a>
+  <div class="caption"><h2><span>23</span> AI Workout Mobile App | Fitness UI/UX Design Case Study</h2><p>Behance · <a href="https://www.behance.net/gallery/251974081/AI-Workout-Mobile-App-Fitness-UIUX-Design-Case-Study" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-24">
+  <a class="preview" href="https://www.behance.net/gallery/248537291/Gym-Workout-App" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/24.jpg" alt="24 · Gym Workout App" decoding="async"></a>
+  <div class="caption"><h2><span>24</span> Gym Workout App</h2><p>Behance · <a href="https://www.behance.net/gallery/248537291/Gym-Workout-App" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-25">
+  <a class="preview" href="https://www.behance.net/gallery/227343721/Health-Fitness-Dashboard-UIUX-Design" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/25.jpg" alt="25 · Health &amp; Fitness Dashboard — UI/UX Design" decoding="async"></a>
+  <div class="caption"><h2><span>25</span> Health &amp; Fitness Dashboard — UI/UX Design</h2><p>Behance · <a href="https://www.behance.net/gallery/227343721/Health-Fitness-Dashboard-UIUX-Design" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-26">
+  <a class="preview" href="https://www.behance.net/gallery/253188941/FitLevel-Gamified-Fitness-Wellness-Dashboard" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/26.jpg" alt="26 · FitLevel | Gamified Fitness &amp; Wellness Dashboard" decoding="async"></a>
+  <div class="caption"><h2><span>26</span> FitLevel | Gamified Fitness &amp; Wellness Dashboard</h2><p>Behance · <a href="https://www.behance.net/gallery/253188941/FitLevel-Gamified-Fitness-Wellness-Dashboard" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-27">
+  <a class="preview" href="https://www.behance.net/gallery/160397165/Sport-health-tracking" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/27.jpg" alt="27 · Sport + health tracking" decoding="async"></a>
+  <div class="caption"><h2><span>27</span> Sport + health tracking</h2><p>Behance · <a href="https://www.behance.net/gallery/160397165/Sport-health-tracking" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-28">
+  <a class="preview" href="https://ui8.net/mitac/products/98-responsive-saas-dashboard-ui-screens" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/28.jpg" alt="28 · 98 Responsive SaaS Dashboard UI Screens by Emote" decoding="async"></a>
+  <div class="caption"><h2><span>28</span> 98 Responsive SaaS Dashboard UI Screens by Emote</h2><p>UI8 · <a href="https://ui8.net/mitac/products/98-responsive-saas-dashboard-ui-screens" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-29">
+  <a class="preview" href="https://ui8.net/design-monks/products/ai-mental-health-mobile-app-ui-kit" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/29.jpg" alt="29 · AI Mental Health Mobile App UI Kit" decoding="async"></a>
+  <div class="caption"><h2><span>29</span> AI Mental Health Mobile App UI Kit</h2><p>UI8 · <a href="https://ui8.net/design-monks/products/ai-mental-health-mobile-app-ui-kit" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="reference-batch-2-30">
+  <a class="preview" href="https://ui8.net/pickolab-studio/products/grapho---blockchain-and-cryptocurrency-pitch-deck" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/30.jpg" alt="30 · Grapho - Blockchain and Cryptocurrency Pitch Deck" decoding="async"></a>
+  <div class="caption"><h2><span>30</span> Grapho - Blockchain and Cryptocurrency Pitch Deck</h2><p>UI8 · <a href="https://ui8.net/pickolab-studio/products/grapho---blockchain-and-cryptocurrency-pitch-deck" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+</div>
+</section>
 </main>
+<script>
+{
+  const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+  function selectTab(selected) {
+    tabs.forEach(tab => {
+      const active = tab === selected;
+      tab.setAttribute('aria-selected', String(active));
+      tab.tabIndex = active ? 0 : -1;
+      document.getElementById(tab.getAttribute('aria-controls')).hidden = !active;
+    });
+  }
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => selectTab(tab));
+    tab.addEventListener('keydown', event => {
+      let next;
+      if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      selectTab(tabs[next]);
+      tabs[next].focus();
+    });
+  });
+}
+</script>
 </body>
 </html>
