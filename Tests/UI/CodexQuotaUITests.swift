@@ -158,8 +158,21 @@ final class CodexQuotaUITests: XCTestCase {
             app.launch()
             let cards = app.otherElements.matching(identifier: "quota.card")
             XCTAssertEqual(cards.count, 2)
+            let card = cards.element(boundBy: 0)
+            let resetLabels = ["fiveHours", "weekly"].map { card.staticTexts["quota.\($0).reset"].label }
+            screenshot(app, "T62-额度页卡片对照-\(appearance)")
             cards.element(boundBy: 0).buttons["quota.details"].tap()
             XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 5))
+            XCTAssertFalse(app.staticTexts["每周限额"].exists)
+            for (index, id) in ["fiveHours", "weekly"].enumerated() {
+                let reset = app.staticTexts["detail.\(id).reset"]
+                let amount = app.staticTexts["detail.\(id).remaining"]
+                let bar = app.descendants(matching: .any)["detail.\(id).bar"].firstMatch
+                XCTAssertEqual(reset.label, resetLabels[index])
+                XCTAssertTrue(reset.isHittable)
+                XCTAssertLessThanOrEqual(reset.frame.maxY, bar.frame.minY)
+                XCTAssertLessThanOrEqual(amount.frame.maxY, bar.frame.minY)
+            }
             XCTAssertEqual(app.staticTexts["detail.identity"].label, "card-1@example.invalid")
             XCTAssertLessThan(app.staticTexts["detail.fiveHours.remaining"].frame.minY,
                               app.staticTexts["detail.weekly.remaining"].frame.minY)
@@ -962,6 +975,10 @@ final class CodexQuotaUITests: XCTestCase {
         defer { app.terminate() }
         app.buttons["quota.details"].firstMatch.tap()
         XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 3))
+        let reset = app.staticTexts["detail.fiveHours.reset"]
+        let bar = app.descendants(matching: .any)["detail.fiveHours.bar"].firstMatch
+        XCTAssertTrue(reset.isHittable)
+        XCTAssertLessThanOrEqual(reset.frame.maxY, bar.frame.minY)
         let time = app.staticTexts["quota.updatedAt"]
         for _ in 0..<4 where !time.isHittable { app.swipeUp() }
         XCTAssertTrue(time.isHittable)

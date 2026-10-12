@@ -302,48 +302,39 @@ struct QuotaWindowView: View {
     @ScaledMetric(relativeTo: .caption) private var labelSize = 12
     @ScaledMetric(relativeTo: .caption2) private var resetSize = 11
     @ScaledMetric(relativeTo: .headline) private var amountSize = 18
-    @ScaledMetric(relativeTo: .largeTitle) private var detailAmountSize = 30
     @ScaledMetric(relativeTo: .title) private var accessibilityMetadataSize = 14
+
+    // Enlarge the dashboard's window as a whole, retaining its visual ratios.
+    private var scale: CGFloat { detail ? 1.25 : 1 }
 
     private var secondarySize: CGFloat {
         dynamicTypeSize.isAccessibilitySize ? accessibilityMetadataSize : resetSize
     }
 
     var body: some View {
-        if detail {
-            VStack(alignment: .leading, spacing: 12) {
-                ViewThatFits(in: .horizontal) {
-                    HStack(alignment: .firstTextBaseline) { windowTitle; Spacer(minLength: 12); amount }
-                    VStack(alignment: .leading, spacing: 8) { windowTitle; amount }
-                }
-                progressBar
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    DesignIcon(name: "Clock", size: 14)
-                    resetTime
-                }.foregroundStyle(DashboardStyle.secondary)
-            }
-        } else if dynamicTypeSize.isAccessibilitySize {
-            VStack(alignment: .leading, spacing: 8) {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 8 * scale) {
                 ViewThatFits(in: .horizontal) {
                     HStack(alignment: .firstTextBaseline) {
                         windowTitle
-                        Spacer(minLength: 12)
+                        Spacer(minLength: 12 * scale)
                         amount
                     }
-                    VStack(alignment: .leading, spacing: 4) { windowTitle; amount }
+                    VStack(alignment: .leading, spacing: 4 * scale) { windowTitle; amount }
                 }
-                progressBar
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    DesignIcon(name: "Clock", size: 14)
+                if !detail { progressBar }
+                HStack(alignment: .firstTextBaseline, spacing: 6 * scale) {
+                    DesignIcon(name: "Clock", size: 14 * scale)
                     resetTime
                 }
                 .foregroundStyle(DashboardStyle.secondary)
+                if detail { progressBar }
             }
         } else {
-            VStack(spacing: 4) {
+            VStack(spacing: 4 * scale) {
                 ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 5) { reset; Spacer(minLength: 6); amount }
-                    VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 5 * scale) { reset; Spacer(minLength: 6 * scale); amount }
+                    VStack(alignment: .leading, spacing: 6 * scale) {
                         reset
                         HStack { Spacer(); amount }
                     }
@@ -362,7 +353,7 @@ struct QuotaWindowView: View {
                             .frame(width: geometry.size.width * percentage.used / 100)
                     }
             }
-            .frame(height: 6)
+            .frame(height: 6 * scale)
             .accessibilityElement().accessibilityLabel("\(title)额度条")
             .accessibilityValue("已用 \(valueUsedText)，\(QuotaView.amountText(value.amount))")
             .accessibilityIdentifier("\(detail ? "detail" : "quota").\(id).bar")
@@ -370,22 +361,22 @@ struct QuotaWindowView: View {
     }
 
     private var windowTitle: some View {
-        Text(title).font(detail ? .headline : .system(size: labelSize, weight: .medium)).fixedSize()
+        Text(title).font(.system(size: labelSize * scale, weight: .medium)).fixedSize()
             .foregroundStyle(DashboardStyle.secondary)
     }
 
     private var resetTime: some View {
         Text(QuotaView.resetText(value.resetsAt, now: now))
-            .font(.system(size: secondarySize)).fixedSize(horizontal: false, vertical: true)
+            .font(.system(size: secondarySize * scale)).fixedSize(horizontal: false, vertical: true)
             .accessibilityLabel(value.resetsAt.map { "预计重置于 \(QuotaView.dateText($0))" } ?? "未提供重置时间")
             .accessibilityValue(QuotaView.resetText(value.resetsAt, now: now))
             .accessibilityIdentifier("\(detail ? "detail" : "quota").\(id).reset")
     }
 
     private var reset: some View {
-        HStack(spacing: 5) {
-            Text(title).font(detail ? .headline : .system(size: labelSize, weight: .medium)).fixedSize()
-            DesignIcon(name: "Clock", size: 11)
+        HStack(spacing: 5 * scale) {
+            windowTitle
+            DesignIcon(name: "Clock", size: 11 * scale)
             resetTime
         }
         .foregroundStyle(DashboardStyle.secondary)
@@ -394,11 +385,11 @@ struct QuotaWindowView: View {
     private var amount: some View {
         Group {
             if case let .limited(percentage) = value.amount {
-                (Text("剩余 ").font(.system(size: secondarySize)).foregroundColor(DashboardStyle.secondary)
+                (Text("剩余 ").font(.system(size: secondarySize * scale)).foregroundColor(DashboardStyle.secondary)
                  + Text("\(percentage.remaining.formatted(.number.precision(.fractionLength(0...2))))%")
-                    .font(.system(size: detail ? detailAmountSize : amountSize, weight: .semibold)))
+                    .font(.system(size: amountSize * scale, weight: .semibold)))
             } else {
-                Text(QuotaView.amountText(value.amount)).font(.system(size: labelSize, weight: .medium))
+                Text(QuotaView.amountText(value.amount)).font(.system(size: labelSize * scale, weight: .medium))
             }
         }
         .fixedSize().monospacedDigit().accessibilityIdentifier("\(detail ? "detail" : "quota").\(id).remaining")
@@ -876,7 +867,6 @@ struct CodexDetailPanel: View {
                         TimelineView(.periodic(from: .now, by: 60)) { context in
                             VStack(alignment: .leading, spacing: 16) {
                                 detailWindow(snapshot.fiveHours, title: "5 小时", id: "fiveHours", now: context.date)
-                                Text("每周限额").font(.subheadline).foregroundStyle(DashboardStyle.secondary).padding(.leading, 16)
                                 detailWindow(snapshot.weekly, title: "每周", id: "weekly", now: context.date)
                             }
                         }
@@ -916,6 +906,7 @@ struct CodexDetailPanel: View {
                 }
                 .padding(16).padding(.bottom, 20)
             }
+            .clipped()
         }
         .foregroundStyle(DashboardStyle.text)
         .background(DashboardStyle.background)
@@ -931,7 +922,8 @@ struct CodexDetailPanel: View {
         VStack(alignment: .leading, spacing: 16) {
             QuotaWindowView(value: value, title: title, id: id, now: now, detail: true)
         }
-        .padding(20).frame(maxWidth: .infinity, alignment: .leading)
-        .background(DashboardStyle.card, in: RoundedRectangle(cornerRadius: 22))
+        .padding(.horizontal, 20).padding(.vertical, 17.5)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(DashboardStyle.card, in: RoundedRectangle(cornerRadius: 30))
     }
 }
