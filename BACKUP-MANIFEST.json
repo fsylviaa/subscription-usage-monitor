@@ -29,8 +29,8 @@
       "commit": "d4d1c751856e25913bce97bfbd7b254308863239"
     }
   ],
-  "fileCount": 7712,
-  "bytes": 519835910,
+  "fileCount": 7713,
+  "bytes": 519836413,
   "files": [
     {
       "path": "AGENTS.md",
@@ -29851,6 +29851,11 @@
       "path": "reference/ccusage/.codex/environments/environment.toml",
       "bytes": 243,
       "sha256": "1d181e67e3e0c2d8bef94178ac72a48866b3a0a3c54c4760803b0adb43277480"
+    },
+    {
+      "path": "reference/ccusage/.envrc",
+      "bytes": 503,
+      "sha256": "d8aa62e7e811efba1e189b8f9e054b484b8f3d94601ccd2d9d08aadae1104017"
     },
     {
       "path": "reference/ccusage/.gitattributes",
