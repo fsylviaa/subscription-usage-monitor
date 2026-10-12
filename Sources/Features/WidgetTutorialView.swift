@@ -39,8 +39,8 @@ struct WidgetTutorialView: View {
                             Text(page == 0
                                  ? "长按主屏幕，然后添加 Token 仪表盘。"
                                  : "长按小组件，选择要显示的账号")
-                                .font(page == 0 ? .title2.weight(.semibold) : .body)
-                                .accessibilityAddTraits(page == 0 ? .isHeader : [])
+                                .font(.title2.weight(.semibold))
+                                .accessibilityAddTraits(.isHeader)
                                 .fixedSize(horizontal: false, vertical: true)
                                 .accessibilityIdentifier("tutorial.instructions.\(page)")
                         }
