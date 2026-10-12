@@ -1,0 +1,15 @@
+T47 2026-10-12；两端各1单元＋3UI通过；49张原图目视，其中47张去敏图入库。
+手机13／14顶部无关系统通知，仅留忽略build，不归档；等待画面确为连接中。
+10个宿主检查点：完整账户／临时文件／提醒意愿保持，假权限及额度请求0。
+系统动态：两端精确原值恢复；通知权限／正式账户／组件未操作。
+原真实余额、两窗口预计重置及组件对照沿用，不复验。
+Test Case '-[SubscriptionUsageTests.RootViewTests testT47AppearanceAndSceneChangesPreserveAccountsStorageAndReminderIntent]' passed (5.343 seconds).
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT47DarkUpdatingAndBothFailureMessagesRemainReadable]' passed (59.451 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testT47DarkConnectionWaitingCodeAndFailuresStayReadable]' passed (47.442 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testT47DarkMaximumTextReducedMotionTutorial]' passed (71.980 seconds).
+Test Case '-[SubscriptionUsageTests.RootViewTests testT47AppearanceAndSceneChangesPreserveAccountsStorageAndReminderIntent]' passed (5.243 seconds).
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT47DarkUpdatingAndBothFailureMessagesRemainReadable]' passed (53.621 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testT47DarkConnectionWaitingCodeAndFailuresStayReadable]' passed (41.625 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testT47DarkMaximumTextReducedMotionTutorial]' passed (49.151 seconds).
+install: success；2026-10-12T21:37:24.125054+08:00
+launch: success；2026-10-12T21:37:57.374609+08:00

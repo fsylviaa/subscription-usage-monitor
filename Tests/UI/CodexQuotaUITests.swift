@@ -3,6 +3,46 @@ import CryptoKit
 
 final class CodexQuotaUITests: XCTestCase {
     @MainActor
+    func testT47DarkUpdatingAndBothFailureMessagesRemainReadable() {
+        continueAfterFailure = false
+        let updating = launchD60("ui-staggered", extra: ["--t26-dark"])
+        let cards = updating.otherElements.matching(identifier: "quota.card")
+        updating.pullAllQuota()
+        XCTAssertTrue(cards.element(boundBy: 0).descendants(matching: .any)["quota.refreshProgress"].waitForExistence(timeout: 3))
+        XCTAssertTrue(cards.element(boundBy: 1).descendants(matching: .any)["quota.refreshProgress"].exists)
+        assertNoRefreshBanner(updating)
+        screenshot(updating, "T47-深色两户更新中")
+        XCTAssertTrue(cards.element(boundBy: 0).descendants(matching: .any)["quota.refreshProgress"].waitForNonExistence(timeout: 14))
+        XCTAssertTrue(cards.element(boundBy: 1).descendants(matching: .any)["quota.refreshProgress"].exists)
+        screenshot(updating, "T47-深色第一户完成第二户仍等待")
+        XCTAssertTrue(cards.element(boundBy: 1).descendants(matching: .any)["quota.refreshProgress"].waitForNonExistence(timeout: 22))
+        updating.terminate()
+        for (scenario, message) in [("blocked", "网络不达标，无法更新"), ("unknown", "刷新失败")] {
+            let app = launchD60(scenario, extra: ["--t26-dark"])
+            app.pullAllQuota()
+            let text = app.staticTexts["quota.failure"]
+            XCTAssertTrue(text.waitForExistence(timeout: 8))
+            XCTAssertEqual(text.label, message)
+            XCTAssertTrue(text.isHittable)
+            XCTAssertTrue(app.buttons["quota.retry"].isHittable)
+            XCTAssertTrue(app.buttons["quota.closeFeedback"].isHittable)
+            XCTAssertFalse(app.buttons["重新登录"].exists)
+            screenshot(app, "T47-深色失败条-\(scenario)")
+            app.buttons["quota.closeFeedback"].tap()
+            XCTAssertFalse(text.exists)
+            XCTAssertEqual(app.otherElements.matching(identifier: "quota.card").element(boundBy: 0).staticTexts["quota.weekly.remaining"].label, "剩余 90%")
+            XCTAssertEqual(app.otherElements.matching(identifier: "quota.card").element(boundBy: 1).staticTexts["quota.weekly.remaining"].label, "剩余 70%")
+            app.buttons.matching(identifier: "quota.menu").firstMatch.tap()
+            XCTAssertTrue(app.buttons["刷新额度"].isHittable)
+            XCTAssertTrue(app.buttons["删除账户"].isHittable)
+            screenshot(app, "T47-深色账户菜单")
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.85)).tap()
+            XCTAssertFalse(app.buttons["删除账户"].exists)
+            app.terminate()
+        }
+    }
+
+    @MainActor
     func testT42WidgetAndNotificationReturnDismissTutorialBeforeOpeningAccount() {
         continueAfterFailure = false
         let app = XCUIApplication(), first = UUID(), second = UUID()

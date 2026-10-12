@@ -1,6 +1,116 @@
 import XCTest
 
 final class LaunchTests: XCTestCase {
+    /// The missing dark / maximum-text / static combination. Restore Motion exactly.
+    @MainActor
+    func testT47DarkMaximumTextReducedMotionTutorial() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString,
+            "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
+        settings.launch()
+        let motion = settings.switches["REDUCE_MOTION"]
+        if !motion.waitForExistence(timeout: 5) {
+            for _ in 0..<6 {
+                if settings.navigationBars.firstMatch.identifier == "设置" { break }
+                let back = settings.navigationBars.firstMatch.buttons.firstMatch
+                if back.exists { back.tap() } else { break }
+            }
+            let accessibility = settings.buttons["com.apple.settings.accessibility"]
+            for _ in 0..<8 { if accessibility.isHittable { break }; settings.swipeUp() }
+            XCTAssertTrue(accessibility.isHittable); accessibility.tap()
+            let entry = settings.staticTexts["动态效果"]
+            for _ in 0..<5 { if entry.isHittable { break }; settings.swipeUp() }
+            XCTAssertTrue(entry.waitForExistence(timeout: 5)); entry.tap()
+        }
+        XCTAssertTrue(motion.waitForExistence(timeout: 5))
+        let original = try XCTUnwrap(motion.value as? String)
+        addTeardownBlock {
+            await MainActor.run {
+                settings.activate()
+                XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: motion)], timeout: 8), .completed)
+                if motion.value as? String != original {
+                    motion.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+                }
+                XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", original), object: motion)], timeout: 5), .completed)
+                app.terminate()
+                print("T47 motion: exact original restored")
+            }
+        }
+        if original != "1" { motion.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap() }
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "1"), object: motion)], timeout: 5), .completed)
+        app.launch()
+        app.buttons["tab.settings"].tap()
+        let dark = app.switches["settings.darkAppearance"]
+        if dark.value as? String != "1" { dark.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap() }
+        XCTAssertEqual(dark.value as? String, "1")
+        openT45Entry("widgetTutorial", in: app)
+        for page in 0..<2 {
+            assertT42Step(in: app, second: page == 1)
+            let demo = app.descendants(matching: .any).matching(identifier: "tutorial.demo.\(page)").firstMatch
+            XCTAssertEqual(demo.value as? String, "静态关键画面")
+            saveScreenshot(of: app, name: "T47-深色最大字号静态-第\(page+1)页-顶部")
+            let text = app.staticTexts["tutorial.instructions.\(page)"]
+            for offset in 0..<30 {
+                if text.isHittable && text.frame.maxY <= app.buttons["tutorial.next"].frame.minY { break }
+                app.scrollViews.firstMatch.swipeUp()
+                saveScreenshot(of: app, name: "T47-深色最大字号静态-第\(page+1)页-滚动\(offset)")
+            }
+            XCTAssertTrue(text.isHittable)
+            XCTAssertLessThanOrEqual(text.frame.maxY, app.buttons["tutorial.next"].frame.minY)
+            XCTAssertLessThanOrEqual(text.frame.maxX, app.frame.maxX)
+            XCTAssertTrue(app.buttons["tutorial.close"].isHittable)
+            XCTAssertTrue(app.buttons["tutorial.next"].isHittable)
+            app.buttons["tutorial.next"].tap()
+        }
+        XCTAssertTrue(app.buttons["tab.settings"].isSelected)
+        openT45Entry("widgetTutorial", in: app)
+        XCTAssertEqual(app.descendants(matching: .any).matching(identifier: "tutorial.demo.0").firstMatch.value as? String, "静态关键画面")
+        app.buttons["tutorial.close"].tap()
+        XCTAssertTrue(app.buttons["tab.settings"].isSelected)
+    }
+
+    @MainActor
+    func testT47DarkConnectionWaitingCodeAndFailuresStayReadable() {
+        continueAfterFailure = false
+        for scenario in ["slow", "51", "50", "unknown"] {
+            let app = XCUIApplication()
+            // Argument-domain override only; never write the formal appearance preference.
+            app.launchArguments = ["--t07-isolated-ui", scenario, "-appearance", "dark"]
+            app.launch()
+            XCTAssertTrue(app.buttons["tab.settings"].waitForExistence(timeout: 8))
+            app.buttons["tab.settings"].tap()
+            XCTAssertEqual(app.switches["settings.darkAppearance"].value as? String, "1")
+            app.buttons["tab.quota"].tap()
+            app.buttons["quota.toolbarConnect"].tap()
+            XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
+            saveScreenshot(of: app, name: "T47-深色连接-\(scenario)-平台弹层")
+            app.buttons["platforms.codex"].tap()
+            if scenario == "slow" {
+                let progress = app.descendants(matching: .any).matching(identifier: "connection.progress").firstMatch
+                XCTAssertTrue(progress.waitForExistence(timeout: 2))
+                saveScreenshot(of: app, name: "T47-深色连接-等待")
+            } else if scenario == "51" {
+                XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5))
+                XCTAssertEqual(app.staticTexts["connection.code"].label, "TEST-CODE")
+                XCTAssertTrue(app.buttons["connection.copy"].isHittable)
+                XCTAssertTrue(app.buttons["connection.open"].isHittable)
+                saveScreenshot(of: app, name: "T47-深色连接-代码")
+            } else {
+                let failure = app.staticTexts["connection.failure"]
+                XCTAssertTrue(failure.waitForExistence(timeout: 5))
+                XCTAssertEqual(failure.label, scenario == "50" ? "网络不达标，无法连接" : "登录未完成，请重试")
+                XCTAssertTrue(app.buttons["connection.retry"].isHittable)
+                saveScreenshot(of: app, name: "T47-深色连接-\(scenario)-失败")
+            }
+            XCTAssertTrue(app.buttons["connection.cancel"].isHittable)
+            app.buttons["connection.cancel"].tap()
+            XCTAssertTrue(app.buttons["tab.quota"].isSelected)
+            app.terminate()
+        }
+    }
+
     @MainActor
     func testT46IntegratedSettingsRoutesCancelAndDemoCleanup() {
         continueAfterFailure = false

@@ -458,6 +458,95 @@ final class RootViewTests: XCTestCase {
     }
 
     @MainActor
+    func testT47AppearanceAndSceneChangesPreserveAccountsStorageAndReminderIntent() async throws {
+        let fixture = T26BatchFixture(scenario: "success")
+        defer { try? FileManager.default.removeItem(at: fixture.directory) }
+        let suite = "T47-\(UUID())"
+        let preferences = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { preferences.removePersistentDomain(forName: suite) }
+        preferences.set(true, forKey: ResetReminderSettings.preferenceKey)
+        let authorization = T47AuthorizationService()
+        let reminders = ResetReminderSettings(defaults: preferences, authorizationService: authorization)
+        let flow = CodexConnectionFlow(transactions: T36Transactions(), bindings: fixture,
+                                       quotaUpdater: fixture, foregroundRefreshEnabled: false)
+        await flow.loadAccounts()
+        await reminders.refreshAuthorization()
+        let accounts = flow.accounts
+        XCTAssertEqual(accounts.count, 2)
+        let file = fixture.directory.appendingPathComponent("accounts.json")
+        let originalBytes = try Data(contentsOf: file)
+        let navigation = ResetReminderNavigation()
+        var backgroundTransitions = 0
+
+        func root(_ phase: ScenePhase) -> some View {
+            RootView(connection: flow, preferences: preferences,
+                     onBackground: { backgroundTransitions += 1 }, reminders: reminders,
+                     notificationNavigation: navigation)
+                .environment(\.scenePhase, phase)
+        }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.first as? UIWindowScene)
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 414, height: 896)
+        let controller = UIHostingController(rootView: root(.active))
+        window.rootViewController = controller
+        window.overrideUserInterfaceStyle = .light
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; window.rootViewController = nil }
+
+        func check(_ host: UIViewController, scheme: UIUserInterfaceStyle, _ checkpoint: String) async throws {
+            try await Task.sleep(for: .milliseconds(500))
+            window.layoutIfNeeded()
+            XCTAssertEqual(host.view.traitCollection.userInterfaceStyle, scheme, checkpoint)
+            XCTAssertEqual(flow.accounts, accounts, checkpoint + "：完整身份、顺序、额度及成功时间保持")
+            let savedAccounts = try await fixture.store.load()
+            XCTAssertEqual(savedAccounts, accounts, checkpoint + "：存档读回保持")
+            XCTAssertEqual(try Data(contentsOf: file), originalBytes, checkpoint + "：账户文件未重写")
+            XCTAssertTrue(reminders.wantsReminders, checkpoint)
+            XCTAssertTrue(reminders.isEnabled, checkpoint)
+            XCTAssertTrue(preferences.bool(forKey: ResetReminderSettings.preferenceKey), checkpoint)
+            XCTAssertEqual(authorization.requestCount, 0, "外观／场景变化不能请求通知权限")
+            let requests = await fixture.requests
+            XCTAssertTrue(requests.isEmpty, "本测试隔离外观，不能通过额度刷新改写测试账户")
+        }
+
+        try await check(controller, scheme: .light, "系统默认浅色")
+        XCTAssertNil(preferences.string(forKey: "appearance"))
+        window.overrideUserInterfaceStyle = .dark
+        try await check(controller, scheme: .dark, "前台跟随系统深色")
+
+        preferences.set("light", forKey: "appearance")
+        try await check(controller, scheme: .light, "手动浅色优先于系统深色")
+        controller.rootView = root(.inactive)
+        try await check(controller, scheme: .light, "离开前台保持手动浅色")
+        controller.rootView = root(.background)
+        try await check(controller, scheme: .light, "后台保持手动浅色")
+        XCTAssertEqual(backgroundTransitions, 1)
+        window.overrideUserInterfaceStyle = .light
+        window.overrideUserInterfaceStyle = .dark
+        controller.rootView = root(.active)
+        try await check(controller, scheme: .light, "后台系统变色后返回保持手动浅色")
+
+        preferences.set("dark", forKey: "appearance")
+        window.overrideUserInterfaceStyle = .light
+        try await check(controller, scheme: .dark, "手动深色优先于系统浅色")
+        // Host the existing settings page with the same reminder model. Actual
+        // tab-button routing is covered separately by the isolated UI checks.
+        let settings = UIHostingController(rootView: NavigationStack {
+            SettingsView(darkAppearance: true, reminders: reminders)
+        }.preferredColorScheme(.dark))
+        window.rootViewController = settings
+        try await check(settings, scheme: .dark, "设置页仍共享原提醒意愿与账户存档")
+        window.rootViewController = controller
+        try await check(controller, scheme: .dark, "返回额度页业务记录保持")
+
+        let reopened = UIHostingController(rootView: root(.active))
+        window.rootViewController = reopened
+        try await check(reopened, scheme: .dark, "重建页面保持手动深色")
+        XCTAssertEqual(preferences.string(forKey: "appearance"), "dark")
+        print("T47 | 独立偏好与双账户 | 系统／手动浅深、后台返回、设置页及重建页面均保持账户文件和提醒意愿")
+    }
+
+    @MainActor
     func testResetDayLabelUsesCalendarDayInsteadOfRoundingDownFullDays() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = try XCTUnwrap(TimeZone(identifier: "Asia/Shanghai"))
@@ -494,4 +583,14 @@ final class RootViewTests: XCTestCase {
 private actor T36Transactions: CodexLoginTransactionStoring {
     func save(_ authorization: CodexDeviceAuthorization) { }
     func remove(transactionID: UUID) { }
+}
+
+@MainActor
+private final class T47AuthorizationService: ResetReminderAuthorizationServing {
+    private(set) var requestCount = 0
+    func authorizationStatus() async throws -> ResetReminderAuthorizationStatus { .authorized }
+    func requestAuthorization() async throws {
+        requestCount += 1
+        XCTFail("T47隔离外观检查不应请求系统通知权限")
+    }
 }

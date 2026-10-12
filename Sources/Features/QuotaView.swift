@@ -70,6 +70,8 @@ struct QuotaView: View {
 
             if loading {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .accessibilityLabel("正在加载账户")
+                    .accessibilityIdentifier("quota.loading")
             } else if loadFailed {
                 ContentUnavailableView("刷新失败", systemImage: "exclamationmark.circle")
             } else if accounts.isEmpty {
