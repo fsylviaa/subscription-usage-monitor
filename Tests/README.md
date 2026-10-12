@@ -197,8 +197,12 @@ RootViewTests的T62／T36用例核对可信字段、稳定身份、非法URL、�
 实际桌面用例`testT36ActualSmallAndMediumWidgetTapColdAndBackground`需显式测试环境`T36_WIDGET_DESKTOP=1`，复用已有两尺寸，不改系统配置。DEBUG `--t36-desktop-fixture baseline <UUID>`用20分钟限时标记让实际组件无参数冷启动仍走隔离；后台和系统提醒关闭，结束必须用同入口`cleanup`清理。`T36_CLEANUP_CHECK=1`显式运行只读清理用例，仅核对标记与组件读路径，不读取正式账户／授权。Release没有该隔离入口，普通测试不启用桌面专项。报告、首次失败及手机事实见T62／T36验收。
 
 
-## T42 两步小组件教程
+## T42／T43 添加与选择账户教程
 
-`LaunchTests` 的三个 `testT42…` 页面用例使用独立管理账户与偏好，验证额度／设置来源、两步关闭和完成、返回主屏幕后保持步骤、重进回第一步、浅深和最大字号；已有基础导航用例同步教程入口已启用。`CodexQuotaUITests/testT42WidgetAndNotificationReturnDismissTutorialBeforeOpeningAccount` 使用原有两户固定输入，验证外部入口关闭教程并打开对应详情，不向系统发送通知。
+`LaunchTests` 的三个 `testT42…` 页面用例使用独立管理账户与偏好，验证指定单句、删除旧解释、额度／设置来源、双向滑动、两步关闭和完成、返回主屏幕后保持步骤、重进第一步、浅深和最大字号。`CodexQuotaUITests/testT42WidgetAndNotificationReturnDismissTutorialBeforeOpeningAccount` 使用原有两户固定输入，验证外部入口关闭教程并打开对应详情，不向系统发送通知。
 
-`TEST_RUNNER_T42_WIDGET_ADD=1` 才启用实际主屏幕添加检查，复用T36限时隔离会话，不读／清空正式账户、不登录或修改权限。检查按主屏幕空白长按、编辑、添加、搜索“订阅用量”和系统尺寸页执行；新增组件数量须增加。清理注册到XCTest teardown，失败时也执行，并等待空隔离页可见后再结束，避免stop-on-failure跳过Swift defer导致隔离状态遗留。系统页面完整调试描述只保存在忽略的本机build目录，提交证据使用去敏摘要和人工账户教程截图。
+`testT43AnimationDoesNotBlockPagingClosingOrBackgroundReturn` 验证动画中两来源的滑动、按钮与后台返回。`testT43SystemMotionPreferenceAnimationAndStaticKeyframes` 从系统设置实际切换REDUCE_MOTION，正常动画到结束、静态全部关键画面及最大字号均检查；teardown等待原值恢复，不修改通知权限。字体通过进程启动参数临时覆盖，App外观在隔离偏好中切换，不修改正式设置。
+
+实际系统用例`testT43ActualSystemAddAndSelectNewWidget`仅在测试runner显式环境`T43_SYSTEM_WIDGET_FLOW=1`时执行，取代旧T42_WIDGET_ADD。复用T36限时隔离会话，在无本App组件的页面添加并唯一识别新实例，按实际系统搜索“订阅用量”、查看小／中号、添加、长按编辑、显示账户选第二个人工账号，确认结果并仅移除该临时实例。已有配置不作为测试编辑对象；无法唯一识别就停止。夹具清理注册XCTest teardown并等待空隔离页；后续可复用T36既有只读清理检查核对标记和正式路径，不读取正式账户／授权。
+
+本次因说明句误匹配而遗留的已识别临时组件，按第2页实际0→1证据进行一次接续选择／移除；该一次性恢复分支已从最终源码移除。原失败与逐段通过保存在T43验收记录；不把一次接续写成整条添加链在同一轮重跑成功。完整系统层级与本机结果留忽略build目录，Git仅保存人工账户截图及去敏摘要。

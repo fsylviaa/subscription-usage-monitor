@@ -1,11 +1,130 @@
 import XCTest
 
 final class LaunchTests: XCTestCase {
+    /// Changes only Motion, restores its exact original value even on test failure.
+    @MainActor
+    func testT43SystemMotionPreferenceAnimationAndStaticKeyframes() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        cleanT42Fixture(in: app)
+        app.launch()
+        let settings = XCUIApplication(bundleIdentifier: "com.apple.Preferences")
+        settings.launch()
+        let toggle = settings.switches["REDUCE_MOTION"]
+        if !toggle.waitForExistence(timeout: 5) {
+            for _ in 0..<6 {
+                if settings.navigationBars.firstMatch.identifier == "设置" { break }
+                let back = settings.navigationBars.firstMatch.buttons.firstMatch
+                if back.exists { back.tap() } else { break }
+            }
+            let accessibility = settings.buttons["com.apple.settings.accessibility"]
+            for _ in 0..<8 { if accessibility.isHittable { break }; settings.swipeUp() }
+            XCTAssertTrue(accessibility.isHittable, settings.debugDescription)
+            accessibility.tap()
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "identifier == %@", "辅助功能"), object: settings.navigationBars.firstMatch)], timeout: 5), .completed, settings.debugDescription)
+            let motion = settings.staticTexts["动态效果"]
+            for _ in 0..<5 { if motion.isHittable { break }; settings.swipeUp() }
+            XCTAssertTrue(motion.waitForExistence(timeout: 5), settings.debugDescription); motion.tap()
+        }
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5), settings.debugDescription)
+        let original = try XCTUnwrap(toggle.value as? String)
+        addTeardownBlock {
+            await MainActor.run {
+                settings.activate()
+                XCTAssertTrue(settings.wait(for: .runningForeground, timeout: 8))
+                XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: toggle)], timeout: 8), .completed)
+                if toggle.value as? String != original {
+                    toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+                }
+                XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", original), object: toggle)], timeout: 5), .completed)
+                app.terminate()
+            }
+        }
+        for reduced in [false, true] {
+            settings.activate()
+            XCTAssertTrue(settings.wait(for: .runningForeground, timeout: 8))
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: toggle)], timeout: 8), .completed)
+            if toggle.value as? String != (reduced ? "1" : "0") {
+                toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            }
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", reduced ? "1" : "0"), object: toggle)], timeout: 5), .completed)
+            app.terminate()
+            if reduced {
+                app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+            }
+            app.launch()
+            XCTAssertTrue(app.wait(for: .runningForeground, timeout: 8))
+            if reduced { app.buttons["tab.settings"].tap() }
+            let entry = app.buttons[reduced ? "settings.widgetTutorial" : "quota.widgetTutorial"]
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "hittable == true"), object: entry)], timeout: 8), .completed)
+            entry.tap()
+            for page in 0..<2 {
+                assertT42Step(in: app, second: page == 1)
+                let demo = app.descendants(matching: .any).matching(identifier: "tutorial.demo.\(page)").firstMatch
+                XCTAssertTrue(demo.waitForExistence(timeout: 5))
+                if reduced {
+                    XCTAssertEqual(demo.value as? String, "静态关键画面")
+                    saveScreenshot(of: app, name: "T43-系统减少动态-第\(page + 1)步-顶部")
+                    let instructions = app.staticTexts["tutorial.instructions.\(page)"]
+                    for offset in 0..<12 {
+                        if instructions.isHittable && instructions.frame.maxY <= app.buttons["tutorial.next"].frame.minY { break }
+                        app.scrollViews.firstMatch.swipeUp()
+                        saveScreenshot(of: app, name: "T43-系统减少动态-第\(page + 1)步-滚动\(offset)")
+                    }
+                    XCTAssertTrue(instructions.isHittable)
+                    XCTAssertLessThanOrEqual(instructions.frame.maxY, app.buttons["tutorial.next"].frame.minY)
+                    saveScreenshot(of: app, name: "T43-系统减少动态-第\(page + 1)步-关键画面")
+                    XCTAssertEqual(demo.value as? String, "静态关键画面")
+                    XCTAssertTrue(app.buttons["tutorial.close"].isHittable)
+                    XCTAssertTrue(app.buttons["tutorial.next"].isHittable)
+                } else {
+                    XCTAssertTrue((demo.value as? String)?.contains("画面") == true)
+                    saveScreenshot(of: app, name: "T43-动画-第\(page + 1)步-开始")
+                    let final = "画面 \(page == 0 ? 5 : 4)，共 \(page == 0 ? 5 : 4) 个"
+                    XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(
+                        predicate: NSPredicate(format: "value == %@", final), object: demo)], timeout: 12), .completed)
+                    saveScreenshot(of: app, name: "T43-动画-第\(page + 1)步-结束")
+                }
+                app.buttons["tutorial.next"].tap()
+            }
+            XCTAssertTrue(app.buttons[reduced ? "tab.settings" : "tab.quota"].isSelected)
+        }
+        print("T43 MOTION | system toggle normal/static verified; exact original restored by teardown")
+    }
+
+    @MainActor
+    func testT43AnimationDoesNotBlockPagingClosingOrBackgroundReturn() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        cleanT42Fixture(in: app); app.launch()
+        defer { app.terminate() }
+        for settings in [false, true] {
+            if settings { app.buttons["tab.settings"].tap() }
+            let entry = app.buttons[settings ? "settings.widgetTutorial" : "quota.widgetTutorial"]
+            entry.tap()
+            swipeTutorial(in: app, forward: true); assertT42Step(in: app, second: true)
+            swipeTutorial(in: app, forward: false); assertT42Step(in: app, second: false)
+            app.buttons["tutorial.close"].tap()
+            XCTAssertTrue(entry.waitForExistence(timeout: 5))
+            entry.tap(); app.buttons["tutorial.next"].tap()
+            XCUIDevice.shared.press(.home); app.activate()
+            assertT42Step(in: app, second: true)
+            app.buttons["tutorial.close"].tap()
+            XCTAssertTrue(entry.waitForExistence(timeout: 5))
+            entry.tap(); app.buttons["tutorial.next"].tap(); app.buttons["tutorial.next"].tap()
+            XCTAssertTrue(app.buttons[settings ? "tab.settings" : "tab.quota"].isSelected)
+        }
+    }
+
+
     /// Opt-in system check, with the existing expiring widget fixture. No real
     /// accounts are read or cleared; existing desktop widgets are retained.
     @MainActor
-    func testT42ActualSystemGalleryAndAddWidgetFollowingTutorial() throws {
-        guard ProcessInfo.processInfo.environment["T42_WIDGET_ADD"] == "1" else {
+    func testT43ActualSystemAddAndSelectNewWidget() throws {
+        guard ProcessInfo.processInfo.environment["T43_SYSTEM_WIDGET_FLOW"] == "1" else {
             throw XCTSkip("显式启用主屏幕添加验证，使用隔离组件会话")
         }
         continueAfterFailure = false
@@ -29,12 +148,10 @@ final class LaunchTests: XCTestCase {
         XCTAssertTrue(app.buttons["quota.widgetTutorial"].waitForExistence(timeout: 10))
         app.buttons["quota.widgetTutorial"].tap()
         assertT42Step(in: app, second: false)
-        app.buttons["tutorial.next"].tap()
-        assertT42Step(in: app, second: true)
         XCUIDevice.shared.press(.home)
         XCUIDevice.shared.press(.home)
         let widgets = springboard.icons.matching(NSPredicate(format: "label == %@ AND value == %@", "订阅用量", "小组件"))
-        let before = widgets.count
+
         let occupied = springboard.icons.allElementsBoundByIndex.filter(\.isHittable).map(\.frame)
         let screen = springboard.frame
         var blank: CGPoint?
@@ -50,6 +167,14 @@ final class LaunchTests: XCTestCase {
         let point = try XCTUnwrap(blank, "需要一处主屏幕空白区域")
         springboard.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: point.x, dy: point.y)).press(forDuration: 1.5)
         XCTAssertTrue(springboard.buttons["编辑"].waitForExistence(timeout: 8))
+        // Add on a page without this App's widgets, so the new instance is unambiguous.
+        for _ in 0..<10 {
+            if widgets.count == 0 { break }
+            springboard.swipeLeft()
+        }
+        XCTAssertEqual(widgets.count, 0, "没有找到空组件页，不改现有配置")
+        let before = widgets.count
+        let previousFrames = widgets.allElementsBoundByIndex.map(\.frame)
         springboard.buttons["编辑"].tap()
         XCTAssertTrue(springboard.buttons["添加小组件"].waitForExistence(timeout: 5))
         springboard.buttons["添加小组件"].tap()
@@ -68,14 +193,52 @@ final class LaunchTests: XCTestCase {
             .press(forDuration: 0.1, thenDragTo: springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.15, dy: 0.56)))
         let medium = NSPredicate(format: "value == %@", "小组件, 中")
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: medium, object: preview)], timeout: 8), .completed)
-        print("T42 SYSTEM | native small and medium pages verified")
+        print("T43 SYSTEM | native small and medium pages verified")
         add.tap()
         XCTAssertTrue(springboard.buttons["完成"].waitForExistence(timeout: 8))
         springboard.buttons["完成"].tap()
         let added = NSPredicate { _, _ in MainActor.assumeIsolated { widgets.count == before + 1 } }
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: added, object: nil)], timeout: 15), .completed)
         XCTAssertTrue(springboard.staticTexts["batch-1"].firstMatch.waitForExistence(timeout: 30))
-        print("T42 SYSTEM | added medium | widget count \(before) -> \(widgets.count) | default fixture first account visible")
+        print("T43 SYSTEM | added medium | widget count \(before) -> \(widgets.count) | default fixture first account visible")
+        let currentFrames = widgets.allElementsBoundByIndex.map(\.frame)
+        // Never guess which existing widget to configure. Require unchanged old positions.
+        XCTAssertTrue(previousFrames.allSatisfy { currentFrames.contains($0) }, "旧组件位置变化，停止选择，保护原配置")
+        let newFrames = currentFrames.filter { !previousFrames.contains($0) }
+        let newFrame = try XCTUnwrap(newFrames.count == 1 ? newFrames.first : nil)
+        app.activate()
+        assertT42Step(in: app, second: false)
+        app.buttons["tutorial.next"].tap()
+        assertT42Step(in: app, second: true)
+        XCUIDevice.shared.press(.home)
+        springboard.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: newFrame.midX, dy: newFrame.midY)).press(forDuration: 1.5)
+        let edit = springboard.buttons["编辑小组件"]
+        XCTAssertTrue(edit.waitForExistence(timeout: 8), springboard.debugDescription)
+        edit.tap()
+        let accountRow = springboard.buttons["跟随列表首个账户"]
+        XCTAssertTrue(accountRow.waitForExistence(timeout: 8))
+        accountRow.tap()
+        let secondAccount = springboard.descendants(matching: .any)
+            .matching(NSPredicate(format: "label BEGINSWITH %@", "batch-2@example.invalid")).firstMatch
+        XCTAssertTrue(secondAccount.waitForExistence(timeout: 8))
+        secondAccount.tap()
+        saveScreenshot(of: springboard, name: "T43-实际系统-新组件显示账户选第二户")
+        springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12)).tap()
+        XCTAssertTrue(springboard.staticTexts["batch-2"].firstMatch.waitForExistence(timeout: 20))
+        print("T43 SYSTEM | edited only newly added medium; selected fixture second account visible")
+        // Remove only this uniquely identified temporary widget; all older instances are elsewhere.
+        XCTAssertEqual(widgets.count, 1)
+        springboard.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: newFrame.midX, dy: newFrame.midY)).press(forDuration: 1.5)
+        let remove = springboard.buttons["移除小组件"]
+        XCTAssertTrue(remove.waitForExistence(timeout: 5)); remove.tap()
+        let confirm = springboard.alerts.buttons["移除"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5)); confirm.tap()
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            MainActor.assumeIsolated { widgets.count == 0 }
+        }, object: nil)], timeout: 8), .completed)
+        print("T43 SYSTEM | removed only temporary selected widget; existing configurations retained")
         app.activate()
         assertT42Step(in: app, second: true)
         app.buttons["tutorial.next"].tap()
@@ -179,7 +342,10 @@ final class LaunchTests: XCTestCase {
             XCTAssertTrue(app.buttons["tutorial.close"].isHittable)
             XCTAssertTrue(app.buttons["tutorial.next"].isHittable)
             let instructions = app.staticTexts["tutorial.instructions.\(second ? 1 : 0)"]
-            app.scrollViews.firstMatch.swipeUp()
+            for _ in 0..<8 {
+                if instructions.isHittable && instructions.frame.maxY <= app.buttons["tutorial.next"].frame.minY { break }
+                app.scrollViews.firstMatch.swipeUp()
+            }
             XCTAssertTrue(instructions.isHittable)
             XCTAssertGreaterThanOrEqual(instructions.frame.minX, 0)
             XCTAssertLessThanOrEqual(instructions.frame.maxX, app.frame.maxX)
