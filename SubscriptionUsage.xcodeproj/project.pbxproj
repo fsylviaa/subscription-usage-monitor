@@ -727,6 +727,7 @@
 				"PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsage";
                 "CODE_SIGN_ENTITLEMENTS" = "Config/SubscriptionUsage.entitlements";
                 "INFOPLIST_FILE" = "Config/Info.plist";
+				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
 				"ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" = "AccentColor";
 				"INFOPLIST_KEY_CFBundleDisplayName" = "订阅用量";
 				"INFOPLIST_KEY_LSApplicationCategoryType" = "public.app-category.utilities";
@@ -758,6 +759,7 @@
 				"PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsage";
                 "CODE_SIGN_ENTITLEMENTS" = "Config/SubscriptionUsage.entitlements";
                 "INFOPLIST_FILE" = "Config/Info.plist";
+				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
 				"ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" = "AccentColor";
 				"INFOPLIST_KEY_CFBundleDisplayName" = "订阅用量";
 				"INFOPLIST_KEY_LSApplicationCategoryType" = "public.app-category.utilities";

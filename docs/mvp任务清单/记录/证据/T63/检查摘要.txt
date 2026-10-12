@@ -1,0 +1,16 @@
+T63 检查摘要（2026-10-12）
+基线：d2c2f15；用户明确选定并授权保存黑色指针的彩色仪表图标。
+环境：Xcode /Applications/Xcode.app；构建使用 CODE_SIGNING_ALLOWED=NO，不安装或启动App。
+Release iphonesimulator: BUILD SUCCEEDED; CFBundleIconName=AppIcon; display name and bundle unchanged
+compiled icon: iphonesimulator/AppIcon60x60@2x.png, 120x120
+compiled icon: iphonesimulator/AppIcon76x76@2x~ipad.png, 152x152
+Release iphoneos: BUILD SUCCEEDED; CFBundleIconName=AppIcon; display name and bundle unchanged
+compiled icon: iphoneos/AppIcon60x60@2x.png, 120x120
+compiled icon: iphoneos/AppIcon76x76@2x~ipad.png, 152x152
+Debug/Release工程配置：仅主App各新增 ASSETCATALOG_COMPILER_APPICON_NAME=AppIcon。
+源图1254x1254与最后生成文件逐字节一致；1024x1024实际图标无alpha（sips检查通过）。
+1024图与构建生成120px图已目视核对：左红右绿、彩色连续渐变、五道刻度、黑指针/轴心；无裁切。
+两端无图标相关警告；原SettingsView Sendable警告保留，不扩大为本次修改。
+手机安装／实际桌面图标未执行，用户未亲验；真实账户、权限与组件配置未操作。
+初次simctl未指定完整Xcode路径不可用；沙箱内服务访问失败；完整Xcode环境构建随后成功。
+最终文档检查：63个唯一任务行，39完成／9待验／13未开始／2取消；472条本地链接有效，git diff --check通过。
