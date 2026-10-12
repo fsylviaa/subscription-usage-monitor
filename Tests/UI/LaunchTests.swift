@@ -50,6 +50,92 @@ final class LaunchTests: XCTestCase {
         assertEmptyQuota(in: app)
     }
 
+    @MainActor
+    func testT45PrivacyAndBundledLicenseLightDarkOffline() {
+        checkT45Support(maximumText: false)
+    }
+
+    @MainActor
+    func testT45PrivacyAndLicenseMaximumText() {
+        checkT45Support(maximumText: true)
+    }
+
+    @MainActor
+    private func checkT45Support(maximumText: Bool) {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        // Existing management isolation refuses all account-network requests.
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        if maximumText {
+            app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        }
+        app.launch()
+        defer { app.terminate() }
+        let mode = maximumText ? "大字号" : "离线正常"
+        for dark in [false, true] {
+            app.buttons["tab.settings"].tap()
+            if dark {
+                for _ in 0..<12 { if app.switches["settings.darkAppearance"].isHittable { break }; app.swipeDown() }
+                app.switches["settings.darkAppearance"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            }
+            openT45Entry("privacy", in: app)
+            XCTAssertTrue(app.navigationBars["隐私说明"].waitForExistence(timeout: 5))
+            for identifier in ["source", "network", "storage", "collection", "deletion"] {
+                let text = app.staticTexts["privacy.\(identifier)"]
+                for _ in 0..<16 { if text.isHittable { break }; app.swipeUp() }
+                XCTAssertTrue(text.isHittable)
+                saveScreenshot(of: app, name: "T45-\(mode)-\(dark ? "深" : "浅")-隐私-\(identifier)-开头")
+                for _ in 0..<24 { if text.frame.maxY < app.buttons["tab.settings"].frame.minY { break }; app.swipeUp() }
+                XCTAssertLessThan(text.frame.maxY, app.buttons["tab.settings"].frame.minY)
+                saveScreenshot(of: app, name: "T45-\(mode)-\(dark ? "深" : "浅")-隐私-\(identifier)-末尾")
+            }
+            app.navigationBars["隐私说明"].buttons.firstMatch.tap()
+            XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
+            openT45Entry("licenses", in: app)
+            let license = app.buttons["licenses.codexBar"]
+            XCTAssertTrue(license.waitForExistence(timeout: 5)); XCTAssertTrue(license.label.contains("MIT"))
+            saveScreenshot(of: app, name: "T45-\(mode)-\(dark ? "深" : "浅")-清单")
+            license.tap()
+            XCTAssertTrue(app.navigationBars["CodexBar 许可"].waitForExistence(timeout: 5))
+            XCTAssertFalse(app.staticTexts["license.unavailable"].exists)
+            XCTAssertEqual(app.staticTexts["license.paragraph.0"].label, "MIT License")
+            XCTAssertEqual(app.staticTexts["license.paragraph.1"].label, "Copyright (c) 2026 Peter Steinberger")
+            saveScreenshot(of: app, name: "T45-\(mode)-\(dark ? "深" : "浅")-许可开头")
+            let end = app.staticTexts["license.paragraph.4"]
+            for _ in 0..<40 {
+                if end.exists && end.isHittable && end.frame.maxY < app.buttons["tab.settings"].frame.minY { break }
+                app.swipeUp()
+            }
+            XCTAssertTrue(end.isHittable)
+            XCTAssertTrue(end.label.contains("THE SOFTWARE IS PROVIDED"))
+            XCTAssertTrue(end.label.hasSuffix("SOFTWARE.\n"))
+            XCTAssertLessThan(end.frame.maxY, app.buttons["tab.settings"].frame.minY)
+            saveScreenshot(of: app, name: "T45-\(mode)-\(dark ? "深" : "浅")-许可末尾")
+            app.navigationBars["CodexBar 许可"].buttons.firstMatch.tap()
+            XCTAssertTrue(app.navigationBars["开源许可"].waitForExistence(timeout: 5))
+            app.navigationBars["开源许可"].buttons.firstMatch.tap()
+            XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
+            if !maximumText && !dark {
+                app.terminate(); app.launch()
+                // Cold reopen still reads all support content without a usable connection.
+            }
+        }
+        app.buttons["tab.quota"].tap()
+        assertEmptyQuota(in: app)
+    }
+
+    @MainActor
+    private func openT45Entry(_ identifier: String, in app: XCUIApplication) {
+        let entry = app.buttons["settings.\(identifier)"]
+        for _ in 0..<12 {
+            if entry.isHittable && entry.frame.maxY < app.buttons["tab.settings"].frame.minY { break }
+            app.swipeUp()
+        }
+        XCTAssertTrue(entry.isHittable)
+        XCTAssertLessThan(entry.frame.maxY, app.buttons["tab.settings"].frame.minY)
+        entry.tap()
+    }
+
     /// Read-only by default; explicit T43_LAYOUT_ADD checks and cleans one new instance.
     @MainActor
     func testT43ReadActualAddingPageLayouts() throws {
@@ -826,7 +912,7 @@ final class LaunchTests: XCTestCase {
     }
 
     @MainActor
-    func testNavigationEmptyStateAndUnavailableActions() {
+    func testNavigationEmptyStateAndSupportEntries() {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["--management-ui", UUID().uuidString]
@@ -845,7 +931,7 @@ final class LaunchTests: XCTestCase {
             for identifier in ["settings.privacy", "settings.licenses"] {
                 let action = app.buttons[identifier]
                 XCTAssertTrue(action.exists, identifier)
-                XCTAssertFalse(action.isEnabled, identifier)
+                XCTAssertTrue(action.isEnabled, identifier)
             }
             XCTAssertTrue(app.buttons["settings.widgetTutorial"].isEnabled)
             XCTAssertFalse(app.buttons["settings.connect"].exists)

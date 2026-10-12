@@ -57,8 +57,18 @@ struct SettingsView: View {
                     Label("帮助与说明", systemImage: "questionmark.circle")
                 }
                 .accessibilityIdentifier("settings.help")
-                pendingAction("隐私说明", systemImage: "hand.raised", identifier: "settings.privacy")
-                pendingAction("开源许可", systemImage: "info.circle", identifier: "settings.licenses")
+                NavigationLink {
+                    PrivacyView(bottomInset: supportBottomInset)
+                } label: {
+                    Label("隐私说明", systemImage: "hand.raised")
+                }
+                .accessibilityIdentifier("settings.privacy")
+                NavigationLink {
+                    OpenSourceView(bottomInset: supportBottomInset)
+                } label: {
+                    Label("开源许可", systemImage: "info.circle")
+                }
+                .accessibilityIdentifier("settings.licenses")
             }
             Section {
                 Toggle("演示模式", isOn: Binding(get: { demoEnabled }, set: setDemoMode))
@@ -72,16 +82,7 @@ struct SettingsView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    private func pendingAction(_ title: String, systemImage: String, identifier: String) -> some View {
-        Button {
-            // 对应功能任务接入后再开放，T03 不展示空白子页面。
-        } label: {
-            Label(title, systemImage: systemImage)
-                .foregroundStyle(.secondary)
-        }
-        .disabled(true)
-        .accessibilityIdentifier(identifier)
-    }
+
 }
 
 
@@ -110,6 +111,94 @@ private struct HelpView: View {
         }
         .safeAreaPadding(.bottom, bottomInset)
         .navigationTitle("帮助与说明")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+
+private struct PrivacyView: View {
+    let bottomInset: CGFloat
+    var body: some View {
+        Form {
+            Section("数据来源与用途") {
+                Text("通过 OpenAI 登录并查询 Codex 订阅的账户资料、剩余额度和预计重置时间，用于额度展示、小组件更新及重置提醒。")
+                    .accessibilityIdentifier("privacy.source")
+                Text("连接和刷新前进行必要网络检查：通过 Claude 获取网络出口地址，再交由 Net.Coffee 检查该地址。账户授权不会发送给这些网络检查服务。")
+                    .accessibilityIdentifier("privacy.network")
+            }
+            Section("本机保存") {
+                Text("登录授权安全保存在本机钥匙串；本机同时保存账户身份与顺序、最近成功的额度及重置时间、原成功时间和用户设置。App 与小组件共享更新所需的必要本机数据及授权。")
+                    .accessibilityIdentifier("privacy.storage")
+                Text("不采集电脑上的聊天、代码或会话日志。")
+                    .accessibilityIdentifier("privacy.collection")
+            }
+            Section("删除账户") {
+                Text("在额度页的账户菜单选择“删除账户”，移除本 App 对应的连接、授权和缓存数据。不会取消订阅，也不会退出浏览器或其他设备上的登录。")
+                    .accessibilityIdentifier("privacy.deletion")
+            }
+        }
+        .safeAreaPadding(.bottom, bottomInset)
+        .navigationTitle("隐私说明")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct OpenSourceView: View {
+    let bottomInset: CGFloat
+    var body: some View {
+        Form {
+            Section {
+                NavigationLink {
+                    CodexBarLicenseView(bottomInset: bottomInset)
+                } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("CodexBar")
+                        Text("MIT · Codex 平台标志素材")
+                            .font(.subheadline).foregroundStyle(.secondary)
+                    }
+                }
+                .accessibilityIdentifier("licenses.codexBar")
+            } footer: {
+                Text("仅列出实际采用的开源项目或素材。完整许可随 App 提供，可离线查看。")
+            }
+        }
+        .safeAreaPadding(.bottom, bottomInset)
+        .navigationTitle("开源许可")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct CodexBarLicenseView: View {
+    let bottomInset: CGFloat
+    // Read the bundled original; license details never depend on a web request.
+    private let license = Bundle.main.url(forResource: "CodexBar-MIT", withExtension: "txt")
+        .flatMap { try? String(contentsOf: $0, encoding: .utf8) }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Text("CodexBar · MIT")
+                    .font(.headline)
+                Text("采用内容：Codex 平台标志素材\n来源：github.com/steipete/CodexBar")
+                    .font(.subheadline).foregroundStyle(.secondary)
+                if let license {
+                    ForEach(Array(license.components(separatedBy: "\n\n").enumerated()), id: \.offset) { index, paragraph in
+                        Text(paragraph)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .textSelection(.enabled)
+                            .accessibilityIdentifier("license.paragraph.\(index)")
+                    }
+                } else {
+                    Text("许可暂不可用")
+                        .accessibilityIdentifier("license.unavailable")
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(20)
+        }
+        .safeAreaPadding(.bottom, bottomInset)
+        .background(DashboardStyle.background)
+        .navigationTitle("CodexBar 许可")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

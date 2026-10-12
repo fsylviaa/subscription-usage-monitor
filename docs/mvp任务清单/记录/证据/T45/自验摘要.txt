@@ -1,0 +1,15 @@
+T45 2026-10-12
+用户真实余额及两窗口重置亲验沿用，无额外真实账户查询。
+来源SVG与LICENSE原字节一致；Debug和Release许可一致。
+完整许可证SHA256：14293556b79940745123d0160c71d27ed0e9fe9b8a848093f3ed78f4853caafe
+离线环境：管理隔离检查返回网络不可用，非手机飞行模式。
+Test Case '-[SubscriptionUsageUITests.LaunchTests testNavigationEmptyStateAndSupportEntries]' passed (26.752 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testT45PrivacyAndBundledLicenseLightDarkOffline]' passed (56.150 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testT45PrivacyAndLicenseMaximumText]' failed (9.909 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testT45PrivacyAndLicenseMaximumText]' passed (158.324 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testNavigationEmptyStateAndSupportEntries]' passed (18.137 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testT45PrivacyAndBundledLicenseLightDarkOffline]' passed (40.794 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testT45PrivacyAndLicenseMaximumText]' failed (8.855 seconds).
+Test Case '-[SubscriptionUsageUITests.LaunchTests testT45PrivacyAndLicenseMaximumText]' passed (117.393 seconds).
+install: success；结果文件时间 2026-10-12T21:13:43.296708+08:00
+launch: success；结果文件时间 2026-10-12T21:14:20.860992+08:00

@@ -5,6 +5,9 @@
 	};
 	"objectVersion" = "56";
 	"objects" = {
+        "56CA27E0739A4804AF72B2BE" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "text"; "path" = "Licenses/CodexBar-MIT.txt"; "sourceTree" = "<group>"; };
+        "2EE7C9A1952642258DCBC14F" = { "isa" = "PBXBuildFile"; "fileRef" = "56CA27E0739A4804AF72B2BE"; };
+
 "A42000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "WidgetTutorialView.swift"; "sourceTree" = "<group>"; };
 "A42000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A42000000000000000000001"; };
 "A40000000000000000000001" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000001"; };
@@ -575,6 +578,7 @@
 			"isa" = "PBXGroup";
 			"children" = (
 				"E0E27618A2D2A8FEBDD49F35",
+                "56CA27E0739A4804AF72B2BE",
 				"12874EF8E2CD6D147428E5AC",
 			);
 			"path" = "Resources";
@@ -958,6 +962,7 @@
 			"buildActionMask" = "2147483647";
 			"files" = (
 				"1029A0BE8FBD5986A9935B4D",
+                "2EE7C9A1952642258DCBC14F",
 			);
 			"runOnlyForDeploymentPostprocessing" = "0";
 		};
