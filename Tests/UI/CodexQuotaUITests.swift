@@ -2,6 +2,34 @@ import XCTest
 import CryptoKit
 
 final class CodexQuotaUITests: XCTestCase {
+    @MainActor
+    func testT42WidgetAndNotificationReturnDismissTutorialBeforeOpeningAccount() {
+        continueAfterFailure = false
+        let app = XCUIApplication(), first = UUID(), second = UUID()
+        app.launchArguments = ["--t36-desktop-fixture", "cleanup", UUID().uuidString]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["未连接账户"].waitForExistence(timeout: 8))
+        app.terminate()
+        app.launchArguments = ["--t26-isolated-ui", "success", "--t41-notification-ui", "--t41-warm-only",
+                               "--t36-account-ids", first.uuidString, second.uuidString]
+        app.launch()
+        defer { app.terminate() }
+        for notification in [false, true] {
+            app.buttons["tab.settings"].tap()
+            app.buttons["settings.widgetTutorial"].tap()
+            XCTAssertTrue(app.buttons["tutorial.next"].waitForExistence(timeout: 5))
+            app.buttons["tutorial.next"].tap()
+            XCUIDevice.shared.press(.home)
+            app.open(notification ? notificationFixtureURL("second") : t36URL(id: second, identity: "batch-2@example.invalid"))
+            XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 8))
+            XCTAssertEqual(app.staticTexts["detail.identity"].label, "batch-2@example.invalid")
+            XCTAssertFalse(app.buttons["tutorial.close"].exists)
+            screenshot(app, "T42-\(notification ? "通知" : "组件")返回关闭教程直达对应账户")
+            app.buttons["detail.close"].tap()
+            XCTAssertTrue(app.buttons["tab.quota"].isSelected)
+        }
+    }
+
     private func notificationFixtureURL(_ target: String) -> URL {
         URL(string: "subscriptionusage://notification-fixture?target=\(target)")!
     }

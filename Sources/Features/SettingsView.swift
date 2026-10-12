@@ -8,6 +8,7 @@ struct SettingsView: View {
     var setDarkAppearance: (Bool) -> Void = { _ in }
     @ObservedObject var reminders: ResetReminderSettings
     var openNotificationSettings: () -> Void = {}
+    var openWidgetTutorial: () -> Void = {}
     var body: some View {
         Form {
             Section("通用") {
@@ -45,7 +46,10 @@ struct SettingsView: View {
             }
 
             Section("支持") {
-                pendingAction("如何添加小组件", systemImage: "square.grid.2x2", identifier: "settings.widgetTutorial")
+                Button(action: openWidgetTutorial) {
+                    Label("如何添加小组件", systemImage: "square.grid.2x2")
+                }
+                .accessibilityIdentifier("settings.widgetTutorial")
                 pendingAction("帮助与说明", systemImage: "questionmark.circle", identifier: "settings.help")
                 pendingAction("隐私说明", systemImage: "hand.raised", identifier: "settings.privacy")
                 pendingAction("开源许可", systemImage: "info.circle", identifier: "settings.licenses")

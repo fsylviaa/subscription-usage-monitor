@@ -195,3 +195,10 @@ T39 真实只读补验：`ResetReminderNotificationTests/testT39ReadRealPendingR
 RootViewTests的T62／T36用例核对可信字段、稳定身份、非法URL、排序／同邮箱更新／删除、路由无查询副作用。CodexQuotaUITests核对两户面板、单户失败旧值、删除关闭、系统URL冷／热及缓存不等登录恢复。旧T24展开检查已按D-66改为面板交互。
 
 实际桌面用例`testT36ActualSmallAndMediumWidgetTapColdAndBackground`需显式测试环境`T36_WIDGET_DESKTOP=1`，复用已有两尺寸，不改系统配置。DEBUG `--t36-desktop-fixture baseline <UUID>`用20分钟限时标记让实际组件无参数冷启动仍走隔离；后台和系统提醒关闭，结束必须用同入口`cleanup`清理。`T36_CLEANUP_CHECK=1`显式运行只读清理用例，仅核对标记与组件读路径，不读取正式账户／授权。Release没有该隔离入口，普通测试不启用桌面专项。报告、首次失败及手机事实见T62／T36验收。
+
+
+## T42 两步小组件教程
+
+`LaunchTests` 的三个 `testT42…` 页面用例使用独立管理账户与偏好，验证额度／设置来源、两步关闭和完成、返回主屏幕后保持步骤、重进回第一步、浅深和最大字号；已有基础导航用例同步教程入口已启用。`CodexQuotaUITests/testT42WidgetAndNotificationReturnDismissTutorialBeforeOpeningAccount` 使用原有两户固定输入，验证外部入口关闭教程并打开对应详情，不向系统发送通知。
+
+`TEST_RUNNER_T42_WIDGET_ADD=1` 才启用实际主屏幕添加检查，复用T36限时隔离会话，不读／清空正式账户、不登录或修改权限。检查按主屏幕空白长按、编辑、添加、搜索“订阅用量”和系统尺寸页执行；新增组件数量须增加。清理注册到XCTest teardown，失败时也执行，并等待空隔离页可见后再结束，避免stop-on-failure跳过Swift defer导致隔离状态遗留。系统页面完整调试描述只保存在忽略的本机build目录，提交证据使用去敏摘要和人工账户教程截图。

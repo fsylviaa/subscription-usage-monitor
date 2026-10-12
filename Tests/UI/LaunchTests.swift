@@ -1,6 +1,213 @@
 import XCTest
 
 final class LaunchTests: XCTestCase {
+    /// Opt-in system check, with the existing expiring widget fixture. No real
+    /// accounts are read or cleared; existing desktop widgets are retained.
+    @MainActor
+    func testT42ActualSystemGalleryAndAddWidgetFollowingTutorial() throws {
+        guard ProcessInfo.processInfo.environment["T42_WIDGET_ADD"] == "1" else {
+            throw XCTSkip("显式启用主屏幕添加验证，使用隔离组件会话")
+        }
+        continueAfterFailure = false
+        let app = XCUIApplication(), session = UUID().uuidString
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        // XCTest's stop-on-failure exception can bypass a Swift defer.
+        addTeardownBlock { [session] in
+            await MainActor.run {
+                let cleanup = XCUIApplication()
+                cleanup.terminate()
+                XCUIDevice.shared.press(.home)
+                XCUIDevice.shared.press(.home)
+                cleanup.launchArguments = ["--t36-desktop-fixture", "cleanup", session]
+                cleanup.launch()
+                XCTAssertTrue(cleanup.staticTexts["未连接账户"].waitForExistence(timeout: 8))
+                cleanup.terminate()
+            }
+        }
+        app.launchArguments = ["--t36-desktop-fixture", "baseline", session]
+        app.launch()
+        XCTAssertTrue(app.buttons["quota.widgetTutorial"].waitForExistence(timeout: 10))
+        app.buttons["quota.widgetTutorial"].tap()
+        assertT42Step(in: app, second: false)
+        app.buttons["tutorial.next"].tap()
+        assertT42Step(in: app, second: true)
+        XCUIDevice.shared.press(.home)
+        XCUIDevice.shared.press(.home)
+        let widgets = springboard.icons.matching(NSPredicate(format: "label == %@ AND value == %@", "订阅用量", "小组件"))
+        let before = widgets.count
+        let occupied = springboard.icons.allElementsBoundByIndex.filter(\.isHittable).map(\.frame)
+        let screen = springboard.frame
+        var blank: CGPoint?
+        for y in stride(from: 0.78, through: 0.20, by: -0.04) {
+            for x in stride(from: 0.90, through: 0.10, by: -0.10) {
+                let point = CGPoint(x: screen.width * x, y: screen.height * y)
+                if !occupied.contains(where: { $0.insetBy(dx: -8, dy: -8).contains(point) }) {
+                    blank = point; break
+                }
+            }
+            if blank != nil { break }
+        }
+        let point = try XCTUnwrap(blank, "需要一处主屏幕空白区域")
+        springboard.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: point.x, dy: point.y)).press(forDuration: 1.5)
+        XCTAssertTrue(springboard.buttons["编辑"].waitForExistence(timeout: 8))
+        springboard.buttons["编辑"].tap()
+        XCTAssertTrue(springboard.buttons["添加小组件"].waitForExistence(timeout: 5))
+        springboard.buttons["添加小组件"].tap()
+        let search = springboard.searchFields.firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 8))
+        search.tap(); search.typeText("订阅用量")
+        let result = springboard.collectionViews["add-sheet-collection-view"].cells["订阅用量"].firstMatch
+        XCTAssertTrue(result.waitForExistence(timeout: 10))
+        result.tap()
+        let add = springboard.buttons.matching(NSPredicate(format: "label CONTAINS %@", "添加小组件")).firstMatch
+        XCTAssertTrue(add.waitForExistence(timeout: 8))
+        let preview = springboard.buttons["订阅用量, 订阅额度"].firstMatch
+        XCTAssertTrue(preview.waitForExistence(timeout: 8))
+        XCTAssertEqual(preview.value as? String, "小组件, 小")
+        springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.85, dy: 0.56))
+            .press(forDuration: 0.1, thenDragTo: springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.15, dy: 0.56)))
+        let medium = NSPredicate(format: "value == %@", "小组件, 中")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: medium, object: preview)], timeout: 8), .completed)
+        print("T42 SYSTEM | native small and medium pages verified")
+        add.tap()
+        XCTAssertTrue(springboard.buttons["完成"].waitForExistence(timeout: 8))
+        springboard.buttons["完成"].tap()
+        let added = NSPredicate { _, _ in MainActor.assumeIsolated { widgets.count == before + 1 } }
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: added, object: nil)], timeout: 15), .completed)
+        XCTAssertTrue(springboard.staticTexts["batch-1"].firstMatch.waitForExistence(timeout: 30))
+        print("T42 SYSTEM | added medium | widget count \(before) -> \(widgets.count) | default fixture first account visible")
+        app.activate()
+        assertT42Step(in: app, second: true)
+        app.buttons["tutorial.next"].tap()
+        XCTAssertTrue(app.buttons["quota.widgetTutorial"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testT42BothSourcesCloseEitherStepCompleteAndRestart() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        cleanT42Fixture(in: app)
+        app.launch()
+        defer { app.terminate() }
+        XCTAssertTrue(app.buttons["quota.widgetTutorial"].waitForExistence(timeout: 5))
+        XCTAssertLessThanOrEqual(app.buttons["quota.widgetTutorial"].frame.maxY, app.buttons["tab.quota"].frame.minY)
+        for settings in [false, true] {
+            if settings { app.buttons["tab.settings"].tap() }
+            let entry = app.buttons[settings ? "settings.widgetTutorial" : "quota.widgetTutorial"]
+            for secondStep in [false, true] {
+                XCTAssertTrue(entry.waitForExistence(timeout: 5))
+                entry.tap()
+                assertT42Step(in: app, second: false)
+                if secondStep {
+                    app.buttons["tutorial.next"].tap()
+                    assertT42Step(in: app, second: true)
+                }
+                saveScreenshot(of: app, name: "T42-\(settings ? "设置" : "额度")-第\(secondStep ? 2 : 1)步")
+                app.buttons["tutorial.close"].tap()
+                XCTAssertTrue(entry.waitForExistence(timeout: 5))
+                XCTAssertTrue(app.buttons[settings ? "tab.settings" : "tab.quota"].isSelected)
+            }
+            entry.tap()
+            assertT42Step(in: app, second: false)
+            app.buttons["tutorial.next"].tap()
+            assertT42Step(in: app, second: true)
+            // Going Home does not consume the second step or imply installation.
+            XCUIDevice.shared.press(.home)
+            app.activate()
+            assertT42Step(in: app, second: true)
+            app.buttons["tutorial.next"].tap()
+            XCTAssertTrue(entry.waitForExistence(timeout: 5))
+            XCTAssertTrue(app.buttons[settings ? "tab.settings" : "tab.quota"].isSelected)
+            entry.tap()
+            assertT42Step(in: app, second: false)
+            app.buttons["tutorial.close"].tap()
+            XCTAssertTrue(entry.waitForExistence(timeout: 5))
+        }
+    }
+
+    @MainActor
+    func testT42ConnectedListAndLightDarkTutorialRemainUsable() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        cleanT42Fixture(in: app)
+        app.launch()
+        defer { app.terminate() }
+        app.buttons["tab.settings"].tap()
+        app.switches["settings.demo"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        for dark in [false, true] {
+            let toggle = app.switches["settings.darkAppearance"]
+            if toggle.value as? String != (dark ? "1" : "0") {
+                toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            }
+            app.buttons["tab.quota"].tap()
+            if !app.buttons["quota.details"].firstMatch.exists { app.buttons["quota.toolbarConnect"].tap() }
+            XCTAssertTrue(app.buttons["quota.details"].firstMatch.waitForExistence(timeout: 5))
+            saveScreenshot(of: app, name: "T42-额度页入口-\(dark ? "深" : "浅")")
+            app.buttons["quota.widgetTutorial"].tap()
+            assertT42Step(in: app, second: false)
+            saveScreenshot(of: app, name: "T42-第1步-\(dark ? "深" : "浅")")
+            app.buttons["tutorial.next"].tap()
+            assertT42Step(in: app, second: true)
+            saveScreenshot(of: app, name: "T42-第2步-\(dark ? "深" : "浅")")
+            app.buttons["tutorial.next"].tap()
+            XCTAssertTrue(app.buttons["quota.details"].firstMatch.waitForExistence(timeout: 5))
+            app.buttons["quota.details"].firstMatch.tap()
+            XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 5))
+            app.buttons["detail.close"].tap()
+            app.buttons["tab.settings"].tap()
+        }
+    }
+
+    @MainActor
+    func testT42MaximumTextSizeKeepsInstructionsAndControlsReachable() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString,
+                               "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        cleanT42Fixture(in: app)
+        app.launch()
+        defer { app.terminate() }
+        app.buttons["quota.widgetTutorial"].tap()
+        for second in [false, true] {
+            XCTAssertTrue(app.buttons["tutorial.next"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.buttons["tutorial.close"].isHittable)
+            XCTAssertTrue(app.buttons["tutorial.next"].isHittable)
+            let instructions = app.staticTexts["tutorial.instructions"]
+            app.scrollViews.firstMatch.swipeUp()
+            XCTAssertTrue(instructions.isHittable)
+            XCTAssertGreaterThanOrEqual(instructions.frame.minX, 0)
+            XCTAssertLessThanOrEqual(instructions.frame.maxX, app.frame.maxX)
+            XCTAssertLessThanOrEqual(instructions.frame.maxY, app.buttons["tutorial.next"].frame.minY)
+            if second { XCTAssertTrue(app.staticTexts["tutorial.defaultAccount"].isHittable) }
+            saveScreenshot(of: app, name: "T42-最大字号-第\(second ? 2 : 1)步")
+            app.buttons["tutorial.next"].tap()
+        }
+        XCTAssertTrue(app.buttons["quota.widgetTutorial"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    private func assertT42Step(in app: XCUIApplication, second: Bool) {
+        XCTAssertTrue(app.staticTexts["tutorial.stepTitle"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["tutorial.stepTitle"].label,
+                       second ? "搜索 App，选择尺寸并添加" : "长按主屏幕，进入添加入口")
+        XCTAssertEqual(app.buttons["tutorial.next"].label, second ? "完成" : "继续")
+        XCTAssertTrue(app.buttons["tutorial.close"].isHittable)
+        XCTAssertTrue(app.buttons["tutorial.next"].isHittable)
+        XCTAssertTrue(app.staticTexts["tutorial.instructions"].label.contains(second ? "订阅用量" : "编辑"))
+    }
+
+    @MainActor
+    private func cleanT42Fixture(in app: XCUIApplication) {
+        let arguments = app.launchArguments
+        app.launchArguments = ["--t36-desktop-fixture", "cleanup", UUID().uuidString]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["未连接账户"].waitForExistence(timeout: 8))
+        app.terminate()
+        app.launchArguments = arguments
+    }
+
     @MainActor
     func testT58ManualAppearanceSurvivesRelaunch() {
         continueAfterFailure = false
@@ -218,11 +425,12 @@ final class LaunchTests: XCTestCase {
             XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
             XCTAssertTrue(app.buttons["tab.settings"].isSelected)
 
-            for identifier in ["settings.widgetTutorial", "settings.help", "settings.privacy", "settings.licenses"] {
+            for identifier in ["settings.help", "settings.privacy", "settings.licenses"] {
                 let action = app.buttons[identifier]
                 XCTAssertTrue(action.exists, identifier)
                 XCTAssertFalse(action.isEnabled, identifier)
             }
+            XCTAssertTrue(app.buttons["settings.widgetTutorial"].isEnabled)
             XCTAssertFalse(app.buttons["settings.connect"].exists)
             XCTAssertFalse(app.buttons["settings.accounts"].exists)
             let reminder = app.switches["settings.resetReminder"]

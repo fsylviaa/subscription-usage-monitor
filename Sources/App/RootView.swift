@@ -20,6 +20,11 @@ struct RootView: View {
     @State private var reminderAccountsLoaded = false
     private enum Tab: Hashable { case quota, settings }
     @State private var selection: Tab = .quota
+    private enum TutorialSource: String, Identifiable {
+        case quota, settings
+        var id: String { rawValue }
+    }
+    @State private var tutorialSource: TutorialSource?
     @State private var connectionDetent: PresentationDetent = .height(250)
     @State private var appearanceTransition = AppearanceTransition()
 
@@ -76,16 +81,28 @@ struct RootView: View {
                              }, reminders: reminders, openNotificationSettings: {
                                  guard let url = URL(string: UIApplication.openNotificationSettingsURLString) else { return }
                                  UIApplication.shared.open(url)
-                             })
+                             }, openWidgetTutorial: { tutorialSource = .settings })
             }
             .tag(Tab.settings).toolbar(.hidden, for: .tabBar)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            HStack(spacing: 0) {
-                tab("额度", icon: "Chart", value: .quota, id: "quota")
-                tab("设置", icon: "Settings", value: .settings, id: "settings")
+            VStack(spacing: 0) {
+                if selection == .quota {
+                    Button { tutorialSource = .quota } label: {
+                        Label("如何添加小组件", systemImage: "square.grid.2x2")
+                            .font(.subheadline.weight(.medium))
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("quota.widgetTutorial")
+                    .padding(.horizontal, 16)
+                }
+                HStack(spacing: 0) {
+                    tab("额度", icon: "Chart", value: .quota, id: "quota")
+                    tab("设置", icon: "Settings", value: .settings, id: "settings")
+                }
+                .padding(.top, 6).padding(.bottom, 4)
             }
-            .padding(.top, 6).padding(.bottom, 4)
             .background(DashboardStyle.background.ignoresSafeArea(edges: .bottom))
         }
         .alert("排序未保存，请重试", isPresented: Binding(get: { connection.accountOrderFailed },
@@ -110,6 +127,7 @@ struct RootView: View {
             if CodexConnectionUITestSupport.injectNotificationURLIfRequested(url) { return }
             #endif
             guard let route = WidgetQuotaRoute(url: url) else { return }
+            tutorialSource = nil
             if let event = pendingNotification { notificationNavigation.consume(event.id) }
             pendingNotification = nil
             selection = .quota
@@ -118,6 +136,7 @@ struct RootView: View {
         }
         .onChange(of: notificationNavigation.pending, initial: true) { _, event in
             guard let event else { return }
+            tutorialSource = nil
             selection = .quota
             pendingWidgetRoute = nil
             pendingNotification = event
@@ -156,6 +175,14 @@ struct RootView: View {
         }
         .onChange(of: connection.accounts) { _, accounts in
             if let detailTarget, detailTarget.resolve(in: accounts) == nil { self.detailTarget = nil }
+        }
+        .sheet(item: $tutorialSource, onDismiss: { openPendingAccountRoute() }) { _ in
+            WidgetTutorialView(close: { tutorialSource = nil })
+                .presentationDetents([.large])
+                .presentationDragIndicator(.hidden)
+                .presentationCornerRadius(28)
+                .presentationBackground(DashboardStyle.background)
+                .preferredColorScheme(appearance == "dark" ? .dark : appearance == "light" ? .light : nil)
         }
         .sheet(item: $detailTarget, onDismiss: { openPendingWidgetAdd() }) { target in
             if let account = target.resolve(in: connection.accounts) {
@@ -216,7 +243,7 @@ struct RootView: View {
         // failed read must never resolve a valid old target to a guessed account.
         guard pendingWidgetRoute != nil || pendingNotification != nil, connection.cachedAccountsLoaded,
               !connection.loadingAccounts, !connection.accountLoadFailed,
-              !connection.isPresented else { return }
+              !connection.isPresented, tutorialSource == nil else { return }
         let route = pendingWidgetRoute
         let notification = pendingNotification
         pendingWidgetRoute = nil
