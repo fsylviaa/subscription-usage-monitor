@@ -1,6 +1,134 @@
 import XCTest
+import CryptoKit
 
 final class CodexQuotaUITests: XCTestCase {
+    @MainActor
+    func testT36ActualSmallAndMediumWidgetTapColdAndBackground() throws {
+        guard ProcessInfo.processInfo.environment["T36_WIDGET_DESKTOP"] == "1" else {
+            throw XCTSkip("显式启用：复用已放置的两种尺寸组件，仅隔离会话")
+        }
+        continueAfterFailure = false
+        let app = XCUIApplication(), session = UUID().uuidString
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        defer {
+            app.terminate()
+            app.launchArguments = ["--t36-desktop-fixture", "cleanup", session]
+            app.launch(); app.terminate()
+        }
+        app.launchArguments = ["--t36-desktop-fixture", "baseline", session]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 10))
+        XCUIDevice.shared.press(.home)
+        showT35Desktop(springboard)
+        let ready = NSPredicate { _, _ in self.t35BothSizesContain("batch-", on: springboard) }
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: nil)], timeout: 45), .completed)
+        screenshot(springboard, "T36-真实桌面两尺寸隔离基线")
+        func widget(_ medium: Bool) -> XCUIElement? {
+            springboard.icons.matching(NSPredicate(format: "label == %@ AND value == %@", "订阅用量", "小组件"))
+                .allElementsBoundByIndex.first { $0.isHittable && $0.frame.width > 100 && ($0.frame.width > 230) == medium }
+        }
+        for medium in [false, true] {
+            for cold in [true, false] {
+                if cold { app.terminate() }
+                else { app.activate(); XCUIDevice.shared.press(.home) }
+                showT35Desktop(springboard)
+                let card = try XCTUnwrap(widget(medium))
+                let labels = springboard.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "batch-"))
+                    .allElementsBoundByIndex.filter { card.frame.contains(CGPoint(x: $0.frame.midX, y: $0.frame.midY)) }
+                let identity = try XCTUnwrap(labels.first?.label)
+                card.tap()
+                XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 10))
+                XCTAssertEqual(app.staticTexts["detail.identity"].label, identity + "@example.invalid")
+                XCTAssertFalse(app.staticTexts["connection.title"].exists)
+                screenshot(app, "T36-\(medium ? "中号" : "小号")-\(cold ? "冷启动" : "后台返回")")
+                app.buttons["detail.close"].tap()
+                XCUIDevice.shared.press(.home)
+            }
+        }
+    }
+
+    @MainActor
+    func testT36ColdWidgetURLDoesNotWaitForPendingLoginRestoration() {
+        continueAfterFailure = false
+        let app = XCUIApplication(), first = UUID(), second = UUID()
+        app.launchArguments = ["--t26-isolated-ui", "success", "--t27-lifecycle", "--t36-delay-login-read",
+                               "--t36-account-ids", first.uuidString, second.uuidString]
+        app.open(t36URL(id: second, identity: "batch-2@example.invalid"))
+        XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 8), "不等待60秒登录恢复")
+        XCTAssertEqual(app.staticTexts["detail.identity"].label, "batch-2@example.invalid")
+        screenshot(app, "T36-冷启动缓存面板不等待登录恢复")
+        app.terminate()
+    }
+
+    private func t36URL(id: UUID, identity: String) -> URL {
+        let key = SHA256.hash(data: Data("codex:false:\(identity.lowercased())".utf8))
+            .map { String(format: "%02x", $0) }.joined()
+        var url = URLComponents()
+        url.scheme = "subscriptionusage"; url.host = "quota"
+        url.queryItems = [.init(name: "account", value: id.uuidString), .init(name: "identity", value: key)]
+        return url.url!
+    }
+
+    @MainActor
+    func testT36SystemURLColdLaunchAndBackgroundReturnOpenSelectedPanel() {
+        continueAfterFailure = false
+        let app = XCUIApplication(), first = UUID(), second = UUID()
+        app.launchArguments = ["--t26-isolated-ui", "ui-foreground", "--t27-lifecycle",
+                               "--t36-account-ids", first.uuidString, second.uuidString]
+        app.open(t36URL(id: second, identity: "batch-2@example.invalid"))
+        XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 8))
+        XCTAssertEqual(app.staticTexts["detail.identity"].label, "batch-2@example.invalid")
+        XCTAssertFalse(app.descendants(matching: .any)["quota.refreshProgress"].exists)
+        screenshot(app, "T36-系统URL冷启动对应第二账户")
+        let updated = NSPredicate(format: "label == %@", "剩余 55%")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: updated,
+            object: app.staticTexts["detail.weekly.remaining"])], timeout: 10), .completed)
+        app.buttons["detail.close"].tap()
+        XCUIDevice.shared.press(.home)
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            app.state == .runningBackground
+        }, object: nil)], timeout: 5), .completed)
+        app.open(t36URL(id: first, identity: "batch-1@example.invalid"))
+        XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 8))
+        XCTAssertEqual(app.staticTexts["detail.identity"].label, "batch-1@example.invalid")
+        screenshot(app, "T36-系统URL后台返回对应第一账户")
+        app.buttons["detail.close"].tap()
+        app.open(t36URL(id: second, identity: "different@example.invalid"))
+        XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["detail.close"].exists)
+        XCTAssertFalse(app.staticTexts["connection.title"].exists)
+        app.terminate()
+    }
+
+    @MainActor
+    func testT36UnavailableOldTargetAndEmptyTargetFallBackSafely() {
+        continueAfterFailure = false
+        let app = XCUIApplication(), first = UUID(), second = UUID()
+        for scenario in ["blocked", "unknown"] {
+            app.launchArguments = ["--t26-isolated-ui", scenario, "--t27-lifecycle",
+                                   "--t36-account-ids", first.uuidString, second.uuidString]
+            app.open(t36URL(id: second, identity: "batch-2@example.invalid"))
+            XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 8))
+            XCTAssertEqual(app.staticTexts["detail.identity"].label, "batch-2@example.invalid")
+            XCTAssertTrue(app.staticTexts["detail.failure"].waitForExistence(timeout: 5))
+            XCTAssertEqual(app.staticTexts["detail.weekly.remaining"].label, "剩余 70%")
+            screenshot(app, "T36-组件链接失败保留旧值-\(scenario)")
+            app.buttons["detail.close"].tap()
+            app.open(t36URL(id: UUID(), identity: "deleted@example.invalid"))
+            XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 5))
+            XCTAssertFalse(app.buttons["detail.close"].exists)
+            XCTAssertFalse(app.buttons["connection.cancel"].exists)
+            app.terminate()
+        }
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        app.open(t36URL(id: first, identity: "old@example.invalid"))
+        XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 8))
+        XCTAssertFalse(app.buttons["detail.close"].exists)
+        screenshot(app, "T36-已无账户进入连接入口")
+        app.buttons["connection.cancel"].tap()
+        app.terminate()
+    }
+
     @MainActor
     func testT62CardOpensSamePanelClosesAndMenuKeepsItsScope() {
         continueAfterFailure = false

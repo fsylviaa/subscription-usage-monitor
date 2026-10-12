@@ -176,13 +176,15 @@ final class AppBackgroundRuntime {
         let arguments = ProcessInfo.processInfo.arguments
         flow = CodexConnectionUITestSupport.makeFlow()
         preferences = CodexConnectionUITestSupport.preferences
-        let isolated = arguments.contains(where: { $0.hasPrefix("--t") || $0 == "--management-ui" })
+        let routeIsolation = CodexConnectionUITestSupport.isWidgetRouteValidationActive
+        let isolated = routeIsolation || arguments.contains(where: { $0.hasPrefix("--t") || $0 == "--management-ui" })
         enabled = NSClassFromString("XCTestCase") == nil && (!isolated || arguments.contains("--t30-background-debug"))
         source = arguments.contains("--t30-background-debug") ? "debug" : "system"
         let directory = isolated || NSClassFromString("XCTestCase") != nil
             ? FileManager.default.temporaryDirectory.appendingPathComponent("T30-debug")
             : Self.applicationDirectory
         #else
+        let routeIsolation = false
         flow = CodexConnectionFlow.live()
         preferences = .standard
         enabled = true
@@ -190,7 +192,7 @@ final class AppBackgroundRuntime {
         let directory = Self.applicationDirectory
         #endif
         let permitsReminders = ResetReminderRuntime.permitsSystemScheduling(
-            arguments: ProcessInfo.processInfo.arguments, isTestHost: NSClassFromString("XCTestCase") != nil)
+            arguments: ProcessInfo.processInfo.arguments, isTestHost: NSClassFromString("XCTestCase") != nil || routeIsolation)
         if permitsReminders { SharedResetReminderRuntime.migratePreference(from: preferences) }
         reminderScheduler = permitsReminders ? SharedResetReminderRuntime.liveScheduler() : nil
         coordinator = BackgroundQuotaRefresh(flow: flow, journalURL: directory.appendingPathComponent("events.json"),

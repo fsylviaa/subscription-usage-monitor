@@ -137,7 +137,7 @@ final class CodexConnectionFlow: ObservableObject {
     private let foregroundRefreshEnabled: Bool
     private var observesSceneActivity = false
     private var sceneIsActive = false
-    private var cachedAccountsLoaded = false
+    @Published private(set) var cachedAccountsLoaded = false
     private var pendingForegroundRefresh = false
     private var expiryWork: Task<Void, Never>?
     private var cleanupWork: Task<Void, Never>?

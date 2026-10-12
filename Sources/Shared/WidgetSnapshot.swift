@@ -64,14 +64,11 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
 
     static let empty = WidgetSnapshot(schemaVersion: 1, account: nil)
 
-    /// Derived from this exact snapshot's local ID; contains no email or secrets.
-    /// URL handling is delivered in T36; T32 only prepares the target.
+    /// Derived from this exact rendered identity, never the latest list index.
+    /// The fingerprint prevents an old link from attaching to a different person.
     var clickTarget: URL {
-        var url = URLComponents()
-        url.scheme = "subscriptionusage"
-        url.host = "quota"
-        if let account { url.queryItems = [URLQueryItem(name: "account", value: account.id.uuidString)] }
-        return url.url!
+        guard let account else { return URL(string: "subscriptionusage://quota")! }
+        return WidgetQuotaRoute.url(accountID: account.id, identity: account.identity, isDemo: account.isDemo)
     }
 
     var emptyMessage: String? {

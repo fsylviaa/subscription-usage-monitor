@@ -7,8 +7,28 @@ import WidgetKit
 /// flow uses real clients but an entirely separate account directory and vault.
 @MainActor
 enum CodexConnectionUITestSupport {
+    private struct RouteValidationSession: Codable {
+        let id: UUID
+        let expiresAt: Date
+    }
+    private static var routeValidationMarker: URL? {
+        try? WidgetSnapshotStore.sharedDirectory().appendingPathComponent("T36-route-session.json")
+    }
+    private static var routeValidationSession: UUID? {
+        guard let marker = routeValidationMarker, let data = try? Data(contentsOf: marker),
+              let session = try? JSONDecoder().decode(RouteValidationSession.self, from: data),
+              session.expiresAt > Date(), session.expiresAt.timeIntervalSinceNow <= 1_200,
+              (try? WidgetSnapshotStore.displayStore().resolvedURL()) == (try? WidgetSnapshotStore.validationStore(session: session.id).resolvedURL())
+        else { return nil }
+        return session.id
+    }
+    static var isWidgetRouteValidationActive: Bool { routeValidationSession != nil }
+
     static var preferences: UserDefaults {
         let args = ProcessInfo.processInfo.arguments
+        if let session = routeValidationSession {
+            return UserDefaults(suiteName: "T36-route-\(session)")!
+        }
         if args.contains("--t26-isolated-ui") {
             let preferences = UserDefaults(suiteName: "T26-feedback-fixture")!
             preferences.set(args.contains("--t26-dark") ? "dark" : "light", forKey: "appearance")
@@ -37,6 +57,29 @@ enum CodexConnectionUITestSupport {
             return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
                 authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
         }
+        if let marker = arguments.firstIndex(of: "--t36-desktop-fixture") {
+            guard arguments.indices.contains(marker + 2), let session = UUID(uuidString: arguments[marker + 2]),
+                  let file = routeValidationMarker else {
+                return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) }, authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+            }
+            let scenario = arguments[marker + 1]
+            if scenario == "cleanup" {
+                try? FileManager.default.removeItem(at: file)
+                UserDefaults.standard.removePersistentDomain(forName: "T36-route-\(session)")
+                return widgetValidationFlow(scenario: "cleanup", session: session, useConfiguredAccount: false)
+            }
+            do {
+                try WidgetSnapshotStore.setValidationSession(session)
+                try JSONEncoder().encode(RouteValidationSession(id: session, expiresAt: Date().addingTimeInterval(1_200)))
+                    .write(to: file, options: .atomic)
+            } catch { return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) }, authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions()) }
+            return widgetValidationFlow(scenario: scenario, session: session, useConfiguredAccount: true)
+        }
+        // Explicit, time-bounded developer session also survives a real widget
+        // cold launch, whose process receives no test launch arguments.
+        if let session = routeValidationSession {
+            return widgetValidationFlow(scenario: "baseline", session: session, useConfiguredAccount: true)
+        }
         if let marker = arguments.firstIndex(of: "--t35-widget-fixture") {
             guard arguments.indices.contains(marker + 2), let session = UUID(uuidString: arguments[marker + 2]) else {
                 // Malformed isolation arguments must never fall through to real accounts.
@@ -56,8 +99,13 @@ enum CodexConnectionUITestSupport {
                 bindings: T23CardFixture(scenario: arguments[marker + 1]))
         }
         if let marker = arguments.firstIndex(of: "--t26-isolated-ui"), arguments.indices.contains(marker + 1) {
-            let fixture = T26BatchFixture(scenario: arguments[marker + 1])
-            let flow = CodexConnectionFlow(transactions: FixtureTransactions(), bindings: fixture, quotaUpdater: fixture,
+            let ids: [UUID]
+            if let index = arguments.firstIndex(of: "--t36-account-ids"), arguments.indices.contains(index + 2) {
+                ids = [arguments[index + 1], arguments[index + 2]].compactMap(UUID.init(uuidString:))
+            } else { ids = [] }
+            let fixture = T26BatchFixture(scenario: arguments[marker + 1], widgetAccountIDs: ids)
+            let flow = CodexConnectionFlow(transactions: arguments.contains("--t36-delay-login-read")
+                    ? T15DelayedTransactions() : FixtureTransactions(), bindings: fixture, quotaUpdater: fixture,
                 foregroundRefreshEnabled: arguments.contains("--t27-lifecycle"))
             if arguments.contains("--t26-auto") {
                 Task {

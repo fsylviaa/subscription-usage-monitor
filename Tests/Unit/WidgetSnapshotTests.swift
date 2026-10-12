@@ -284,7 +284,7 @@ final class WidgetSnapshotTests: XCTestCase {
         XCTAssertEqual(first.account?.weekly?.amount.remainingPercent, 70)
         XCTAssertEqual(first.account?.fiveHours?.amount.remainingPercent, 60)
         XCTAssertEqual(first.account?.quotaObservedAt, time)
-        XCTAssertEqual(first.clickTarget.query, "account=\(a.id.uuidString)")
+        XCTAssertEqual(URLComponents(url: first.clickTarget, resolvingAgainstBaseURL: false)?.queryItems?.first(where: { $0.name == "account" })?.value, a.id.uuidString)
         try await store.reorder([b.id, a.id])
         let reordered = try XCTUnwrap(WidgetSnapshotStore(fileURL: shared.resolvedURL()).read())
         XCTAssertEqual(reordered.account?.id, b.id)
@@ -292,7 +292,7 @@ final class WidgetSnapshotTests: XCTestCase {
         XCTAssertEqual(reordered.account?.weekly?.amount.remainingPercent, 30)
         XCTAssertEqual(reordered.account?.fiveHours?.amount.remainingPercent, 20)
         XCTAssertEqual(reordered.account?.quotaObservedAt, time)
-        XCTAssertEqual(reordered.clickTarget.query, "account=\(b.id.uuidString)")
+        XCTAssertEqual(URLComponents(url: reordered.clickTarget, resolvingAgainstBaseURL: false)?.queryItems?.first(where: { $0.name == "account" })?.value, b.id.uuidString)
         print("T32 | A在首位 | 周70% / 5小时60% | 原成功时间保持 | 点击A | 通过")
         print("T32 | B移到首位 | 周30% / 5小时20% | 原成功时间保持 | 点击B | 通过")
     }
@@ -306,7 +306,7 @@ final class WidgetSnapshotTests: XCTestCase {
         XCTAssertEqual(snapshot.emptyMessage, "尚未获取额度")
         XCTAssertNil(snapshot.account?.weekly); XCTAssertNil(snapshot.account?.fiveHours)
         XCTAssertNil(snapshot.account?.quotaObservedAt)
-        XCTAssertEqual(snapshot.clickTarget.query, "account=\(a.id.uuidString)")
+        XCTAssertEqual(URLComponents(url: snapshot.clickTarget, resolvingAgainstBaseURL: false)?.queryItems?.first(where: { $0.name == "account" })?.value, a.id.uuidString)
         print("T32 | A尚未取得 / B有额度 | 仍显示A，无数值无成功时间 | 点击A | 通过")
     }
 

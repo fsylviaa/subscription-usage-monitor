@@ -4,6 +4,82 @@ import XCTest
 @testable import SubscriptionUsage
 
 final class RootViewTests: XCTestCase {
+    @MainActor
+    func testT36DesktopValidationMarkersWereCleaned() throws {
+        guard ProcessInfo.processInfo.environment["T36_CLEANUP_CHECK"] == "1" else {
+            throw XCTSkip("实际桌面隔离会话结束后，显式启用只读清理核对")
+        }
+        #if DEBUG
+        let root = try WidgetSnapshotStore.sharedDirectory()
+        XCTAssertFalse(FileManager.default.fileExists(atPath: root.appendingPathComponent("T36-route-session.json").path))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: root.appendingPathComponent("T35-validation-session").path))
+        XCTAssertEqual(try WidgetSnapshotStore.displayStore().resolvedURL(), try WidgetSnapshotStore.appGroupStore().resolvedURL())
+        XCTAssertFalse(CodexConnectionUITestSupport.isWidgetRouteValidationActive)
+        print("T36 | 桌面隔离结束 | 路由标记及组件读路径已恢复，未读取正式账户/授权")
+        #endif
+    }
+
+    func testT36SelectedWidgetLinksResolveIdentityAcrossSortReconnectAndDeletion() throws {
+        var a = ConnectedAccount(verifiedEmail: "first@example.invalid", scope: .init(remoteAccountID: "a", kind: .personal), credentialRef: UUID())
+        var b = ConnectedAccount(verifiedEmail: "selected@example.invalid", scope: .init(remoteAccountID: "b", kind: .personal), credentialRef: UUID())
+        let publication = WidgetSnapshot.projecting([a, b])
+        let selected = QuotaWidgetContent.snapshot(publication).selecting(accountID: b.id.uuidString)
+        let link = selected.destinationURL
+        XCTAssertFalse(link.absoluteString.contains("example.invalid"))
+        let route = try XCTUnwrap(WidgetQuotaRoute(url: link))
+        XCTAssertEqual(route.detailTarget(in: [a, b])?.id, b.id)
+        XCTAssertEqual(route.detailTarget(in: [b, a])?.id, b.id)
+        b.generation += 1; b.credentialRef = UUID()
+        XCTAssertEqual(route.detailTarget(in: [a, b])?.id, b.id, "同邮箱更新连接保持目标")
+        b.verifiedEmail = "replacement@example.invalid"
+        XCTAssertNil(route.detailTarget(in: [a, b]), "不得把旧目标嫁接到另一身份")
+        XCTAssertNil(route.detailTarget(in: [a]))
+        XCTAssertNil(route.detailTarget(in: []))
+        a.deletionPending = true
+        let deleted = WidgetQuotaRoute(url: WidgetQuotaRoute.url(accountID: a.id, identity: "first@example.invalid", isDemo: false))
+        XCTAssertNil(deleted?.detailTarget(in: [a]))
+        XCTAssertEqual(QuotaWidgetContent.snapshot(.empty).destinationURL, QuotaWidgetContent.addAccountURL)
+        XCTAssertEqual(WidgetQuotaRoute(url: QuotaWidgetContent.unavailable.destinationURL), .quota(accountID: nil, identityKey: nil))
+    }
+
+    func testT36MalformedAndForeignURLsNeverChooseAnAccount() {
+        for raw in ["https://quota", "subscriptionusage://quota/path", "subscriptionusage://user:secret@quota", "subscriptionusage://quota#fragment"] {
+            XCTAssertNil(WidgetQuotaRoute(url: URL(string: raw)!))
+        }
+        for raw in ["subscriptionusage://quota", "subscriptionusage://quota?account=broken", "subscriptionusage://quota?account=\(UUID())", "subscriptionusage://quota?account=\(UUID())&account=\(UUID())&identity=bad"] {
+            XCTAssertEqual(WidgetQuotaRoute(url: URL(string: raw)!), .quota(accountID: nil, identityKey: nil))
+        }
+    }
+
+    @MainActor
+    func testT36RoutingDoesNotAddQuotaRequestsToForegroundMergedRefresh() async throws {
+        let fixture = T26BatchFixture(scenario: "success")
+        defer { try? FileManager.default.removeItem(at: fixture.directory) }
+        let flow = CodexConnectionFlow(transactions: T36Transactions(), bindings: fixture, quotaUpdater: fixture)
+        flow.sceneActivityChanged(true)
+        await flow.loadAccounts()
+        let selected = flow.accounts[1]
+        let route = try XCTUnwrap(WidgetQuotaRoute(url: WidgetQuotaRoute.url(accountID: selected.id,
+            identity: selected.verifiedEmail!, isDemo: false)))
+        for _ in 0..<3 { XCTAssertEqual(route.detailTarget(in: flow.accounts)?.id, selected.id) }
+        flow.sceneActivityChanged(true)
+        await flow.waitForInitialQuota()
+        let counts = await fixture.requests
+        XCTAssertEqual(counts.values.reduce(0, +), 2, "每户仅前台自动查询一次，路由不查")
+        XCTAssertTrue(flow.visibleQuotaUpdatingIDs.isEmpty)
+        for scenario in ["blocked", "unknown"] {
+            let failing = T26BatchFixture(scenario: scenario)
+            defer { try? FileManager.default.removeItem(at: failing.directory) }
+            let f = CodexConnectionFlow(transactions: T36Transactions(), bindings: failing, quotaUpdater: failing)
+            let saved = try await failing.load()
+            f.sceneActivityChanged(true); await f.loadAccounts(); await f.waitForInitialQuota()
+            XCTAssertEqual(f.accounts, saved)
+            let link = WidgetQuotaRoute.url(accountID: saved[1].id, identity: saved[1].verifiedEmail!, isDemo: false)
+            XCTAssertEqual(WidgetQuotaRoute(url: link)?.detailTarget(in: f.accounts)?.id, saved[1].id)
+            XCTAssertEqual(f.quotaFailure, scenario == "blocked" ? "网络不达标，无法更新" : "刷新失败")
+        }
+    }
+
     func testT62DetailIdentityAndTrustedRowsNeverBorrowAnotherAccount() throws {
         let now = Date(timeIntervalSince1970: 1_791_590_400)
         var first = ConnectedAccount(remoteUserID: "user-a", verifiedEmail: "a@example.invalid",
@@ -392,4 +468,10 @@ final class RootViewTests: XCTestCase {
         XCTAssertGreaterThan(size.height, 0)
         XCTAssertTrue(size.width.isFinite && size.height.isFinite)
     }
+}
+
+
+private actor T36Transactions: CodexLoginTransactionStoring {
+    func save(_ authorization: CodexDeviceAuthorization) { }
+    func remove(transactionID: UUID) { }
 }

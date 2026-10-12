@@ -12,6 +12,7 @@ struct RootView: View {
     private let onBackground: () -> Void
     private let reminderScheduler: ResetReminderScheduler?
     private let publishesWidgetAppearance: Bool
+    @State private var pendingWidgetRoute: WidgetQuotaRoute?
     @State private var pendingWidgetAdd = false
     @State private var detailTarget: CodexDetailTarget?
     @State private var reminderAccountsLoaded = false
@@ -102,12 +103,20 @@ struct RootView: View {
             }
         }
         .onOpenURL { url in
-            guard QuotaWidgetContent.isAddAccountURL(url) else { return }
+            guard let route = WidgetQuotaRoute(url: url) else { return }
             selection = .quota
-            pendingWidgetAdd = true
+            pendingWidgetRoute = route
+            openPendingWidgetRoute()
+        }
+        .onChange(of: connection.canConnect) { _, _ in
+            openPendingWidgetRoute()
             openPendingWidgetAdd()
         }
-        .onChange(of: connection.canConnect) { _, _ in openPendingWidgetAdd() }
+        .onChange(of: connection.loadingAccounts) { _, _ in openPendingWidgetRoute() }
+        .onChange(of: connection.cachedAccountsLoaded) { _, _ in openPendingWidgetRoute() }
+        .onChange(of: connection.isPresented) { _, presented in
+            if !presented { openPendingWidgetRoute() }
+        }
         .task { await reminders.refreshAuthorization() }
         .task(id: reminderInput) {
             guard let reminderScheduler else { return }
@@ -119,6 +128,7 @@ struct RootView: View {
             connection.sceneActivityChanged(scenePhase == .active)
             await connection.loadAccounts()
             reminderAccountsLoaded = true
+            openPendingWidgetRoute()
             openPendingWidgetAdd()
         }
         .onChange(of: scenePhase) { _, phase in
@@ -132,7 +142,7 @@ struct RootView: View {
         .onChange(of: connection.accounts) { _, accounts in
             if let detailTarget, detailTarget.resolve(in: accounts) == nil { self.detailTarget = nil }
         }
-        .sheet(item: $detailTarget) { target in
+        .sheet(item: $detailTarget, onDismiss: { openPendingWidgetAdd() }) { target in
             if let account = target.resolve(in: connection.accounts) {
                 CodexDetailPanel(account: account,
                     updating: connection.visibleQuotaUpdatingIDs.contains(account.id),
@@ -184,6 +194,29 @@ struct RootView: View {
               !connection.loadingAccounts, !connection.accountLoadFailed else { return nil }
         return ReminderInput(accounts: connection.accounts, wantsReminders: true,
             authorization: reminders.authorizationStatus)
+    }
+
+    private func openPendingWidgetRoute() {
+        // A cold-start URL can arrive before cached accounts. Empty/loading or a
+        // failed read must never resolve a valid old target to a guessed account.
+        guard let route = pendingWidgetRoute, connection.cachedAccountsLoaded,
+              !connection.loadingAccounts, !connection.accountLoadFailed,
+              !connection.isPresented else { return }
+        pendingWidgetRoute = nil
+        let replacingDetail = detailTarget != nil
+        detailTarget = nil
+        pendingWidgetAdd = false
+        switch route {
+        case .addAccount:
+            pendingWidgetAdd = true
+        case .quota:
+            detailTarget = route.detailTarget(in: connection.accounts)
+            if detailTarget == nil && connection.accounts.filter({ $0.deletionPending != true }).isEmpty {
+                pendingWidgetAdd = true
+            }
+        }
+        if !replacingDetail || !pendingWidgetAdd { openPendingWidgetAdd() }
+        // Scene activation owns the refresh. Routing has no query side effect.
     }
 
     private func openPendingWidgetAdd() {
@@ -275,5 +308,16 @@ private struct AppearanceWindowReader: UIViewRepresentable {
             super.didMoveToWindow()
             transition?.window = window
         }
+    }
+}
+
+
+extension WidgetQuotaRoute {
+    func detailTarget(in accounts: [ConnectedAccount]) -> CodexDetailTarget? {
+        guard case let .quota(id?, key?) = self,
+              let account = accounts.first(where: { $0.id == id && $0.deletionPending != true }),
+              key == Self.identityKey(account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户", isDemo: account.isDemo)
+        else { return nil }
+        return CodexDetailTarget(account)
     }
 }

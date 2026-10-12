@@ -133,7 +133,7 @@ struct QuotaView: View {
         }
     }
 
-    static func dateText(_ date: Date) -> String {
+    nonisolated static func dateText(_ date: Date) -> String {
         date.formatted(.dateTime.month().day().hour().minute())
     }
 

@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 import SwiftUI
 import WidgetKit
 import AppIntents
@@ -36,6 +37,13 @@ enum QuotaWidgetContent: Equatable, Sendable {
         case let .snapshot(snapshot):
             snapshot.account.flatMap { $0.failure?.message(hasFetched: $0.state != .notFetched) } ?? snapshot.emptyMessage
         }
+    }
+
+    /// The exact rendered entry determines the link, including configured widgets.
+    var destinationURL: URL {
+        if showsAddAccount { return Self.addAccountURL }
+        guard case let .snapshot(snapshot) = self else { return URL(string: "subscriptionusage://quota")! }
+        return snapshot.clickTarget
     }
 
     static let addAccountURL = URL(string: "subscriptionusage://add-account")!
@@ -234,5 +242,46 @@ struct SmallQuotaWidgetView: View {
             }
         }
         .accessibilityElement(children: .combine)
+    }
+}
+
+
+/// A local opaque target plus an identity fingerprint. Neither email nor a
+/// credential is carried by the URL. Generations are deliberately excluded:
+/// successful reconnection of the same email keeps the account's existing link.
+enum WidgetQuotaRoute: Equatable {
+    case addAccount
+    case quota(accountID: UUID?, identityKey: String?)
+
+    init?(url: URL) {
+        guard url.scheme == "subscriptionusage", url.path.isEmpty,
+              url.user == nil, url.password == nil, url.port == nil,
+              url.fragment == nil else { return nil }
+        if url.host == "add-account" { self = .addAccount; return }
+        guard url.host == "quota" else { return nil }
+        let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        let ids = items.filter { $0.name == "account" }
+        let keys = items.filter { $0.name == "identity" }
+        guard ids.count == 1, keys.count == 1, items.count == 2,
+              let rawID = ids[0].value, let id = UUID(uuidString: rawID),
+              let key = keys[0].value, key.count == 64,
+              key.allSatisfy({ "0123456789abcdef".contains($0) }) else {
+            self = .quota(accountID: nil, identityKey: nil); return
+        }
+        self = .quota(accountID: id, identityKey: key)
+    }
+
+    static func identityKey(_ identity: String, isDemo: Bool) -> String {
+        let normalized = identity.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return SHA256.hash(data: Data("codex:\(isDemo):\(normalized)".utf8))
+            .map { String(format: "%02x", $0) }.joined()
+    }
+
+    static func url(accountID: UUID, identity: String, isDemo: Bool) -> URL {
+        var url = URLComponents()
+        url.scheme = "subscriptionusage"; url.host = "quota"
+        url.queryItems = [URLQueryItem(name: "account", value: accountID.uuidString),
+                          URLQueryItem(name: "identity", value: identityKey(identity, isDemo: isDemo))]
+        return url.url!
     }
 }

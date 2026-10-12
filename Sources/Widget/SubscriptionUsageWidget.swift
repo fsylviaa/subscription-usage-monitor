@@ -61,6 +61,6 @@ private struct QuotaWidgetSurface: View {
             .containerBackground(for: .widget) {
                 Color("DesignCard").environment(\.colorScheme, scheme)
             }
-            .widgetURL(entry.content.showsAddAccount ? QuotaWidgetContent.addAccountURL : nil)
+            .widgetURL(entry.content.destinationURL)
     }
 }
