@@ -31,6 +31,8 @@ def render_cards(references, id_prefix="reference"):
 
 
 def render_prototype(number, theme):
+    if number > 3:
+        return render_extra_prototype(number, theme)
     kind = {1: "skala", 2: "capsule", 3: "ticks"}[number]
     rows = []
     for key, name, remaining, reset in (
@@ -79,12 +81,74 @@ def render_prototype(number, theme):
     return f"""<div class="prototype-stage {kind}"><div class="quota-account"><div class="quota-head"><div class="quota-brand">Codex <span class="quota-plan">· Plus</span></div></div>{''.join(rows)}</div></div>"""
 
 
+
+def render_extra_prototype(number, theme):
+    """Eight distinct geometries; old 1–3 rendering stays byte-for-byte unchanged."""
+    kinds = {4:'dials', 5:'island', 6:'blocks', 7:'liquid', 8:'ticket', 9:'journal', 10:'glass', 11:'panels'}
+    kind = kinds[number]
+    rows = []
+    for key, name, value, reset in (("week", "每周额度", 73, "10月19日 09:00"), ("five", "5小时额度", 50, "今日 23:30")):
+        uid = f'q{number}-{key}-{theme}'
+        meta = f'<div class="quota-meta"><div><div class="quota-name">{name}</div><div class="quota-reset">下次重置 · {reset}</div></div><div class="quota-number"><small>剩余</small><strong data-number>{value}%</strong></div></div>'
+        defs, art = '', ''
+        box, orientation = '0 0 1000 160', 'horizontal'
+        if kind == 'dials':
+            box = '0 0 240 220'
+            # 270 degrees, clockwise from the lower left. pathLength uses exact percent arc length.
+            arc = 'M 56.3604 179.6396 A 90 90 0 1 1 183.6396 179.6396'
+            defs = f'<mask id="{uid}-arc" maskUnits="userSpaceOnUse" x="0" y="0" width="240" height="220"><path d="{arc}" fill="none" stroke="white" stroke-width="44" pathLength="100" stroke-dasharray="{value} 100" data-dial-fill/></mask>'
+            ticks = []
+            import math
+            for i in range(61):
+                a = math.radians(135+i*4.5); r = 99 if i%5==0 else 102
+                ticks.append(f'<line x1="{120+r*math.cos(a):.4f}" y1="{116+r*math.sin(a):.4f}" x2="{120+109*math.cos(a):.4f}" y2="{116+109*math.sin(a):.4f}" stroke-width="{2 if i%5==0 else 1}"/>')
+            art = f'<circle cx="120" cy="116" r="81" class="dial-face"/><path d="{arc}" fill="none" class="extra-neutral" stroke-width="10"/><g class="dial-muted">{"".join(ticks)}</g><path d="{arc}" fill="none" class="dial-active" stroke-width="10" pathLength="100" stroke-dasharray="{value} 100" data-dial-fill/><g class="dial-active" mask="url(#{uid}-arc)">{"".join(ticks)}</g><g data-needle transform="rotate({135+value*2.7} 120 116)"><path d="M 192 116 L 217 116" class="dial-needle" stroke-width="3"/></g><circle cx="120" cy="116" r="65" class="dial-inner"/>'
+        elif kind == 'liquid':
+            box, orientation = '0 0 160 240', 'vertical'
+            defs = f'<linearGradient id="{uid}-fluid" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#93f47e"/><stop offset=".5" stop-color="#48c570"/><stop offset="1" stop-color="#187b63"/></linearGradient><clipPath id="{uid}-vessel"><rect x="28" y="20" width="104" height="200"/></clipPath><clipPath id="{uid}-fluid-area"><path data-liquid-clip d="M28 {220-value*2} H132 V220 H28 Z"/></clipPath>'
+            art = f'<rect x="20" y="12" width="120" height="216" rx="25" class="vessel-shell"/><rect x="28" y="20" width="104" height="200" class="liquid-used extra-neutral"/><g clip-path="url(#{uid}-vessel)"><path data-liquid d="M28 {220-value*2} H132 V220 H28 Z" fill="url(#{uid}-fluid)"/><path data-meniscus fill="none" stroke="#c3ffc0" stroke-width="1.5"/><g clip-path="url(#{uid}-fluid-area)"><g data-fluid-bubbles fill="#ddffd3" opacity=".28"><circle cx="53" cy="183" r="3"/><circle cx="98" cy="158" r="2"/></g><path data-liquid-shine d="M35 25 H41 V220 H35 Z" fill="white" opacity=".12"/></g></g><path d="M24 190 V42 Q24 20 43 17" fill="none" class="vessel-shine" stroke-width="2"/>'
+        else:
+            # Active coordinate span is exactly 0..1000. Shells and caps are excluded.
+            defs = f'<clipPath id="{uid}-remaining"><rect data-extra-clip x="0" y="0" width="{value*10}" height="160"/></clipPath><clipPath id="{uid}-change"><rect data-extra-change x="0" y="0" width="0" height="160"/></clipPath>'
+            if kind == 'island':
+                art = f'<rect x="0" y="75" width="1000" height="10" rx="5" class="extra-neutral"/><g clip-path="url(#{uid}-remaining)"><rect x="0" y="75" width="1000" height="10" rx="5" class="island-energy"/><rect data-island-light x="0" y="75" width="1000" height="10" fill="#d6ffc2" opacity="0"/></g><line data-boundary x1="{value*10}" x2="{value*10}" y1="74" y2="86" class="island-tip" stroke-width="2"/>'
+            elif kind == 'blocks':
+                blocks = ''.join(f'<rect x="{i*206}" y="24" width="176" height="112" rx="20"/>' for i in range(5))
+                # Five equal blocks, with the last ending exactly at 1000.
+                art = f'<rect x="0" y="24" width="1000" height="112" rx="20" class="segment-bed extra-neutral"/><g class="blocks-muted">{blocks}</g><g clip-path="url(#{uid}-remaining)"><g class="blocks-active">{blocks}</g><g clip-path="url(#{uid}-change)" data-extra-accent opacity="0" class="blocks-flash">{blocks}</g></g>'
+            elif kind == 'ticket':
+                stripes = ''.join(f'<path d="M{i*130-50} 32 H{i*130+55} L{i*130+20} 128 H{i*130-85} Z"/>' for i in range(9))
+                art = f'<rect x="0" y="32" width="1000" height="96" class="ticket-bed"/><g class="ticket-muted">{stripes}</g><g clip-path="url(#{uid}-remaining)"><g class="ticket-active">{stripes}</g><g clip-path="url(#{uid}-change)" class="ticket-flash" data-extra-accent opacity="0">{stripes}</g></g>'
+            elif kind == 'journal':
+                strokes = ''.join(f'<path d="M{i*42+8} {40+(i%3)*3} Q{i*42+3} 80 {i*42+9} {119-(i%4)*3} L{i*42+26} {121-(i%3)*2} Q{i*42+31} 80 {i*42+25} {39+(i%4)*2} Z"/>' for i in range(24))
+                art = f'<g class="journal-muted">{strokes}</g><g clip-path="url(#{uid}-remaining)"><g class="journal-active">{strokes}</g><g data-journal-ink opacity="0" class="journal-ink">{strokes}</g></g><path d="M0 21 Q480 12 1000 24 Q997 79 1000 137 Q500 149 0 139 Q4 80 0 21" class="journal-edge" fill="none" stroke-width="9"/>'
+            elif kind == 'glass':
+                defs += f'<linearGradient id="{uid}-blue" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d6f5ff"/><stop offset=".2" stop-color="#83dcff"/><stop offset=".55" stop-color="#388af0"/><stop offset="1" stop-color="#78c4ff"/></linearGradient><clipPath id="{uid}-tube"><rect x="0" y="40" width="1000" height="80" rx="40" ry="40" data-tube-pill/></clipPath>'
+                art = f'<rect x="0" y="40" width="1000" height="80" rx="40" ry="40" data-tube-pill class="glass-used extra-neutral"/><g clip-path="url(#{uid}-tube)"><g clip-path="url(#{uid}-remaining)"><rect x="0" y="40" width="1000" height="80" fill="url(#{uid}-blue)"/><path d="M0 54 H1000" stroke="white" stroke-width="3" opacity=".6"/><g data-glass-spark opacity=".25" fill="white"><circle cx="125" cy="73" r="3"/><circle cx="460" cy="98" r="2"/><circle cx="640" cy="68" r="2"/></g><rect data-glass-cap x="{value*10-16}" y="45" width="16" height="70" rx="8" fill="#d2f1ff" opacity=".75"/></g></g><rect x="0" y="40" width="1000" height="80" rx="40" ry="40" data-tube-pill class="glass-outline" fill="none" stroke-width="4"/>'
+            elif kind == 'panels':
+                ticks = ''.join(f'<rect x="{i*25}" y="32" width="13" height="96" rx="3"/>' for i in range(40))
+                art = f'<rect x="0" y="32" width="1000" height="96" rx="3" class="panel-bed extra-neutral"/><g class="panel-muted">{ticks}</g><g clip-path="url(#{uid}-remaining)"><g class="panel-active">{ticks}</g><g data-extra-accent opacity="0" clip-path="url(#{uid}-change)" class="panel-flash">{ticks}</g></g>'
+        graph = f'<svg class="quota-graph extra-graph" viewBox="{box}" preserveAspectRatio="{ "xMidYMid meet" if kind in ("dials","liquid") else "none" }" role="slider" tabindex="0" aria-label="方案{number} {"暗色" if theme=="dark" else "亮色"} {name}剩余百分比" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{value}" aria-orientation="{orientation}"><defs>{defs}</defs>{art}</svg>'
+        if kind == 'dials':
+            # Stable central readout, while name and reset stay above the dial.
+            meta = f'<div class="quota-name">{name}</div><div class="quota-reset">下次重置 · {reset}</div>'
+            graph = f'<div class="dial-wrap">{graph}<div class="dial-readout"><small>剩余</small><strong data-number>{value}%</strong></div></div>'
+        if kind == 'island':
+            # Rail and readout share a shell, but only the green rail responds to dragging.
+            number_markup = f'<div class="quota-number"><small>剩余</small><strong data-number>{value}%</strong></div>'
+            meta = f'<div class="quota-name">{name}</div><div class="quota-reset">下次重置 · {reset}</div>'
+            graph = f'<div class="island-shell">{graph}{number_markup}</div>'
+        rows.append(f'<section class="quota-window extra-window" data-window="{key}" aria-label="{name}">{meta}{graph}</section>')
+    return f'<div class="prototype-stage extra-stage {kind}"><div class="quota-account"><div class="quota-head"><div class="quota-brand">Codex <span class="quota-plan">· Plus</span></div></div><div class="extra-windows">{"".join(rows)}</div></div></div>'
+
+
 def render_prototype_controls(number):
     controls = []
     for key, name, remaining in (("week", "每周额度", 73), ("five", "5小时额度", 50)):
         uid = f"q{number}-{key}"
         controls.append(f"""<label class="quota-control" for="{uid}-input"><span class="quota-control-line"><span>{name} · 剩余百分比</span><output data-output="{key}" for="{uid}-input">{remaining}%</output></span><input id="{uid}-input" data-control="{key}" type="range" min="0" max="100" step="0.1" value="{remaining}" aria-label="方案{number} {name}剩余百分比精调"></label>""")
-    return f"""<div class="quota-controls">{''.join(controls)}<div class="quota-actions"><button class="quota-play" type="button" data-demo>演示变化</button><button class="adaptation-button quota-detail" type="button" data-detail-target="detail-{number}" aria-haspopup="dialog" aria-controls="detail-{number}">原图与适配说明</button></div><p class="quota-help">明暗两版共用数值。亮色表示剩余，灰色表示已用；可拖动图形或精调滑块，时间与数值均为模拟。</p></div>"""
+    help_text = "明暗两版共用数值。亮色表示剩余，灰色表示已用；可拖动图形或精调滑块，时间与数值均为模拟。" if number <= 3 else "明暗两版共用数值。实体／强调部分表示剩余，灰色表示已用；可拖动图形或精调滑块，时间与数值均为模拟。"
+    return f"""<div class="quota-controls">{''.join(controls)}<div class="quota-actions"><button class="quota-play" type="button" data-demo>演示变化</button><button class="adaptation-button quota-detail" type="button" data-detail-target="detail-{number}" aria-haspopup="dialog" aria-controls="detail-{number}">原图与适配说明</button></div><p class="quota-help">{help_text}</p></div>"""
 
 
 def render_selected_cards(references, second_references, selected_mappings, adaptation_details=()):
@@ -104,9 +168,10 @@ def render_selected_cards(references, second_references, selected_mappings, adap
         url = escape(str(item["url"]), quote=True)
         image = escape(str(item["image"]), quote=True)
         batch_name = "第一批" if batch == 1 else "第二批"
-        if number in (1, 2, 3) and number in details:
-            kind = {1: "skala", 2: "capsule", 3: "ticks"}[number]
-            cards.append(f"""<article class="card prototype-card" id="selected-reference-{number}" data-prototype="{kind}">
+        if number in range(1, 12) and number in details:
+            kind = {1:"skala",2:"capsule",3:"ticks",4:"dials",5:"island",6:"blocks",7:"liquid",8:"ticket",9:"journal",10:"glass",11:"panels"}[number]
+            prototype_attr = "data-prototype" if number <= 3 else "data-extra-prototype"
+            cards.append(f"""<article class="card prototype-card" id="selected-reference-{number}" {prototype_attr}="{kind}">
 <div class="prototype-comparison"><div class="prototype-pair">
 <div class="prototype-variant" data-theme="dark"><p class="quota-theme">暗色</p>{render_prototype(number, "dark")}</div>
 <div class="prototype-variant" data-theme="light"><p class="quota-theme">亮色</p>{render_prototype(number, "light")}</div>
@@ -156,7 +221,7 @@ def render_detail_dialogs(references, second_references, selected_mappings, adap
             paragraphs = "\n".join(f"<p>{escape(str(paragraph))}</p>" for paragraph in section["paragraphs"])
             sections.append(f"<section class=\"adaptation-section\"><h3>{section_title}</h3>{paragraphs}</section>")
         sections_html = "\n".join(sections)
-        notice = ("已制作网页交互样机，正式 App 尚未采用；此处保留原图和原适配说明。本轮网页明暗并排，数字与亮色均表示剩余、灰色表示已用；旧正文的实色已用、邮箱及箭头建议为历史方案，以当前样机为准。拖动与滑块仅用于网页，原作动画未验证。" if number in (1, 2, 3) else "文字方案待选，尚未制作适配原型；示例非实时数据。数字显示剩余，实色表示已用；动效仅为建议，原作动画未验证，不新增 App 功能。")
+        notice = ("已制作网页交互样机，正式 App 尚未采用；此处保留原图和原适配说明。本轮网页明暗并排，数字与亮色均表示剩余、灰色表示已用；旧正文的实色已用、邮箱及箭头建议为历史方案，以当前样机为准。拖动与滑块仅用于网页，原作动画未验证。" if number in (1, 2, 3) else "已制作网页交互样机，正式 App 尚未采用；原图与详细历史说明保留。最新要求：明暗并排、Codex · Plus精简头部、下次重置在窗口名下；数字与实体／强调部分均表示剩余，灰色表示已用，第8款亮版黑色斜块表示剩余。旧正文中的实色已用、邮箱／箭头等建议已被取代；拖动与精调仅属网页模拟，原作动画未验证。")
         dialogs.append(f"""<dialog class="detail-dialog" id="detail-{number}" aria-labelledby="detail-title-{number}" aria-describedby="detail-note-{number}">
 <div class="detail-shell">
   <header class="detail-header"><h2 id="detail-title-{number}"><span class="selection-number">{number}</span> {title}</h2><button class="detail-close" type="button" data-close-dialog autofocus aria-label="关闭参考 {number} 的适配说明">关闭</button></header>
@@ -176,7 +241,7 @@ def render_detail_dialogs(references, second_references, selected_mappings, adap
 
 def build_gallery(references, second_references, selected_mappings=(), adaptation_details=()):
     count = len(references) + len(second_references)
-    guidance = "选中1—3可拖动预览；原图与适配说明见独立入口" if adaptation_details else "点击截图或原作链接查看详情"
+    guidance = "选中1—11可拖动预览；原图与适配说明见独立入口" if adaptation_details else "点击截图或原作链接查看详情"
     status = f"{count} 个原作参考 · 选中 {len(selected_mappings)} 个 · {guidance}" if count else "正在搜集原作参考"
     first_content = render_cards(references)
     second_content = render_cards(second_references, "reference-batch-2")
