@@ -1,0 +1,16 @@
+T63 饱满版更新检查（2026-10-12）
+基线8e3e2aa；用户先确认预览，再明确授权更新到本人手机。
+原始图1254x1254与确认预览逐字节一致；实际图1024x1024不透明PNG，hasAlpha=no。
+原图SHA-256=7c3f0157734cc672ba332ca8d25bbd94e0583c9365025fb5caee81e769087e46
+1024图SHA-256=fca7627e76f09fc65a5de479c3dbf221273d69f5012959a9d40a79dd188819c0
+1024资源目视通过：仪表主体放大，彩环／五刻度／黑指针及轴心更厚实，左红右绿连续渐变，未裁切。
+签名Release构建：build/T63-fuller-release.log，BUILD SUCCEEDED；原SettingsView警告保持。
+完整本机环境codesign --verify --deep --strict通过；主App/组件显示名保持Token 仪表盘，Bundle保持原值。
+工程project.pbxproj逐字节等于Git基线；业务源码、数据身份、App Group/钥匙串与组件选择配置未更改。
+产物CFBundleIconName=AppIcon，编译PNG IHDR=120x120；iOS优化PNG不支持本工具直接预览，未将其记为目视通过。
+同Bundle覆盖安装成功：build/T63-fuller-install.json outcome=success，安装开始16:25:47（+08:00），未卸载。
+手机元数据核对：build/T63-fuller-after-app.json outcome=success，Token 仪表盘与原Bundle。
+普通启动：16:26:37（+08:00），build/T63-fuller-launch.json outcome=success，arguments=[]。
+预览用户已确认，手机新版桌面视觉仍未亲验；此前不饱满反馈与各轮失败历史保持。
+本轮不导出/清理真实账户、不操作权限或任何组件配置，未做正式文件前后字节比较；普通前台刷新沿用现有App行为。
+最终记录检查：63项状态统计一致，269条本地/行号链接有效，实际两份资源SHA与品牌说明一致。
