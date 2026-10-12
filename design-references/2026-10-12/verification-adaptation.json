@@ -1,0 +1,154 @@
+{
+  "date": "2026-10-12",
+  "scope": "11项首页额度卡片文字说明；现有原图；不制作效果图或操作Figma",
+  "dialogs": [
+    {
+      "id": "detail-1",
+      "image": "screenshots/11.jpg",
+      "loaded": true,
+      "matchingLink": true,
+      "originalLink": "https://dribbble.com/shots/21752734-Skala-progress-bar",
+      "sections": 8,
+      "textLength": 1468,
+      "title": "1 Skala progress bar",
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "detail-2",
+      "image": "screenshots/17.jpg",
+      "loaded": true,
+      "matchingLink": true,
+      "originalLink": "https://www.pinterest.com/pin/350577152263222155/",
+      "sections": 8,
+      "textLength": 1450,
+      "title": "2 发光胶囊进度卡片（原 Pin 未命名）",
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "detail-3",
+      "image": "screenshots/19.jpg",
+      "loaded": true,
+      "matchingLink": true,
+      "originalLink": "https://www.pinterest.com/pin/592504894770745443/",
+      "sections": 8,
+      "textLength": 1433,
+      "title": "3 密集分段刻度卡片（原 Pin 未命名）",
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "detail-4",
+      "image": "screenshots/28.jpg",
+      "loaded": true,
+      "matchingLink": true,
+      "originalLink": "https://dribbble.com/shots/18707010-Toyota-GR86-Gauge-Exploration",
+      "sections": 8,
+      "textLength": 1444,
+      "title": "4 Toyota GR86 Gauge Exploration",
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "detail-5",
+      "image": "screenshots-batch-2/11.jpg",
+      "loaded": true,
+      "matchingLink": true,
+      "originalLink": "https://www.pinterest.com/pin/30047522509762503/",
+      "sections": 8,
+      "textLength": 1457,
+      "title": "5 Battery Charging UI with Dynamic Island | iOS Energy Status Design",
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "detail-6",
+      "image": "screenshots-batch-2/13.jpg",
+      "loaded": true,
+      "matchingLink": true,
+      "originalLink": "https://www.pinterest.com/pin/13510867627884208/",
+      "sections": 8,
+      "textLength": 1454,
+      "title": "6 紫色分段电量卡片（原 Pin 未命名）",
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "detail-7",
+      "image": "screenshots-batch-2/14.jpg",
+      "loaded": true,
+      "matchingLink": true,
+      "originalLink": "https://www.pinterest.com/pin/869194796817868888/",
+      "sections": 8,
+      "textLength": 1247,
+      "title": "7 绿色液体电量填充（原 Pin 未命名）",
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "detail-8",
+      "image": "screenshots-batch-2/19.jpg",
+      "loaded": true,
+      "matchingLink": true,
+      "originalLink": "https://huaban.com/pins/6830690582",
+      "sections": 8,
+      "textLength": 1260,
+      "title": "8 常规内容-图标系列扁平风加载进度条元素",
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "detail-9",
+      "image": "screenshots-batch-2/20.jpg",
+      "loaded": true,
+      "matchingLink": true,
+      "originalLink": "https://huaban.com/pins/6385482101",
+      "sections": 8,
+      "textLength": 1291,
+      "title": "9 小红书爆款加载中卡通涂鸦风标记文字",
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "detail-10",
+      "image": "screenshots-batch-2/21.jpg",
+      "loaded": true,
+      "matchingLink": true,
+      "originalLink": "https://huaban.com/pins/6271331369",
+      "sections": 8,
+      "textLength": 1298,
+      "title": "10 图标系列-通用-发光进度码通用贴纸",
+      "closed": true,
+      "focusReturned": true
+    },
+    {
+      "id": "detail-11",
+      "image": "screenshots-batch-2/24.jpg",
+      "loaded": true,
+      "matchingLink": true,
+      "originalLink": "https://www.behance.net/gallery/248537291/Gym-Workout-App",
+      "sections": 8,
+      "textLength": 1323,
+      "title": "11 Gym Workout App",
+      "closed": true,
+      "focusReturned": true
+    }
+  ],
+  "additionalChecks": {
+    "allOriginalManifestsImagesAndSelectedIdsShaUnchanged": true,
+    "original60CardsHtmlUnchanged": true,
+    "tabCounts": [
+      30,
+      30,
+      11
+    ],
+    "escapeCloseAndFocusReturn": true,
+    "keyboardOpenAndBackdropClose": true,
+    "longTextScrolledToFigmaDescription": true,
+    "titleAndExplicitButtonOpen": true,
+    "originalLinkOpensCorrectUrlWithoutDialog": true,
+    "originalLinkChecked": "https://dribbble.com/shots/21752734-Skala-progress-bar",
+    "userReview": "新文字方案与弹窗尚未用户亲验"
+  }
+}

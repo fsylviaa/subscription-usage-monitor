@@ -11,6 +11,7 @@ OUTPUT = BASE / "dist" / "index.html"
 SOURCE = BASE / "references.json"
 SECOND_SOURCE = BASE / "references-batch-2.json"
 SELECTED_SOURCE = BASE / "selected-references.json"
+DETAILS_SOURCE = BASE / "adaptation-details.json"
 
 
 def render_cards(references, id_prefix="reference"):
@@ -29,11 +30,12 @@ def render_cards(references, id_prefix="reference"):
     return "\n".join(cards) if cards else '<p class="empty">原作截图和链接整理后将显示在这里。</p>'
 
 
-def render_selected_cards(references, second_references, selected_mappings):
+def render_selected_cards(references, second_references, selected_mappings, adaptation_details=()):
     batches = {
         1: {int(item["id"]): item for item in references},
         2: {int(item["id"]): item for item in second_references},
     }
+    details = {int(item["id"]): item for item in adaptation_details}
     cards = []
     for selection in selected_mappings:
         number = int(selection["id"])
@@ -45,19 +47,73 @@ def render_selected_cards(references, second_references, selected_mappings):
         url = escape(str(item["url"]), quote=True)
         image = escape(str(item["image"]), quote=True)
         batch_name = "第一批" if batch == 1 else "第二批"
-        cards.append(f"""<article class="card" id="selected-reference-{number}">
+        if number in details:
+            cards.append(f"""<article class="card selected-card" id="selected-reference-{number}" data-detail-target="detail-{number}" tabindex="0" aria-label="查看选中参考 {number} 的适配说明" aria-haspopup="dialog" aria-controls="detail-{number}">
+  <button class="preview detail-preview" type="button" aria-label="查看选中参考 {number} 的适配说明"><img src="{image}" alt="选中 {number} · {title}" decoding="async"></button>
+  <div class="caption"><h2><span class="selection-number">{number}</span> {title}</h2><p class="origin">{batch_name} · 原编号 {original_number:02d}</p><p>{source} · <a href="{url}" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p><p><button class="adaptation-button" type="button">查看适配说明</button></p></div>
+</article>""")
+        else:
+            cards.append(f"""<article class="card" id="selected-reference-{number}">
   <a class="preview" href="{url}" target="_blank" rel="noopener noreferrer"><img src="{image}" alt="选中 {number} · {title}" decoding="async"></a>
   <div class="caption"><h2><span class="selection-number">{number}</span> {title}</h2><p class="origin">{batch_name} · 原编号 {original_number:02d}</p><p>{source} · <a href="{url}" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
 </article>""")
     return "\n".join(cards) if cards else '<p class="empty">选中的参考将显示在这里。</p>'
 
 
-def build_gallery(references, second_references, selected_mappings=()):
+def render_detail_dialogs(references, second_references, selected_mappings, adaptation_details):
+    batches = {
+        1: {int(item["id"]): item for item in references},
+        2: {int(item["id"]): item for item in second_references},
+    }
+    details = {int(item["id"]): item for item in adaptation_details}
+    dialogs = []
+    for selection in selected_mappings:
+        number = int(selection["id"])
+        if number not in details:
+            continue
+        detail = details[number]
+        batch = int(selection["batch"])
+        original_number = int(selection["original_id"])
+        original = batches[batch][original_number]
+        title = escape(str(original["title"]))
+        source = escape(str(original["source"]))
+        url = escape(str(original["url"]), quote=True)
+        image = escape(str(original["image"]), quote=True)
+        batch_name = "第一批" if batch == 1 else "第二批"
+        direction = escape(str(detail["direction"]))
+        summary = escape(str(detail["summary"]))
+        figma_prompt = escape(str(detail["figma_prompt"]))
+        sections = []
+        for section in detail["sections"]:
+            section_title = escape(str(section["title"]))
+            paragraphs = "\n".join(f"<p>{escape(str(paragraph))}</p>" for paragraph in section["paragraphs"])
+            sections.append(f"<section class=\"adaptation-section\"><h3>{section_title}</h3>{paragraphs}</section>")
+        sections_html = "\n".join(sections)
+        dialogs.append(f"""<dialog class="detail-dialog" id="detail-{number}" aria-labelledby="detail-title-{number}" aria-describedby="detail-note-{number}">
+<div class="detail-shell">
+  <header class="detail-header"><h2 id="detail-title-{number}"><span class="selection-number">{number}</span> {title}</h2><button class="detail-close" type="button" data-close-dialog autofocus aria-label="关闭参考 {number} 的适配说明">关闭</button></header>
+  <div class="detail-body">
+    <p class="detail-origin">{batch_name} · 原编号 {original_number:02d} · {source} · <a href="{url}" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p>
+    <p class="detail-notice" id="detail-note-{number}">文字方案待选，尚未制作适配原型；示例非实时数据。数字显示剩余，实色表示已用；动效仅为建议，原作动画未验证，不新增 App 功能。</p>
+    <a class="detail-image-link" href="{url}" target="_blank" rel="noopener noreferrer"><img class="detail-image" src="{image}" alt="参考 {number} · {title} 原作截图" decoding="async"></a>
+    <div class="adaptation-text"><p class="detail-direction"><strong>适配方向：</strong>{direction}</p><p class="detail-summary">{summary}</p>
+{sections_html}
+      <section class="adaptation-section"><h3>后续 Figma 绘制描述</h3><p class="figma-description">{figma_prompt}</p></section>
+    </div>
+  </div>
+</div>
+</dialog>""")
+    return "\n".join(dialogs)
+
+
+def build_gallery(references, second_references, selected_mappings=(), adaptation_details=()):
     count = len(references) + len(second_references)
-    status = f"{count} 个原作参考 · 选中 {len(selected_mappings)} 个 · 点击截图或原作链接查看详情" if count else "正在搜集原作参考"
+    guidance = "点击选中卡片查看适配说明，原作链接查看原作" if adaptation_details else "点击截图或原作链接查看详情"
+    status = f"{count} 个原作参考 · 选中 {len(selected_mappings)} 个 · {guidance}" if count else "正在搜集原作参考"
     first_content = render_cards(references)
     second_content = render_cards(second_references, "reference-batch-2")
-    selected_content = render_selected_cards(references, second_references, selected_mappings)
+    selected_content = render_selected_cards(references, second_references, selected_mappings, adaptation_details)
+    detail_dialogs = render_detail_dialogs(references, second_references, selected_mappings, adaptation_details)
     return f"""<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -68,6 +124,7 @@ def build_gallery(references, second_references, selected_mappings=()):
 *{{box-sizing:border-box}}body{{margin:0;background:#f4f4f4;color:#202020;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}}main{{max-width:1560px;margin:auto;padding:32px 24px}}header{{margin-bottom:24px}}h1{{margin:0 0 8px;font-size:26px}}header p{{margin:0;color:#666;font-size:15px}}.grid{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}}.card{{overflow:hidden;background:white;border:1px solid #ddd;border-radius:10px}}.preview{{display:flex;align-items:center;justify-content:center;height:300px;background:#fafafa}}.preview img{{display:block;width:100%;height:100%;object-fit:contain}}.caption{{padding:14px 16px 16px}}h2{{margin:0;font-size:16px;line-height:1.5;font-weight:600;overflow-wrap:anywhere}}h2 span{{color:#777}}.caption p{{margin:8px 0 0;font-size:14px;color:#666}}a{{color:#2458b5;text-underline-offset:3px}}.empty{{grid-column:1/-1;color:#666}}@media(max-width:1050px){{.grid{{grid-template-columns:repeat(2,minmax(0,1fr))}}}}@media(max-width:650px){{main{{padding:24px 16px}}.grid{{grid-template-columns:1fr}}.preview{{height:280px}}}}
 .tabs{{display:flex;gap:8px;margin-bottom:20px}}.tab{{padding:10px 16px;border:1px solid #ccc;border-radius:8px;background:transparent;color:#555;font:inherit;cursor:pointer}}.tab[aria-selected="true"]{{background:#202020;border-color:#202020;color:white}}.tab:focus-visible{{outline:2px solid #2458b5;outline-offset:3px}}
 h2 .selection-number{{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;margin-right:4px;padding:0 6px;border-radius:6px;background:#202020;color:white;font-size:18px;vertical-align:middle}}.caption .origin{{font-size:13px}}
+.selected-card{{cursor:pointer}}.selected-card:focus-visible{{outline:2px solid #2458b5;outline-offset:3px}}.detail-preview{{width:100%;border:0;padding:0;cursor:pointer}}.adaptation-button{{border:0;padding:0;background:none;color:#2458b5;text-decoration:underline;text-underline-offset:3px;font:inherit;cursor:pointer}}.detail-dialog{{width:min(1040px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);padding:0;border:1px solid #ddd;border-radius:12px;color:#202020;overflow:hidden}}.detail-dialog::backdrop{{background:rgba(0,0,0,.45)}}.detail-shell{{display:flex;flex-direction:column;max-height:calc(100dvh - 32px)}}.detail-header{{display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none;margin:0;padding:16px 20px;border-bottom:1px solid #ddd;background:white}}.detail-header h2{{font-size:18px}}.detail-close{{flex:none;padding:9px 16px;border:1px solid #bbb;border-radius:7px;background:white;color:#202020;font:inherit;cursor:pointer}}.detail-close:focus-visible,.detail-preview:focus-visible,.adaptation-button:focus-visible{{outline:2px solid #2458b5;outline-offset:3px}}.detail-body{{min-height:0;overflow:auto;overscroll-behavior:contain;padding:20px 24px 32px;line-height:1.75}}.detail-origin{{margin:0 0 12px;color:#666;font-size:14px}}.detail-notice{{margin:0 0 20px;padding:12px 16px;border:1px solid #ddd;border-radius:8px;background:#f7f7f7;font-size:14px;color:#555}}.detail-image-link{{display:block;margin-bottom:24px;background:#fafafa}}.detail-image{{display:block;width:100%;height:auto;max-height:260px;object-fit:contain}}.adaptation-text{{max-width:760px;margin:auto}}.detail-direction{{margin:0 0 10px;font-size:18px}}.detail-summary{{margin:0 0 24px}}.adaptation-section{{margin-top:24px}}.adaptation-section h3{{margin:0 0 8px;font-size:18px}}.adaptation-section p{{margin:0 0 10px;overflow-wrap:anywhere}}.figma-description{{white-space:pre-wrap;padding:14px 16px;background:#f7f7f7;border:1px solid #ddd;border-radius:8px}}@media(max-width:650px){{.detail-header{{padding:12px 14px;gap:10px}}.detail-header h2{{font-size:16px}}.detail-close{{padding:8px 12px}}.detail-body{{padding:16px 16px 24px}}}}
 </style>
 </head>
 <body>
@@ -94,6 +151,7 @@ h2 .selection-number{{display:inline-flex;align-items:center;justify-content:cen
 </div>
 </section>
 </main>
+{detail_dialogs}
 <script>
 {{
   const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
@@ -119,6 +177,42 @@ h2 .selection-number{{display:inline-flex;align-items:center;justify-content:cen
       tabs[next].focus();
     }});
   }});
+  const dialogOpeners = new WeakMap();
+  function openDetail(id, opener) {{
+    const dialog = document.getElementById(id);
+    if (!dialog || dialog.open) return;
+    dialogOpeners.set(dialog, {{ opener, overflow: document.body.style.overflow }});
+    dialog.showModal();
+    document.body.style.overflow = 'hidden';
+    dialog.querySelector('.detail-body').scrollTop = 0;
+    dialog.querySelector('[data-close-dialog]').focus();
+  }}
+  document.querySelectorAll('[data-detail-target]').forEach(card => {{
+    card.addEventListener('click', event => {{
+      if (event.target.closest('a[href]')) return;
+      openDetail(card.dataset.detailTarget, event.target.closest('button') || card);
+    }});
+    card.addEventListener('keydown', event => {{
+      if (event.target !== card || !['Enter', ' '].includes(event.key)) return;
+      event.preventDefault();
+      openDetail(card.dataset.detailTarget, card);
+    }});
+  }});
+  document.querySelectorAll('.detail-dialog').forEach(dialog => {{
+    dialog.querySelector('[data-close-dialog]').addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', event => {{
+      if (event.target !== dialog) return;
+      const bounds = dialog.getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
+    }});
+    dialog.addEventListener('close', () => {{
+      const state = dialogOpeners.get(dialog);
+      if (!state) return;
+      document.body.style.overflow = state.overflow;
+      if (state.opener && state.opener.isConnected) state.opener.focus({{ preventScroll: true }});
+      dialogOpeners.delete(dialog);
+    }});
+  }});
 }}
 </script>
 </body>
@@ -130,6 +224,7 @@ if __name__ == "__main__":
     references = json.loads(SOURCE.read_text(encoding="utf-8")) if SOURCE.exists() else []
     second_references = json.loads(SECOND_SOURCE.read_text(encoding="utf-8")) if SECOND_SOURCE.exists() else []
     selected_mappings = json.loads(SELECTED_SOURCE.read_text(encoding="utf-8")) if SELECTED_SOURCE.exists() else []
+    adaptation_details = json.loads(DETAILS_SOURCE.read_text(encoding="utf-8")) if DETAILS_SOURCE.exists() else []
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(build_gallery(references, second_references, selected_mappings), encoding="utf-8")
-    print(f"Generated {OUTPUT} ({len(references)} + {len(second_references)} references; {len(selected_mappings)} selected)")
+    OUTPUT.write_text(build_gallery(references, second_references, selected_mappings, adaptation_details), encoding="utf-8")
+    print(f"Generated {OUTPUT} ({len(references)} + {len(second_references)} references; {len(selected_mappings)} selected; {len(adaptation_details)} details)")
