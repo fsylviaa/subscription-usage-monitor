@@ -99,6 +99,10 @@ final class LaunchTests: XCTestCase {
                 XCTAssertTrue(entry.waitForExistence(timeout: 5))
                 entry.tap()
                 assertT42Step(in: app, second: false)
+                swipeTutorial(in: app, forward: true)
+                assertT42Step(in: app, second: true)
+                swipeTutorial(in: app, forward: false)
+                assertT42Step(in: app, second: false)
                 if secondStep {
                     app.buttons["tutorial.next"].tap()
                     assertT42Step(in: app, second: true)
@@ -174,13 +178,13 @@ final class LaunchTests: XCTestCase {
             XCTAssertTrue(app.buttons["tutorial.next"].waitForExistence(timeout: 5))
             XCTAssertTrue(app.buttons["tutorial.close"].isHittable)
             XCTAssertTrue(app.buttons["tutorial.next"].isHittable)
-            let instructions = app.staticTexts["tutorial.instructions"]
+            let instructions = app.staticTexts["tutorial.instructions.\(second ? 1 : 0)"]
             app.scrollViews.firstMatch.swipeUp()
             XCTAssertTrue(instructions.isHittable)
             XCTAssertGreaterThanOrEqual(instructions.frame.minX, 0)
             XCTAssertLessThanOrEqual(instructions.frame.maxX, app.frame.maxX)
             XCTAssertLessThanOrEqual(instructions.frame.maxY, app.buttons["tutorial.next"].frame.minY)
-            if second { XCTAssertTrue(app.staticTexts["tutorial.defaultAccount"].isHittable) }
+            XCTAssertFalse(app.staticTexts["tutorial.defaultAccount"].exists)
             saveScreenshot(of: app, name: "T42-最大字号-第\(second ? 2 : 1)步")
             app.buttons["tutorial.next"].tap()
         }
@@ -188,14 +192,23 @@ final class LaunchTests: XCTestCase {
     }
 
     @MainActor
+    private func swipeTutorial(in app: XCUIApplication, forward: Bool) {
+        let pager = app
+        let start = pager.coordinate(withNormalizedOffset: CGVector(dx: forward ? 0.85 : 0.15, dy: 0.5))
+        let end = pager.coordinate(withNormalizedOffset: CGVector(dx: forward ? 0.15 : 0.85, dy: 0.5))
+        start.press(forDuration: 0.05, thenDragTo: end)
+    }
+
+    @MainActor
     private func assertT42Step(in app: XCUIApplication, second: Bool) {
-        XCTAssertTrue(app.staticTexts["tutorial.stepTitle"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.staticTexts["tutorial.stepTitle"].label,
-                       second ? "搜索 App，选择尺寸并添加" : "长按主屏幕，进入添加入口")
+        let text = app.staticTexts["tutorial.instructions.\(second ? 1 : 0)"]
+        XCTAssertTrue(text.waitForExistence(timeout: 5))
+        XCTAssertEqual(text.label, second ? "长按小组件，选择要显示的账号" : "长按主屏幕，然后添加 Token 仪表盘。")
+        XCTAssertFalse(app.staticTexts["tutorial.stepTitle"].exists)
+        XCTAssertFalse(app.staticTexts["tutorial.defaultAccount"].exists)
         XCTAssertEqual(app.buttons["tutorial.next"].label, second ? "完成" : "继续")
         XCTAssertTrue(app.buttons["tutorial.close"].isHittable)
         XCTAssertTrue(app.buttons["tutorial.next"].isHittable)
-        XCTAssertTrue(app.staticTexts["tutorial.instructions"].label.contains(second ? "订阅用量" : "编辑"))
     }
 
     @MainActor

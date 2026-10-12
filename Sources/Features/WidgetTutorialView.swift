@@ -1,9 +1,9 @@
 import SwiftUI
 
-/// Static system instructions. Advancing or closing never installs a widget.
+/// Shared tutorial. Navigation never performs a system widget operation.
 struct WidgetTutorialView: View {
     var close: () -> Void
-    @State private var secondStep = false
+    @State private var step = 0
 
     var body: some View {
         VStack(spacing: 0) {
@@ -21,46 +21,45 @@ struct WidgetTutorialView: View {
             }
             .padding(.horizontal, 8).padding(.top, 8)
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    illustration
-                        .frame(maxWidth: .infinity)
-                        .padding(24)
-                        .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 26))
-                        .accessibilityHidden(true)
-                    Text(secondStep ? "搜索 App，选择尺寸并添加" : "长按主屏幕，进入添加入口")
-                        .font(.title2.weight(.semibold))
-                        .accessibilityAddTraits(.isHeader)
-                        .accessibilityIdentifier("tutorial.stepTitle")
-                    Text(secondStep
-                         ? "搜索“订阅用量”，选择小号或中号，轻点“添加小组件”，再轻点“完成”。"
-                         : "长按主屏幕空白处，轻点左上角“编辑”，再选择“添加小组件”。")
-                        .font(.body)
-                        .foregroundStyle(DashboardStyle.secondary)
-                        .accessibilityIdentifier("tutorial.instructions")
-                    if secondStep {
-                        Text("默认显示账户列表中的第一个账户。")
-                            .font(.subheadline).foregroundStyle(DashboardStyle.secondary)
-                            .accessibilityIdentifier("tutorial.defaultAccount")
+            TabView(selection: $step) {
+                ForEach(0..<2) { page in
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 18) {
+                            illustration(secondStep: page == 1)
+                                .frame(maxWidth: .infinity)
+                                .padding(24)
+                                .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 26))
+                                .accessibilityHidden(true)
+                            Text(page == 0
+                                 ? "长按主屏幕，然后添加 Token 仪表盘。"
+                                 : "长按小组件，选择要显示的账号")
+                                .font(.body)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .accessibilityIdentifier("tutorial.instructions.\(page)")
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(16)
                     }
+                    .clipped()
+                    .tag(page)
+                    .accessibilityHidden(step != page)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(16)
             }
-            .clipped()
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .accessibilityIdentifier("tutorial.pages")
 
             VStack(spacing: 14) {
                 HStack(spacing: 6) {
-                    Capsule().fill(secondStep ? DashboardStyle.track : DashboardStyle.text)
-                        .frame(width: secondStep ? 6 : 18, height: 6)
-                    Capsule().fill(secondStep ? DashboardStyle.text : DashboardStyle.track)
-                        .frame(width: secondStep ? 18 : 6, height: 6)
+                    Capsule().fill(step == 1 ? DashboardStyle.track : DashboardStyle.text)
+                        .frame(width: step == 1 ? 6 : 18, height: 6)
+                    Capsule().fill(step == 1 ? DashboardStyle.text : DashboardStyle.track)
+                        .frame(width: step == 1 ? 18 : 6, height: 6)
                 }
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(secondStep ? "第 2 步，共 2 步" : "第 1 步，共 2 步")
+                .accessibilityLabel(step == 1 ? "第 2 步，共 2 步" : "第 1 步，共 2 步")
                 .accessibilityIdentifier("tutorial.step")
-                Button(secondStep ? "完成" : "继续") {
-                    if secondStep { close() } else { secondStep = true }
+                Button(step == 1 ? "完成" : "继续") {
+                    if step == 1 { close() } else { step = 1 }
                 }
                 .buttonStyle(DashboardButtonStyle())
                 .accessibilityIdentifier("tutorial.next")
@@ -73,24 +72,19 @@ struct WidgetTutorialView: View {
     }
 
     @ViewBuilder
-    private var illustration: some View {
+    private func illustration(secondStep: Bool) -> some View {
         if secondStep {
             VStack(spacing: 18) {
+                sizeDiagram("", width: 132)
+                Text("编辑小组件").font(.subheadline.weight(.semibold))
                 HStack {
-                    Image(systemName: "magnifyingglass")
-                    Text("订阅用量")
+                    Text("显示账户")
                     Spacer()
+                    Text("账号").foregroundStyle(DashboardStyle.secondary)
+                    Image(systemName: "chevron.right")
                 }
                 .font(.subheadline).padding(12)
                 .background(DashboardStyle.background, in: RoundedRectangle(cornerRadius: 12))
-                HStack(alignment: .bottom, spacing: 16) {
-                    sizeDiagram("小号", width: 66)
-                    sizeDiagram("中号", width: 132)
-                }
-                Text("添加小组件").font(.subheadline.weight(.semibold))
-                    .padding(12).frame(maxWidth: .infinity)
-                    .foregroundStyle(DashboardStyle.accentText)
-                    .background(DashboardStyle.accent, in: RoundedRectangle(cornerRadius: 14))
             }
         } else {
             VStack(spacing: 20) {
