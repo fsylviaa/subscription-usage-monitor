@@ -27,7 +27,7 @@ struct WidgetTutorialView: View {
                         VStack(alignment: .leading, spacing: 18) {
                             WidgetOperationIllustration(page: page, active: step == page)
                                 .frame(maxWidth: .infinity)
-                                .padding(24)
+                                .padding(page == 0 ? 10 : 24)
                                 .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 26))
 
                             Text(page == 0
@@ -82,7 +82,7 @@ private struct WidgetOperationIllustration: View {
     @State private var frame = 0
     @ScaledMetric(relativeTo: .subheadline) private var contentHeight = 240
 
-    private var count: Int { page == 0 ? 5 : 4 }
+    private var count: Int { page == 0 ? 8 : 4 }
     private var appName: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
             ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? ""
@@ -113,71 +113,32 @@ private struct WidgetOperationIllustration: View {
             frame = 0
             // Play once on each visit, then retain the outcome. Navigation is independent.
             for next in 1..<count {
-                do { try await Task.sleep(for: .seconds(2)) } catch { return }
+                do { try await Task.sleep(for: .seconds(page == 0 ? 3 : 2)) } catch { return }
                 guard !Task.isCancelled else { return }
                 withAnimation(.easeInOut(duration: 0.25)) { frame = next }
             }
         }
     }
 
-    private func phone(_ index: Int, moving: Bool) -> some View {
-        VStack(spacing: 16) {
-            Capsule().fill(DashboardStyle.text).frame(width: 48, height: 5)
-            Group {
-                if page == 0 { adding(index, moving: moving) }
-                else { choosing(index, moving: moving) }
-            }
-            .id(index)
-            .transition(.opacity)
-            .frame(maxWidth: .infinity, minHeight: moving ? contentHeight : 190,
-                   maxHeight: moving ? contentHeight : nil)
-            Capsule().fill(DashboardStyle.secondary).frame(width: 62, height: 4)
-        }
-        .font(.subheadline)
-        .padding(18)
-        .frame(maxWidth: 280)
-        .background(DashboardStyle.background, in: RoundedRectangle(cornerRadius: 30))
-        .overlay(RoundedRectangle(cornerRadius: 30).strokeBorder(DashboardStyle.track, lineWidth: 2))
-    }
-
     @ViewBuilder
-    private func adding(_ index: Int, moving: Bool) -> some View {
-        switch index {
-        case 0:
-            VStack(spacing: 24) {
-                icons
-                HStack { Spacer(); touch(moving: moving) }
-            }
-        case 1:
-            VStack(alignment: .leading, spacing: 18) {
-                row("编辑", icon: "hand.point.up.left.fill")
-                row("添加小组件", icon: "plus")
-                icons
-            }
-        case 2:
-            VStack(spacing: 18) {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                    Text(appName).fixedSize(horizontal: false, vertical: true)
-                    Spacer(minLength: 0)
-                }.padding(10).background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 10))
-                row(appName, icon: "square.grid.2x2")
-            }
-        case 3:
+    private func phone(_ index: Int, moving: Bool) -> some View {
+        if page == 0 {
+            WidgetAddingSystemPage(index: index, appName: appName, moving: moving)
+        } else {
             VStack(spacing: 16) {
-                Text(appName).fontWeight(.semibold)
-                ViewThatFits(in: .horizontal) {
-                    HStack(alignment: .top, spacing: 10) { size("小号", medium: false); size("中号", medium: true) }
-                    VStack(spacing: 10) { size("小号", medium: false); size("中号", medium: true) }
-                }
-                action("添加小组件")
+                Capsule().fill(DashboardStyle.text).frame(width: 48, height: 5)
+                choosing(index, moving: moving)
+                    .id(index)
+                    .transition(.opacity)
+                    .frame(maxWidth: .infinity, minHeight: moving ? contentHeight : 190,
+                           maxHeight: moving ? contentHeight : nil)
+                Capsule().fill(DashboardStyle.secondary).frame(width: 62, height: 4)
             }
-        default:
-            VStack(spacing: 18) {
-                HStack { Spacer(); Text("完成").fontWeight(.semibold) }
-                widget
-                icons
-            }
+            .font(.subheadline)
+            .padding(18)
+            .frame(maxWidth: 280)
+            .background(DashboardStyle.background, in: RoundedRectangle(cornerRadius: 30))
+            .overlay(RoundedRectangle(cornerRadius: 30).strokeBorder(DashboardStyle.track, lineWidth: 2))
         }
     }
 
@@ -237,17 +198,249 @@ private struct WidgetOperationIllustration: View {
             Image(systemName: icon)
         }.padding(10).background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 10))
     }
-    private func size(_ label: String, medium: Bool) -> some View {
-        VStack(spacing: 8) {
-            RoundedRectangle(cornerRadius: 12).strokeBorder(DashboardStyle.secondary, lineWidth: 2)
-                .frame(width: medium ? 116 : 58, height: 58)
-            Text(label).font(.caption)
+}
+
+/// Proportional reconstruction of the owner's iPhone 11 / iOS 26.5 pages.
+/// Coordinates describe the observed 414 × 896 viewport, not tutorial controls.
+/// Artificial app tiles and quota values avoid copying private Home Screen data.
+private struct WidgetAddingSystemPage: View {
+    let index: Int
+    let appName: String
+    let moving: Bool
+    @ScaledMetric(relativeTo: .body) private var preferredWidth = 250
+    private let width: CGFloat = 414
+    private let height: CGFloat = 896
+    private var sheetVisible: Bool { (3...6).contains(index) }
+    private var editing: Bool { index != 0 }
+
+    var body: some View {
+        // The whole system page grows together, retaining the observed proportions.
+        GeometryReader { geometry in
+            let scale = geometry.size.width / width
+            scene
+                .frame(width: width, height: height)
+                .environment(\.dynamicTypeSize, .medium)
+                .clipShape(RoundedRectangle(cornerRadius: 38))
+                .overlay(RoundedRectangle(cornerRadius: 38).strokeBorder(DashboardStyle.track, lineWidth: 2))
+                .scaleEffect(scale, anchor: .topLeading)
+                .frame(width: width * scale, height: height * scale, alignment: .topLeading)
+                .frame(maxWidth: .infinity)
+        }
+        .aspectRatio(width / height, contentMode: .fit)
+        .frame(maxWidth: preferredWidth)
+    }
+
+    private var scene: some View {
+        ZStack(alignment: .topLeading) {
+            home
+            if index == 2 { editMenu.transition(.scale(scale: 0.9, anchor: .topLeading).combined(with: .opacity)) }
+            if sheetVisible {
+                systemSheet.transition(.move(edge: .bottom))
+            }
+            pointer
+        }
+        .foregroundStyle(Color.primary)
+    }
+
+    private var systemSheet: some View {
+        ZStack(alignment: .topLeading) {
+            RoundedRectangle(cornerRadius: 46)
+                .fill(Color(.secondarySystemBackground))
+                .frame(width: width, height: 794).offset(y: 102)
+            Capsule().fill(Color.secondary.opacity(0.4)).frame(width: 36, height: 5).offset(x: 189, y: 114)
+            if index < 5 { gallery.id(index).transition(.opacity) }
+            else { preview.transition(.opacity) }
+        }
+        .frame(width: width, height: height)
+    }
+
+    private var home: some View {
+        ZStack(alignment: .topLeading) {
+            LinearGradient(colors: [DashboardStyle.track, DashboardStyle.elevated, DashboardStyle.background], startPoint: .topLeading, endPoint: .bottomTrailing)
+            if editing {
+                systemPill("编辑").offset(x: 28, y: 16)
+                systemPill("完成").offset(x: 326, y: 16)
+            } else {
+                Text("9:41").font(.system(size: 17, weight: .semibold)).offset(x: 35, y: 18)
+                HStack(spacing: 5) { Image(systemName: "cellularbars"); Image(systemName: "wifi"); Image(systemName: "battery.100percent") }
+                    .font(.system(size: 14)).offset(x: 327, y: 20)
+            }
+            ForEach(0..<16, id: \.self) { item in
+                let row = item / 4, column = item % 4
+                appTile(item, editing: editing).offset(x: CGFloat(33 + column * 94), y: CGFloat(80 + row * 104) + (index == 7 ? 208 : 0))
+            }
+            if index == 7 {
+                quotaPreview(medium: true).frame(width: 355, height: 166).offset(x: 29, y: 70)
+                Text(appName).font(.system(size: 12)).frame(width: 355).offset(x: 29, y: 244)
+            }
+            HStack(spacing: 7) { ForEach(0..<3) { dot in Circle().fill(dot == 0 ? Color.primary : Color.secondary.opacity(0.4)).frame(width: 6, height: 6) } }
+                .padding(10).background(.ultraThinMaterial, in: Capsule()).offset(x: 177, y: 730)
+            RoundedRectangle(cornerRadius: 44).fill(.ultraThinMaterial).frame(width: 388, height: 106).offset(x: 13, y: 779)
+            HStack(spacing: 30) { ForEach(0..<4) { appTile($0, editing: editing, label: false) } }.offset(x: 33, y: 800)
         }
     }
-    private func action(_ label: String) -> some View {
-        Text(label).fontWeight(.semibold).fixedSize(horizontal: false, vertical: true)
-            .padding(10).frame(maxWidth: .infinity)
-            .foregroundStyle(DashboardStyle.accentText)
-            .background(DashboardStyle.accent, in: RoundedRectangle(cornerRadius: 12))
+
+    private func appTile(_ item: Int, editing: Bool, label: Bool = true) -> some View {
+        VStack(spacing: 5) {
+            RoundedRectangle(cornerRadius: 15).fill(DashboardStyle.secondary.opacity(0.22))
+                .overlay(Image(systemName: ["envelope.fill", "calendar", "photo.fill", "gearshape.fill"][item % 4]).font(.system(size: 28)))
+                .frame(width: 64, height: 64)
+                .overlay(alignment: .topLeading) {
+                    if editing { Image(systemName: "minus").font(.system(size: 12, weight: .bold)).frame(width: 24, height: 24).background(.regularMaterial, in: Circle()).offset(x: -5, y: -5) }
+                }
+            if label { Text(["邮件", "日历", "照片", "设置"][item % 4]).font(.system(size: 12)) }
+        }
+    }
+
+    private func systemPill(_ text: String) -> some View {
+        Text(text).font(.system(size: 16, weight: .semibold)).frame(width: 60, height: 26)
+            .background(.ultraThinMaterial, in: Capsule()).overlay(Capsule().strokeBorder(Color.secondary.opacity(0.4)))
+    }
+
+    private var editMenu: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            menuRow("添加小组件", symbol: "widget.small.badge.plus")
+            menuRow("自定义", symbol: "apps.iphone")
+            menuRow("编辑墙纸", symbol: "photo")
+            menuRow("编辑页面", symbol: "rectangle.on.rectangle")
+        }
+        .padding(.vertical, 8).frame(width: 250, height: 188)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 28))
+        .offset(x: 25, y: 49)
+    }
+    private func menuRow(_ text: String, symbol: String) -> some View {
+        HStack(spacing: 14) { Image(systemName: symbol).frame(width: 22); Text(text); Spacer() }
+            .font(.system(size: 17)).padding(.horizontal, 29).frame(height: 42)
+    }
+
+    private var gallery: some View {
+        ZStack(alignment: .topLeading) {
+            HStack(spacing: 10) {
+                Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                Text(index == 4 ? appName : "搜索小组件").foregroundStyle(index == 4 ? Color.primary : .secondary)
+                if index == 4 { Spacer(); Image(systemName: "xmark.circle.fill") }
+            }
+            .font(.system(size: 20)).padding(.horizontal, 22)
+            .frame(width: index == 4 ? 301 : 356, height: 44)
+            .background(Color(.secondarySystemGroupedBackground), in: Capsule()).offset(x: 29, y: 138)
+            if index == 4 {
+                Image(systemName: "xmark").font(.system(size: 24)).frame(width: 44, height: 44)
+                    .background(Color(.secondarySystemGroupedBackground), in: Circle()).offset(x: 341, y: 138)
+                HStack(spacing: 16) { appIcon.frame(width: 48, height: 48); Text(appName).font(.system(size: 18, weight: .semibold)) }
+                    .offset(x: 29, y: 216)
+                keyboard.offset(y: 551)
+            } else {
+                // Keep the real gallery's two-column cards without copying personal suggestions.
+                VStack(alignment: .leading, spacing: 18) {
+                    Text("最近").font(.system(size: 17, weight: .semibold))
+                    HStack(spacing: 22) {
+                        ForEach(0..<4) { _ in
+                            Circle().fill(Color(.tertiarySystemFill)).frame(width: 62, height: 62)
+                        }
+                    }
+                }.padding(16).frame(width: 356, height: 166, alignment: .topLeading)
+                    .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 30))
+                    .shadow(color: .black.opacity(0.12), radius: 14, y: 8)
+                    .offset(x: 29, y: 214)
+                ForEach(0..<4) { card in
+                    VStack(spacing: 7) {
+                        RoundedRectangle(cornerRadius: 30).fill(Color(.secondarySystemGroupedBackground))
+                            .overlay(Image(systemName: ["calendar", "photo", "clock"][card % 3]).font(.system(size: 38)).foregroundStyle(.secondary))
+                            .frame(width: 166, height: 166)
+                            .shadow(color: .black.opacity(0.12), radius: 14, y: 8)
+                        Text(["日历", "照片", "时钟"][card % 3]).font(.system(size: 14, weight: .semibold))
+                    }.offset(x: card % 2 == 0 ? 29 : 219, y: CGFloat(433 + card / 2 * 220))
+                }
+            }
+        }
+    }
+
+    private var appIcon: some View {
+        RoundedRectangle(cornerRadius: 7).fill(Color(.secondarySystemBackground))
+            .overlay(Image(systemName: "square.grid.3x3").resizable().scaledToFit().padding(4).foregroundStyle(.secondary))
+    }
+
+    private var preview: some View {
+        ZStack(alignment: .topLeading) {
+            HStack(spacing: 8) { appIcon.frame(width: 30, height: 30); Text(appName).font(.system(size: 16, weight: .semibold)) }
+                .offset(x: 21, y: 124)
+            Image(systemName: "xmark").font(.system(size: 23)).offset(x: 373, y: 124)
+            Text("订阅额度").font(.system(size: 27, weight: .bold)).frame(width: width).offset(y: 197)
+            Text("长按编辑小组件，为每个组件选择显示账户。")
+                .font(.system(size: 17)).foregroundStyle(.secondary).frame(width: 382).offset(x: 16, y: 235)
+            ZStack(alignment: .topLeading) {
+                quotaPreview(medium: index == 6).frame(width: index == 6 ? 355 : 166, height: 166)
+                    .offset(x: index == 6 ? 29 : 124)
+                    .id(index)
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+                // A clipped adjacent preview conveys the same horizontal size carousel.
+                quotaPreview(medium: index != 6).frame(width: index == 6 ? 166 : 355, height: 166)
+                    .offset(x: index == 6 ? -150 : 400)
+            }.frame(width: width, height: 166).offset(y: 416)
+            if index == 5 {
+                Image(systemName: "arrow.left").font(.system(size: 24)).foregroundStyle(.secondary).offset(x: 196, y: 610)
+            }
+            HStack(spacing: 10) { ForEach(0..<2) { dot in Circle().fill(dot == (index == 6 ? 1 : 0) ? Color.primary : Color.secondary).frame(width: 7, height: 7) } }
+                .offset(x: 194, y: 767)
+            Label("添加小组件", systemImage: "plus.circle.fill").font(.system(size: 20))
+                .foregroundStyle(Color(.systemBackground)).frame(width: 366, height: 50)
+                .background(Color.primary, in: Capsule()).offset(x: 24, y: 789)
+        }
+    }
+
+    private func quotaPreview(medium: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image("DesignCodex").resizable().renderingMode(.template).frame(width: 22, height: 22)
+                    .padding(4).background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 10))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Codex · Plus").font(.system(size: 14, weight: .semibold))
+                    Text("账号 A").font(.system(size: 11)).foregroundStyle(DashboardStyle.secondary)
+                }
+            }
+            ForEach(["每周", "5 小时"], id: \.self) { title in
+                VStack(spacing: 4) {
+                    HStack { Text(title).font(.system(size: 12)); Spacer(); Text("剩余 90%").font(.system(size: 16, weight: .semibold)) }
+                    Capsule().fill(DashboardStyle.track).frame(height: 6)
+                        .overlay(alignment: .leading) { Capsule().fill(DashboardStyle.text).frame(width: medium ? 32 : 14, height: 6) }
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(14).foregroundStyle(DashboardStyle.text)
+        .background(DashboardStyle.background, in: RoundedRectangle(cornerRadius: 30))
+    }
+
+    private var keyboard: some View {
+        VStack(spacing: 11) {
+            Spacer().frame(height: 39)
+            keyRow(Array("qwertyuiop").map(String.init))
+            keyRow(Array("asdfghjkl").map(String.init)).padding(.horizontal, 14)
+            keyRow(["⇧"] + Array("zxcvbnm").map(String.init) + ["⌫"])
+            HStack(spacing: 6) {
+                key("123").frame(width: 44); key("☺︎").frame(width: 44)
+                key("").frame(maxWidth: .infinity)
+                Image(systemName: "magnifyingglass").font(.system(size: 22)).frame(width: 95, height: 45).foregroundStyle(.white).background(Color.blue, in: RoundedRectangle(cornerRadius: 8))
+            }
+            HStack { Image(systemName: "globe"); Spacer(); Image(systemName: "mic") }.font(.system(size: 24)).padding(.horizontal, 27).padding(.top, 13)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 6).frame(width: width, height: 345)
+        .background(Color(.systemGray4), in: UnevenRoundedRectangle(topLeadingRadius: 28, topTrailingRadius: 28))
+    }
+    private func keyRow(_ letters: [String]) -> some View {
+        HStack(spacing: 6) { ForEach(Array(letters.enumerated()), id: \.offset) { _, letter in key(letter).frame(maxWidth: .infinity) } }
+    }
+    private func key(_ letter: String) -> some View {
+        Text(letter).font(.system(size: 24)).frame(height: 45).frame(maxWidth: .infinity)
+            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var pointer: some View {
+        let points: [CGPoint] = [.init(x: 330, y: 660), .init(x: 65, y: 35), .init(x: 150, y: 76), .init(x: 207, y: 161), .init(x: 160, y: 245), .init(x: 280, y: 514), .init(x: 207, y: 814), .init(x: 354, y: 35)]
+        return Image(systemName: "hand.point.up.left.fill").font(.system(size: 30))
+            .foregroundStyle(DashboardStyle.text).padding(10).background(DashboardStyle.elevated.opacity(0.9), in: Circle())
+            .offset(x: points[index].x - 16, y: points[index].y)
+            .symbolEffect(.pulse, options: .repeating, isActive: moving)
     }
 }

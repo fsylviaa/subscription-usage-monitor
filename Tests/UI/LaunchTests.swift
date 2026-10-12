@@ -1,6 +1,135 @@
 import XCTest
 
 final class LaunchTests: XCTestCase {
+    /// Read-only by default; explicit T43_LAYOUT_ADD checks and cleans one new instance.
+    @MainActor
+    func testT43ReadActualAddingPageLayouts() throws {
+        let environment = ProcessInfo.processInfo.environment
+        guard environment["T43_LAYOUT_REFERENCE"] == "1" || environment["T43_LAYOUT_ADD"] == "1" else {
+            throw XCTSkip("显式启用本人系统页面参照；普通回归不操作主屏幕")
+        }
+        continueAfterFailure = false
+        let app = XCUIApplication(), session = UUID().uuidString
+        let board = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        addTeardownBlock {
+            await MainActor.run {
+                XCUIDevice.shared.press(.home); XCUIDevice.shared.press(.home)
+                app.terminate()
+                app.launchArguments = ["--t36-desktop-fixture", "cleanup", session]
+                app.launch()
+                XCTAssertTrue(app.staticTexts["未连接账户"].waitForExistence(timeout: 8))
+                app.terminate()
+            }
+        }
+        app.launchArguments = ["--t36-desktop-fixture", "baseline", session]
+        app.launch()
+        XCTAssertTrue(app.buttons["quota.widgetTutorial"].waitForExistence(timeout: 10))
+        XCUIDevice.shared.press(.home); XCUIDevice.shared.press(.home)
+        let addForLayout = ProcessInfo.processInfo.environment["T43_LAYOUT_ADD"] == "1"
+        let widgets = board.icons.matching(NSPredicate(format: "label == %@ AND value == %@", "订阅用量", "小组件"))
+        if addForLayout {
+            for _ in 0..<10 { if widgets.count == 0 { break }; board.swipeLeft() }
+            XCTAssertEqual(widgets.count, 0, "只在无本App组件的页面添加，保护旧实例")
+        }
+        saveScreenshot(of: board, name: "T43R-系统-主屏幕")
+        let occupied = board.icons.allElementsBoundByIndex.filter(\.isHittable).map(\.frame)
+        var blank: CGPoint?
+        for y in stride(from: 0.78, through: 0.20, by: -0.04) {
+            for x in stride(from: 0.90, through: 0.10, by: -0.10) {
+                let point = CGPoint(x: board.frame.width * x, y: board.frame.height * y)
+                if !occupied.contains(where: { $0.insetBy(dx: -8, dy: -8).contains(point) }) { blank = point; break }
+            }
+            if blank != nil { break }
+        }
+        let point = try XCTUnwrap(blank)
+        board.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: point.x, dy: point.y)).press(forDuration: 1.5)
+        XCTAssertTrue(board.buttons["编辑"].waitForExistence(timeout: 8))
+        saveScreenshot(of: board, name: "T43R-系统-编辑状态")
+        board.buttons["编辑"].tap()
+        XCTAssertTrue(board.buttons["添加小组件"].waitForExistence(timeout: 5))
+        saveScreenshot(of: board, name: "T43R-系统-编辑菜单")
+        board.buttons["添加小组件"].tap()
+        let search = board.searchFields.firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 8))
+        saveScreenshot(of: board, name: "T43R-系统-图库")
+        search.tap(); search.typeText("订阅用量")
+        let result = board.collectionViews["add-sheet-collection-view"].cells["订阅用量"].firstMatch
+        XCTAssertTrue(result.waitForExistence(timeout: 10))
+        saveScreenshot(of: board, name: "T43R-系统-搜索结果")
+        result.tap()
+        let preview = board.buttons["订阅用量, 订阅额度"].firstMatch
+        XCTAssertTrue(preview.waitForExistence(timeout: 8))
+        XCTAssertEqual(preview.value as? String, "小组件, 小")
+        Thread.sleep(forTimeInterval: 1) // Let SpringBoard finish its carousel transition.
+        saveScreenshot(of: board, name: "T43R-系统-小号预览")
+        board.coordinate(withNormalizedOffset: CGVector(dx: 0.85, dy: 0.56)).press(forDuration: 0.1,
+            thenDragTo: board.coordinate(withNormalizedOffset: CGVector(dx: 0.15, dy: 0.56)))
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "小组件, 中"), object: preview)], timeout: 8), .completed)
+        Thread.sleep(forTimeInterval: 1)
+        saveScreenshot(of: board, name: "T43R-系统-中号预览")
+        if addForLayout {
+            XCTAssertEqual(widgets.count, 0)
+            let add = board.buttons.matching(NSPredicate(format: "label CONTAINS %@", "添加小组件")).firstMatch
+            XCTAssertTrue(add.waitForExistence(timeout: 5)); add.tap()
+            XCTAssertTrue(board.buttons["完成"].waitForExistence(timeout: 8))
+            XCTAssertEqual(widgets.count, 1)
+            // No older App widget existed on this page; this is the new owned instance.
+            let owned = widgets.firstMatch
+            addTeardownBlock {
+                await MainActor.run {
+                    XCTAssertEqual(widgets.count, 1, "新实例无法唯一识别时停止，不猜测删除")
+                    owned.press(forDuration: 1.5)
+                    let remove = board.buttons["移除小组件"]
+                    XCTAssertTrue(remove.waitForExistence(timeout: 5)); remove.tap()
+                    let confirm = board.alerts.buttons["移除"]
+                    XCTAssertTrue(confirm.waitForExistence(timeout: 5)); confirm.tap()
+                    XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                        MainActor.assumeIsolated { widgets.count == 0 }
+                    }, object: nil)], timeout: 8), .completed)
+                    print("T43R cleanup: uniquely new medium removed; page count 1→0")
+                }
+            }
+            Thread.sleep(forTimeInterval: 1)
+            saveScreenshot(of: board, name: "T43R-系统-添加后编辑状态")
+            board.buttons["完成"].tap()
+            XCTAssertTrue(board.staticTexts["batch-1"].firstMatch.waitForExistence(timeout: 30))
+            saveScreenshot(of: board, name: "T43R-系统-新增临时中号")
+            print("T43R reference: full first flow observed; uniquely new 0→1 medium; teardown checks removal")
+        } else {
+            XCUIDevice.shared.press(.home); XCUIDevice.shared.press(.home)
+            print("T43R reference: home/edit/menu/gallery/search/small/medium observed; no widget mutation")
+        }
+    }
+
+    @MainActor
+    func testT43FirstAnimationAllLayoutsLightAndDark() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        cleanT42Fixture(in: app); app.launch()
+        defer { app.terminate() }
+        for dark in [false, true] {
+            app.buttons["tab.settings"].tap()
+            let toggle = app.switches["settings.darkAppearance"]
+            if toggle.value as? String != (dark ? "1" : "0") {
+                toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            }
+            app.buttons["settings.widgetTutorial"].tap()
+            let demo = app.descendants(matching: .any).matching(identifier: "tutorial.demo.0").firstMatch
+            XCTAssertTrue(demo.waitForExistence(timeout: 5))
+            // Capture on a clock rather than waiting for transient accessibility values.
+            // On the physical phone, hierarchy snapshots may outlast an entire frame.
+            for capture in 0..<24 {
+                saveScreenshot(of: app, name: "T43R-第一动画-\(dark ? "深" : "浅")-连续\(capture)")
+                Thread.sleep(forTimeInterval: 1)
+            }
+            XCTAssertEqual(demo.value as? String, "画面 8，共 8 个")
+            assertT42Step(in: app, second: false)
+            app.buttons["tutorial.close"].tap()
+            XCTAssertTrue(app.buttons["tab.settings"].isSelected)
+        }
+    }
+
     /// Changes only Motion, restores its exact original value even on test failure.
     @MainActor
     func testT43SystemMotionPreferenceAnimationAndStaticKeyframes() throws {
@@ -68,7 +197,7 @@ final class LaunchTests: XCTestCase {
                     XCTAssertEqual(demo.value as? String, "静态关键画面")
                     saveScreenshot(of: app, name: "T43-系统减少动态-第\(page + 1)步-顶部")
                     let instructions = app.staticTexts["tutorial.instructions.\(page)"]
-                    for offset in 0..<12 {
+                    for offset in 0..<30 {
                         if instructions.isHittable && instructions.frame.maxY <= app.buttons["tutorial.next"].frame.minY { break }
                         app.scrollViews.firstMatch.swipeUp()
                         saveScreenshot(of: app, name: "T43-系统减少动态-第\(page + 1)步-滚动\(offset)")
@@ -82,9 +211,9 @@ final class LaunchTests: XCTestCase {
                 } else {
                     XCTAssertTrue((demo.value as? String)?.contains("画面") == true)
                     saveScreenshot(of: app, name: "T43-动画-第\(page + 1)步-开始")
-                    let final = "画面 \(page == 0 ? 5 : 4)，共 \(page == 0 ? 5 : 4) 个"
+                    let final = "画面 \(page == 0 ? 8 : 4)，共 \(page == 0 ? 8 : 4) 个"
                     XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(
-                        predicate: NSPredicate(format: "value == %@", final), object: demo)], timeout: 12), .completed)
+                        predicate: NSPredicate(format: "value == %@", final), object: demo)], timeout: 30), .completed)
                     saveScreenshot(of: app, name: "T43-动画-第\(page + 1)步-结束")
                 }
                 app.buttons["tutorial.next"].tap()
