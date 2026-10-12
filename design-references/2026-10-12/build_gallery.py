@@ -30,23 +30,23 @@ def render_cards(references, id_prefix="reference"):
     return "\n".join(cards) if cards else '<p class="empty">原作截图和链接整理后将显示在这里。</p>'
 
 
-def render_prototype(number):
+def render_prototype(number, theme):
     kind = {1: "skala", 2: "capsule", 3: "ticks"}[number]
-    rows, controls = [], []
+    rows = []
     for key, name, remaining, reset in (
         ("week", "每周额度", 73, "10月19日 09:00"),
         ("five", "5小时额度", 50, "今日 23:30"),
     ):
-        uid = f"q{number}-{key}"
-        width = (100 - remaining) * 10
-        defs = f'<clipPath id="{uid}-used"><rect data-used-clip x="0" y="0" width="{width}" height="80"/></clipPath>'
+        uid = f"q{number}-{key}-{theme}"
+        width = remaining * 10
+        defs = f'<clipPath id="{uid}-remaining"><rect data-remaining-clip x="0" y="0" width="{width}" height="80"/></clipPath>'
         defs += f'<clipPath id="{uid}-change"><rect data-accent-clip x="0" y="0" width="0" height="80"/></clipPath>'
         if kind == "capsule":
             defs += f'''<linearGradient id="{uid}-color" x1="0" x2="1000" gradientUnits="userSpaceOnUse"><stop stop-color="#9cee75"/><stop offset=".35" stop-color="#71e9c3"/><stop offset="1" stop-color="#b3f6e9"/></linearGradient>
 <filter id="{uid}-blur" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="10"/></filter>
 <clipPath id="{uid}-track"><rect x="0" y="22" width="1000" height="36" rx="18" ry="18" data-track-pill/></clipPath>'''
-            drawing = f'''<rect x="0" y="22" width="1000" height="36" rx="18" ry="18" data-track-pill fill="#414744"/>
-<g clip-path="url(#{uid}-used)"><g clip-path="url(#{uid}-track)">
+            drawing = f'''<rect x="0" y="22" width="1000" height="36" rx="18" ry="18" data-track-pill class="quota-neutral-pill" fill="#414744"/>
+<g clip-path="url(#{uid}-remaining)"><g clip-path="url(#{uid}-track)">
 <rect data-pill x="0" y="22" width="{width}" height="36" rx="18" ry="18" fill="url(#{uid}-color)"/>
 <rect data-glow x="0" y="29" width="1000" height="20" rx="10" fill="#ecfff3" filter="url(#{uid}-blur)" opacity=".25"/>
 <path d="M 0 26 H 1000" stroke="#ffffff" opacity=".12"/></g></g>'''
@@ -59,24 +59,32 @@ def render_prototype(number):
                         x = 16 + column * (968 / 31)
                         y = 12 + row * 22
                         shape = f'<rect x="{x-15:.3f}" y="{y}" width="30" height="6" rx="3" data-grain data-cx="{x:.3f}" data-cy="{y+3}" transform="rotate(45 {x:.3f} {y+3})"'
-                        neutral.append(shape + ' fill="#3c4048"/>')
+                        neutral.append(shape + ' class="quota-neutral-grain" fill="#3c4048"/>')
                         elements.append(shape + f' fill="{palette[(column+row*2)%len(palette)]}"/>')
             else:
                 for column in range(100):
                     x = column * (994 / 99)
                     shape = f'<rect x="{x:.3f}" y="14" width="6" height="52" rx="1"'
-                    neutral.append(shape + ' fill="#36383c"/>')
+                    neutral.append(shape + ' class="quota-neutral-tick" fill="#36383c"/>')
                     elements.append(shape + ' fill="#e9ebee"/>')
+            if kind == 'ticks':
+                neutral.insert(0, '<rect class="quota-tick-bed" x="0" y="14" width="1000" height="52" rx="2" fill="none"/>')
             texture = ''.join(elements)
             accent_texture = texture.replace('#e9ebee', '#ffffff') if kind == 'ticks' else texture
-            drawing = ''.join(neutral) + f'<g clip-path="url(#{uid}-used)"><g class="quota-surface">{texture}</g><g clip-path="url(#{uid}-change)"><g data-accent opacity="0">{accent_texture}</g></g></g>'
+            drawing = ''.join(neutral) + f'<g clip-path="url(#{uid}-remaining)"><g class="quota-surface">{texture}</g><g clip-path="url(#{uid}-change)"><g data-accent opacity="0">{accent_texture}</g></g></g>'
         rows.append(f'''<section class="quota-window" data-window="{key}" aria-label="{name}">
-<div class="quota-meta"><div><div class="quota-name">{name}</div><div class="quota-reset">预计重置 · {reset}</div></div><div class="quota-number"><small>剩余</small><strong data-number>{remaining}%</strong></div></div>
-<svg class="quota-graph" viewBox="0 0 1000 80" preserveAspectRatio="none" role="slider" tabindex="0" aria-label="方案{number} {name}剩余百分比" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{remaining}" aria-orientation="horizontal"><defs>{defs}</defs>{drawing}</svg>
+<div class="quota-meta"><div><div class="quota-name">{name}</div><div class="quota-reset">下次重置 · {reset}</div></div><div class="quota-number"><small>剩余</small><strong data-number>{remaining}%</strong></div></div>
+<svg class="quota-graph" viewBox="0 0 1000 80" preserveAspectRatio="none" role="slider" tabindex="0" aria-label="方案{number} {'暗色' if theme == 'dark' else '亮色'} {name}剩余百分比" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{remaining}" aria-orientation="horizontal"><defs>{defs}</defs>{drawing}</svg>
 </section>''')
-        controls.append(f'''<label class="quota-control" for="{uid}-input"><span class="quota-control-line"><span>{name} · 剩余百分比</span><output data-output="{key}" for="{uid}-input">{remaining}%</output></span><input id="{uid}-input" data-control="{key}" type="range" min="0" max="100" step="0.1" value="{remaining}" aria-label="方案{number} {name}剩余百分比精调"></label>''')
-    return f'''<div class="prototype-stage {kind}"><div class="quota-account"><div class="quota-head"><div><div class="quota-brand">Codex <span class="quota-plan">· Plus</span> <span class="quota-chevron" aria-hidden="true">⌄</span></div><div class="quota-email">preview@example.com</div></div><span class="quota-demo">模拟</span></div>{''.join(rows)}</div></div>
-<div class="quota-controls">{''.join(controls)}<div class="quota-actions"><button class="quota-play" type="button" data-demo>演示变化</button><button class="adaptation-button quota-detail" type="button" data-detail-target="detail-{number}" aria-haspopup="dialog" aria-controls="detail-{number}">原图与适配说明</button></div><p class="quota-help">可拖动额度图形，滑块精调剩余。实色表示已用；时间与数值均为模拟。</p></div>'''
+    return f"""<div class="prototype-stage {kind}"><div class="quota-account"><div class="quota-head"><div class="quota-brand">Codex <span class="quota-plan">· Plus</span></div></div>{''.join(rows)}</div></div>"""
+
+
+def render_prototype_controls(number):
+    controls = []
+    for key, name, remaining in (("week", "每周额度", 73), ("five", "5小时额度", 50)):
+        uid = f"q{number}-{key}"
+        controls.append(f"""<label class="quota-control" for="{uid}-input"><span class="quota-control-line"><span>{name} · 剩余百分比</span><output data-output="{key}" for="{uid}-input">{remaining}%</output></span><input id="{uid}-input" data-control="{key}" type="range" min="0" max="100" step="0.1" value="{remaining}" aria-label="方案{number} {name}剩余百分比精调"></label>""")
+    return f"""<div class="quota-controls">{''.join(controls)}<div class="quota-actions"><button class="quota-play" type="button" data-demo>演示变化</button><button class="adaptation-button quota-detail" type="button" data-detail-target="detail-{number}" aria-haspopup="dialog" aria-controls="detail-{number}">原图与适配说明</button></div><p class="quota-help">明暗两版共用数值。亮色表示剩余，灰色表示已用；可拖动图形或精调滑块，时间与数值均为模拟。</p></div>"""
 
 
 def render_selected_cards(references, second_references, selected_mappings, adaptation_details=()):
@@ -99,7 +107,11 @@ def render_selected_cards(references, second_references, selected_mappings, adap
         if number in (1, 2, 3) and number in details:
             kind = {1: "skala", 2: "capsule", 3: "ticks"}[number]
             cards.append(f"""<article class="card prototype-card" id="selected-reference-{number}" data-prototype="{kind}">
-{render_prototype(number)}
+<div class="prototype-comparison"><div class="prototype-pair">
+<div class="prototype-variant" data-theme="dark"><p class="quota-theme">暗色</p>{render_prototype(number, "dark")}</div>
+<div class="prototype-variant" data-theme="light"><p class="quota-theme">亮色</p>{render_prototype(number, "light")}</div>
+</div></div>
+{render_prototype_controls(number)}
   <div class="caption"><h2><span class="selection-number">{number}</span> {title}</h2><p class="origin">{batch_name} · 原编号 {original_number:02d}</p><p>{source} · <a href="{url}" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
 </article>""")
         elif number in details:
@@ -144,7 +156,7 @@ def render_detail_dialogs(references, second_references, selected_mappings, adap
             paragraphs = "\n".join(f"<p>{escape(str(paragraph))}</p>" for paragraph in section["paragraphs"])
             sections.append(f"<section class=\"adaptation-section\"><h3>{section_title}</h3>{paragraphs}</section>")
         sections_html = "\n".join(sections)
-        notice = ("已制作网页交互样机，正式 App 尚未采用；此处保留原图和原适配说明。拖动与滑块仅用于网页模拟，数字显示剩余、实色表示已用；下文禁止拖动指正式 App，原作动画未验证。" if number in (1, 2, 3) else "文字方案待选，尚未制作适配原型；示例非实时数据。数字显示剩余，实色表示已用；动效仅为建议，原作动画未验证，不新增 App 功能。")
+        notice = ("已制作网页交互样机，正式 App 尚未采用；此处保留原图和原适配说明。本轮网页明暗并排，数字与亮色均表示剩余、灰色表示已用；旧正文的实色已用、邮箱及箭头建议为历史方案，以当前样机为准。拖动与滑块仅用于网页，原作动画未验证。" if number in (1, 2, 3) else "文字方案待选，尚未制作适配原型；示例非实时数据。数字显示剩余，实色表示已用；动效仅为建议，原作动画未验证，不新增 App 功能。")
         dialogs.append(f"""<dialog class="detail-dialog" id="detail-{number}" aria-labelledby="detail-title-{number}" aria-describedby="detail-note-{number}">
 <div class="detail-shell">
   <header class="detail-header"><h2 id="detail-title-{number}"><span class="selection-number">{number}</span> {title}</h2><button class="detail-close" type="button" data-close-dialog autofocus aria-label="关闭参考 {number} 的适配说明">关闭</button></header>

@@ -1,0 +1,5320 @@
+{
+  "date": "2026-10-12",
+  "browser": "Chrome",
+  "baselineCommit": "aaebed8",
+  "initial": [
+    {
+      "inputs": [
+        {
+          "key": "week",
+          "value": 73
+        },
+        {
+          "key": "five",
+          "value": 50
+        }
+      ],
+      "kind": "skala",
+      "variants": [
+        {
+          "theme": "dark",
+          "windows": [
+            {
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 730
+            },
+            {
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "theme": "light",
+          "windows": [
+            {
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 730
+            },
+            {
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "key": "week",
+          "value": 73
+        },
+        {
+          "key": "five",
+          "value": 50
+        }
+      ],
+      "kind": "capsule",
+      "variants": [
+        {
+          "theme": "dark",
+          "windows": [
+            {
+              "glow": "0.25",
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 730
+            },
+            {
+              "glow": "0.25",
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "theme": "light",
+          "windows": [
+            {
+              "glow": "0.25",
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 730
+            },
+            {
+              "glow": "0.25",
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "key": "week",
+          "value": 73
+        },
+        {
+          "key": "five",
+          "value": 50
+        }
+      ],
+      "kind": "ticks",
+      "variants": [
+        {
+          "theme": "dark",
+          "windows": [
+            {
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 730
+            },
+            {
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        },
+        {
+          "theme": "light",
+          "windows": [
+            {
+              "key": "week",
+              "number": "73%",
+              "value": 73,
+              "width": 730
+            },
+            {
+              "key": "five",
+              "number": "50%",
+              "value": 50,
+              "width": 500
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "test": "默认73/50亮色剩余及六卡片头部精简",
+      "pass": true
+    },
+    {
+      "test": "六状态独立及明暗联动 1/week",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.1
+          },
+          {
+            "key": "five",
+            "value": 50
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.1%",
+                "value": 73.1,
+                "width": 731
+              },
+              {
+                "key": "five",
+                "number": "50%",
+                "value": 50,
+                "width": 500
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.1%",
+                "value": 73.1,
+                "width": 731
+              },
+              {
+                "key": "five",
+                "number": "50%",
+                "value": 50,
+                "width": 500
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "六状态独立及明暗联动 1/five",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.1
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.1%",
+                "value": 73.1,
+                "width": 731
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.1%",
+                "value": 73.1,
+                "width": 731
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "六状态独立及明暗联动 2/week",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.1
+          },
+          {
+            "key": "five",
+            "value": 50
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.1%",
+                "value": 73.1,
+                "width": 731
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50%",
+                "value": 50,
+                "width": 500
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.1%",
+                "value": 73.1,
+                "width": 731
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50%",
+                "value": 50,
+                "width": 500
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "六状态独立及明暗联动 2/five",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.1
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.1%",
+                "value": 73.1,
+                "width": 731
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.1%",
+                "value": 73.1,
+                "width": 731
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "六状态独立及明暗联动 3/week",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.1
+          },
+          {
+            "key": "five",
+            "value": 50
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.1%",
+                "value": 73.1,
+                "width": 731
+              },
+              {
+                "key": "five",
+                "number": "50%",
+                "value": 50,
+                "width": 500
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.1%",
+                "value": 73.1,
+                "width": 731
+              },
+              {
+                "key": "five",
+                "number": "50%",
+                "value": 50,
+                "width": 500
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "六状态独立及明暗联动 3/five",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.1
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.1%",
+                "value": 73.1,
+                "width": 731
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.1%",
+                "value": 73.1,
+                "width": 731
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 暗色 每周额度剩余百分比 0",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 0
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 暗色 每周额度剩余百分比 100",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 100
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 暗色 每周额度剩余百分比 99.9",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 99.9
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 暗色 每周额度剩余百分比 0.1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 0.1
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "实际拖动两版联动 方案1 暗色 每周额度剩余百分比",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 暗色 5小时额度剩余百分比 0",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 0
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 暗色 5小时额度剩余百分比 100",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 100
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 暗色 5小时额度剩余百分比 99.9",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 99.9
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 暗色 5小时额度剩余百分比 0.1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 0.1
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "实际拖动两版联动 方案1 暗色 5小时额度剩余百分比",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 亮色 每周额度剩余百分比 0",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 0
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 亮色 每周额度剩余百分比 100",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 100
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 亮色 每周额度剩余百分比 99.9",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 99.9
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 亮色 每周额度剩余百分比 0.1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 0.1
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "实际拖动两版联动 方案1 亮色 每周额度剩余百分比",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 亮色 5小时额度剩余百分比 0",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 0
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 亮色 5小时额度剩余百分比 100",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 100
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 亮色 5小时额度剩余百分比 99.9",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 99.9
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案1 亮色 5小时额度剩余百分比 0.1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 0.1
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "实际拖动两版联动 方案1 亮色 5小时额度剩余百分比",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 暗色 每周额度剩余百分比 0",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 0
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0",
+                "key": "week",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0",
+                "key": "week",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 暗色 每周额度剩余百分比 100",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 100
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 暗色 每周额度剩余百分比 99.9",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 99.9
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 暗色 每周额度剩余百分比 0.1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 0.1
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "实际拖动两版联动 方案2 暗色 每周额度剩余百分比",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 暗色 5小时额度剩余百分比 0",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 0
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0",
+                "key": "five",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0",
+                "key": "five",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 暗色 5小时额度剩余百分比 100",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 100
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 暗色 5小时额度剩余百分比 99.9",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 99.9
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 暗色 5小时额度剩余百分比 0.1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 0.1
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "实际拖动两版联动 方案2 暗色 5小时额度剩余百分比",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 亮色 每周额度剩余百分比 0",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 0
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0",
+                "key": "week",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0",
+                "key": "week",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 亮色 每周额度剩余百分比 100",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 100
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 亮色 每周额度剩余百分比 99.9",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 99.9
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 亮色 每周额度剩余百分比 0.1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 0.1
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "实际拖动两版联动 方案2 亮色 每周额度剩余百分比",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 亮色 5小时额度剩余百分比 0",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 0
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0",
+                "key": "five",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0",
+                "key": "five",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 亮色 5小时额度剩余百分比 100",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 100
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 亮色 5小时额度剩余百分比 99.9",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 99.9
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案2 亮色 5小时额度剩余百分比 0.1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 0.1
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "实际拖动两版联动 方案2 亮色 5小时额度剩余百分比",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 暗色 每周额度剩余百分比 0",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 0
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 暗色 每周额度剩余百分比 100",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 100
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 暗色 每周额度剩余百分比 99.9",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 99.9
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 暗色 每周额度剩余百分比 0.1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 0.1
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "实际拖动两版联动 方案3 暗色 每周额度剩余百分比",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 50.1
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "50.1%",
+                "value": 50.1,
+                "width": 501
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 暗色 5小时额度剩余百分比 0",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 0
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 暗色 5小时额度剩余百分比 100",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 100
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 暗色 5小时额度剩余百分比 99.9",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 99.9
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 暗色 5小时额度剩余百分比 0.1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 0.1
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "实际拖动两版联动 方案3 暗色 5小时额度剩余百分比",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 亮色 每周额度剩余百分比 0",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 0
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 亮色 每周额度剩余百分比 100",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 100
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 亮色 每周额度剩余百分比 99.9",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 99.9
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 亮色 每周额度剩余百分比 0.1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 0.1
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "实际拖动两版联动 方案3 亮色 每周额度剩余百分比",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 亮色 5小时额度剩余百分比 0",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 0
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0%",
+                "value": 0,
+                "width": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 亮色 5小时额度剩余百分比 100",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 100
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "100%",
+                "value": 100,
+                "width": 1000
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 亮色 5小时额度剩余百分比 99.9",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 99.9
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "99.9%",
+                "value": 99.9,
+                "width": 999
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "双主题端点 方案3 亮色 5小时额度剩余百分比 0.1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 0.1
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "0.1%",
+                "value": 0.1,
+                "width": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "实际拖动两版联动 方案3 亮色 5小时额度剩余百分比",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 73.4
+          },
+          {
+            "key": "five",
+            "value": 73.4
+          }
+        ],
+        "kind": "ticks",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              },
+              {
+                "key": "five",
+                "number": "73.4%",
+                "value": 73.4,
+                "width": 734
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "两主题快速反向和越界 1/暗色",
+      "pass": true
+    },
+    {
+      "test": "两主题快速反向和越界 1/亮色",
+      "pass": true
+    },
+    {
+      "test": "两主题快速反向和越界 2/暗色",
+      "pass": true
+    },
+    {
+      "test": "两主题快速反向和越界 2/亮色",
+      "pass": true
+    },
+    {
+      "test": "两主题快速反向和越界 3/暗色",
+      "pass": true
+    },
+    {
+      "test": "两主题快速反向和越界 3/亮色",
+      "pass": true
+    },
+    {
+      "test": "两版动画同步及连续比例 1",
+      "pass": true
+    },
+    {
+      "test": "两版动画同步及连续比例 2",
+      "pass": true
+    },
+    {
+      "test": "两版动画同步及连续比例 3",
+      "pass": true
+    },
+    {
+      "test": "演示首组终值95/82两版一致",
+      "pass": true
+    },
+    {
+      "test": "亮版拖动立即接管且两版保持53.6/1",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 53.6
+          },
+          {
+            "key": "five",
+            "value": 1
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "53.6%",
+                "value": 53.6,
+                "width": 536
+              },
+              {
+                "glow": "0.25000000000000006",
+                "key": "five",
+                "number": "1%",
+                "value": 1,
+                "width": 10
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "53.6%",
+                "value": 53.6,
+                "width": 536
+              },
+              {
+                "glow": "0.25000000000000006",
+                "key": "five",
+                "number": "1%",
+                "value": 1,
+                "width": 10
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "明暗修订后原图说明入口 1",
+      "pass": true,
+      "actual": {
+        "loaded": true,
+        "note": "已制作网页交互样机，正式 App 尚未采用；此处保留原图和原适配说明。本轮网页明暗并排，数字与亮色均表示剩余、灰色表示已用；旧正文的实色已用、邮箱及箭头建议为历史方案，以当前样机为准。拖动与滑块仅用于网页，原作动画未验证。",
+        "open": true,
+        "sections": 8,
+        "url": "https://dribbble.com/shots/21752734-Skala-progress-bar"
+      }
+    },
+    {
+      "test": "明暗修订后原图说明入口 2",
+      "pass": true,
+      "actual": {
+        "loaded": true,
+        "note": "已制作网页交互样机，正式 App 尚未采用；此处保留原图和原适配说明。本轮网页明暗并排，数字与亮色均表示剩余、灰色表示已用；旧正文的实色已用、邮箱及箭头建议为历史方案，以当前样机为准。拖动与滑块仅用于网页，原作动画未验证。",
+        "open": true,
+        "sections": 8,
+        "url": "https://www.pinterest.com/pin/350577152263222155/"
+      }
+    },
+    {
+      "test": "明暗修订后原图说明入口 3",
+      "pass": true,
+      "actual": {
+        "loaded": true,
+        "note": "已制作网页交互样机，正式 App 尚未采用；此处保留原图和原适配说明。本轮网页明暗并排，数字与亮色均表示剩余、灰色表示已用；旧正文的实色已用、邮箱及箭头建议为历史方案，以当前样机为准。拖动与滑块仅用于网页，原作动画未验证。",
+        "open": true,
+        "sections": 8,
+        "url": "https://www.pinterest.com/pin/592504894770745443/"
+      }
+    },
+    {
+      "test": "标签数量 第一批30个",
+      "pass": true,
+      "actual": 30
+    },
+    {
+      "test": "标签数量 第二批30个",
+      "pass": true,
+      "actual": 30
+    },
+    {
+      "test": "标签数量 选中的",
+      "pass": true,
+      "actual": 11
+    },
+    {
+      "test": "详情与标签往返保留六值及两版联动",
+      "pass": false,
+      "note": "首轮比较包含胶囊光效的浮点尾差；额度及裁切未改变，改为比较六值和两版数值／比例"
+    },
+    {
+      "test": "详情与标签往返数值保持复验",
+      "pass": true
+    },
+    {
+      "test": "390窄屏仍并排且只有比较区横向滚动",
+      "pass": true,
+      "actual": {
+        "pageWidth": 390,
+        "pairs": [
+          {
+            "columns": "302px 302px",
+            "content": 644,
+            "scroll": 0,
+            "width": 356
+          },
+          {
+            "columns": "302px 302px",
+            "content": 644,
+            "scroll": 0,
+            "width": 356
+          },
+          {
+            "columns": "302px 302px",
+            "content": 644,
+            "scroll": 0,
+            "width": 356
+          }
+        ],
+        "sync": [
+          "73.0",
+          "50.0",
+          "73.0",
+          "50.0",
+          "73.0",
+          "50.0",
+          "73.0",
+          "50.0",
+          "73.0",
+          "50.0",
+          "73.0",
+          "50.0"
+        ],
+        "viewport": 390
+      }
+    },
+    {
+      "test": "窄屏横向滚动显示亮版且页面不溢出",
+      "pass": true
+    },
+    {
+      "test": "窄屏亮版拖动同步暗版33.3%",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 33.3
+          },
+          {
+            "key": "five",
+            "value": 50
+          }
+        ],
+        "kind": "skala",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "key": "week",
+                "number": "33.3%",
+                "value": 33.3,
+                "width": 333
+              },
+              {
+                "key": "five",
+                "number": "50%",
+                "value": 50,
+                "width": 500
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "key": "week",
+                "number": "33.3%",
+                "value": 33.3,
+                "width": 333
+              },
+              {
+                "key": "five",
+                "number": "50%",
+                "value": 50,
+                "width": 500
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "连续演示最新目标3/1且稳定光效无浮点尾差",
+      "pass": true,
+      "actual": {
+        "inputs": [
+          {
+            "key": "week",
+            "value": 3
+          },
+          {
+            "key": "five",
+            "value": 1
+          }
+        ],
+        "kind": "capsule",
+        "variants": [
+          {
+            "theme": "dark",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "3%",
+                "value": 3,
+                "width": 30
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "1%",
+                "value": 1,
+                "width": 10
+              }
+            ]
+          },
+          {
+            "theme": "light",
+            "windows": [
+              {
+                "glow": "0.25",
+                "key": "week",
+                "number": "3%",
+                "value": 3,
+                "width": 30
+              },
+              {
+                "glow": "0.25",
+                "key": "five",
+                "number": "1%",
+                "value": 1,
+                "width": 10
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "test": "最终版本完整DOM状态往返复验",
+      "pass": true
+    },
+    {
+      "test": "Chrome控制台无警告错误",
+      "pass": true,
+      "actual": []
+    }
+  ],
+  "animations": [
+    {
+      "n": 1,
+      "samples": [
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 7.2
+            },
+            {
+              "key": "five",
+              "value": 74
+            }
+          ],
+          "kind": "skala",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "7.2%",
+                  "value": 7.2,
+                  "width": 72
+                },
+                {
+                  "key": "five",
+                  "number": "74%",
+                  "value": 74,
+                  "width": 740
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "7.2%",
+                  "value": 7.2,
+                  "width": 72
+                },
+                {
+                  "key": "five",
+                  "number": "74%",
+                  "value": 74,
+                  "width": 740
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 15
+            },
+            {
+              "key": "five",
+              "value": 74.8
+            }
+          ],
+          "kind": "skala",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "15%",
+                  "value": 15,
+                  "width": 150
+                },
+                {
+                  "key": "five",
+                  "number": "74.8%",
+                  "value": 74.8,
+                  "width": 748
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "15%",
+                  "value": 15,
+                  "width": 150
+                },
+                {
+                  "key": "five",
+                  "number": "74.8%",
+                  "value": 74.8,
+                  "width": 748
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 21.3
+            },
+            {
+              "key": "five",
+              "value": 75.3
+            }
+          ],
+          "kind": "skala",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "21.3%",
+                  "value": 21.3,
+                  "width": 213
+                },
+                {
+                  "key": "five",
+                  "number": "75.3%",
+                  "value": 75.3,
+                  "width": 753
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "21.3%",
+                  "value": 21.3,
+                  "width": 213
+                },
+                {
+                  "key": "five",
+                  "number": "75.3%",
+                  "value": 75.3,
+                  "width": 753
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 28.3
+            },
+            {
+              "key": "five",
+              "value": 76
+            }
+          ],
+          "kind": "skala",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "28.3%",
+                  "value": 28.3,
+                  "width": 283
+                },
+                {
+                  "key": "five",
+                  "number": "76%",
+                  "value": 76,
+                  "width": 760
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "28.3%",
+                  "value": 28.3,
+                  "width": 283
+                },
+                {
+                  "key": "five",
+                  "number": "76%",
+                  "value": 76,
+                  "width": 760
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 33.9
+            },
+            {
+              "key": "five",
+              "value": 76.5
+            }
+          ],
+          "kind": "skala",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "33.9%",
+                  "value": 33.9,
+                  "width": 339
+                },
+                {
+                  "key": "five",
+                  "number": "76.5%",
+                  "value": 76.5,
+                  "width": 765
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "33.9%",
+                  "value": 33.9,
+                  "width": 339
+                },
+                {
+                  "key": "five",
+                  "number": "76.5%",
+                  "value": 76.5,
+                  "width": 765
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 39.4
+            },
+            {
+              "key": "five",
+              "value": 77
+            }
+          ],
+          "kind": "skala",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "39.4%",
+                  "value": 39.4,
+                  "width": 394
+                },
+                {
+                  "key": "five",
+                  "number": "77%",
+                  "value": 77,
+                  "width": 770
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "39.4%",
+                  "value": 39.4,
+                  "width": 394
+                },
+                {
+                  "key": "five",
+                  "number": "77%",
+                  "value": 77,
+                  "width": 770
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 45.4
+            },
+            {
+              "key": "five",
+              "value": 77.5
+            }
+          ],
+          "kind": "skala",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "45.4%",
+                  "value": 45.4,
+                  "width": 454
+                },
+                {
+                  "key": "five",
+                  "number": "77.5%",
+                  "value": 77.5,
+                  "width": 775
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "45.4%",
+                  "value": 45.4,
+                  "width": 454
+                },
+                {
+                  "key": "five",
+                  "number": "77.5%",
+                  "value": 77.5,
+                  "width": 775
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 45.4
+            },
+            {
+              "key": "five",
+              "value": 77.5
+            }
+          ],
+          "kind": "skala",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "45.4%",
+                  "value": 45.4,
+                  "width": 454
+                },
+                {
+                  "key": "five",
+                  "number": "77.5%",
+                  "value": 77.5,
+                  "width": 775
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "45.4%",
+                  "value": 45.4,
+                  "width": 454
+                },
+                {
+                  "key": "five",
+                  "number": "77.5%",
+                  "value": 77.5,
+                  "width": 775
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "samples": [
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 2.6
+            },
+            {
+              "key": "five",
+              "value": 73.6
+            }
+          ],
+          "kind": "capsule",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "glow": "0.25732933253884394",
+                  "key": "week",
+                  "number": "2.6%",
+                  "value": 2.6,
+                  "width": 26
+                },
+                {
+                  "glow": "0.25732933253884394",
+                  "key": "five",
+                  "number": "73.6%",
+                  "value": 73.6,
+                  "width": 736
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "glow": "0.25732933253884394",
+                  "key": "week",
+                  "number": "2.6%",
+                  "value": 2.6,
+                  "width": 26
+                },
+                {
+                  "glow": "0.25732933253884394",
+                  "key": "five",
+                  "number": "73.6%",
+                  "value": 73.6,
+                  "width": 736
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 12.7
+            },
+            {
+              "key": "five",
+              "value": 74.5
+            }
+          ],
+          "kind": "capsule",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "glow": "0.28652075716118064",
+                  "key": "week",
+                  "number": "12.7%",
+                  "value": 12.7,
+                  "width": 127
+                },
+                {
+                  "glow": "0.28652075716118064",
+                  "key": "five",
+                  "number": "74.5%",
+                  "value": 74.5,
+                  "width": 745
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "glow": "0.28652075716118064",
+                  "key": "week",
+                  "number": "12.7%",
+                  "value": 12.7,
+                  "width": 127
+                },
+                {
+                  "glow": "0.28652075716118064",
+                  "key": "five",
+                  "number": "74.5%",
+                  "value": 74.5,
+                  "width": 745
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 17.4
+            },
+            {
+              "key": "five",
+              "value": 75
+            }
+          ],
+          "kind": "capsule",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "glow": "0.30078227407991776",
+                  "key": "week",
+                  "number": "17.4%",
+                  "value": 17.4,
+                  "width": 174
+                },
+                {
+                  "glow": "0.30078227407991776",
+                  "key": "five",
+                  "number": "75%",
+                  "value": 75,
+                  "width": 750
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "glow": "0.30078227407991776",
+                  "key": "week",
+                  "number": "17.4%",
+                  "value": 17.4,
+                  "width": 174
+                },
+                {
+                  "glow": "0.30078227407991776",
+                  "key": "five",
+                  "number": "75%",
+                  "value": 75,
+                  "width": 750
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 21.9
+            },
+            {
+              "key": "five",
+              "value": 75.4
+            }
+          ],
+          "kind": "capsule",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "glow": "0.31487333137386453",
+                  "key": "week",
+                  "number": "21.9%",
+                  "value": 21.9,
+                  "width": 219
+                },
+                {
+                  "glow": "0.31487333137386453",
+                  "key": "five",
+                  "number": "75.4%",
+                  "value": 75.4,
+                  "width": 754
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "glow": "0.31487333137386453",
+                  "key": "week",
+                  "number": "21.9%",
+                  "value": 21.9,
+                  "width": 219
+                },
+                {
+                  "glow": "0.31487333137386453",
+                  "key": "five",
+                  "number": "75.4%",
+                  "value": 75.4,
+                  "width": 754
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 26.3
+            },
+            {
+              "key": "five",
+              "value": 75.8
+            }
+          ],
+          "kind": "capsule",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "glow": "0.3289122592565131",
+                  "key": "week",
+                  "number": "26.3%",
+                  "value": 26.3,
+                  "width": 263
+                },
+                {
+                  "glow": "0.3289122592565131",
+                  "key": "five",
+                  "number": "75.8%",
+                  "value": 75.8,
+                  "width": 758
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "glow": "0.3289122592565131",
+                  "key": "week",
+                  "number": "26.3%",
+                  "value": 26.3,
+                  "width": 263
+                },
+                {
+                  "glow": "0.3289122592565131",
+                  "key": "five",
+                  "number": "75.8%",
+                  "value": 75.8,
+                  "width": 758
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 30.4
+            },
+            {
+              "key": "five",
+              "value": 76.1
+            }
+          ],
+          "kind": "capsule",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "glow": "0.3423556015950596",
+                  "key": "week",
+                  "number": "30.4%",
+                  "value": 30.4,
+                  "width": 304
+                },
+                {
+                  "glow": "0.3423556015950596",
+                  "key": "five",
+                  "number": "76.1%",
+                  "value": 76.1,
+                  "width": 761
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "glow": "0.3423556015950596",
+                  "key": "week",
+                  "number": "30.4%",
+                  "value": 30.4,
+                  "width": 304
+                },
+                {
+                  "glow": "0.3423556015950596",
+                  "key": "five",
+                  "number": "76.1%",
+                  "value": 76.1,
+                  "width": 761
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 34.4
+            },
+            {
+              "key": "five",
+              "value": 76.5
+            }
+          ],
+          "kind": "capsule",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "glow": "0.35581272024300736",
+                  "key": "week",
+                  "number": "34.4%",
+                  "value": 34.4,
+                  "width": 344
+                },
+                {
+                  "glow": "0.35581272024300736",
+                  "key": "five",
+                  "number": "76.5%",
+                  "value": 76.5,
+                  "width": 765
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "glow": "0.35581272024300736",
+                  "key": "week",
+                  "number": "34.4%",
+                  "value": 34.4,
+                  "width": 344
+                },
+                {
+                  "glow": "0.35581272024300736",
+                  "key": "five",
+                  "number": "76.5%",
+                  "value": 76.5,
+                  "width": 765
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 38.2
+            },
+            {
+              "key": "five",
+              "value": 76.9
+            }
+          ],
+          "kind": "capsule",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "glow": "0.36890605228586626",
+                  "key": "week",
+                  "number": "38.2%",
+                  "value": 38.2,
+                  "width": 382
+                },
+                {
+                  "glow": "0.36890605228586626",
+                  "key": "five",
+                  "number": "76.9%",
+                  "value": 76.9,
+                  "width": 769
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "glow": "0.36890605228586626",
+                  "key": "week",
+                  "number": "38.2%",
+                  "value": 38.2,
+                  "width": 382
+                },
+                {
+                  "glow": "0.36890605228586626",
+                  "key": "five",
+                  "number": "76.9%",
+                  "value": 76.9,
+                  "width": 769
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "samples": [
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 6.2
+            },
+            {
+              "key": "five",
+              "value": 74
+            }
+          ],
+          "kind": "ticks",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "6.2%",
+                  "value": 6.2,
+                  "width": 62
+                },
+                {
+                  "key": "five",
+                  "number": "74%",
+                  "value": 74,
+                  "width": 740
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "6.2%",
+                  "value": 6.2,
+                  "width": 62
+                },
+                {
+                  "key": "five",
+                  "number": "74%",
+                  "value": 74,
+                  "width": 740
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 16.1
+            },
+            {
+              "key": "five",
+              "value": 74.8
+            }
+          ],
+          "kind": "ticks",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "16.1%",
+                  "value": 16.1,
+                  "width": 161
+                },
+                {
+                  "key": "five",
+                  "number": "74.8%",
+                  "value": 74.8,
+                  "width": 748
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "16.1%",
+                  "value": 16.1,
+                  "width": 161
+                },
+                {
+                  "key": "five",
+                  "number": "74.8%",
+                  "value": 74.8,
+                  "width": 748
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 25.3
+            },
+            {
+              "key": "five",
+              "value": 75.7
+            }
+          ],
+          "kind": "ticks",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "25.3%",
+                  "value": 25.3,
+                  "width": 253
+                },
+                {
+                  "key": "five",
+                  "number": "75.7%",
+                  "value": 75.7,
+                  "width": 757
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "25.3%",
+                  "value": 25.3,
+                  "width": 253
+                },
+                {
+                  "key": "five",
+                  "number": "75.7%",
+                  "value": 75.7,
+                  "width": 757
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 33.7
+            },
+            {
+              "key": "five",
+              "value": 76.4
+            }
+          ],
+          "kind": "ticks",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "33.7%",
+                  "value": 33.7,
+                  "width": 337
+                },
+                {
+                  "key": "five",
+                  "number": "76.4%",
+                  "value": 76.4,
+                  "width": 764
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "33.7%",
+                  "value": 33.7,
+                  "width": 337
+                },
+                {
+                  "key": "five",
+                  "number": "76.4%",
+                  "value": 76.4,
+                  "width": 764
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 41.5
+            },
+            {
+              "key": "five",
+              "value": 77.1
+            }
+          ],
+          "kind": "ticks",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "41.5%",
+                  "value": 41.5,
+                  "width": 415
+                },
+                {
+                  "key": "five",
+                  "number": "77.1%",
+                  "value": 77.1,
+                  "width": 771
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "41.5%",
+                  "value": 41.5,
+                  "width": 415
+                },
+                {
+                  "key": "five",
+                  "number": "77.1%",
+                  "value": 77.1,
+                  "width": 771
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 48.5
+            },
+            {
+              "key": "five",
+              "value": 77.8
+            }
+          ],
+          "kind": "ticks",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "48.5%",
+                  "value": 48.5,
+                  "width": 485
+                },
+                {
+                  "key": "five",
+                  "number": "77.8%",
+                  "value": 77.8,
+                  "width": 778
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "48.5%",
+                  "value": 48.5,
+                  "width": 485
+                },
+                {
+                  "key": "five",
+                  "number": "77.8%",
+                  "value": 77.8,
+                  "width": 778
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 54.8
+            },
+            {
+              "key": "five",
+              "value": 78.4
+            }
+          ],
+          "kind": "ticks",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "54.8%",
+                  "value": 54.8,
+                  "width": 548
+                },
+                {
+                  "key": "five",
+                  "number": "78.4%",
+                  "value": 78.4,
+                  "width": 784
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "54.8%",
+                  "value": 54.8,
+                  "width": 548
+                },
+                {
+                  "key": "five",
+                  "number": "78.4%",
+                  "value": 78.4,
+                  "width": 784
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "key": "week",
+              "value": 60.3
+            },
+            {
+              "key": "five",
+              "value": 78.9
+            }
+          ],
+          "kind": "ticks",
+          "variants": [
+            {
+              "theme": "dark",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "60.3%",
+                  "value": 60.3,
+                  "width": 603
+                },
+                {
+                  "key": "five",
+                  "number": "78.9%",
+                  "value": 78.9,
+                  "width": 789
+                }
+              ]
+            },
+            {
+              "theme": "light",
+              "windows": [
+                {
+                  "key": "week",
+                  "number": "60.3%",
+                  "value": 60.3,
+                  "width": 603
+                },
+                {
+                  "key": "five",
+                  "number": "78.9%",
+                  "value": 78.9,
+                  "width": 789
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "本轮仅Chrome",
+    "实际触屏与系统减少动态实测未执行"
+  ],
+  "screenshots": [
+    "verification-prototype-themes-desktop.jpg",
+    "verification-prototype-themes-2.jpg",
+    "verification-prototype-themes-3.jpg",
+    "verification-prototype-themes-narrow-dark.jpg",
+    "verification-prototype-themes-narrow-light.jpg"
+  ],
+  "notes": [
+    "宽度1440布局DOM检查无溢出，截图接口曾裁切该临时覆盖画面；恢复756正常窗口后重拍，最终桌面截图完整",
+    "首次URL绑定出现两个相同地址，已按此前保留的Chrome标签ID选取，未操作另一标签",
+    "往返首轮比较包含光效的浮点尾差，六值与裁切未变；限定数值复验通过，动画终点明确回零并完成最终完整DOM复验",
+    "静态控件首轮原始字符串计数包含JS选择器，断言失败；改为只统计input标签，6个控件及所有静态检查复验通过，页面无新增控件"
+  ],
+  "staticChecks": {
+    "unchangedTwoBatchesAndEightCards": true,
+    "originalDetailsOnlyStatusNoticeChanged": true,
+    "unchangedSourceAndImageFiles": 64,
+    "uniqueHTMLAndSVGIDs": true,
+    "repeatBuildSHA256": "7f96c6c1d4de5003b1495f518267bd80e17036c6ff6f7fefe0f745be7ae42a46",
+    "sixCardsSixInputsTwelveGraphs": true,
+    "externalFetchOrScript": false
+  }
+}
