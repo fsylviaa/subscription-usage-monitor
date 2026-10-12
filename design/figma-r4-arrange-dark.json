@@ -1,0 +1,10 @@
+{
+  "status": "Dark 画布排布完成",
+  "start": 14400,
+  "end": 14439,
+  "nextIndex": 14439,
+  "total": 14439,
+  "moved": 39,
+  "complete": true,
+  "scope": "只移动当前交互区现有 R4 根；不改原 44 页坐标，不改根名称、父级、反应或组件。"
+}

@@ -1,0 +1,349 @@
+{
+  "status": "读取完成",
+  "nodes": [
+    {
+      "id": "65:1364715",
+      "name": "R4/Light/AccountWidgets/Set-14/Pending-1",
+      "type": "FRAME",
+      "visible": true,
+      "count": 4,
+      "children": [
+        {
+          "id": "65:1364716",
+          "name": "R2/StatusBar/Light",
+          "visible": true
+        },
+        {
+          "id": "65:1364717",
+          "name": "Navigation",
+          "visible": true
+        },
+        {
+          "id": "65:1364721",
+          "name": "Scroll viewport",
+          "visible": true
+        },
+        {
+          "id": "65:1364745",
+          "name": "Rectangle",
+          "visible": true
+        }
+      ],
+      "texts": [
+        {
+          "id": "I65:1364716;14:15102",
+          "text": "9:41"
+        },
+        {
+          "id": "65:1364718",
+          "text": "主屏幕"
+        },
+        {
+          "id": "65:1364723",
+          "text": "iOS 主屏幕 · 交互示意"
+        },
+        {
+          "id": "65:1364811",
+          "text": "Codex"
+        },
+        {
+          "id": "65:1364812",
+          "text": "09:41"
+        },
+        {
+          "id": "65:1364832",
+          "text": "work.codex"
+        },
+        {
+          "id": "65:1364815",
+          "text": "每周"
+        },
+        {
+          "id": "65:1364816",
+          "text": "剩余 70%"
+        },
+        {
+          "id": "65:1364819",
+          "text": "5 天后 09:00重置"
+        },
+        {
+          "id": "65:1364822",
+          "text": "5 小时"
+        },
+        {
+          "id": "65:1364823",
+          "text": "剩余 85%"
+        },
+        {
+          "id": "65:1364826",
+          "text": "4 小时后重置"
+        },
+        {
+          "id": "65:1364857",
+          "text": "Cursor"
+        },
+        {
+          "id": "65:1364858",
+          "text": "09:41"
+        },
+        {
+          "id": "65:1364878",
+          "text": "alin.cursor"
+        },
+        {
+          "id": "65:1364861",
+          "text": "套餐内额度"
+        },
+        {
+          "id": "65:1364862",
+          "text": "剩余 62%"
+        },
+        {
+          "id": "65:1364865",
+          "text": "12 天后重置"
+        },
+        {
+          "id": "65:1364879",
+          "text": "剩余 $12.40 / $20.00"
+        },
+        {
+          "id": "65:1364726",
+          "text": "轻点小组件，打开对应账号"
+        },
+        {
+          "id": "65:1364732",
+          "text": "订阅额度"
+        },
+        {
+          "id": "65:1364736",
+          "text": "日历"
+        },
+        {
+          "id": "65:1364740",
+          "text": "照片"
+        },
+        {
+          "id": "65:1364744",
+          "text": "相机"
+        }
+      ],
+      "reactions": [
+        {
+          "id": "65:1364719",
+          "name": "Action/back",
+          "reactions": [
+            {
+              "action": {
+                "type": "NODE",
+                "destinationId": "53:351234",
+                "navigation": "NAVIGATE",
+                "transition": {
+                  "type": "DISSOLVE",
+                  "easing": {
+                    "type": "EASE_OUT"
+                  },
+                  "duration": 0.18000000715255737
+                },
+                "resetVideoPosition": false,
+                "resetScrollPosition": true,
+                "resetInteractiveComponents": false
+              },
+              "actions": [
+                {
+                  "type": "NODE",
+                  "destinationId": "53:351234",
+                  "navigation": "NAVIGATE",
+                  "transition": {
+                    "type": "DISSOLVE",
+                    "easing": {
+                      "type": "EASE_OUT"
+                    },
+                    "duration": 0.18000000715255737
+                  },
+                  "resetVideoPosition": false,
+                  "resetScrollPosition": true,
+                  "resetInteractiveComponents": false
+                }
+              ],
+              "trigger": {
+                "type": "ON_CLICK"
+              }
+            }
+          ]
+        },
+        {
+          "id": "65:1364808",
+          "name": "AccountWidget/0/2",
+          "reactions": [
+            {
+              "action": {
+                "type": "NODE",
+                "destinationId": "53:306395",
+                "navigation": "OVERLAY",
+                "transition": {
+                  "type": "DISSOLVE",
+                  "easing": {
+                    "type": "EASE_OUT"
+                  },
+                  "duration": 0.18000000715255737
+                },
+                "resetVideoPosition": false,
+                "resetScrollPosition": false,
+                "resetInteractiveComponents": false
+              },
+              "actions": [
+                {
+                  "type": "NODE",
+                  "destinationId": "53:306395",
+                  "navigation": "OVERLAY",
+                  "transition": {
+                    "type": "DISSOLVE",
+                    "easing": {
+                      "type": "EASE_OUT"
+                    },
+                    "duration": 0.18000000715255737
+                  },
+                  "resetVideoPosition": false,
+                  "resetScrollPosition": false,
+                  "resetInteractiveComponents": false
+                }
+              ],
+              "trigger": {
+                "type": "ON_CLICK"
+              }
+            }
+          ]
+        },
+        {
+          "id": "65:1364854",
+          "name": "AccountWidget/1/3",
+          "reactions": [
+            {
+              "action": {
+                "type": "NODE",
+                "destinationId": "53:306870",
+                "navigation": "OVERLAY",
+                "transition": {
+                  "type": "DISSOLVE",
+                  "easing": {
+                    "type": "EASE_OUT"
+                  },
+                  "duration": 0.18000000715255737
+                },
+                "resetVideoPosition": false,
+                "resetScrollPosition": false,
+                "resetInteractiveComponents": false
+              },
+              "actions": [
+                {
+                  "type": "NODE",
+                  "destinationId": "53:306870",
+                  "navigation": "OVERLAY",
+                  "transition": {
+                    "type": "DISSOLVE",
+                    "easing": {
+                      "type": "EASE_OUT"
+                    },
+                    "duration": 0.18000000715255737
+                  },
+                  "resetVideoPosition": false,
+                  "resetScrollPosition": false,
+                  "resetInteractiveComponents": false
+                }
+              ],
+              "trigger": {
+                "type": "ON_CLICK"
+              }
+            }
+          ]
+        },
+        {
+          "id": "65:1364729",
+          "name": "App/订阅额度",
+          "reactions": [
+            {
+              "action": {
+                "type": "NODE",
+                "destinationId": "53:351234",
+                "navigation": "NAVIGATE",
+                "transition": {
+                  "type": "DISSOLVE",
+                  "easing": {
+                    "type": "EASE_OUT"
+                  },
+                  "duration": 0.18000000715255737
+                },
+                "resetVideoPosition": false,
+                "resetScrollPosition": true,
+                "resetInteractiveComponents": false
+              },
+              "actions": [
+                {
+                  "type": "NODE",
+                  "destinationId": "53:351234",
+                  "navigation": "NAVIGATE",
+                  "transition": {
+                    "type": "DISSOLVE",
+                    "easing": {
+                      "type": "EASE_OUT"
+                    },
+                    "duration": 0.18000000715255737
+                  },
+                  "resetVideoPosition": false,
+                  "resetScrollPosition": true,
+                  "resetInteractiveComponents": false
+                }
+              ],
+              "trigger": {
+                "type": "ON_CLICK"
+              }
+            }
+          ]
+        },
+        {
+          "id": "65:1364745",
+          "name": "Rectangle",
+          "reactions": [
+            {
+              "action": {
+                "type": "NODE",
+                "destinationId": "53:351234",
+                "navigation": "NAVIGATE",
+                "transition": {
+                  "type": "DISSOLVE",
+                  "easing": {
+                    "type": "EASE_OUT"
+                  },
+                  "duration": 0.18000000715255737
+                },
+                "resetVideoPosition": false,
+                "resetScrollPosition": true,
+                "resetInteractiveComponents": false
+              },
+              "actions": [
+                {
+                  "type": "NODE",
+                  "destinationId": "53:351234",
+                  "navigation": "NAVIGATE",
+                  "transition": {
+                    "type": "DISSOLVE",
+                    "easing": {
+                      "type": "EASE_OUT"
+                    },
+                    "duration": 0.18000000715255737
+                  },
+                  "resetVideoPosition": false,
+                  "resetScrollPosition": true,
+                  "resetInteractiveComponents": false
+                }
+              ],
+              "trigger": {
+                "type": "ON_CLICK"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

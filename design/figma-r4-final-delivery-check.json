@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-09T05:46:23.215088+00:00",
+  "jsonDocumentsParsed": 7,
+  "clickObservations": 87,
+  "requirementMappingItems": 46,
+  "finalAuditIssues": 0,
+  "finalAuditIncomplete": 0,
+  "finalAuditUnscanned": 0,
+  "missingHandoffOrAcceptanceLinks": [],
+  "finalBackupIntegrityAndHash": "passed",
+  "finalBackupCanvasMatchesPostAudit": true,
+  "prototypeScopeAcceptance": "completed",
+  "wholeDeliveryAccepted": false,
+  "onlyRemaining": "whole_cloud_version_verification_blocked_by_figma_memory",
+  "documents": [
+    "design/figma-state.json",
+    "design/figma-r4-live-progress.json",
+    "design/figma-r4-click-log.json",
+    "design/figma-r4-resume-acceptance-mapping.json",
+    "design/figma-r4-audit-after-final-fixes.json",
+    "design/figma-r4-final-backup-2026-10-09.json",
+    "design/figma-r4-final-sync-2026-10-09.json",
+    "app/docs/figma-handoff-2026-10-09.md",
+    "app/docs/acceptance-r4.md"
+  ]
+}

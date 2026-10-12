@@ -1,0 +1,146 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/tokscale-core",
+    "crates/tokscale-cli",
+]
+
+[workspace.package]
+version = "4.18.0"
+edition = "2021"
+authors = ["Junho Yeo <hello@junho.io>"]
+license = "MIT"
+repository = "https://github.com/junhoyeo/tokscale"
+
+[workspace.dependencies]
+# Internal crates
+tokscale-core = { path = "crates/tokscale-core" }
+
+# Parallelism
+rayon = "1.10"
+
+# JSON parsing (with SIMD acceleration)
+simd-json = "0.14"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
+
+# TOML config parsing
+toml = "0.8"
+
+# File system traversal
+walkdir = "2"
+
+# Date/time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# Named IANA timezones for the pinned bucketing zone (`scanner.bucketTimezone`).
+#
+# A `chrono::FixedOffset` would avoid this dependency but cannot follow DST, so
+# a pinned offset drifts an hour off local midnight twice a year and re-splits
+# usage near the day boundary — a bounded rerun of the bug pinning removes. The
+# named-zone variant is the only exact fix, so the tz database is the price.
+# `default-features = false` drops the `parse-zoneinfo`/`case-insensitive`
+# extras; `std` alone is enough for `FromStr` + `TimeZone`.
+chrono-tz = { version = "0.10", default-features = false, features = ["std"] }
+
+# Reads the machine's IANA zone name so the CLI can pin it on first scan.
+# Already compiled into every build — `chrono` depends on it to implement
+# `Local` — so naming it here as a direct dependency adds no code to the binary.
+iana-time-zone = "0.1"
+
+# Error handling
+thiserror = "2"
+anyhow = "1.0"
+libc = "0.2"
+
+# HTTP client (async)
+# rustls is the workspace default. `rustls-tls-native-roots`, not plain
+# `rustls-tls`: the latter trusts only the baked-in webpki root set, which
+# would silently break anyone behind a corporate MITM proxy or using a private
+# CA. Reading the OS trust store keeps today's behaviour.
+#
+# `rustls-tls-webpki-roots` is enabled IN ADDITION to native roots (#1343).
+# rustls-native-certs treats `SSL_CERT_FILE` as an exclusive override: when a
+# wrapper like Socket Firewall (`sfw`) sets it to a file holding only its own
+# MITM CA, the OS trust store is dropped entirely and every host the wrapper
+# tunnels through untouched (models.dev, raw.githubusercontent.com, ...)
+# fails with `invalid peer certificate: UnknownIssuer`. Compiling the Mozilla
+# webpki roots in as well makes the trust store additive — real certificates
+# keep validating while the injected CA covers the MITM'd hosts — matching
+# how Node treated `NODE_EXTRA_CA_CERTS` back when the CLI ran on Bun.
+#
+# `native-tls` is NOT listed here on purpose. reqwest's `native-tls` feature
+# implies `default-tls`, and `impl Default for TlsBackend` (reqwest
+# src/tls.rs) returns the native-tls backend whenever `default-tls` is on and
+# `http3` is off. Enabling it on this shared entry would therefore flip the
+# runtime TLS backend for every client in the workspace and for every target,
+# because Cargo unifies features across the graph. Only the Cursor client
+# needs native TLS (#1250), so the member crates opt in per target instead —
+# see the `[target.'cfg(...)'.dependencies]` blocks in crates/*/Cargo.toml.
+reqwest = { version = "0.12", features = ["json", "rustls-tls-native-roots", "rustls-tls-webpki-roots"], default-features = false }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync", "fs"] }
+
+# For disk caching (XDG paths)
+dirs = "5"
+
+# SQLite database support (bundled for cross-compilation)
+rusqlite = { version = "0.32", features = ["bundled"] }
+zstd = "0.13"
+
+# Lazy static initialization
+once_cell = "1"
+
+# CLI framework
+clap = { version = "4.5", features = ["derive", "cargo"] }
+
+# TUI framework
+ratatui = { version = "0.29", features = ["all-widgets"] }
+crossterm = { version = "0.28", features = ["event-stream"] }
+
+# Terminal cell width of a grapheme. ratatui lays tables out in cells and
+# already depends on this crate to do it, so measuring table content with
+# anything else (`chars().count()`) disagrees with the solver on CJK and emoji.
+unicode-width = "0.2"
+
+# Grapheme cluster boundaries. `char_indices()` only respects UTF-8 character
+# boundaries, so truncating on it splits a flag (two regional indicators) or a
+# ZWJ family emoji mid-sequence and renders garbage. Already in the tree
+# transitively, so this adds no new dependency.
+unicode-segmentation = "1.12"
+
+# Async utilities
+tokio-stream = "0.1"
+futures = "0.3"
+
+# Table output for non-TUI mode
+comfy-table = "7"
+
+# Terminal colors
+colored = "2"
+
+# Progress indicators
+indicatif = "0.17"
+
+# Tracing/logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+sha2 = "0.10"
+fs2 = "0.4"
+
+# Trae iCubeAuthInfo decryption: AES-128-CBC + base64
+aes = "0.8"
+cbc = { version = "0.1", features = ["std"] }
+base64 = "0.22"
+
+# Clipboard
+arboard = "3"
+
+# Unix signal handling
+signal-hook = "0.3"
+
+[profile.release]
+lto = true
+opt-level = 3
+codegen-units = 1
+strip = true

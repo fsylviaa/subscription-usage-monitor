@@ -1,0 +1,3517 @@
+{
+  "schemaVersion": 1,
+  "fileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+  "recordedDate": "2026-10-09",
+  "evidenceType": "reported_actual_click_observation",
+  "observationSource": "主执行代理提供的实际原型点击观察",
+  "scope": "仅记录已实际点击观察到的事实，不将未记录流程或整项需求标为通过。",
+  "screenshotDirectory": "design/review-r4",
+  "overallResult": "scoped_design_acceptance_complete_blocked_only_cloud_sync",
+  "entries": [
+    {
+      "id": "R4-CLICK-001",
+      "theme": "Light",
+      "scenario": "小组件连续断开及回退确认链",
+      "status": "observed",
+      "steps": [
+        {
+          "action": "从 C（work Codex，70% / 85%）与 D（Cursor，62%）两个小组件开始，确认断开 C",
+          "observed": "第一个组件回退到 B（personal Codex），显示剩余 38% / 64%；第二个组件仍为 D，62%。"
+        },
+        {
+          "action": "继续确认断开 B",
+          "observed": "第一个组件跨平台回退到 A（Claude），显示剩余 39% / 72%；第二个组件仍为 D。"
+        },
+        {
+          "action": "继续确认断开 A",
+          "observed": "两个组件均展示 D（Cursor），剩余 62%。"
+        },
+        {
+          "action": "继续确认断开 D",
+          "observed": "两个组件均显示“未连接账号，无数据”。"
+        }
+      ],
+      "additionalObservation": "第二个 Cursor 小组件在 C、B、A 被断开后保持原选择，直到 D 被断开。",
+      "screenshotFiles": [
+        "light-widget-same-platform-fallback.jpg",
+        "light-widget-cross-platform-fallback.jpg",
+        "light-widget-empty.jpg"
+      ],
+      "limitations": [
+        "未包含从空态小组件点击进入连接引导的观察。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-002",
+      "theme": "Light",
+      "scenario": "回退后点击 B、A 小组件并返回",
+      "status": "observed",
+      "observations": [
+        "点击 B 小组件进入对应账号详情，显示对应 email 与 09:41 更新时间。",
+        "点击 A 小组件进入对应账号详情，显示对应 email 与 09:41 更新时间。",
+        "从详情点击 Back，返回各自准确的 Home 状态。"
+      ],
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-003",
+      "theme": "Dark",
+      "scenario": "ABCDE 多候选列表中断开 C",
+      "status": "observed",
+      "observations": [
+        "在 ABCDE 账号列表中断开 C 后，组件选择当前列表中排在最前的同平台候选 B（personal Codex），没有选择 E。",
+        "Cursor 小组件保持原选择。",
+        "点击 B 小组件进入对应 email 的账号详情，更新时间为 09:41。",
+        "返回后保留原 Home 布局。"
+      ],
+      "screenshotFiles": [
+        "dark-widget-first-candidate.jpg"
+      ]
+    },
+    {
+      "id": "R4-CLICK-004",
+      "theme": "Light",
+      "scenario": "基础看板全部刷新",
+      "status": "observed",
+      "sourceNodeId": "1:536",
+      "observations": [
+        "从基础四账号看板点击全部刷新，更新范围显示为全部账号。",
+        "依次观察网络检查评分 51、额度查询，最后回到四账号页面。"
+      ],
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-005",
+      "theme": "Light",
+      "scenario": "work 账号菜单单独刷新",
+      "status": "observed",
+      "observations": [
+        "在 C（work Codex）账号菜单中执行刷新，更新范围只显示该 work 账号。",
+        "依次观察网络检查、额度查询，最后回到四账号页面。"
+      ],
+      "screenshotFiles": [],
+      "limitations": [
+        "本次单账号刷新观察未单独记录评分数值。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-006",
+      "theme": "Light",
+      "scenario": "重新连接 work 账号",
+      "status": "observed",
+      "steps": [
+        {
+          "action": "对 work 账号执行重新连接",
+          "observed": "登录界面显示 work 账号。"
+        },
+        {
+          "action": "点击 Continue",
+          "observed": "依次进入网络检查、额度查询，再返回原四账号页面。"
+        }
+      ],
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-007",
+      "theme": "Light",
+      "scenario": "添加第三个 Codex 账号时取消",
+      "status": "observed",
+      "steps": [
+        {
+          "action": "开始添加第三个 Codex 账号",
+          "observed": "先显示网络检查，再进入 new.codex 登录界面。"
+        },
+        {
+          "action": "在登录界面点击 Cancel",
+          "observed": "返回原四账号页面。"
+        }
+      ],
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-008",
+      "theme": "Light",
+      "scenario": "新增第三个 Codex 账号并完成首次查询",
+      "status": "observed",
+      "steps": [
+        {
+          "action": "再次添加并在登录界面点击 Continue",
+          "observed": "进入已绑定但尚未取得额度的新账号状态，额度显示“—”与“未获取”。"
+        },
+        {
+          "action": "继续首次额度查询流程",
+          "observed": "首次查询有独立网络检查，显示评分 51，之后进入额度查询。"
+        },
+        {
+          "action": "等待查询流程完成",
+          "observed": "显示五账号的 Set47 看板，新 Codex 显示 54% / 91%。"
+        },
+        {
+          "action": "进入设置",
+          "observed": "设置页显示五个账号。"
+        }
+      ],
+      "accountModelSet": 47,
+      "screenshotFiles": [
+        "light-third-codex-added.jpg",
+        "light-five-account-settings.jpg"
+      ]
+    },
+    {
+      "id": "R4-CLICK-009",
+      "theme": "Light",
+      "scenario": "从五账号设置页删除 new.codex",
+      "status": "observed",
+      "observations": [
+        "从五账号设置页打开 new.codex 菜单并断开该账号。",
+        "返回 base15 设置页，其余四个账号保留。"
+      ],
+      "resultAccountModelSet": 15,
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-010",
+      "theme": "Light",
+      "scenario": "通知权限拒绝后从系统设置恢复",
+      "status": "observed",
+      "steps": [
+        {
+          "action": "从设置页点击通知开关",
+          "observed": "进入系统权限示意。"
+        },
+        {
+          "action": "拒绝通知权限",
+          "observed": "返回通知被拒绝的设置状态。"
+        },
+        {
+          "action": "再次点击通知开关",
+          "observed": "进入 iOS 通知设置 Off 状态。"
+        },
+        {
+          "action": "开启系统通知开关，再点击 Back",
+          "observed": "返回 App 的 SettingOn，通知开关为 On，原四账号保留。"
+        }
+      ],
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-011",
+      "theme": "Light",
+      "scenario": "通知已开启设置页的小组件教程完成返回",
+      "observations": [
+        "从 SettingOn 进入小组件教程，在第二步点击 Done，返回同一个 SettingOn。"
+      ],
+      "limitations": [
+        "只观察此设置来源的完成路径；首页来源及提前关闭路径仍需单独验证。"
+      ],
+      "status": "observed",
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-012",
+      "theme": "Light",
+      "scenario": "网络检查超时后的取消",
+      "observations": [
+        "显示超时对应的无法完成网络检查提示，不显示评分。",
+        "点击取消返回网络设计评审入口。"
+      ],
+      "status": "observed",
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-013",
+      "theme": "Light",
+      "scenario": "评分网站不可用后的取消",
+      "observations": [
+        "显示网站不可用对应的无法完成网络检查提示，不显示评分。",
+        "点击取消返回网络设计评审入口。"
+      ],
+      "status": "observed",
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-014",
+      "theme": "Light",
+      "scenario": "无有效评分后的取消",
+      "observations": [
+        "显示无有效评分对应的无法完成网络检查提示，不显示评分。",
+        "点击取消返回网络设计评审入口。"
+      ],
+      "status": "observed",
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-015",
+      "theme": "Dark",
+      "scenario": "评分 50 阻止后的取消按钮修复验证",
+      "observations": [
+        "修复后，评分 50 状态的 Cancel 按钮可见、可点。",
+        "实际点击 Cancel 返回同一网络设计评审入口。"
+      ],
+      "screenshotFiles": [
+        "dark-score50-fixed.jpg"
+      ],
+      "status": "observed"
+    },
+    {
+      "id": "R4-CLICK-016",
+      "theme": "Light",
+      "scenario": "新增前评分 49 失败并取消，不产生账号",
+      "sourceNodeId": "53:1120517",
+      "sourceName": "LightBeforeAddFailedLaunch",
+      "observations": [
+        "自动网络检查得到 49，进入失败面板；背景为原四账号。",
+        "点击取消确实返回原四账号，没有新增账号。"
+      ],
+      "screenshotFiles": [
+        "light-before-add49-preserves-accounts.jpg"
+      ],
+      "status": "observed"
+    },
+    {
+      "id": "R4-CLICK-017",
+      "theme": "Light",
+      "scenario": "首次额度查询失败后关闭，保留新账号未知额度",
+      "sourceNodeId": "53:1120057",
+      "sourceName": "LightFirstQueryLaunch",
+      "observations": [
+        "出现“首次额度查询失败”，目标 new.codex；提示“平台暂未返回额度，尚未获取额度”。",
+        "关闭后滚动查看，新 Codex 的周／5 小时额度均为“未获取”与“—”；其他旧账号卡片正确。"
+      ],
+      "screenshotFiles": [
+        "light-first-query-failed.jpg",
+        "light-first-query-failed-retains-unknown.jpg"
+      ],
+      "limitations": [
+        "此观察为无可信缓存的新账号；不证明已有可信额度账号的查询失败保留规则已验收。"
+      ],
+      "status": "observed"
+    },
+    {
+      "id": "R4-CLICK-018",
+      "theme": "Light",
+      "scenario": "首次查询失败后从新账号菜单刷新，重新检查并成功",
+      "observations": [
+        "从 new.codex 卡片菜单点击刷新额度，再次进入“正在检查网络”，操作文案为新账号首次查询。",
+        "自动完成后，新 Codex 显示 54% / 91%，旧账号卡片保持。"
+      ],
+      "limitations": [
+        "触发入口是新卡片菜单刷新，不是失败面板上的“重试”按钮。"
+      ],
+      "status": "observed",
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-019",
+      "theme": "Light",
+      "scenario": "后台超时后的页内重试及成功更新",
+      "sourceNodeId": "46:158267",
+      "targetNodeId": "46:159354",
+      "observations": [
+        "失败页在页面内显示超时，原成功更新时间为 09:41。",
+        "点击重试实际进入网络检查，没有出现前台弹窗。",
+        "流程完成到页内“已更新／上次成功更新 09:45”，四个旧账号额度正确，全程没有前台 modal。"
+      ],
+      "status": "observed",
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-020",
+      "theme": "Dark",
+      "scenario": "小组件联网失败保留缓存及点击来源",
+      "sourceNodeId": "53:303980",
+      "sourceName": "DarkWidgetFailed",
+      "observations": [
+        "无前台弹窗，组件保留 Claude 39% / 72% 与 09:41。",
+        "点击小组件进入对应 Claude email 的详情，更新时间仍为 09:41。",
+        "Back 返回原 Failed 小组件状态。"
+      ],
+      "status": "observed",
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-021",
+      "theme": "Dark",
+      "scenario": "从小组件评审检查入口完成更新并进入详情",
+      "sourceNodeId": "53:304075",
+      "sourceName": "CheckA",
+      "targetNodeId": "53:304467",
+      "observations": [
+        "从设计评审的 CheckA 入口开始自动流程，最终到 Success，显示已更新 09:45。",
+        "点击小组件进入对应 Claude 详情，更新时间为 09:45。"
+      ],
+      "screenshotFiles": [
+        "dark-widget-updated-detail.jpg"
+      ],
+      "limitations": [
+        "入口是设计评审 CheckA，不是已验证的失败页重试控件；不能据此声明失败页重试链已验收。"
+      ],
+      "status": "observed"
+    },
+    {
+      "id": "R4-CLICK-022",
+      "theme": "Dark",
+      "scenario": "点击锁屏通知后定位 Claude 账号",
+      "sourceNodeId": "14:42922",
+      "sourceName": "LockNotification",
+      "targetNodeId": "53:1121368",
+      "observations": [
+        "实际点击通知后进入展开的 Claude 账号，邮箱正确。"
+      ],
+      "limitations": [
+        "未捕捉网络检查的中间相位，不能声称已经视觉确认检查动画或额度查询过程。",
+        "被移除通知目标从孤立根直接打开时，CLOSE 没有来源；该尝试不计为返回路径验收，正式入口仍待验证。"
+      ],
+      "status": "observed",
+      "screenshotFiles": [],
+      "followUpObservation": "本条当时未捕获的深色通知检查相位后续已由069明确观察；正式来源的已断开通知目标关闭返回另见034。原孤立根尝试仍不计返回验收。"
+    },
+    {
+      "id": "R4-CLICK-023",
+      "theme": "Light",
+      "scenario": "评分 49 边界及退出（既有点击摘要）",
+      "observationSource": "design/figma-r4-live-progress.json / prototypeObserved",
+      "observations": [
+        "既有实际点击摘要记录：当前有效评分 49、需高于 50 的条件，操作被阻止；取消返回设计评审入口。"
+      ],
+      "screenshotFiles": [
+        "light-score49-click.jpg"
+      ],
+      "limitations": [
+        "来自既有实际点击摘要的补录，没有重新执行。"
+      ],
+      "status": "observed"
+    },
+    {
+      "id": "R4-CLICK-024",
+      "theme": "Light",
+      "scenario": "评分 50 阻止后重试，再进入登录（既有点击摘要）",
+      "observationSource": "design/figma-r4-live-progress.json / prototypeObserved",
+      "observations": [
+        "既有实际点击摘要记录：评分 50 被阻止；重试重新进行网络检查，之后进入 Codex 登录。",
+        "点击登录界面 X 返回设计评审入口。"
+      ],
+      "screenshotFiles": [
+        "light-score50-click.jpg",
+        "light-retry-to-login.jpg"
+      ],
+      "limitations": [
+        "摘要未单独记录重试得到的评分数值；没有重新执行。"
+      ],
+      "status": "observed"
+    },
+    {
+      "id": "R4-CLICK-025",
+      "theme": "Light",
+      "scenario": "小尺寸组件选择账号并完成（既有点击摘要）",
+      "observationSource": "design/figma-r4-live-progress.json / prototypeObserved",
+      "observations": [
+        "从小尺寸组件 gallery 点击 Add，选择 work.codex，再点击 Done。",
+        "完成后展示 work 70% / 85% 与 Cursor 62%；点击 work 小组件进入正确 work.codex 详情。"
+      ],
+      "screenshotFiles": [
+        "light-widget-work-selected.jpg"
+      ],
+      "limitations": [
+        "来自既有实际点击摘要；未覆盖中尺寸配置及深色配置。"
+      ],
+      "status": "observed"
+    },
+    {
+      "id": "R4-CLICK-026",
+      "theme": "Dark",
+      "scenario": "网络结果与授权失败路径（既有点击摘要）",
+      "observationSource": "design/figma-r4-live-progress.json / prototypeObserved",
+      "observations": [
+        "既有摘要记录深色评分 49 被阻止，以及 timeout、unavailable、invalid 三种结果场景。",
+        "摘要记录 timeout 重试 → 网络检查 → 登录。",
+        "摘要记录直接评分 51 → 登录 → 授权失败 → 取消。"
+      ],
+      "limitations": [
+        "既有摘要没有逐项保存无评分文案、取消最终目标或账号保留细节；仅记载这些流程被实际点击，不将对应完整验收条目标为通过。",
+        "摘要中 dark-*.jpg 为通配引用，不能当作具体、已检查的截图证据。",
+        "评分 50 的修复后取消已单独记录在 R4-CLICK-015，此处不重复。"
+      ],
+      "status": "observed",
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-027",
+      "theme": "Dark",
+      "scenario": "首次权限允许、关闭再开启及页签返回",
+      "sourceNodeId": "53:1121238",
+      "sourceName": "SystemReview",
+      "steps": [
+        {
+          "action": "从 SystemReview 首次权限入口进入 Settings（1:5757），点击通知开关",
+          "observed": "进入系统权限示意面板。"
+        },
+        {
+          "action": "点击允许",
+          "observed": "进入 SettingsOn（53:894279）。"
+        },
+        {
+          "action": "点击通知开关关闭，再点击开启",
+          "observed": "依次进入 Off（53:894654）和 On。"
+        },
+        {
+          "action": "点击额度页签",
+          "observed": "进入 DOn（53:894442）。"
+        }
+      ],
+      "limitations": [
+        "只验证此权限分支内的保持；成功新增后的跨流程权限保持当时仍在独立修复，不列为通过。"
+      ],
+      "status": "observed",
+      "screenshotFiles": [],
+      "followUpObservation": "当时的权限跨新增限制保留为历史背景；指定浅深权限保持主故事已由056/059后续实点闭环，有限模型范围不扩大。"
+    },
+    {
+      "id": "R4-CLICK-028",
+      "theme": "Dark",
+      "scenario": "通知已开启看板的全部刷新",
+      "sourceNodeId": "53:894442",
+      "observations": [
+        "从 DOn 点击顶部刷新，网络检查范围显示“全部已绑定账号”。",
+        "完成后回到同一个 DOn，四账号保留。"
+      ],
+      "status": "observed",
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-029",
+      "theme": "Dark",
+      "scenario": "通知已开启看板的 work 单账号刷新",
+      "sourceNodeId": "53:894442",
+      "observations": [
+        "从 work 账号菜单刷新，网络检查范围仅显示 work。",
+        "完成后回到同一个 DOn。"
+      ],
+      "status": "observed",
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-030",
+      "theme": "Dark",
+      "scenario": "通知已开启看板的 work 重新连接",
+      "sourceNodeId": "53:894442",
+      "observations": [
+        "work 重连登录界面显示 work email。",
+        "点击 Continue 后观察针对 work 的网络检查，完成后回到同一个 DOn。"
+      ],
+      "status": "observed",
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-031",
+      "theme": "Dark",
+      "scenario": "通知已开启看板新增 Codex 时取消",
+      "sourceNodeId": "53:894442",
+      "observations": [
+        "新增 Codex 先经过前置网络检查，再进入新账号登录界面。",
+        "点击取消回到原 DOn，四账号保留。"
+      ],
+      "status": "observed",
+      "screenshotFiles": []
+    },
+    {
+      "id": "R4-CLICK-032",
+      "theme": "Dark",
+      "scenario": "新增 Codex 成功后的五账号结果",
+      "sourceNodeId": "53:894442",
+      "targetNodeId": "53:281796",
+      "accountModelSet": 47,
+      "observations": [
+        "再次新增 Codex，在登录界面点击 Continue 授权。",
+        "最终进入 Set47 看板，新账号显示 54% / 91%，原四账号保留。"
+      ],
+      "limitations": [
+        "本条未单独记录首次查询的检查中间相位。",
+        "当时成功新增后返回 canonical 模型导致跨流程权限状态保持存在待修复问题；本条仅记录账号行为，不将通知状态保持判为通过。"
+      ],
+      "status": "observed",
+      "screenshotFiles": [],
+      "followUpObservation": "当时的权限跨新增限制保留为历史背景；指定浅深权限保持主故事已由056/059后续实点闭环，有限模型范围不扩大。"
+    },
+    {
+      "id": "R4-CLICK-033",
+      "theme": "Dark",
+      "scenario": "新 Codex 断开确认的取消与再次确认",
+      "sourceNodeId": "53:281796",
+      "targetNodeId": "1:4124",
+      "steps": [
+        {
+          "action": "从新账号卡片打开断开确认",
+          "observed": "确认面板显示 new 账号 email。"
+        },
+        {
+          "action": "点击 Cancel",
+          "observed": "返回五账号。"
+        },
+        {
+          "action": "再次从菜单打开确认，点击 Disconnect",
+          "observed": "返回原四账号看板（1:4124）。"
+        }
+      ],
+      "limitations": [
+        "仅记录断开目标、取消／确认和账号结果；跨成功新增／断开流程的通知状态保持未判为通过。"
+      ],
+      "status": "observed",
+      "screenshotFiles": [],
+      "followUpObservation": "当时的权限跨新增限制保留为历史背景；指定浅深权限保持主故事已由056/059后续实点闭环，有限模型范围不扩大。"
+    },
+    {
+      "id": "R4-CLICK-034",
+      "theme": "Dark",
+      "scenario": "从正式评审入口打开已断开通知目标并关闭",
+      "sourceNodeId": "53:1121194",
+      "sourceName": "R4Review",
+      "targetNodeId": "53:1121579",
+      "steps": [
+        {
+          "action": "点击通知目标已断开的评审入口",
+          "observed": "出现对应面板，显示 alin.claude 无法更新。"
+        },
+        {
+          "action": "点击关闭",
+          "observed": "确实返回同一个 R4Review（53:1121194）。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-notification-target-removed.jpg"
+      ],
+      "limitations": [
+        "仅此有来源路径计入返回观察；R4-CLICK-022 中孤立根的 CLOSE 尝试仍不算验收。"
+      ],
+      "status": "observed"
+    },
+    {
+      "id": "R4-CLICK-035",
+      "theme": "Dark",
+      "scenario": "网络评审中的额度查询失败及面板重试",
+      "sourceNodeId": "46:138573",
+      "sourceName": "NetworkHub",
+      "steps": [
+        {
+          "action": "从网络评审入口进入查询失败分支",
+          "observed": "失败界面显示 work 账号邮箱，保留原成功更新时间 09:41。"
+        },
+        {
+          "action": "点击失败面板 Retry",
+          "observed": "实际看到针对 work 的“正在检查网络”，随后自动完成并回到同一 hub。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-quota-failed.jpg"
+      ],
+      "limitations": [
+        "通过与查询中间相位很短，未逐帧确认或截图；不能声称所有中间相位均完成视觉核验。",
+        "本次报告未记录失败前后具体额度数值，不能仅凭此条判定可信旧额度数值保留已完整通过。"
+      ],
+      "status": "observed"
+    },
+    {
+      "id": "R4-CLICK-036",
+      "theme": "Dark",
+      "scenario": "中尺寸小组件选择 work、点击详情及逐层返回",
+      "steps": [
+        {
+          "action": "从 WidgetHub 进入 Gallery（46:153121），点击添加",
+          "observed": "进入 Config（46:153225）。"
+        },
+        {
+          "action": "选择 work（46:153593），点击 Done",
+          "observed": "进入 Home（46:153659），work 小组件显示 70% / 85%。"
+        },
+        {
+          "action": "点击 work 小组件",
+          "observed": "进入正确 work email 的详情，更新时间为 09:41。"
+        },
+        {
+          "action": "依次点击 Back",
+          "observed": "返回同一 Home，再返回 Config、Gallery，最后返回 WidgetHub，整条返回链可用。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-medium-widget-work-detail.jpg"
+      ],
+      "status": "observed"
+    },
+    {
+      "id": "R4-CLICK-037",
+      "theme": "Dark",
+      "scenario": "ABCD 小组件连续断开的完整回退链",
+      "sourceNodeId": "46:152771",
+      "steps": [
+        {
+          "action": "从 C + D 的 Home 进入 App 的 ABCD 账号列表，确认断开 C",
+          "observed": "回到 B + D（46:153966）。"
+        },
+        {
+          "action": "继续断开 B",
+          "observed": "回到 A + D（46:154131）。"
+        },
+        {
+          "action": "点击 A 小组件，再返回",
+          "observed": "详情显示正确 Claude email、39% / 72% 与 09:41；Back 可返回。"
+        },
+        {
+          "action": "继续断开 A",
+          "observed": "回到 D + D（46:154296）。"
+        },
+        {
+          "action": "继续断开 D",
+          "observed": "进入 Empty（46:154462），两个组件均无数据。"
+        }
+      ],
+      "additionalObservation": "原本展示 D 的组件在 C、B、A 断开期间始终保持 Cursor 62%，直到 D 自身被断开。",
+      "screenshotFiles": [
+        "dark-widget-same-platform-fallback.jpg",
+        "dark-widget-cross-platform-fallback.jpg",
+        "dark-widget-empty.jpg"
+      ],
+      "limitations": [
+        "空态当时仍出现不适用的“轻点小组件打开对应账号”说明，正在局部删除；本条只记录行为，不判最终静态文案通过。"
+      ],
+      "status": "observed",
+      "followUpObservation": "当时发现的空态不适用说明已局部修复，深色修复后画面复验见 R4-CLICK-040；本条保留当时的历史观察。"
+    },
+    {
+      "id": "R4-CLICK-038",
+      "theme": "Dark",
+      "scenario": "空态小组件连接引导、选择器及教程返回",
+      "sourceNodeId": "46:154462",
+      "steps": [
+        {
+          "action": "点击 Empty 小组件",
+          "observed": "进入 Guide（46:154620）。"
+        },
+        {
+          "action": "点击连接",
+          "observed": "打开账号选择器；点击 X 回到同一个 Guide。"
+        },
+        {
+          "action": "打开教程并点击 X",
+          "observed": "回到同一个 Guide。"
+        },
+        {
+          "action": "点击 Back",
+          "observed": "返回 Empty（46:154462）。"
+        }
+      ],
+      "limitations": [
+        "只记录可达性与返回；空态不适用说明文案的修复尚未复验。"
+      ],
+      "status": "observed",
+      "screenshotFiles": [],
+      "followUpObservation": "R4-CLICK-040 仅复验深色空态静态文案，没有追加重测本条 Guide 后续交互。"
+    },
+    {
+      "id": "R4-CLICK-039",
+      "theme": "Light",
+      "scenario": "从评审通知入口实际观察网络检查并进入正确 Claude 详情",
+      "status": "observed",
+      "sourceNodeId": "53:1119634",
+      "sourceName": "R4 Review",
+      "intermediateNodeId": "14:42460",
+      "intermediateName": "Lock",
+      "targetNodeId": "53:1119808",
+      "steps": [
+        {
+          "action": "从 R4 Review 进入通知入口，在 Lock（14:42460）点击通知",
+          "observed": "明确捕获“正在检查网络”的覆盖层，目标账号为 alin.claude。"
+        },
+        {
+          "action": "等待自动流程结束",
+          "observed": "进入 Claude 展开详情（53:1119808），显示正确身份、39% / 72% 与 09:41。"
+        }
+      ],
+      "screenshotFiles": [
+        "light-notification-account-return.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-notification-account-return.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "主执行代理报告静态截图已保存并完成像素检查；不扩大为整组截图或全部中间相位已核验。"
+        }
+      ],
+      "limitations": [
+        "已视觉观察网络检查覆盖层及最终账号详情；本条未单独报告额度查询中间相位。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-040",
+      "theme": "Light+Dark",
+      "scenario": "空态不适用说明局部删除与深色画面复验",
+      "status": "observed",
+      "evidenceType": "reported_local_repair_and_visual_observation",
+      "executionReports": [
+        "design/figma-r4-emptycopy-light.json",
+        "design/figma-r4-emptycopy-dark.json"
+      ],
+      "observations": [
+        "主执行代理已执行 emptycopy/Light 与 emptycopy/Dark；按报告，每个主题严格作用于两个根，删除不适用的 hint 与一处空白。",
+        "深色浏览器重新进入 Empty（46:154462）并强制重绘；肉眼确认不再显示不适用 hint，两个小组件均显示“未连接账号，无数据”。",
+        "更新后的截图覆盖 dark-widget-empty.jpg，并完成肉眼像素检查。",
+        "后续浅色修复后重新检查 Empty（46:144101），新截图 light-widget-empty.jpg 已完成像素核验，确认无不适用 hint。"
+      ],
+      "screenshotFiles": [
+        "dark-widget-empty.jpg",
+        "light-widget-empty.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-widget-empty.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "修复后重新进入深色 Empty（46:154462）并强制重绘；确认无不适用 hint 且两个组件均为“未连接账号，无数据”。"
+        },
+        {
+          "file": "light-widget-empty.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "浅色修复后 Empty（46:144101）的新截图已完成像素核验，确认无不适用 hint。"
+        }
+      ],
+      "limitations": [
+        "本条只记录局部修复与静态复验；后续浅色 EmptyGuide 的独立点击观察另见 R4-CLICK-043，深色 Guide 路径仍以 R4-CLICK-038 原观察为准。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-041",
+      "theme": "Light",
+      "scenario": "多个同平台候选时选择列表最前的个人 Codex",
+      "status": "observed",
+      "sourceNodeId": "46:146149",
+      "intermediateNodeId": "46:146479",
+      "targetNodeId": "46:146314",
+      "steps": [
+        {
+          "action": "从 multiple 原型进入 App（46:146479）",
+          "observed": "列表顺序为 Claude、个人 Codex、work Codex、Cursor、backup Codex。"
+        },
+        {
+          "action": "点击 work 菜单进入断开确认",
+          "observed": "确认界面显示 work email。"
+        },
+        {
+          "action": "确认断开 work",
+          "observed": "到达 46:146314，组件回退到 alin.codex，显示 38% / 64%；Cursor 组件仍为 62%。"
+        },
+        {
+          "action": "点击左侧小组件",
+          "observed": "进入个人 Codex 对应邮箱的详情，显示 38% / 64% 与 09:41。"
+        },
+        {
+          "action": "点击返回",
+          "observed": "已执行点击，但返回后的最终画面尚未肉眼确认，也未单独截图；不计返回结果验收。"
+        }
+      ],
+      "screenshotFiles": [
+        "light-widget-multiple-candidates-result.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-widget-multiple-candidates-result.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "多候选断开后的结果截图已保存并完成像素确认；不包含最后一次返回画面的验证。"
+        }
+      ],
+      "limitations": [
+        "最后一次返回仅有点击动作，没有已确认的最终画面，不推断返回正确。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-042",
+      "theme": "Light",
+      "scenario": "已有四账号时新增同平台 Claude 并到达成功结果",
+      "status": "observed",
+      "sourceNodeId": "1:536",
+      "targetNodeId": "46:190629",
+      "accountModelSet": 31,
+      "steps": [
+        {
+          "action": "从已有四账号看板点击连接，选择 Claude",
+          "observed": "明确捕获新增前网络检查，之后进入 new.claude 登录示意。"
+        },
+        {
+          "action": "点击 Continue",
+          "observed": "捕获“正在连接 Claude”，随后自动到 Set31（46:190629）。"
+        },
+        {
+          "action": "查看新增后的账号卡片",
+          "observed": "新 Claude 显示 61% / 47%；旧 Claude 39% / 72%、Codex 38% / 64%、work Codex 70% / 85% 不变。"
+        }
+      ],
+      "screenshotFiles": [
+        "light-added-claude.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-added-claude.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "新增 Claude 结果截图已完成像素核验。"
+        }
+      ],
+      "limitations": [
+        "本次未单独捕获首次额度查询阶段，不将最终成功结果写成已视觉确认首次查询所有中间相位。",
+        "本次具体旧值对照报告列出旧 Claude、Codex 与 work Codex；不额外推断未明确列出的旧卡检查细节。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-043",
+      "theme": "Light",
+      "scenario": "空组件引导新增 Cursor 时退出登录，再完成教程并返回空态",
+      "status": "observed",
+      "sourceNodeId": "46:144101",
+      "intermediateNodeId": "46:144259",
+      "steps": [
+        {
+          "action": "从 Empty 点击空组件",
+          "observed": "进入 Guide（46:144259）。"
+        },
+        {
+          "action": "在 Guide 点击 Connect，选择 Cursor",
+          "observed": "明确观察新增前网络检查，之后进入显示 alin.cursor 的 Cursor 登录示意。"
+        },
+        {
+          "action": "点击登录界面 X",
+          "observed": "退出登录并返回同一个 Guide，仍无账号。"
+        },
+        {
+          "action": "打开教程，点击下一步，再点击完成",
+          "observed": "返回同一个 Guide。"
+        },
+        {
+          "action": "点击 Back",
+          "observed": "回到同一个 Empty（46:144101），返回后的画面已确认。"
+        }
+      ],
+      "screenshotFiles": [],
+      "limitations": [
+        "完成的是登录退出与教程返回，未完成 Cursor 授权成功，也不据此证明 Cursor 新增成功。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-044",
+      "theme": "Dark",
+      "scenario": "首次额度查询检查后失败，关闭保留新账号未知额度",
+      "status": "observed",
+      "sourceNodeId": "53:1121194",
+      "sourceName": "R4Review",
+      "intermediateNodeId": "53:1121617",
+      "intermediateName": "FirstQueryLaunch",
+      "steps": [
+        {
+          "action": "从 R4Review 点击“新增后首次查询失败”",
+          "observed": "进入 Launch（53:1121617），明确捕获针对 new.codex 首次额度查询的网络检查。"
+        },
+        {
+          "action": "等待自动流程继续",
+          "observed": "进入“首次额度查询失败”，提示“平台暂未返回额度，尚未获取额度”。"
+        },
+        {
+          "action": "点击 Close",
+          "observed": "回到同一五账号 Launch；新卡保持“—／未获取”，旧 Claude39% / 72%、个人 Codex38% / 64%、work Codex70% / 85%。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-first-query-failed.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-first-query-failed.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "深色首次额度查询失败截图已完成像素核验。"
+        }
+      ],
+      "limitations": [
+        "查询中与评分51相位未单独截获；已观察网络检查与失败结果，不能声称所有中间相位均完成视觉核验。",
+        "此场景的新账号无可信缓存，不代替已有可信额度账号的普通查询失败保留规则。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-045",
+      "theme": "Dark",
+      "scenario": "首次查询失败关闭后从新卡菜单刷新，重查后成功",
+      "status": "observed",
+      "sourceNodeId": "53:1121617",
+      "targetNodeId": "53:281796",
+      "accountModelSet": 47,
+      "steps": [
+        {
+          "action": "从失败后保留未知额度的 new.codex 卡片打开菜单，点击刷新",
+          "observed": "再次明确捕获网络检查。"
+        },
+        {
+          "action": "等待自动流程结束",
+          "observed": "进入53:281796，新账号显示54% / 91%，旧数据不变。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-first-query-retry-success.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-first-query-retry-success.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "深色首次查询失败后经新卡菜单刷新成功的结果截图已完成像素核验。"
+        }
+      ],
+      "limitations": [
+        "触发入口是新账号卡片菜单刷新，不是失败面板上的重试按钮。",
+        "查询中与评分51相位未单独截获；不以自动最终成功推断其视觉细节均已核验。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-046",
+      "theme": "Dark",
+      "scenario": "新增前评分49阻止并取消，保留原四账号",
+      "status": "observed",
+      "sourceNodeId": "53:1121194",
+      "sourceName": "R4Review",
+      "intermediateNodeId": "53:1122077",
+      "intermediateName": "BeforeAddFailedLaunch",
+      "targetNodeId": "53:1122077",
+      "steps": [
+        {
+          "action": "从 R4Review 点击新增前评分49失败入口",
+          "observed": "进入 Launch（53:1122077），评分结果显示“当前评分49，需高于50”，并明确“已阻止添加Codex账号”。"
+        },
+        {
+          "action": "点击 Cancel",
+          "observed": "返回同一 Launch 的原四账号：Claude39% / 72%、Codex38% / 64%、work Codex70% / 85%、Cursor62%，没有新卡。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-before-add49-preserves-accounts.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-before-add49-preserves-accounts.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "深色新增前评分49阻止、取消保留账号的截图已完成像素核验。"
+        }
+      ]
+    },
+    {
+      "id": "R4-CLICK-047",
+      "theme": "Dark",
+      "scenario": "后台超时保持旧数据，页内重试检查后更新",
+      "status": "observed",
+      "sourceNodeId": "53:302679",
+      "intermediateNodeId": "53:302898",
+      "targetNodeId": "53:303766",
+      "steps": [
+        {
+          "action": "进入真实后台失败状态53:302679",
+          "observed": "页面内显示“未更新·网络检查超时／无法完成网络检查·上次成功更新09:41”；原四账号额度不变，没有前台modal。"
+        },
+        {
+          "action": "点击 Retry",
+          "observed": "进入53:302898，明确看到页内“正在检查／NetCoffee·Claude AI·上次成功09:41”，没有前台弹窗。"
+        },
+        {
+          "action": "等待自动流程结束",
+          "observed": "进入53:303766，显示已更新09:45，四账号数据与身份一致。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-background-failed.jpg",
+        "dark-background-retry-success.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-background-failed.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "深色后台超时保留旧数据与09:41的失败截图已完成像素核验。"
+        },
+        {
+          "file": "dark-background-retry-success.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "深色页内重试自动成功到09:45的截图已完成像素核验。"
+        }
+      ],
+      "limitations": [
+        "本条从后台失败状态开始，明确观察重试的页内检查和最终成功；不扩展为进入App时自动更新的全部初始相位均被单独捕获。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-048",
+      "theme": "Dark",
+      "scenario": "五账号来源再次添加Claude授权失败并取消",
+      "status": "observed",
+      "sourceNodeId": "53:261874",
+      "sourceName": "DarkSet31",
+      "accountModelSet": 31,
+      "steps": [
+        {
+          "action": "从已有A/F Claude、B/C Codex、D Cursor的Set31点击连接，再选择Claude",
+          "observed": "进入another.claude登录。"
+        },
+        {
+          "action": "点击Continue",
+          "observed": "进入授权未完成状态，显示“未添加新账号。已有账号保持不变。”"
+        },
+        {
+          "action": "点击Cancel",
+          "observed": "返回同一个Set31；已查看的A39% / 72%、F61% / 47%、B38% / 64%、C70% / 85%保留。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-auth-failed-preserves-five.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-auth-failed-preserves-five.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "深色五账号来源授权失败保留账号的截图已完成像素核验。"
+        }
+      ],
+      "limitations": [
+        "本次未单独捕获新增前网络检查相位，不将进入登录本身写成检查动画已核验。",
+        "D Cursor在折叠下方，本次没有滚动核对；只对明确看到的A/F/B/C额度作数值保留观察。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-049",
+      "theme": "Light",
+      "scenario": "小组件网站不可用保留缓存，评审模拟系统再次查询后更新",
+      "status": "observed",
+      "sourceNodeId": "53:1119634",
+      "sourceName": "R4Review",
+      "failureNodeId": "46:159568",
+      "checkingNodeId": "46:159663",
+      "targetNodeId": "46:160055",
+      "steps": [
+        {
+          "action": "从R4Review点击网站不可用场景",
+          "observed": "进入46:159568，小组件保留Claude39% / 72%及上次成功09:41。"
+        },
+        {
+          "action": "点击小组件",
+          "observed": "进入正确Claude邮箱的详情，更新时间09:41；Back回Widget，再Back回Review。"
+        },
+        {
+          "action": "在设计评审入口点击“系统再次查询”",
+          "observed": "进入46:159663，明确看到组件内检查网络，仍显示09:41。"
+        },
+        {
+          "action": "等待自动更新",
+          "observed": "进入46:160055，显示已更新09:45。"
+        },
+        {
+          "action": "点击已更新小组件",
+          "observed": "进入正确Claude邮箱详情，额度39% / 72%、更新时间09:45。"
+        }
+      ],
+      "screenshotFiles": [
+        "light-widget-updated-detail.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-widget-updated-detail.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "浅色小组件再次查询成功后的账号详情截图已完成像素核验。"
+        }
+      ],
+      "limitations": [
+        "“系统再次查询”来自设计评审的模拟结果选择入口，不是产品内重试控件，不据此声称小组件提供该产品操作。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-050",
+      "theme": "Light",
+      "scenario": "普通查询失败保留可信缓存，面板重试并返回同一来源",
+      "status": "observed",
+      "sourceNodeId": "46:136512",
+      "sourceName": "NetworkHub",
+      "launchNodeId": "65:2175533",
+      "detailNodeId": "46:172038",
+      "executionReports": [
+        "design/figma-r4-failure-source-light.json",
+        "design/figma-r4-failure-source-dark.json"
+      ],
+      "repairContext": "主执行代理已执行 failure-source 两根局部修复，浅深原生执行记录分别保存；本条实际点击为浅色。",
+      "steps": [
+        {
+          "action": "从网络hub点击查询失败，进入新Launch（65:2175533）",
+          "observed": "捕获背景work70% / 85%以及针对work的网络检查。"
+        },
+        {
+          "action": "等待流程进入失败状态",
+          "observed": "显示“额度查询失败／平台暂未返回额度”、work邮箱，以及保留上次成功数据09:41。"
+        },
+        {
+          "action": "点击失败面板Retry",
+          "observed": "明确重新进入针对work的网络检查，背景work仍为70% / 85%；随后自动关闭面板并回到同一Launch四账号，work仍为70% / 85%。"
+        },
+        {
+          "action": "点击work展开",
+          "observed": "没有触发新的网络检查，进入46:172038；work身份、Plus套餐、09:41与70% / 85%一致。"
+        }
+      ],
+      "screenshotFiles": [
+        "light-query-failure-source.jpg",
+        "light-query-retry-source-retained.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-query-failure-source.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "普通查询失败保留work可信缓存及原时间的来源截图已完成像素核验。"
+        },
+        {
+          "file": "light-query-retry-source-retained.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "失败面板重试返回同源及work展开身份／数据／时间一致的截图已完成像素核验。"
+        }
+      ],
+      "limitations": [
+        "评分51与查询中相位很短，未单独捕获；不声称其视觉细节已逐相位核验。",
+        "本条已实际验证普通缓存失败的数值／时间保留、真实面板Retry及同源返回，不因缺少短暂相位截图而将这些已观察行为重复列为待测。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-051",
+      "theme": "Light",
+      "scenario": "通知已开启设置页进入开源许可详情并逐层返回",
+      "status": "observed",
+      "sourceNodeId": "53:1119678",
+      "sourceName": "SystemReview",
+      "settingsNodeId": "53:892676",
+      "targetNodeId": "53:892676",
+      "steps": [
+        {
+          "action": "从SystemReview点击“通知已开启”",
+          "observed": "进入Settings（53:892676），通知为On，显示原四账号。"
+        },
+        {
+          "action": "打开开源许可，再进入CodexBar MIT详情",
+          "observed": "依次进入许可列表与CodexBar MIT详情；逐屏截图已做视觉确认。"
+        },
+        {
+          "action": "从详情返回许可列表，再返回设置",
+          "observed": "返回原Settings（53:892676），通知仍为On，原四账号保留；返回画面已视觉确认。"
+        }
+      ],
+      "screenshotFiles": [
+        "light-licenses-return-on.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-licenses-return-on.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "许可详情逐层返回原On设置页的截图已emit并完成像素核验。"
+        }
+      ],
+      "limitations": [
+        "仅验证此浅色开源许可／CodexBar MIT详情的往返及返回设置状态，不扩大为全部支持页面或跨新增权限状态保持通过。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-052",
+      "theme": "Light",
+      "scenario": "从原入口进入App自动更新，页内检查后成功",
+      "status": "observed",
+      "sourceNodeId": "1:500",
+      "checkingNodeId": "46:158486",
+      "targetNodeId": "46:159354",
+      "steps": [
+        {
+          "action": "从原入口1:500实际点击“进入App·自动更新”",
+          "observed": "进入页内CheckA（46:158486）；明确捕获Net.Coffee／Claude信任评分检查、上次成功09:41及四账号原额度，没有弹窗。"
+        },
+        {
+          "action": "等待自动流程结束",
+          "observed": "进入Success（46:159354），上次成功更新09:45，四账号不变。"
+        }
+      ],
+      "screenshotFiles": [
+        "light-app-auto-check.jpg",
+        "light-app-auto-success.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-app-auto-check.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "已emit并像素核验；短Dissolve过渡中有目录淡残影，但当前网络标题可读，可证明检查相位。",
+          "evidenceUse": "transition_phase_not_final_static_delivery"
+        },
+        {
+          "file": "light-app-auto-success.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "已emit并像素核验；确认自动更新成功09:45及四账号保留。"
+        }
+      ],
+      "limitations": [
+        "本次未单独截获评分51，不声称逐帧覆盖全部相位。",
+        "检查截图包含短Dissolve过渡残影，用于实际相位证据，不列为最终静态交付画面。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-053",
+      "theme": "Dark",
+      "scenario": "从原入口进入App自动更新，页内检查与查询后成功",
+      "status": "observed",
+      "sourceNodeId": "1:4088",
+      "checkingNodeId": "53:302898",
+      "queryingNodeId": "53:303548",
+      "targetNodeId": "53:303766",
+      "steps": [
+        {
+          "action": "从原入口1:4088实际点击“进入App·自动更新”",
+          "observed": "进入页内CheckA（53:302898）；明确捕获Net.Coffee／Claude信任评分检查、上次成功09:41及四账号原额度，没有弹窗。"
+        },
+        {
+          "action": "观察自动进入查询中",
+          "observed": "独立捕获Querying（53:303548），仍显示原成功时间09:41。"
+        },
+        {
+          "action": "等待自动流程结束",
+          "observed": "进入Success（53:303766），上次成功更新09:45，四账号不变。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-app-auto-check.jpg",
+        "dark-app-auto-querying.jpg",
+        "dark-app-auto-success.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-app-auto-check.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "已emit并像素核验；短Dissolve过渡中有目录淡残影，但当前网络标题可读，可证明检查相位。",
+          "evidenceUse": "transition_phase_not_final_static_delivery"
+        },
+        {
+          "file": "dark-app-auto-querying.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "已emit并像素核验；独立确认Querying相位仍保留09:41。"
+        },
+        {
+          "file": "dark-app-auto-success.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "已emit并像素核验；确认自动更新成功09:45及四账号保留。"
+        }
+      ],
+      "limitations": [
+        "本次未单独截获评分51，不声称逐帧覆盖全部相位。",
+        "检查截图包含短Dissolve过渡残影，用于实际相位证据，不列为最终静态交付画面。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-054",
+      "theme": "Light",
+      "scenario": "断开work后回退到同平台未知额度账号，详情与返回一致",
+      "status": "observed",
+      "sourceNodeId": "65:1364715",
+      "sourceName": "DesignValidationHome",
+      "sourceAppNodeId": "53:351234",
+      "resultAppNodeId": "53:337214",
+      "targetNodeId": "65:1349611",
+      "detailNodeId": "65:1349573",
+      "steps": [
+        {
+          "action": "从设计验证起点Home（65:1364715）点击App图标",
+          "observed": "起点组件显示C work70% / 85%和D Cursor62%、$12.40/20；进入Pending14-1看板（53:351234），B个人Codex为“—／未获取”，C为70% / 85%，D为62%。"
+        },
+        {
+          "action": "从C更多菜单进入断开确认，再确认",
+          "observed": "确认面板显示work邮箱；确认后进入Pending10-1看板（53:337214），只剩B未知额度与D62%。"
+        },
+        {
+          "action": "点击Home indicator",
+          "observed": "进入Home（65:1349611）；左组件alin.codex显示“未获取额度”，右D仍为62%、$12.40/20，没有沿用已断开C的70% / 85%。"
+        },
+        {
+          "action": "点击左组件",
+          "observed": "进入WidgetUnknown（65:1349573），显示alin.codex@example.com与“尚未获取额度”。"
+        },
+        {
+          "action": "关闭详情",
+          "observed": "返回同一Home（65:1349611）；逐屏已完成像素确认。"
+        }
+      ],
+      "screenshotFiles": [
+        "light-widget-fallback-unknown.jpg",
+        "light-widget-unknown-detail.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-widget-fallback-unknown.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "未知额度候选回退结果截图已核验；B未获取，D保持原值，无C旧额度挪用。"
+        },
+        {
+          "file": "light-widget-unknown-detail.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "未知额度账号详情截图已核验，身份为alin.codex@example.com。"
+        }
+      ],
+      "limitations": [
+        "本条只验证W06的未知额度候选子项；旧缓存失效点击目标的后续双主题实点见057/058，不把本条单独写成整个W06通过。",
+        "小号组件时间沿用R3隐藏，本条没有把09:41记为小号组件的可见内容。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-055",
+      "theme": "Dark",
+      "scenario": "跨平台回退到未知额度Claude，详情与同源返回",
+      "status": "observed",
+      "sourceNodeId": "65:1650027",
+      "sourceAppNodeId": "53:532190",
+      "observedResultAppNodeId": "53:518170",
+      "steps": [
+        {
+          "action": "从Home（65:1650027）点击App",
+          "observed": "Home显示C work70% / 85%与D Cursor62%、$12.40/20；进入Pending13-0看板（53:532190），A Claude为“—／未获取”，C work为70% / 85%，D为62%。"
+        },
+        {
+          "action": "打开C菜单，进入断开确认并点击Confirm",
+          "observed": "菜单及确认中目标为work邮箱；确认后进入Pending9-0看板（53:518170），仅A未知额度与D62%保留。上述画面均逐屏视觉确认。"
+        },
+        {
+          "action": "点击Home indicator，解锁后继续核验",
+          "observed": "Home（65:1636461）已像素确认：Claude alin.claude显示“未获取额度”，D Cursor保持62%、$12.40/20，没有挪用已断开C的70% / 85%。"
+        },
+        {
+          "action": "点击Claude小组件",
+          "observed": "进入WidgetUnknown（65:1636423），准确显示alin.claude@example.com及“尚未获取额度”。"
+        },
+        {
+          "action": "点击Close",
+          "observed": "返回同一个Home（65:1636461），再次完成像素确认。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-widget-cross-fallback-unknown.jpg",
+        "dark-widget-unknown-detail.jpg"
+      ],
+      "limitations": [
+        "本条证明深色跨平台未知额度候选的回退／详情／返回；W06旧缓存失效点击目标的后续双主题实际观察另见057/058。"
+      ],
+      "targetNodeId": "65:1636461",
+      "detailNodeId": "65:1636423",
+      "screenshotVerification": [
+        {
+          "file": "dark-widget-cross-fallback-unknown.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "用户解锁后正确重存并覆盖旧候选文件，已emit核验；确认Claude未知额度、D原值及无C额度挪用。"
+        },
+        {
+          "file": "dark-widget-unknown-detail.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "已emit核验；Claude未知额度详情显示alin.claude@example.com／尚未获取额度。"
+        }
+      ],
+      "observationHistory": "最初因Mac锁屏仅记录到App断开结果和Home URL；用户解锁后补验最终Home、Claude未知详情与Close返回，本条已按新增事实补全。"
+    },
+    {
+      "id": "R4-CLICK-056",
+      "theme": "Light",
+      "scenario": "通知On下连续新增Claude和Cursor，设置与账号数据保持",
+      "status": "observed",
+      "sourceNodeId": "53:1119678",
+      "sourceName": "SystemReview",
+      "initialSettingsNodeId": "53:892676",
+      "claudeDashboardNodeId": "65:1173672",
+      "claudeSettingsNodeId": "65:1173495",
+      "cursorSettingsNodeId": "65:2085537",
+      "cursorDashboardNodeId": "65:2085728",
+      "resultAccountModelSet": 95,
+      "steps": [
+        {
+          "action": "从SystemReview进入通知On，再从原四账号Settings添加Claude",
+          "observed": "先观察新增前网络检查，再进入new.claude登录示意。"
+        },
+        {
+          "action": "点击Continue并观察首次查询",
+          "observed": "首次查询网络检查时，新账号显示“—／未获取”，旧A39% / 72%、B38% / 64%保留；随后成功进入Set31看板（65:1173672）。"
+        },
+        {
+          "action": "进入Set31设置",
+          "observed": "Settings（65:1173495）显示五个账号身份，通知仍为On。"
+        },
+        {
+          "action": "继续添加Cursor，在new.cursor登录示意点击Continue",
+          "observed": "成功到Set95；Settings（65:2085537）显示A、F、B、C、D、G六个账号身份，通知仍为On。"
+        },
+        {
+          "action": "再次打开添加选择器并点击X",
+          "observed": "返回同一个Set95 Settings，六个账号和通知On均不变。"
+        },
+        {
+          "action": "切换Dashboard（65:2085728）并滚动查看",
+          "observed": "B38% / 64%、C70% / 85%、D62%、G28%及各自具体邮箱可见。"
+        },
+        {
+          "action": "点击G详情",
+          "observed": "显示new.cursor@example.com，剩余28%、8天、上次成功09:41；没有金额。"
+        }
+      ],
+      "screenshotFiles": [
+        "light-add-keeps-notification-on.jpg",
+        "light-cross-add-notification-on.jpg",
+        "light-cross-add-cursor-quotas.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-add-keeps-notification-on.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "浅色新增Claude后五身份设置与通知On已像素核验。"
+        },
+        {
+          "file": "light-cross-add-notification-on.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "继续新增Cursor后六身份设置与通知On已像素核验。"
+        },
+        {
+          "file": "light-cross-add-cursor-quotas.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "Set95看板中的B/C/D/G额度及具体邮箱已像素核验。"
+        }
+      ],
+      "limitations": [
+        "Cursor在途网络帧很短，具体检查相位未留截图，不声称本次已逐相位视觉确认。",
+        "G详情没有金额，本条仅记录实际看到的剩余28%、8天及09:41，不写金额已验证。",
+        "本条证明Light通知On跨这次连续成功新增及选择器取消的主故事；Dark对应修复仍待实际点击，不能关闭整个跨主题问题。"
+      ],
+      "followUpObservation": "当时的权限跨新增限制保留为历史背景；指定浅深权限保持主故事已由056/059后续实点闭环，有限模型范围不扩大。"
+    },
+    {
+      "id": "R4-CLICK-057",
+      "theme": "Light",
+      "scenario": "旧缓存work组件点击进入当前绑定状态并返回当前组件",
+      "status": "observed",
+      "sourceNodeId": "94:2477991",
+      "targetAppNodeId": "53:337214",
+      "targetHomeNodeId": "65:1349611",
+      "steps": [
+        {
+          "action": "通过根URL打开旧缓存设计评审状态94:2477991",
+          "observed": "显示旧work.codex70% / 85%与Cursor alin62%、$12.40/20。"
+        },
+        {
+          "action": "实际点击左侧旧work小组件",
+          "observed": "进入53:337214，当前仅B alin.codex未知“—／未获取”和D62%，不含C work。"
+        },
+        {
+          "action": "点击Home indicator",
+          "observed": "返回65:1349611，当前组件为B未获取及D62%、$12.40/20，没有恢复C work。"
+        }
+      ],
+      "additionalObservation": "此链未发起联网查询；从根URL进入的是评审起点，目标与返回均由实际点击验证。",
+      "screenshotFiles": [
+        "light-stale-widget-current-binding.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-stale-widget-current-binding.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "主执行代理明确报告已查看像素，确认旧缓存点击进入当前B未知+D的绑定状态。"
+        }
+      ]
+    },
+    {
+      "id": "R4-CLICK-058",
+      "theme": "Dark",
+      "scenario": "旧缓存work组件点击进入当前绑定状态并返回当前组件",
+      "status": "observed",
+      "sourceNodeId": "94:2478095",
+      "targetAppNodeId": "53:519111",
+      "targetHomeNodeId": "65:1639468",
+      "steps": [
+        {
+          "action": "通过根URL打开旧缓存设计评审状态94:2478095",
+          "observed": "进入与浅色对应的旧缓存work组件场景。"
+        },
+        {
+          "action": "实际点击左侧旧work小组件",
+          "observed": "进入53:519111，当前仅B未知额度和D62%，没有恢复C work。"
+        },
+        {
+          "action": "点击Home indicator",
+          "observed": "返回65:1639468，当前组件为B未获取及D62%、$12.40/20。"
+        }
+      ],
+      "additionalObservation": "此链未发起联网查询；从根URL进入的是评审起点，目标与返回均由实际点击验证。",
+      "screenshotFiles": [
+        "dark-stale-widget-current-binding.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-stale-widget-current-binding.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "主执行代理后续明确确认已查看该截图像素，验证旧work缓存点击进入当前B未知+D绑定状态。"
+        }
+      ]
+    },
+    {
+      "id": "R4-CLICK-059",
+      "theme": "Dark",
+      "scenario": "通知On来源新增Codex成功后五身份设置仍On",
+      "status": "observed",
+      "sourceNodeId": "53:1121238",
+      "sourceName": "SystemReview",
+      "initialSettingsNodeId": "53:894279",
+      "targetNodeId": "65:1299695",
+      "steps": [
+        {
+          "action": "从SystemReview点击通知已开启",
+          "observed": "进入Settings（53:894279），原四账号且通知On。"
+        },
+        {
+          "action": "点击Add，选择Codex，进入new.codex登录示意后点击Continue",
+          "observed": "实际看到“正在连接Codex”的授权相位。"
+        },
+        {
+          "action": "等待自动成功后进入设置",
+          "observed": "Settings（65:1299695）显示A、B、C、E、D五个身份，通知仍为On。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-add-keeps-notification-on.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-add-keeps-notification-on.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "主执行代理已看全部相关画面像素并保存此图，确认新增Codex后五身份设置与通知On。"
+        }
+      ],
+      "limitations": [
+        "短网络中间状态未截获，不声称已逐帧实证全部网络相位。",
+        "本条与056共同闭环指定浅深权限保持主故事；有限模型边界保留，不声明任意账号排列或全部跨流程组合通过。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-060",
+      "theme": "Light",
+      "scenario": "R3旧stale来源刷新失败与重试保留旧额度、09:11及返回",
+      "status": "observed",
+      "sourceNodeId": "14:42451",
+      "sourceName": "R3 stale original",
+      "targetNodeId": "14:42451",
+      "steps": [
+        {
+          "action": "打开R3旧stale原画面14:42451",
+          "observed": "Claude39% / 72%、B38% / 64%、C70% / 85%、D62%；顶部提示显示原成功时间09:11。"
+        },
+        {
+          "action": "点击顶部刷新",
+          "observed": "实际看到“正在检查网络／当前全部已绑定账号额度查询”及Net.Coffee Claude AI；随后自动进入额度查询失败，明确不是网络检查失败。"
+        },
+        {
+          "action": "点击重试",
+          "observed": "再次实际看到网络检查。"
+        },
+        {
+          "action": "随后关闭失败面板",
+          "observed": "返回同一原页14:42451，没有把后继查询失败当成成功更新旧数据。"
+        },
+        {
+          "action": "点击Claude展开",
+          "observed": "详情显示alin.claude@example.com、39% / 72%，上次成功09:11，仍与原来源一致。"
+        },
+        {
+          "action": "点击左上返回",
+          "observed": "回到同一个原画面14:42451。"
+        }
+      ],
+      "screenshotFiles": [
+        "light-r3-stale-retry-retains-time.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-r3-stale-retry-retains-time.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "主执行代理已查看像素；旧R3 stale路径查询失败、重试后来源时间09:11与Claude额度／身份一致。"
+        }
+      ],
+      "limitations": [
+        "本条是该浅色旧特殊画面的实际路径回归，不扩展为全部44张R3画面或深色对应页均已点击通过。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-061",
+      "theme": "Dark",
+      "scenario": "原R3 stale页面查询失败与重试，保留09:11及四账号原数据",
+      "status": "observed",
+      "sourceNodeId": "14:42913",
+      "sourceName": "Original Dark R3 stale",
+      "targetNodeId": "14:42913",
+      "steps": [
+        {
+          "action": "在原版深色R3 stale页面14:42913点击顶部refresh",
+          "observed": "进入查询中，随后额度查询失败；首次检查相位短暂，本次未截图。"
+        },
+        {
+          "action": "点击Retry",
+          "observed": "实际截图清楚显示“正在检查网络”、当前全部已绑定账号的额度查询，以及Net.Coffee Claude AI。"
+        },
+        {
+          "action": "再次查询失败后点击Close，再展开Claude",
+          "observed": "Claude详情显示39% / 72%、alin.claude身份、最后成功09:11。"
+        },
+        {
+          "action": "返回原页面",
+          "observed": "回到14:42913，原四账号Claude39% / 72%、B38% / 64%、C70% / 85%、D62%保持。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-r3-stale-retry-retains-time.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-r3-stale-retry-retains-time.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "已保存且查看像素，确认Claude详情39% / 72%及原成功时间09:11。"
+        }
+      ],
+      "limitations": [
+        "实际来源是原版Dark R3画面，不是重建来源；本条仅证明该原页面的失败／重试／返回保留。",
+        "首次网络检查相位未截图，不声称本次逐帧核验全部相位。",
+        "不扩展为12:41等其他旧特殊页面或全部R3画面均已点击。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-062",
+      "theme": "Light",
+      "scenario": "普通四账号看板教程首步关闭及第二步完成返回",
+      "status": "observed",
+      "sourceNodeId": "1:536",
+      "targetNodeId": "1:536",
+      "steps": [
+        {
+          "action": "从普通看板1:536下方点击“如何添加小组件”",
+          "observed": "进入Tutorial1。"
+        },
+        {
+          "action": "在首步点击X关闭",
+          "observed": "回到原四账号看板。"
+        },
+        {
+          "action": "再次进入教程，点击Next",
+          "observed": "进入Tutorial2，说明搜索、选择尺寸，以及添加后长按编辑账户。"
+        },
+        {
+          "action": "点击Done",
+          "observed": "返回1:536，原四账号及其额度值保持。"
+        }
+      ],
+      "additionalObservation": "全程实际点击并逐屏观察像素。",
+      "screenshotFiles": [
+        "light-dashboard-tutorial-return.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-dashboard-tutorial-return.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "最终返回普通四账号看板的截图已保存并查看像素。"
+        }
+      ],
+      "limitations": [
+        "本条仅浅色普通看板来源的教程关闭与完成路径；深色对应正在验证，不能据此判两主题均已通过。"
+      ],
+      "followUpObservation": "Dark对应普通看板教程首步X及第二步Done后续已由063观察；本条原先的Dark待验证限制已在该对应路径内补齐。"
+    },
+    {
+      "id": "R4-CLICK-063",
+      "theme": "Dark",
+      "scenario": "普通四账号看板教程首步关闭及第二步完成返回",
+      "status": "observed",
+      "sourceNodeId": "1:4124",
+      "targetNodeId": "1:4124",
+      "steps": [
+        {
+          "action": "从普通看板1:4124点击“如何添加”进入教程首步",
+          "observed": "进入Tutorial1。"
+        },
+        {
+          "action": "点击X关闭",
+          "observed": "返回同一个1:4124，原四账号保留。"
+        },
+        {
+          "action": "再次打开教程并点击Next",
+          "observed": "第二步说明搜索订阅额度、选择尺寸、添加后编辑选择账号。"
+        },
+        {
+          "action": "点击Done",
+          "observed": "返回原1:4124；A39% / 72%、B38% / 64%、C70% / 85%、D62%保持。"
+        }
+      ],
+      "additionalObservation": "所有阶段均由主执行代理查看像素，最终返回画面已保存。",
+      "screenshotFiles": [
+        "dark-dashboard-tutorial-return.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-dashboard-tutorial-return.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "已保存并查看像素，确认教程首步关闭及第二步完成返回原深色四账号看板。"
+        }
+      ],
+      "limitations": [
+        "与062共同验证普通看板来源的浅深首步关闭与第二步完成，不扩展为任意其他来源或最终交付入口已验证。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-064",
+      "theme": "Dark",
+      "scenario": "原R3 12:41来源检查后查询失败，重试与返回保留特定旧值",
+      "status": "observed",
+      "sourceNodeId": "14:53566",
+      "sourceName": "Original Dark R3 12:41",
+      "targetNodeId": "14:53566",
+      "steps": [
+        {
+          "action": "进入原R3画面14:53566并点击顶部refresh",
+          "observed": "原值为A39% / 96%、B38% / 64%、C70% / 85%、D62%，来源成功时间12:41；截图清楚显示Net.Coffee Claude信任评分正在检查及全部账号查询范围。"
+        },
+        {
+          "action": "等待后继查询",
+          "observed": "进入额度查询失败。"
+        },
+        {
+          "action": "点击Retry",
+          "observed": "再次进入网络检查；主执行代理已清楚查看截图，但未将该检查截图保存为文件。"
+        },
+        {
+          "action": "再次失败后点击Close，展开Claude",
+          "observed": "详情显示alin.claude、A39% / 96%，最后成功12:41。"
+        },
+        {
+          "action": "点击Back",
+          "observed": "回到原14:53566，原额度值与12:41保持。"
+        }
+      ],
+      "additionalObservation": "本次没有修改原根内容，只进行该12:41来源的实际回归验证。",
+      "screenshotFiles": [
+        "dark-r3-newtime-retry-retains-time.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-r3-newtime-retry-retains-time.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "已保存并查看像素，确认原12:41来源的Claude39% / 96%及时间在失败／重试／返回后保持。"
+        }
+      ],
+      "limitations": [
+        "Retry网络检查已实际观察，其清楚截图未保存；不编造独立截图附件。",
+        "仅证明原R3 14:53566的12:41来源路径，不扩展为全部特殊画面或最终交付已完成。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-065",
+      "theme": "Light",
+      "scenario": "正式入口新加载、网络与组件目录返回、后台失败页滚动",
+      "status": "observed",
+      "sourceNodeId": "1:500",
+      "startingPointNodeId": "1:500",
+      "reviewNodeId": "53:1119634",
+      "networkNodeId": "46:136512",
+      "widgetNodeId": "46:140634",
+      "backgroundFailedNodeId": "46:158267",
+      "steps": [
+        {
+          "action": "从正式链接新加载node1:500、starting-point1:500",
+          "observed": "浅色最终入口成功显示，已截图并查看像素。"
+        },
+        {
+          "action": "点击网络入口，再点击返回",
+          "observed": "进入46:136512，再返回R4评审53:1119634。"
+        },
+        {
+          "action": "进入小组件目录，再点击返回",
+          "observed": "进入46:140634，再返回同一R4评审53:1119634。"
+        },
+        {
+          "action": "打开后台失败46:158267，向下滚动",
+          "observed": "完整看到Cursor剩余62%与教程，固定Tab位置正常；滚动结果已截图并查看像素。"
+        }
+      ],
+      "screenshotFiles": [
+        "light-final-entry.jpg",
+        "light-background-failed-scroll.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-final-entry.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "正式浅色入口新加载结果。"
+        },
+        {
+          "file": "light-background-failed-scroll.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "后台失败页滚动后完整Cursor62%、教程及正常固定Tab。"
+        }
+      ],
+      "limitations": [
+        "只记录正式入口与本次实际点击结果；不重复验证49/50分支，不据此宣称全文件云同步完成。",
+        "后台下部内容可达已观察；本条没有追加逐个点击所有卡片控件。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-066",
+      "theme": "Dark",
+      "scenario": "正式入口、目录返回、后台滚动、Restart与最终两主题Flows列表",
+      "status": "observed",
+      "sourceNodeId": "1:4088",
+      "startingPointNodeId": "1:4088",
+      "reviewNodeId": "53:1121194",
+      "networkNodeId": "46:138573",
+      "widgetNodeId": "46:150995",
+      "backgroundFailedNodeId": "53:302679",
+      "steps": [
+        {
+          "action": "从正式链接加载1:4088",
+          "observed": "深色最终入口已显示，截图像素已查看。"
+        },
+        {
+          "action": "进入网络目录并返回",
+          "observed": "46:138573 → 返回53:1121194。"
+        },
+        {
+          "action": "进入小组件目录并返回",
+          "observed": "小组件46:150995的画面已确认；截图时URL显示延迟，不能只以当时URL判断未进入；随后返回53:1121194。"
+        },
+        {
+          "action": "进入后台失败53:302679并滚动",
+          "observed": "完整看到Cursor62%与教程，截图像素已查看。"
+        },
+        {
+          "action": "执行Figma Restart",
+          "observed": "返回正式入口1:4088。"
+        },
+        {
+          "action": "打开Browser的Flows侧栏",
+          "observed": "AX仅显示“R4 · 浅色 · 交互状态与返回路径”和“R4 · 深色 · 交互状态与返回路径”两个链接，当前Dark selected；已保存截图并查看像素。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-final-entry.jpg",
+        "dark-background-failed-scroll.jpg",
+        "final-cloud-flows.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-final-entry.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "正式深色入口加载结果。"
+        },
+        {
+          "file": "dark-background-failed-scroll.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "后台失败页滚动后完整Cursor62%与教程。"
+        },
+        {
+          "file": "final-cloud-flows.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "最终Flows侧栏仅浅深两个指定名称，当前深色选中。"
+        }
+      ],
+      "limitations": [
+        "只记录正式入口与本次实际点击结果；不重复验证49/50分支，不据此宣称全文件云同步完成。",
+        "Flows侧栏证明最终entries变更已在新加载的云端原型呈现，不等于所有云同步状态均已清空。",
+        "原生编辑器AX仍含本地未保存、重连后同步的文案；本条不把此状态改写成已全部同步。"
+      ]
+    },
+    {
+      "status": "observed",
+      "id": "R4-CLICK-067",
+      "theme": "Light",
+      "scenario": "从云Flows进入首次权限允许，再Off到On无重复权限请求",
+      "sourceNodeId": "53:1119678",
+      "sourceName": "SystemReview",
+      "initialSettingsNodeId": "1:2169",
+      "onSettingsNodeId": "53:892676",
+      "offSettingsNodeId": "53:893051",
+      "steps": [
+        {
+          "action": "从云端Flows选择Light入口，进入SystemReview首次权限入口",
+          "observed": "到达设置1:2169。"
+        },
+        {
+          "action": "点击通知toggle",
+          "observed": "打开明确标记iOS交互示意的通知权限sheet。"
+        },
+        {
+          "action": "点击Allow",
+          "observed": "返回设置53:892676，通知On，原四个账号身份保留。"
+        },
+        {
+          "action": "点击toggle Off，再点击On",
+          "observed": "依次到53:893051和53:892676，没有重复弹出权限sheet；最终四账号On画面完整正常。"
+        }
+      ],
+      "screenshotFiles": [
+        "light-permission-allow-off-on.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-permission-allow-off-on.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "经过viewport重绘，确认最终完整画面正常；已保存并查看像素。"
+        }
+      ],
+      "captureNote": "期间截图缓冲曾局部黑，viewport重绘后完整正常；此为已恢复的捕获现象，不登记为设计缺陷。",
+      "limitations": [
+        "Figma权限交互示意，不能视为改变真实iOS通知权限。"
+      ]
+    },
+    {
+      "status": "observed",
+      "id": "R4-CLICK-068",
+      "theme": "Dark",
+      "scenario": "首次通知权限拒绝后进入iOS设置示意开启并返回",
+      "sourceNodeId": "53:1121238",
+      "sourceName": "SystemReview",
+      "initialSettingsNodeId": "1:5757",
+      "deniedSettingsNodeId": "53:895028",
+      "iosOffNodeId": "53:895424",
+      "iosOnNodeId": "53:895454",
+      "targetNodeId": "53:894279",
+      "steps": [
+        {
+          "action": "从SystemReview首次请求入口进入设置1:5757，点击toggle",
+          "observed": "打开明确标记iOS交互示意的权限sheet。"
+        },
+        {
+          "action": "点击不允许",
+          "observed": "到53:895028，显示系统权限未开启、前往设置的提示，原四账号保留。"
+        },
+        {
+          "action": "再次点击toggle进入系统设置示意并开启",
+          "observed": "先到iOS Off53:895424，再到On53:895454。"
+        },
+        {
+          "action": "点击Back",
+          "observed": "回设置53:894279，通知On，四账号保留。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-permission-deny-ios-return.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-permission-deny-ios-return.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "已保存且主执行代理查看像素，画面正常；拒绝后经系统示意设置恢复并返回四账号On。"
+        }
+      ],
+      "limitations": [
+        "仅Figma模拟，没有改变真实系统权限。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-069",
+      "theme": "Dark",
+      "scenario": "正式入口锁屏通知触发Claude网络检查后回正确详情",
+      "status": "observed",
+      "sourceNodeId": "14:42922",
+      "sourceName": "LockNotification",
+      "targetNodeId": "53:1121368",
+      "steps": [
+        {
+          "action": "从原正式入口点击末项进入14:42922锁屏，点击alin.claude通知",
+          "observed": "进入53:1121368的Claude展开来源。"
+        },
+        {
+          "action": "连续截图观察检查过程",
+          "observed": "第三张实际清楚读到“正在检查网络”、alin.claude@example.com的额度查询、Net.Coffee · Claude AI信任评分及取消；有短Dissolve残影，该相位截图未保存为文件。"
+        },
+        {
+          "action": "等待自动流程结束",
+          "observed": "回到同一Claude详情，39% / 72%、对应邮箱、Pro、上次成功09:41；其他B38% / 64%、C70% / 85%、D62%保持。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-notification-check-return.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-notification-check-return.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "最终Claude正确详情及其他账号额度截图已查看像素。"
+        }
+      ],
+      "limitations": [
+        "Dark通知前置网络检查相位已有明确实际观察，但相位截图未保存；短Dissolve残影不被记作最终静态画面缺陷。",
+        "pass／query短相位仍未单独捕获，不声称逐帧全部相位通过。",
+        "未纳入首次尝试中无保存的“额度已更新”短相位，避免扩大证据。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-070",
+      "theme": "Dark",
+      "scenario": "小号组件配置work后详情正确，但Home返回错误",
+      "status": "observed_with_open_issue",
+      "sourceNodeId": "46:150995",
+      "galleryNodeId": "46:152233",
+      "initialConfigNodeId": "46:152337",
+      "selectedConfigNodeId": "46:152705",
+      "homeNodeId": "46:152771",
+      "incorrectReturnNodeId": "46:154688",
+      "steps": [
+        {
+          "action": "从WidgetHub进入小号Gallery46:152233，再点击Add",
+          "observed": "进入Config46:152337，初始选择A。"
+        },
+        {
+          "action": "选择work46:152705，点击Done",
+          "observed": "进入Home46:152771，C显示70% / 85%，D显示62%、$12.40/20。"
+        },
+        {
+          "action": "点击C小组件",
+          "observed": "弹层准确显示work.codex、Plus、09:41与70% / 85%。"
+        },
+        {
+          "action": "点击详情Back（CLOSE）",
+          "observed": "回到Home，账号身份及额度正确。"
+        },
+        {
+          "action": "再点击Home导航Back",
+          "observed": "实际进入Accounts46:154688，而不是刚才的Config46:152705；存在真实错误返回。"
+        }
+      ],
+      "screenshotFiles": [
+        "dark-small-widget-work-detail.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "dark-small-widget-work-detail.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "work组件详情身份、Plus、09:41与70% / 85%的截图已查看像素；不把此图当作Home返回正确证据。"
+        }
+      ],
+      "relatedIssue": "R4-OBS-ISSUE-003",
+      "limitations": [
+        "Home导航Back错误尚未修复／复验，本条不能判整条配置返回链通过。",
+        "此前036验证的深色中号路径不受本条影响，不回写其历史观察结论。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-071",
+      "theme": "Light",
+      "scenario": "中号组件选择work，详情CLOSE及Home逐层返回完整",
+      "status": "observed",
+      "galleryNodeId": "46:142760",
+      "initialConfigNodeId": "46:142864",
+      "selectedConfigNodeId": "46:143232",
+      "homeNodeId": "46:143298",
+      "targetNodeId": "46:140634",
+      "steps": [
+        {
+          "action": "从medium Gallery46:142760点击Add",
+          "observed": "进入Config46:142864，初始选择A。"
+        },
+        {
+          "action": "选择work46:143232并点击Done",
+          "observed": "进入Home46:143298，显示work70% / 85%。"
+        },
+        {
+          "action": "点击work组件",
+          "observed": "打开overlay详情，准确显示work.codex、Plus、09:41与70% / 85%；URL保留Home符合覆盖层行为。"
+        },
+        {
+          "action": "点击详情Back（CLOSE）",
+          "observed": "返回Home，work70% / 85%保持。"
+        },
+        {
+          "action": "点击Home Back",
+          "observed": "返回Config46:143232，work行仍被选中。"
+        },
+        {
+          "action": "继续点击Back两次",
+          "observed": "依次回到尺寸页Gallery46:142760，再回WidgetHub46:140634。"
+        }
+      ],
+      "additionalObservation": "完整退出链全部逐屏像素确认。",
+      "screenshotFiles": [
+        "light-medium-widget-work-detail.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "light-medium-widget-work-detail.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "主执行代理",
+          "reportedDate": "2026-10-09",
+          "scope": "浅色中号work详情截图已保存并查看像素，身份／Plus／09:41／70% / 85%正确。"
+        }
+      ],
+      "limitations": [
+        "本条仅证明Light中号完整配置与退出，不涉及Dark小号Home返回错误；R4-OBS-ISSUE-003仍开放。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-072",
+      "theme": "Light",
+      "scenario": "修复后小号work配置、详情标题保持及完整按来源返回",
+      "status": "observed",
+      "observationSource": "主执行代理root恢复执行后的实际原型点击报告；本日志维护代理未操作UI。",
+      "steps": [
+        {
+          "action": "从Widgets Hub46:140634进入小号Gallery46:141872，点击Add",
+          "observed": "进入初始Config46:141976。"
+        },
+        {
+          "action": "选择work进入46:142344并点击完成",
+          "observed": "到共享Home46:142410。"
+        },
+        {
+          "action": "点击work小组件打开Detail/C覆盖层，再点击该页已展开标题",
+          "observed": "详情保持当前work；截图可读work.codex@example.com、70%/85%、Plus及09:41；未跳旧R2页面。"
+        },
+        {
+          "action": "关闭详情后点击Home导航箭头",
+          "observed": "先回同Home，Home Back准确回46:142344，work仍选中。"
+        },
+        {
+          "action": "继续Config Back，再Gallery Back",
+          "observed": "依次到小号Gallery及同Widgets Hub46:140634，完整退出成功。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-light-work-detail.jpg",
+        "resume-light-config-return.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-light-work-detail.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "完整work.codex详情可读，70/85、Plus、09:41一致；Back和Home indicator呈Figma蓝色热点提示，适合交互证据，不作为纯黑白灰最终静态图。",
+          "captureQuality": "complete_with_figma_hotspot_hints"
+        },
+        {
+          "file": "resume-light-config-return.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "完整显示编辑小组件页，work.codex行选中、四账号身份、完成及返回控件可读。",
+          "captureQuality": "complete_usable"
+        }
+      ],
+      "executionReports": [
+        "design/figma-r4-resume-local-repair.json",
+        "design/figma-r4-audit-after-final-fixes.json"
+      ],
+      "sourceNodeId": "46:140634",
+      "galleryNodeId": "46:141872",
+      "initialConfigNodeId": "46:141976",
+      "selectedConfigNodeId": "46:142344",
+      "homeNodeId": "46:142410",
+      "detailNodeId": "46:141286",
+      "targetNodeId": "46:140634",
+      "relatedIssue": "R4-OBS-ISSUE-003",
+      "limitations": [
+        "仅Light配置来源回归；Dark及其他两种来源另记，不由本条自动判全部问题关闭。",
+        "work截图包含Figma蓝色热点提示；未将其误判为产品颜色修改。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-073",
+      "theme": "Light",
+      "scenario": "修复后共享Home从评审Hub进入并按历史返回",
+      "status": "observed",
+      "observationSource": "主执行代理root恢复执行后的实际原型点击报告；本日志维护代理未操作UI。",
+      "steps": [
+        {
+          "action": "从Widgets Hub46:140634点击逐账号回退情景",
+          "observed": "进入同一共享Home46:142410。"
+        },
+        {
+          "action": "点击Home导航Back",
+          "observed": "准确返回Widgets Hub46:140634，不固定跳账号管理或Config。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-light-review-return.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-light-review-return.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "完整显示小组件配置与回退设计评审Hub及全部目录按钮、返回评审入口。",
+          "captureQuality": "complete_usable"
+        }
+      ],
+      "executionReports": [
+        "design/figma-r4-resume-local-repair.json",
+        "design/figma-r4-audit-after-final-fixes.json"
+      ],
+      "sourceNodeId": "46:140634",
+      "homeNodeId": "46:142410",
+      "targetNodeId": "46:140634",
+      "relatedIssue": "R4-OBS-ISSUE-003",
+      "limitations": [
+        "仅Light评审来源返回；由实际点击建立历史，不是孤立Home深链。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-074",
+      "theme": "Light",
+      "scenario": "修复后共享Home从账号列表返回的历史语义与Hub出口",
+      "status": "observed",
+      "observationSource": "主执行代理root恢复执行后的实际原型点击报告；本日志维护代理未操作UI。",
+      "steps": [
+        {
+          "action": "从Hub进入共享Home46:142410，再点App图标",
+          "observed": "进入Accounts/ABCD46:144327。"
+        },
+        {
+          "action": "点击Accounts Back回Home，再点击Home导航Back",
+          "observed": "Home准确返回最近Accounts46:144327，符合实际来源历史。"
+        },
+        {
+          "action": "再点Accounts Back回Home，再点击Home indicator",
+          "observed": "返回Widgets Hub46:140634，保留独立评审出口。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-light-account-return.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-light-account-return.jpg",
+          "status": "pixel_reviewed_capture_artifact",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "可辨四账号及39/72、38/64、70/85、62数据；左上状态时间缺失，下部设备白底及indicator未绘制。仅作局部附件，不能作为完整页面静态通过证据。",
+          "captureQuality": "partial_not_final_static"
+        }
+      ],
+      "executionReports": [
+        "design/figma-r4-resume-local-repair.json",
+        "design/figma-r4-audit-after-final-fixes.json"
+      ],
+      "sourceNodeId": "46:140634",
+      "homeNodeId": "46:142410",
+      "accountsNodeId": "46:144327",
+      "targetNodeId": "46:140634",
+      "relatedIssue": "R4-OBS-ISSUE-003",
+      "limitations": [
+        "本条实际点击结果由root明确报告；附件出现WebGL部分未绘制，仅作可读局部证据，不标完整静态截图通过。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-075",
+      "theme": "Light",
+      "scenario": "修复后Cursor小组件详情标题不跳旧页面且可关闭",
+      "status": "observed",
+      "observationSource": "主执行代理root恢复执行后的实际原型点击报告；本日志维护代理未操作UI。",
+      "steps": [
+        {
+          "action": "在Home点击Cursor小组件",
+          "observed": "打开Detail/D；root明确观察Cursor62%、$12.40及09:41，附件可读alin.cursor、Pro、$12.40/$20.00。"
+        },
+        {
+          "action": "点击已展开标题，再关闭详情",
+          "observed": "点击保持当前Cursor详情；Close成功返回同Home。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-light-cursor-detail.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-light-cursor-detail.jpg",
+          "status": "pixel_reviewed_capture_artifact",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "Cursor身份、62%、$12.40/$20.00、Pro及09:41清楚；Back和标题左段缺失，底部残留蓝色indicator，捕获不完整，不能当完整静态图通过。",
+          "captureQuality": "partial_not_final_static"
+        }
+      ],
+      "executionReports": [
+        "design/figma-r4-resume-local-repair.json",
+        "design/figma-r4-audit-after-final-fixes.json"
+      ],
+      "homeNodeId": "46:142410",
+      "detailNodeId": "46:141589",
+      "targetNodeId": "46:142410",
+      "limitations": [
+        "附件标题/Back部分缺绘，仅保留局部数据证据；不因捕获异常改写root已观察的标题保持与Close结果，不把异常当设计缺陷。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-076",
+      "theme": "Light",
+      "scenario": "修复后多候选backup标题、个人Codex详情及最终返回完整",
+      "status": "observed",
+      "observationSource": "主执行代理root恢复执行后的实际原型点击报告；本日志维护代理未操作UI。",
+      "steps": [
+        {
+          "action": "从Hub多候选情景进入Home46:146149，点击App",
+          "observed": "进入Accounts/ABCDE46:146479。"
+        },
+        {
+          "action": "点击backup标题并滚动查看",
+          "observed": "仍留同账号列表；backup已展开，38%/64%、Plus及09:41清楚，未跳隐藏旧R2。"
+        },
+        {
+          "action": "点work More并确认断开",
+          "observed": "到Home46:146314，组件选个人alin.codex38%/64%，Cursor62%保持。"
+        },
+        {
+          "action": "点个人Codex组件，点击详情标题，再关闭",
+          "observed": "Detail/B保留个人身份、38%/64%、Plus及09:41；标题不跳旧页，Close准确回Home46:146314，补齐041未确认的最终返回。"
+        },
+        {
+          "action": "从Home点击App到Accounts/ABDE46:147154，点击backup标题",
+          "observed": "保持同ABDE列表，backup38%/64%、Plus及09:41可见。"
+        },
+        {
+          "action": "Accounts Back，再Home indicator",
+          "observed": "先回Home46:146314，再回Widgets Hub46:140634，退出完整。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-light-backup-five.jpg",
+        "resume-light-multiple-fallback.jpg",
+        "resume-light-personal-detail.jpg",
+        "resume-light-backup-four.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-light-backup-five.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "完整设备滚动视口，backup.codex38/64、Plus及09:41明确；上方Claude仅条形尾部为正常滚动裁切，非坏图。",
+          "captureQuality": "complete_usable_scrolled_view"
+        },
+        {
+          "file": "resume-light-multiple-fallback.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "完整Home画面，个人alin.codex38/64及未受影响Cursor62%、$12.40/$20.00清楚；无旧work身份。",
+          "captureQuality": "complete_usable"
+        },
+        {
+          "file": "resume-light-personal-detail.jpg",
+          "status": "pixel_reviewed_capture_artifact",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "个人Codex身份、38/64、Plus及09:41清楚；标题左段缺失并有蓝色热点残留，不能作完整静态图通过。",
+          "captureQuality": "partial_not_final_static"
+        },
+        {
+          "file": "resume-light-backup-four.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "完整ABDE账号列表，backup38/64、Plus、09:41及A/B/D身份可读；鼠标指针不遮挡关键数据。",
+          "captureQuality": "complete_usable_with_pointer"
+        }
+      ],
+      "executionReports": [
+        "design/figma-r4-resume-local-repair.json",
+        "design/figma-r4-audit-after-final-fixes.json"
+      ],
+      "sourceNodeId": "46:140634",
+      "initialHomeNodeId": "46:146149",
+      "initialAccountsNodeId": "46:146479",
+      "resultHomeNodeId": "46:146314",
+      "resultAccountsNodeId": "46:147154",
+      "detailNodeId": "46:140983",
+      "targetNodeId": "46:140634",
+      "relatedEntries": [
+        "R4-CLICK-041"
+      ],
+      "limitations": [
+        "personal-detail附件有局部捕获缺绘，不能作为完整静态图；backup-five/multiple-fallback/backup-four已逐张像素检查完整。",
+        "本条是Light多候选及相关修复热区的代表回归，不扩展为任意账号顺序。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-077",
+      "theme": "Dark",
+      "scenario": "修复后深色小号work配置、详情标题保持与完整返回",
+      "status": "observed",
+      "observationSource": "主执行代理root恢复执行后的实际原型点击报告；本日志维护代理未操作UI。",
+      "steps": [
+        {
+          "action": "从Widgets Hub46:150995进入小号Gallery46:152233，再点击Add",
+          "observed": "进入初始Config46:152337。"
+        },
+        {
+          "action": "选择work进入46:152705并完成",
+          "observed": "进入共享Home46:152771。"
+        },
+        {
+          "action": "点击work组件打开Detail/C，再点已展开标题",
+          "observed": "留在正确work.codex详情，70%/85%、Plus及09:41；不跳旧R2。"
+        },
+        {
+          "action": "Close回Home，再点击Home导航Back",
+          "observed": "准确返回work选中的Config46:152705。"
+        },
+        {
+          "action": "继续Config Back与Gallery Back",
+          "observed": "依次回Gallery与Widgets Hub46:150995，完整配置退出成功。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-dark-work-detail.jpg",
+        "resume-dark-config-return.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-dark-work-detail.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件），root已报告同一捕获像素查看",
+          "reportedDate": "2026-10-09",
+          "scope": "work.codex70/85、Plus、09:41与Back完整；Figma蓝色热点及指针仅作交互证据，不是产品颜色。",
+          "captureQuality": "complete_with_figma_hotspot_hints",
+          "finalCleanStaticEligible": false
+        },
+        {
+          "file": "resume-dark-config-return.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件），root已报告同一捕获像素查看",
+          "reportedDate": "2026-10-09",
+          "scope": "完整work选中配置页；四账号身份、完成按钮及底部indicator可见，指针位于Back附近。",
+          "captureQuality": "complete_with_pointer",
+          "finalCleanStaticEligible": false
+        }
+      ],
+      "executionReports": [
+        "design/figma-r4-resume-local-repair.json",
+        "design/figma-r4-audit-after-final-fixes.json"
+      ],
+      "sourceNodeId": "46:150995",
+      "galleryNodeId": "46:152233",
+      "initialConfigNodeId": "46:152337",
+      "selectedConfigNodeId": "46:152705",
+      "homeNodeId": "46:152771",
+      "detailNodeId": "46:151647",
+      "targetNodeId": "46:150995",
+      "relatedIssue": "R4-OBS-ISSUE-003",
+      "limitations": [
+        "图片含Figma热点提示，属于交互证据；未记作纯黑白灰产品最终静态图。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-078",
+      "theme": "Dark",
+      "scenario": "修复后深色共享Home从评审Hub进入后正确返回",
+      "status": "observed",
+      "observationSource": "主执行代理root恢复执行后的实际原型点击报告；本日志维护代理未操作UI。",
+      "steps": [
+        {
+          "action": "从Hub46:150995进入逐账号回退情景",
+          "observed": "到共享Home46:152771。"
+        },
+        {
+          "action": "点击Home导航Back",
+          "observed": "准确返回原Widgets Hub46:150995。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-dark-review-return.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-dark-review-return.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件），root已报告同一捕获像素查看",
+          "reportedDate": "2026-10-09",
+          "scope": "完整Widgets Hub设计评审目录，所有入口及返回评审按钮可见。",
+          "captureQuality": "complete_with_pointer",
+          "finalCleanStaticEligible": false
+        }
+      ],
+      "executionReports": [
+        "design/figma-r4-resume-local-repair.json",
+        "design/figma-r4-audit-after-final-fixes.json"
+      ],
+      "sourceNodeId": "46:150995",
+      "homeNodeId": "46:152771",
+      "targetNodeId": "46:150995",
+      "relatedIssue": "R4-OBS-ISSUE-003",
+      "limitations": [
+        "以从Hub点击建立的实际历史验证，不用孤立深链。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-079",
+      "theme": "Dark",
+      "scenario": "修复后深色共享Home最近账号列表来源与独立出口",
+      "status": "observed",
+      "observationSource": "主执行代理root恢复执行后的实际原型点击报告；本日志维护代理未操作UI。",
+      "steps": [
+        {
+          "action": "从Hub进入共享Home，点App图标",
+          "observed": "进入Accounts/ABCD46:154688。"
+        },
+        {
+          "action": "Accounts Back回Home，再Home Back",
+          "observed": "实际画面已回Accounts46:154688；URL短暂延迟不能替代画面判断。"
+        },
+        {
+          "action": "Accounts Back再回Home，完成Cursor详情关闭后点Home indicator",
+          "observed": "返回Widgets Hub46:150995；独立评审出口仍可用，Cursor详情另见080。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-dark-account-return.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-dark-account-return.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件），root已报告同一捕获像素查看",
+          "reportedDate": "2026-10-09",
+          "scope": "账号管理四卡完整，A39/72、B38/64、C70/85、D62及身份可读；不以截图URL确定来源，实际画面和root观察优先。",
+          "captureQuality": "complete_visible_account_content",
+          "finalCleanStaticEligible": false
+        }
+      ],
+      "executionReports": [
+        "design/figma-r4-resume-local-repair.json",
+        "design/figma-r4-audit-after-final-fixes.json"
+      ],
+      "sourceNodeId": "46:150995",
+      "homeNodeId": "46:152771",
+      "accountsNodeId": "46:154688",
+      "targetNodeId": "46:150995",
+      "relatedIssue": "R4-OBS-ISSUE-003",
+      "limitations": [
+        "URL曾短暂lag但root已查看账号管理画面；不将URL延迟判为错误返回。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-080",
+      "theme": "Dark",
+      "scenario": "修复后深色Cursor详情标题保持且Close回Home",
+      "status": "observed",
+      "observationSource": "主执行代理root恢复执行后的实际原型点击报告；本日志维护代理未操作UI。",
+      "steps": [
+        {
+          "action": "从Home点击Cursor组件",
+          "observed": "Detail/D显示62%、$12.40、原成功09:41及正确Cursor身份。"
+        },
+        {
+          "action": "点击已展开标题，再Close",
+          "observed": "标题点按保持当前详情，Close回同Home；随后indicator回Hub已记079。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-dark-cursor-detail.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-dark-cursor-detail.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件），root已报告同一捕获像素查看",
+          "reportedDate": "2026-10-09",
+          "scope": "Cursor身份、62%、Pro、$12.40/$20.00与数据成功时间09:41清楚，完整标题/Back；左上系统时钟没有绘制，且有蓝色热点提示，限定为内容/交互证据。",
+          "captureQuality": "usable_interaction_statusbar_partial",
+          "finalCleanStaticEligible": false
+        }
+      ],
+      "executionReports": [
+        "design/figma-r4-resume-local-repair.json",
+        "design/figma-r4-audit-after-final-fixes.json"
+      ],
+      "homeNodeId": "46:152771",
+      "detailNodeId": "46:151950",
+      "targetNodeId": "46:152771",
+      "limitations": [
+        "截图内容完整可读但系统状态栏时钟未绘制，另有Figma蓝色热点；仅作为对应内容/交互证据，不作完整纯净静态图。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-081",
+      "theme": "Dark",
+      "scenario": "修复后深色多候选backup标题、个人详情与退出",
+      "status": "observed",
+      "observationSource": "主执行代理root恢复执行后的实际原型点击报告；本日志维护代理未操作UI。",
+      "steps": [
+        {
+          "action": "Hub多候选入口→Home46:156510→App",
+          "observed": "进入Accounts/ABCDE46:156840。"
+        },
+        {
+          "action": "点击backup标题并滚动查看",
+          "observed": "仍在同列表；backup38%/64%、Plus及09:41清楚，不跳旧R2。"
+        },
+        {
+          "action": "点work More→断开确认并确认",
+          "observed": "进入Home46:156675，个人alin.codex38%/64%，Cursor62%保持。"
+        },
+        {
+          "action": "点个人组件→详情B→点标题→Close",
+          "observed": "个人身份、38%/64%、Plus09:41保持；标题不跳旧页，Close回同Home。"
+        },
+        {
+          "action": "App→Accounts/ABDE46:157515→点backup标题",
+          "observed": "保持ABDE当前列表和backup数据。"
+        },
+        {
+          "action": "Accounts Back回Home，再Home indicator",
+          "observed": "准确退出到Widgets Hub46:150995。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-dark-backup-five.jpg",
+        "resume-dark-multiple-fallback.jpg",
+        "resume-dark-personal-detail.jpg",
+        "resume-dark-backup-four.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-dark-backup-five.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件），root已报告同一捕获像素查看",
+          "reportedDate": "2026-10-09",
+          "scope": "完整滚动视口显示backup.codex38/64、Plus及09:41；上方第一卡尾部为正常滚动裁切；蓝色热点位于其他可交互标题，backup无旧热点提示。",
+          "captureQuality": "complete_scrolled_with_figma_hotspot_hints",
+          "finalCleanStaticEligible": false
+        },
+        {
+          "file": "resume-dark-multiple-fallback.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件），root已报告同一捕获像素查看",
+          "reportedDate": "2026-10-09",
+          "scope": "完整Home显示个人alin.codex38/64及未受影响Cursor62%、$12.40/$20.00，回退身份数据一致。",
+          "captureQuality": "complete_with_pointer",
+          "finalCleanStaticEligible": false
+        },
+        {
+          "file": "resume-dark-personal-detail.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件），root已报告同一捕获像素查看",
+          "reportedDate": "2026-10-09",
+          "scope": "个人alin.codex38/64、Plus、09:41、标题及Back可读；左上系统时钟没有绘制且含蓝色热点提示，限定为内容/交互证据。",
+          "captureQuality": "usable_interaction_statusbar_partial",
+          "finalCleanStaticEligible": false
+        },
+        {
+          "file": "resume-dark-backup-four.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件），root已报告同一捕获像素查看",
+          "reportedDate": "2026-10-09",
+          "scope": "完整ABDE列表，backup38/64、Plus09:41及A/B/D清楚；其他标题有Figma蓝色热点，backup保持无旧热点。",
+          "captureQuality": "complete_with_figma_hotspot_hints",
+          "finalCleanStaticEligible": false
+        }
+      ],
+      "executionReports": [
+        "design/figma-r4-resume-local-repair.json",
+        "design/figma-r4-audit-after-final-fixes.json"
+      ],
+      "sourceNodeId": "46:150995",
+      "initialHomeNodeId": "46:156510",
+      "initialAccountsNodeId": "46:156840",
+      "resultHomeNodeId": "46:156675",
+      "resultAccountsNodeId": "46:157515",
+      "detailNodeId": "46:151344",
+      "targetNodeId": "46:150995",
+      "limitations": [
+        "personal-detail缺系统状态栏时钟，但账户数据/原成功时间完整；所有蓝色提示属于Figma交互热点，不是新增产品颜色。",
+        "只验证本多候选样例与5个受修复可见标题，不扩大任意列表排列。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-082",
+      "theme": "Dark",
+      "scenario": "深色超时检查失败取消回同网络评审",
+      "status": "observed",
+      "observationSource": "主执行代理root实际原型点击报告；本日志维护代理只逐张查看截图，未操作UI。",
+      "steps": [
+        {
+          "action": "从网络目录46:138573进入超时分支",
+          "observed": "先观察检查动画，再显示对应原因的网络检查失败；不显示编造评分，尚未添加Codex。"
+        },
+        {
+          "action": "点击失败面板Cancel",
+          "observed": "root实际观察返回同一网络目录46:138573。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-dark-timeout.jpg",
+        "resume-dark-timeout-cancel.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-dark-timeout.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "完整超时失败覆盖层，明确检查超时/无法完成检查、尚未添加Codex，无虚构评分。",
+          "captureQuality": "complete_with_pointer"
+        },
+        {
+          "file": "resume-dark-timeout-cancel.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "完整网络评审目录，取消后无失败覆盖层。",
+          "captureQuality": "complete_with_pointer"
+        }
+      ],
+      "sourceNodeId": "46:138573",
+      "failureNodeId": "46:139567",
+      "targetNodeId": "46:138573",
+      "limitations": [
+        "取消附件像素完整；本条只证明该目录来源，非所有账号排列。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-083",
+      "theme": "Dark",
+      "scenario": "深色网站不可用检查失败取消回同网络评审",
+      "status": "observed",
+      "observationSource": "主执行代理root实际原型点击报告；本日志维护代理只逐张查看截图，未操作UI。",
+      "steps": [
+        {
+          "action": "从网络目录46:138573进入网站不可用分支",
+          "observed": "先观察检查动画，再显示对应原因的网络检查失败；不显示编造评分，尚未添加Codex。"
+        },
+        {
+          "action": "点击失败面板Cancel",
+          "observed": "root实际观察返回同一网络目录46:138573。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-dark-unavailable.jpg",
+        "resume-dark-unavailable-cancel.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-dark-unavailable.jpg",
+          "status": "pixel_reviewed_capture_artifact",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "上半部目录及失败标题缺绘；下方网站暂不可用、无法完成检查、尚未添加Codex及Retry/Cancel可读，不当完整图。",
+          "captureQuality": "partial_not_final_static"
+        },
+        {
+          "file": "resume-dark-unavailable-cancel.jpg",
+          "status": "pixel_reviewed_capture_artifact",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "仅见黑色设备轮廓和指针，目录内容未绘制；不能作返回画面的像素证据，行为保留root明确报告。",
+          "captureQuality": "blank_capture_not_evidence"
+        }
+      ],
+      "sourceNodeId": "46:138573",
+      "failureNodeId": "46:139821",
+      "targetNodeId": "46:138573",
+      "limitations": [
+        "root明确报告取消回同目录；对应cancel附件实际为空白缺绘，不能登记为完整截图通过。",
+        "失败附件仅下部理由/按钮可读；90张原生静态图中对应完整失败页面可复用。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-084",
+      "theme": "Dark",
+      "scenario": "深色无有效评分检查失败取消回同网络评审",
+      "status": "observed",
+      "observationSource": "主执行代理root实际原型点击报告；本日志维护代理只逐张查看截图，未操作UI。",
+      "steps": [
+        {
+          "action": "从网络目录46:138573进入无有效评分分支",
+          "observed": "先观察检查动画，再显示对应原因的网络检查失败；不显示编造评分，尚未添加Codex。"
+        },
+        {
+          "action": "点击失败面板Cancel",
+          "observed": "root实际观察返回同一网络目录46:138573。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-dark-invalid.jpg",
+        "resume-dark-invalid-cancel.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-dark-invalid.jpg",
+          "status": "pixel_reviewed_capture_artifact",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "上半部目录及失败标题缺绘；下方未取得有效评分、无法完成检查、尚未添加Codex及Retry/Cancel可读，不当完整图。",
+          "captureQuality": "partial_not_final_static"
+        },
+        {
+          "file": "resume-dark-invalid-cancel.jpg",
+          "status": "pixel_reviewed_capture_artifact",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "仅见黑色设备轮廓和指针，目录内容未绘制；不能作返回画面的像素证据，行为保留root明确报告。",
+          "captureQuality": "blank_capture_not_evidence"
+        }
+      ],
+      "sourceNodeId": "46:138573",
+      "failureNodeId": "46:140075",
+      "targetNodeId": "46:138573",
+      "limitations": [
+        "root明确报告取消回同目录；对应cancel附件实际为空白缺绘，不能登记为完整截图通过。",
+        "失败附件仅下部理由/按钮可读；90张原生静态图中对应完整失败页面可复用。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-085",
+      "theme": "Dark",
+      "scenario": "无有效评分失败直接Retry重新检查并继续原Codex授权",
+      "status": "observed",
+      "observationSource": "主执行代理root实际原型点击报告；本日志维护代理只逐张查看截图，未操作UI。",
+      "steps": [
+        {
+          "action": "从同目录再次进入invalid，点击失败面板Retry",
+          "observed": "实际看到重新检查网络，范围仍添加Codex。"
+        },
+        {
+          "action": "等待自动继续",
+          "observed": "进入Codex登录示意，账号backup.codex@example.com；未把检查通过当成已添加账号。"
+        },
+        {
+          "action": "在登录面板点击Cancel",
+          "observed": "返回同一网络目录46:138573。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-dark-invalid-rechecking.jpg",
+        "resume-dark-invalid-retry-auth.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-dark-invalid-rechecking.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "重新检查覆盖层清楚显示正在检查网络、添加Codex及Net.Coffee Claude AI信任评分；目录背景完整。",
+          "captureQuality": "complete_phase_evidence"
+        },
+        {
+          "file": "resume-dark-invalid-retry-auth.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "Codex登录面板完整，backup.codex@example.com、示意标识、继续/取消可读；上方来源目录背景未绘制，只作登录面板证据。",
+          "captureQuality": "usable_overlay_background_partial"
+        }
+      ],
+      "sourceNodeId": "46:138573",
+      "failureNodeId": "46:140075",
+      "targetNodeId": "46:138573",
+      "limitations": [
+        "短暂51相位本次未截获，不声称本次实际看清51数值；已有原生静态51图与004/008/026的历史相位观察另计。",
+        "登录面板截图可读，但上方来源背景未绘制；不作为完整画面静态通过。"
+      ]
+    },
+    {
+      "id": "R4-CLICK-086",
+      "theme": "Dark",
+      "scenario": "首次查询失败直接面板Retry检查后成功并保留旧账号",
+      "status": "observed",
+      "observationSource": "主执行代理root实际原型点击报告；本日志维护代理只逐张查看截图，未操作UI。",
+      "steps": [
+        {
+          "action": "网络目录返回R4Review53:1121194，再进入新增后首次查询失败源53:1121617",
+          "observed": "自动显示首次额度查询失败/new.codex/平台暂未返回额度/尚未获取额度面板；新账号未有可信额度。"
+        },
+        {
+          "action": "直接点击失败面板Retry（不是More菜单）",
+          "observed": "实际看到new.codex@example.com的首次额度查询网络检查。"
+        },
+        {
+          "action": "等待自动成功",
+          "observed": "到53:281796；new54%/91%，A39%/72%、B38%/64%、C70%/85%保持。"
+        },
+        {
+          "action": "滚动查看Cursor并展开new",
+          "observed": "D62%保持；new展开53:283037显示Plus与上次成功更新09:41。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-dark-first-query-panel.jpg",
+        "resume-dark-first-query-rechecking.jpg",
+        "resume-dark-first-query-retry-result.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-dark-first-query-panel.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "首次额度查询失败/new.codex/平台暂未返回额度/尚未获取额度及Retry/Close完整；背景旧卡清楚。",
+          "captureQuality": "complete_overlay_evidence"
+        },
+        {
+          "file": "resume-dark-first-query-rechecking.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "正在检查网络/new.codex首次额度查询/Net.Coffee来源清楚，背景旧A/B/C保留。",
+          "captureQuality": "complete_phase_evidence"
+        },
+        {
+          "file": "resume-dark-first-query-retry-result.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "成功看板A39/72、B38/64、C70/85及new54/91清楚；Cursor在首屏下部之外，D62由root实际滚动观察另记。",
+          "captureQuality": "complete_visible_viewport"
+        }
+      ],
+      "sourceNodeId": "53:1121194",
+      "launchNodeId": "53:1121617",
+      "failureNodeId": "53:1121913",
+      "targetNodeId": "53:281796",
+      "detailNodeId": "53:283037",
+      "limitations": [
+        "首次成功09:41沿用现有账户流评审时钟；本条没有09:45，也不要求首次未知数据必须套用后台更新故事09:45。",
+        "09:41与D62为root实际展开/滚动观察，当前首屏结果附件不单独证明这两个细节。",
+        "短51相位未独立保存，不将菜单刷新018/045改写成本次面板Retry。"
+      ],
+      "clockEvidence": {
+        "source": "design/figma-plugin/r4-account-flows.js",
+        "definition": "All displayed data use the 09:41 review clock; done/details also use 09:41.",
+        "interpretation": "新账号此前无成功时间；未知→首个成功09:41符合模拟，非把失败请求时间写成成功。"
+      }
+    },
+    {
+      "id": "R4-CLICK-087",
+      "theme": "Light",
+      "scenario": "首次查询失败直接面板Retry检查后成功并保留旧账号",
+      "status": "observed",
+      "observationSource": "主执行代理root实际原型点击报告；本日志维护代理只逐张查看截图，未操作UI。",
+      "steps": [
+        {
+          "action": "从R4Review53:1119634进入首次失败源53:1120057",
+          "observed": "自动显示new.codex尚未获取额度的首次查询失败面板。"
+        },
+        {
+          "action": "直接点击面板Retry",
+          "observed": "实际看到new.codex首次额度查询的网络检查。"
+        },
+        {
+          "action": "等待自动成功",
+          "observed": "到46:210551；new54%/91%，A39%/72%、B38%/64%、C70%/85%保留。"
+        },
+        {
+          "action": "滚动查看Cursor",
+          "observed": "root明确观察D仍62%。"
+        }
+      ],
+      "screenshotFiles": [
+        "resume-light-first-query-panel.jpg",
+        "resume-light-first-query-rechecking.jpg",
+        "resume-light-first-query-retry-result.jpg"
+      ],
+      "screenshotVerification": [
+        {
+          "file": "resume-light-first-query-panel.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "浅色首次额度查询失败/new.codex及Retry/Close完整，源看板A/B/C保留。",
+          "captureQuality": "complete_overlay_evidence"
+        },
+        {
+          "file": "resume-light-first-query-rechecking.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "上半部背景缺绘，但正在检查网络/new.codex首次额度查询/Net.Coffee Claude AI信任评分及取消完整可读，仅相位证据。",
+          "captureQuality": "usable_phase_background_partial"
+        },
+        {
+          "file": "resume-light-first-query-retry-result.jpg",
+          "status": "pixel_checked",
+          "verifiedBy": "acceptance_review subagent（view_image逐张查看原文件）",
+          "reportedDate": "2026-10-09",
+          "scope": "成功看板A39/72、B38/64、C70/85及new54/91清楚；D62由root实际滚动观察确认，不由首屏截图推断。",
+          "captureQuality": "complete_visible_viewport"
+        }
+      ],
+      "sourceNodeId": "53:1119634",
+      "launchNodeId": "53:1120057",
+      "failureNodeId": "53:1120353",
+      "targetNodeId": "46:210551",
+      "limitations": [
+        "rechecking附件上方背景缺绘，仅下方检查相位作为像素证据；panel/result附件完整。",
+        "D62来自root实际滚动观察，不由首屏截图推断；本次未单独报告Light new展开成功时间。",
+        "未将短51相位写成本次逐帧观察；仅验证指定代表首次失败面板Retry。"
+      ]
+    }
+  ],
+  "updatedDate": "2026-10-09",
+  "screenshotEvidencePolicy": {
+    "status": "partially_pixel_verified",
+    "note": "截图文件名默认仅作为附件引用；只有条目中 screenshotVerification 明确记录 pixel_checked 的图片，才有主执行代理报告的像素核验。日志维护代理未自行逐张检查。文件存在不等于非空、清晰或完整；部分早期 fullPage:false 截图可能因 WebGL 增量缓冲为空白或残影，不单独用作通过证据。",
+    "reportedCaptureFinding": "主执行代理定位到 WebGL 增量缓冲残影，调整视口高度 1100→1102 可强制重绘；最终静态证据计划使用原生 PNG。此说明不表示已有附件已完成像素验收。",
+    "verifiedFiles": [
+      "light-notification-account-return.jpg",
+      "dark-widget-empty.jpg",
+      "light-widget-multiple-candidates-result.jpg",
+      "light-added-claude.jpg",
+      "light-widget-empty.jpg",
+      "dark-first-query-failed.jpg",
+      "dark-first-query-retry-success.jpg",
+      "dark-before-add49-preserves-accounts.jpg",
+      "dark-background-failed.jpg",
+      "dark-background-retry-success.jpg",
+      "dark-auth-failed-preserves-five.jpg",
+      "light-widget-updated-detail.jpg",
+      "light-query-failure-source.jpg",
+      "light-query-retry-source-retained.jpg",
+      "light-licenses-return-on.jpg",
+      "light-app-auto-check.jpg",
+      "light-app-auto-success.jpg",
+      "dark-app-auto-check.jpg",
+      "dark-app-auto-querying.jpg",
+      "dark-app-auto-success.jpg",
+      "light-widget-fallback-unknown.jpg",
+      "light-widget-unknown-detail.jpg",
+      "dark-widget-cross-fallback-unknown.jpg",
+      "dark-widget-unknown-detail.jpg",
+      "light-add-keeps-notification-on.jpg",
+      "light-cross-add-notification-on.jpg",
+      "light-cross-add-cursor-quotas.jpg",
+      "light-stale-widget-current-binding.jpg",
+      "dark-stale-widget-current-binding.jpg",
+      "dark-add-keeps-notification-on.jpg",
+      "light-r3-stale-retry-retains-time.jpg",
+      "dark-r3-stale-retry-retains-time.jpg",
+      "light-dashboard-tutorial-return.jpg",
+      "dark-dashboard-tutorial-return.jpg",
+      "dark-r3-newtime-retry-retains-time.jpg",
+      "light-final-entry.jpg",
+      "light-background-failed-scroll.jpg",
+      "dark-final-entry.jpg",
+      "dark-background-failed-scroll.jpg",
+      "final-cloud-flows.jpg",
+      "light-permission-allow-off-on.jpg",
+      "dark-permission-deny-ios-return.jpg",
+      "dark-notification-check-return.jpg",
+      "dark-small-widget-work-detail.jpg",
+      "light-medium-widget-work-detail.jpg",
+      "resume-light-config-return.jpg",
+      "resume-light-review-return.jpg",
+      "resume-light-work-detail.jpg",
+      "resume-light-backup-five.jpg",
+      "resume-light-multiple-fallback.jpg",
+      "resume-light-backup-four.jpg",
+      "resume-dark-config-return.jpg",
+      "resume-dark-review-return.jpg",
+      "resume-dark-account-return.jpg",
+      "resume-dark-work-detail.jpg",
+      "resume-dark-cursor-detail.jpg",
+      "resume-dark-personal-detail.jpg",
+      "resume-dark-backup-five.jpg",
+      "resume-dark-multiple-fallback.jpg",
+      "resume-dark-backup-four.jpg",
+      "resume-dark-timeout.jpg",
+      "resume-dark-timeout-cancel.jpg",
+      "resume-dark-invalid-rechecking.jpg",
+      "resume-dark-invalid-retry-auth.jpg",
+      "resume-dark-first-query-panel.jpg",
+      "resume-dark-first-query-rechecking.jpg",
+      "resume-dark-first-query-retry-result.jpg",
+      "resume-light-first-query-panel.jpg",
+      "resume-light-first-query-rechecking.jpg",
+      "resume-light-first-query-retry-result.jpg"
+    ],
+    "transitionPhaseOnlyFiles": [
+      "light-app-auto-check.jpg",
+      "dark-app-auto-check.jpg"
+    ],
+    "partialCaptureFiles": [
+      "resume-light-account-return.jpg",
+      "resume-light-cursor-detail.jpg",
+      "resume-light-personal-detail.jpg",
+      "resume-dark-unavailable.jpg",
+      "resume-dark-invalid.jpg",
+      "resume-dark-unavailable-cancel.jpg",
+      "resume-dark-invalid-cancel.jpg"
+    ],
+    "scopedUsableCaptureFiles": [
+      "resume-dark-cursor-detail.jpg",
+      "resume-dark-personal-detail.jpg",
+      "resume-dark-invalid-retry-auth.jpg",
+      "resume-light-first-query-rechecking.jpg"
+    ]
+  },
+  "coverageNotes": [
+    "observed 仅表示本条明确写出的操作与结果已有主执行代理的实际点击观察；不是对应验收条目整体通过。",
+    "既有摘要补录带独立 observationSource；未记录细节不予推断。",
+    "网络检查、账号与权限均为 Figma 模拟，不表示真实技术接入或运行结果。",
+    "W06的未知额度候选已有054/055，旧缓存失效点击目标已有057/058双主题实际路径；这些代表样例已观察，不扩展为任意账户排列。"
+  ],
+  "openObservedIssues": [
+    {
+      "id": "R4-OBS-ISSUE-001",
+      "status": "resolved_verified_specified_light_dark_stories",
+      "theme": "Dark",
+      "description": "指定权限保持主故事已闭环：Light通知On连续新增Claude／Cursor成功后五／六账号设置仍On，选择器取消同源；Dark通知On新增Codex成功后五身份设置仍On。有限模型边界继续保留，不扩展为任意排列。",
+      "relatedEntries": [
+        "R4-CLICK-027",
+        "R4-CLICK-032",
+        "R4-CLICK-033",
+        "R4-CLICK-056",
+        "R4-CLICK-059"
+      ],
+      "remainingVerification": [],
+      "verifiedScopes": [
+        {
+          "theme": "Light",
+          "entry": "R4-CLICK-056",
+          "scope": "On→Claude成功→Cursor成功→chooser X回同六账号On设置。"
+        },
+        {
+          "theme": "Dark",
+          "entry": "R4-CLICK-059",
+          "scope": "On四账号设置→新增Codex成功→五身份设置仍On。"
+        }
+      ],
+      "limitations": [
+        "问题闭环仅对应指定浅深主故事，不声明任意账号排列或所有跨流程组合均经过点击。"
+      ],
+      "resolutionEntries": [
+        "R4-CLICK-056",
+        "R4-CLICK-059"
+      ]
+    },
+    {
+      "id": "R4-OBS-ISSUE-002",
+      "status": "resolved_light_dark_visual_retested",
+      "theme": "Dark",
+      "description": "浅深空态不适用说明均已局部删除并完成修复后视觉复验；深色确认两个组件均为“未连接账号，无数据”，浅色新截图也确认无不适用 hint。",
+      "relatedEntries": [
+        "R4-CLICK-037",
+        "R4-CLICK-038"
+      ],
+      "resolutionEntry": "R4-CLICK-040",
+      "limitations": [
+        "静态修复与交互复验分别记录：浅色后续 EmptyGuide 见043，深色既有 Guide 路径见038，不混为新重测。"
+      ]
+    },
+    {
+      "id": "R4-OBS-ISSUE-003",
+      "status": "resolved_verified_light_dark_three_origins",
+      "theme": "Dark",
+      "description": "小号组件从work配置完成到共享baseHome后，账号详情CLOSE返回Home正确；随后Home的导航Back进入Accounts46:154688，未回实际来源Config46:152705。",
+      "sourceNodeId": "46:152771",
+      "expectedTargetNodeId": "46:152705",
+      "actualTargetNodeId": "46:154688",
+      "relatedEntries": [
+        "R4-CLICK-070"
+      ],
+      "reportedCodeCause": "主执行代理已源码确认：共享baseHome的Action/back被fallback链覆盖。",
+      "repairStatus": "39处局部reaction修复后，新全量分批静态审计候选为空；072–074及077–079实测共享Home三来源正确。",
+      "confirmedScope": "已实点的Dark小号work配置后Home返回；不将问题扩大为未观察的任意主题/配置。",
+      "notAffectedRecordedScope": [
+        "R4-CLICK-036：深色中号配置与逐层返回，原观察保留。"
+      ],
+      "resolutionEntries": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079"
+      ],
+      "resolutionScope": "保留070历史错误事实；本次只对浅深指定Config、Hub、最近Accounts来源关闭该问题。"
+    }
+  ],
+  "currentExecutionBlock": {
+    "status": "resolved_user_unlocked",
+    "reportedDate": "2026-10-09",
+    "description": "用户已手动解锁，UI观察恢复；055已继续核验最终Home、未知详情和关闭返回。",
+    "relatedEntry": "R4-CLICK-055"
+  },
+  "reportedExecutionProgress": {
+    "status": "historical_stage_progress_current_result_in_resumeVerification",
+    "lightPermissionsAudit": {
+      "nativePassed": true,
+      "errors": [],
+      "evidenceType": "reported_static_audit",
+      "limitation": "静态审计与点击证据分开；后续056/059已闭环指定浅深主故事，不扩大为任意排列。"
+    },
+    "pendingWidgetReview": {
+      "status": "execution_receipt_success",
+      "roots": 2,
+      "reviewControls": 6,
+      "report": "design/figma-r4-pending-widget-review.json",
+      "limitation": "模块执行回执，不扩大为其他待测点击目标已通过。"
+    },
+    "lightPermissionsLiveVerification": {
+      "status": "main_story_observed",
+      "entry": "R4-CLICK-056",
+      "limitation": "Light主故事已实点；Dark指定主故事后续见059，不扩大为所有排列。"
+    },
+    "darkPermissionsLiveVerification": {
+      "status": "specified_main_story_observed",
+      "entry": "R4-CLICK-059",
+      "limitation": "指定主故事实点，不是全部有限模型排列的穷举验收。"
+    }
+  },
+  "finalEntryObservation": {
+    "entriesObserved": [
+      "R4-CLICK-065",
+      "R4-CLICK-066"
+    ],
+    "visibleCloudFlowNames": [
+      "R4 · 浅色 · 交互状态与返回路径",
+      "R4 · 深色 · 交互状态与返回路径"
+    ],
+    "cloudPrototypeEntryChangesVisible": true,
+    "editorStillReportsLocalUnsyncedChanges": true,
+    "allCloudSyncComplete": "not_confirmed",
+    "recordScope": "历史065／066入口观察；当时未同步提示不作为最终当前状态。最终持久化核验见resumeVerification.overallPrototypeScope.finalDeliveryEvidence。"
+  },
+  "nativeStaticEvidence": {
+    "reviewedCount": 90,
+    "uniqueFilenameCount": 90,
+    "matchesNativeManifest": true,
+    "groups": [
+      {
+        "group": "网络与后台",
+        "report": "design/figma-r4-static-network-background-review.json",
+        "pixelReviewedImages": 36,
+        "light": 18,
+        "dark": 18
+      },
+      {
+        "group": "小组件",
+        "report": "design/figma-r4-static-widgets-review.json",
+        "pixelReviewedImages": 22,
+        "light": 11,
+        "dark": 11
+      },
+      {
+        "group": "账号与系统",
+        "report": "design/figma-r4-static-accounts-system.json",
+        "pixelReviewedImages": 18,
+        "light": 9,
+        "dark": 9
+      },
+      {
+        "group": "总览与首次查询",
+        "report": "design/figma-r4-static-overview-first-query-review.json",
+        "pixelReviewedImages": 14,
+        "light": 7,
+        "dark": 7
+      }
+    ],
+    "scope": "90张精选原生PNG的静态像素证据；不等同于所有Figma根、连线或任意账号组合完整验收。",
+    "backgroundScrollFollowup": {
+      "source": "R4-STATIC-NB-01",
+      "observations": [
+        "R4-CLICK-065",
+        "R4-CLICK-066"
+      ],
+      "result": "两主题后台失败页下部Cursor62%与教程可滚动完整查看；Light固定Tab正常。未追加逐个点击全部卡片控件。"
+    }
+  },
+  "resumeVerification": {
+    "lightWidgetRepairs": {
+      "status": "specified_light_paths_observed",
+      "entries": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-075",
+        "R4-CLICK-076"
+      ],
+      "sharedHomeThreeSources": "历史Light阶段记录：072–074已验证配置、评审、最近Accounts三来源；其后Dark077–079完成对应验证，见widgetRepairClosure。",
+      "clearedVisibleHotspots": "Light Detail/B/C/D及Accounts/ABCDE、ABDE的backup标题已实际点按保持当前内容。",
+      "historicalEntriesUnmodified": true,
+      "issue003": "历史Light阶段当时仅Light完成；现已由072–074及077–079完成浅深指定三源实点，当前生命周期见widgetRepairClosure及问题003 resolution。"
+    },
+    "darkWidgetRepairs": {
+      "status": "specified_dark_paths_observed",
+      "entries": [
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079",
+        "R4-CLICK-080",
+        "R4-CLICK-081"
+      ],
+      "sharedHomeThreeSources": "Dark配置、评审、最近Accounts三来源均由root实际验证。",
+      "clearedVisibleHotspots": "Dark Detail/B/C/D及Accounts/ABCDE、ABDE的backup标题已实际点按保持当前内容。",
+      "historicalEntriesUnmodified": true
+    },
+    "widgetRepairClosure": {
+      "status": "resolved_verified_light_dark_specified_paths",
+      "issue": "R4-OBS-ISSUE-003",
+      "homeReturnEntries": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079"
+      ],
+      "visibleHotspotEntries": [
+        "R4-CLICK-072",
+        "R4-CLICK-075",
+        "R4-CLICK-076",
+        "R4-CLICK-077",
+        "R4-CLICK-080",
+        "R4-CLICK-081"
+      ],
+      "visibleHotspotsVerified": 10,
+      "claim": "浅深共享Home三种真实来源及10个已展开标题旧热区修复后实际闭环；不等于所有有限模型组合或最终交付通过。"
+    },
+    "networkAndFirstQuery": {
+      "status": "specified_runtime_gaps_closed",
+      "entries": [
+        "R4-CLICK-082",
+        "R4-CLICK-083",
+        "R4-CLICK-084",
+        "R4-CLICK-085",
+        "R4-CLICK-086",
+        "R4-CLICK-087"
+      ],
+      "scope": "Dark三类无结果失败取消、Dark invalid重试、浅深首次失败面板直接Retry已实测；不穷举有限模型全部排列。",
+      "openRequiredRuntimeFollowups": []
+    },
+    "overallPrototypeScope": {
+      "status": "static_and_required_representative_runtime_checks_completed_blocked_only_cloud_sync",
+      "entriesTotal": 87,
+      "newEntries": "R4-CLICK-072..087",
+      "openObservedDesignIssues": [],
+      "deliveryPending": [
+        "整体云端持久化／全量同步核验：独立 Chrome 与原生 Figma 加载固定版本均因内存不足中断，尚无完整读取证据。"
+      ],
+      "limitations": [
+        "静态活动范围全扫描不等于每个有限模型排列都实际点击。",
+        "短51/pass/query相位并非每次捕获；实际看到的检查与最终结果不扩写为逐帧观察。",
+        "截图质量与实际行为分开；坏图保留并明示，不当设计缺陷。"
+      ],
+      "overallAcceptancePassed": false,
+      "finalDeliveryEvidence": {
+        "status": "partial",
+        "completionScope": "blocked_only_cloud_sync",
+        "overallAcceptancePassed": false,
+        "finalNativeBackup": {
+          "manifest": "design/figma-r4-final-backup-2026-10-09.json",
+          "status": "verified",
+          "path": "design/订阅额度 iPhone 原型-R4-最终验收-2026-10-09.fig",
+          "bytes": 10245818,
+          "sha256": "c259e30b5560459cbc9a2b1c9c2247a4cb3a81afb035b9a2eabd873179913b56",
+          "archiveIntegrity": "passed",
+          "matchesPostAuditCheckpointCanvas": true
+        },
+        "cloudSynchronization": {
+          "report": "design/figma-r4-final-sync-2026-10-09.json",
+          "namedVersionId": "2408215105198163984",
+          "namedVersionUrl": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR?version-id=2408215105198163984&node-id=0-1",
+          "saveOperationSucceeded": true,
+          "completeVersionReadVerified": false,
+          "overallCloudSynchronizationVerified": false,
+          "blocker": "independent_chrome_and_native_fixed_version_loads_out_of_memory",
+          "transitionalCanvasNotProof": true
+        },
+        "documentationAndLinks": {
+          "status": "recorded",
+          "handoff": "app/docs/figma-handoff-2026-10-09.md",
+          "state": "design/figma-state.json",
+          "progress": "design/figma-r4-live-progress.json",
+          "scope": "最终备份、真实验收结果、静态截图索引、画布与浅深原型链接已登记；状态与交接同步反映云端全量核验受阻。"
+        },
+        "remaining": [
+          "整体云端持久化／全量同步核验：独立 Chrome 与原生 Figma 加载固定版本均因内存不足中断，尚无完整读取证据。"
+        ],
+        "evidenceBoundary": "最终本地备份与审计后检查点的canvas.fig相同；不声称固定云端版本已完整加载、已导出或与本地字节相等。原型入口及关键修复可见不等于全量云同步。"
+      }
+    }
+  },
+  "overallAcceptancePassed": false
+}

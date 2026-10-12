@@ -1,0 +1,442 @@
+[
+  {
+    "id": "1:500",
+    "name": "Light/Review",
+    "file": "1-500.png"
+  },
+  {
+    "id": "14:41953",
+    "name": "R2/Light|Dashboard|0|R|0|old||||small",
+    "file": "14-41953.png"
+  },
+  {
+    "id": "1:536",
+    "name": "Light/Dashboard",
+    "file": "1-536.png"
+  },
+  {
+    "id": "14:42234",
+    "name": "R2/Light|Dashboard|7|R|0|old|Claude|||small",
+    "file": "14-42234.png"
+  },
+  {
+    "id": "1:2169",
+    "name": "Light/Settings",
+    "file": "1-2169.png"
+  },
+  {
+    "id": "14:49110",
+    "name": "R2/Light|Settings|7|R|1|old||||small",
+    "file": "14-49110.png"
+  },
+  {
+    "id": "14:42459",
+    "name": "R2/Light|Settings|7|R|2|old||||small",
+    "file": "14-42459.png"
+  },
+  {
+    "id": "1:939",
+    "name": "Light/Connect",
+    "file": "1-939.png"
+  },
+  {
+    "id": "14:42235",
+    "name": "R2/Light|Menu|7|R|0|old||Claude||small",
+    "file": "14-42235.png"
+  },
+  {
+    "id": "14:43670",
+    "name": "R2/Light|Login|7|R|0|old||Claude||small",
+    "file": "14-43670.png"
+  },
+  {
+    "id": "14:43879",
+    "name": "R2/Light|Login|7|R|0|old||Codex||small",
+    "file": "14-43879.png"
+  },
+  {
+    "id": "14:44088",
+    "name": "R2/Light|Login|7|R|0|old||Cursor||small",
+    "file": "14-44088.png"
+  },
+  {
+    "id": "14:49365",
+    "name": "R2/Light|Connecting|7|R|0|old||Claude||small",
+    "file": "14-49365.png"
+  },
+  {
+    "id": "14:42457",
+    "name": "R2/Light|Failed|7|R|0|old||Claude||small",
+    "file": "14-42457.png"
+  },
+  {
+    "id": "14:43671",
+    "name": "R2/Light|Disconnect|7|R|0|old||Claude||small",
+    "file": "14-43671.png"
+  },
+  {
+    "id": "1:2503",
+    "name": "Light/Permission",
+    "file": "1-2503.png"
+  },
+  {
+    "id": "14:45732",
+    "name": "R2/Light|System|7|R|2|old||||small",
+    "file": "14-45732.png"
+  },
+  {
+    "id": "14:42067",
+    "name": "Light/Tutorial1",
+    "file": "14-42067.png"
+  },
+  {
+    "id": "1:3510",
+    "name": "Light/Tutorial1b",
+    "file": "1-3510.png"
+  },
+  {
+    "id": "14:43112",
+    "name": "Light/Tutorial2",
+    "file": "14-43112.png"
+  },
+  {
+    "id": "1:3584",
+    "name": "Light/Tutorial2b",
+    "file": "1-3584.png"
+  },
+  {
+    "id": "14:41954",
+    "name": "R2/Light|WidgetReview|7|R|0|old||Claude||small",
+    "file": "14-41954.png"
+  },
+  {
+    "id": "14:42297",
+    "name": "R2/Light|WidgetReview|7|R|0|old||Claude||medium",
+    "file": "14-42297.png"
+  },
+  {
+    "id": "14:42299",
+    "name": "R2/Light|WidgetConfig|7|R|0|old||Claude||small",
+    "file": "14-42299.png"
+  },
+  {
+    "id": "14:42298",
+    "name": "R2/Light|SystemHome|7|R|0|old||Claude||small",
+    "file": "14-42298.png"
+  },
+  {
+    "id": "14:44147",
+    "name": "R2/Light|SystemHome|7|R|0|old||Claude||medium",
+    "file": "14-44147.png"
+  },
+  {
+    "id": "14:42461",
+    "name": "R2/Light|WidgetState|7|R|0|old||Codex||small",
+    "file": "14-42461.png"
+  },
+  {
+    "id": "14:42460",
+    "name": "R2/Light|LockNotification|7|R|1|old||||small",
+    "file": "14-42460.png"
+  },
+  {
+    "id": "1:3676",
+    "name": "Light/StateReview",
+    "file": "1-3676.png"
+  },
+  {
+    "id": "14:42449",
+    "name": "R2/Light|Dashboard|0|R|0|old|||initial|small",
+    "file": "14-42449.png"
+  },
+  {
+    "id": "14:42233",
+    "name": "R2/Light|Dashboard|7|R|0|old|||refresh|small",
+    "file": "14-42233.png"
+  },
+  {
+    "id": "14:42451",
+    "name": "R2/Light|Dashboard|7|R|0|old|||stale|small",
+    "file": "14-42451.png"
+  },
+  {
+    "id": "14:42450",
+    "name": "R2/Light|Dashboard|7|R|0|old|||nodata|small",
+    "file": "14-42450.png"
+  },
+  {
+    "id": "14:42452",
+    "name": "R2/Light|Dashboard|7|R|0|old|||expired|small",
+    "file": "14-42452.png"
+  },
+  {
+    "id": "14:42453",
+    "name": "R2/Light|Dashboard|7|R|0|old|||unavailable|small",
+    "file": "14-42453.png"
+  },
+  {
+    "id": "14:42454",
+    "name": "R2/Light|Dashboard|7|R|0|old|||unknown|small",
+    "file": "14-42454.png"
+  },
+  {
+    "id": "14:42455",
+    "name": "R2/Light|Dashboard|7|R|0|old|||unlimited|small",
+    "file": "14-42455.png"
+  },
+  {
+    "id": "14:42456",
+    "name": "R2/Light|Dashboard|7|R|0|old|||noreset|small",
+    "file": "14-42456.png"
+  },
+  {
+    "id": "14:42458",
+    "name": "R2/Light|Dashboard|7|R|0|old|||due|small",
+    "file": "14-42458.png"
+  },
+  {
+    "id": "14:50564",
+    "name": "R2/Light|Dashboard|7|R|0|new||||small",
+    "file": "14-50564.png"
+  },
+  {
+    "id": "1:2311",
+    "name": "Light/Help",
+    "file": "1-2311.png"
+  },
+  {
+    "id": "1:2347",
+    "name": "Light/Privacy",
+    "file": "1-2347.png"
+  },
+  {
+    "id": "14:43072",
+    "name": "Light/Licenses",
+    "file": "14-43072.png"
+  },
+  {
+    "id": "14:48956",
+    "name": "Light/License",
+    "file": "14-48956.png"
+  },
+  {
+    "id": "1:4088",
+    "name": "Dark/Review",
+    "file": "1-4088.png"
+  },
+  {
+    "id": "14:41998",
+    "name": "R2/Dark|Dashboard|0|R|0|old||||small",
+    "file": "14-41998.png"
+  },
+  {
+    "id": "1:4124",
+    "name": "Dark/Dashboard",
+    "file": "1-4124.png"
+  },
+  {
+    "id": "14:42696",
+    "name": "R2/Dark|Dashboard|7|R|0|old|Claude|||small",
+    "file": "14-42696.png"
+  },
+  {
+    "id": "1:5757",
+    "name": "Dark/Settings",
+    "file": "1-5757.png"
+  },
+  {
+    "id": "14:52174",
+    "name": "R2/Dark|Settings|7|R|1|old||||small",
+    "file": "14-52174.png"
+  },
+  {
+    "id": "14:42921",
+    "name": "R2/Dark|Settings|7|R|2|old||||small",
+    "file": "14-42921.png"
+  },
+  {
+    "id": "1:4527",
+    "name": "Dark/Connect",
+    "file": "1-4527.png"
+  },
+  {
+    "id": "14:42697",
+    "name": "R2/Dark|Menu|7|R|0|old||Claude||small",
+    "file": "14-42697.png"
+  },
+  {
+    "id": "14:46590",
+    "name": "R2/Dark|Login|7|R|0|old||Claude||small",
+    "file": "14-46590.png"
+  },
+  {
+    "id": "14:46799",
+    "name": "R2/Dark|Login|7|R|0|old||Codex||small",
+    "file": "14-46799.png"
+  },
+  {
+    "id": "14:47008",
+    "name": "R2/Dark|Login|7|R|0|old||Cursor||small",
+    "file": "14-47008.png"
+  },
+  {
+    "id": "14:52367",
+    "name": "R2/Dark|Connecting|7|R|0|old||Claude||small",
+    "file": "14-52367.png"
+  },
+  {
+    "id": "14:42919",
+    "name": "R2/Dark|Failed|7|R|0|old||Claude||small",
+    "file": "14-42919.png"
+  },
+  {
+    "id": "14:46591",
+    "name": "R2/Dark|Disconnect|7|R|0|old||Claude||small",
+    "file": "14-46591.png"
+  },
+  {
+    "id": "1:6091",
+    "name": "Dark/Permission",
+    "file": "1-6091.png"
+  },
+  {
+    "id": "14:48652",
+    "name": "R2/Dark|System|7|R|2|old||||small",
+    "file": "14-48652.png"
+  },
+  {
+    "id": "14:42529",
+    "name": "Dark/Tutorial1",
+    "file": "14-42529.png"
+  },
+  {
+    "id": "1:7098",
+    "name": "Dark/Tutorial1b",
+    "file": "1-7098.png"
+  },
+  {
+    "id": "14:46032",
+    "name": "Dark/Tutorial2",
+    "file": "14-46032.png"
+  },
+  {
+    "id": "1:7172",
+    "name": "Dark/Tutorial2b",
+    "file": "1-7172.png"
+  },
+  {
+    "id": "14:41999",
+    "name": "R2/Dark|WidgetReview|7|R|0|old||Claude||small",
+    "file": "14-41999.png"
+  },
+  {
+    "id": "14:42759",
+    "name": "R2/Dark|WidgetReview|7|R|0|old||Claude||medium",
+    "file": "14-42759.png"
+  },
+  {
+    "id": "14:42761",
+    "name": "R2/Dark|WidgetConfig|7|R|0|old||Claude||small",
+    "file": "14-42761.png"
+  },
+  {
+    "id": "14:42760",
+    "name": "R2/Dark|SystemHome|7|R|0|old||Claude||small",
+    "file": "14-42760.png"
+  },
+  {
+    "id": "14:47067",
+    "name": "R2/Dark|SystemHome|7|R|0|old||Claude||medium",
+    "file": "14-47067.png"
+  },
+  {
+    "id": "14:42923",
+    "name": "R2/Dark|WidgetState|7|R|0|old||Codex||small",
+    "file": "14-42923.png"
+  },
+  {
+    "id": "14:42922",
+    "name": "R2/Dark|LockNotification|7|R|1|old||||small",
+    "file": "14-42922.png"
+  },
+  {
+    "id": "1:7264",
+    "name": "Dark/StateReview",
+    "file": "1-7264.png"
+  },
+  {
+    "id": "14:42911",
+    "name": "R2/Dark|Dashboard|0|R|0|old|||initial|small",
+    "file": "14-42911.png"
+  },
+  {
+    "id": "14:42695",
+    "name": "R2/Dark|Dashboard|7|R|0|old|||refresh|small",
+    "file": "14-42695.png"
+  },
+  {
+    "id": "14:42913",
+    "name": "R2/Dark|Dashboard|7|R|0|old|||stale|small",
+    "file": "14-42913.png"
+  },
+  {
+    "id": "14:42912",
+    "name": "R2/Dark|Dashboard|7|R|0|old|||nodata|small",
+    "file": "14-42912.png"
+  },
+  {
+    "id": "14:42914",
+    "name": "R2/Dark|Dashboard|7|R|0|old|||expired|small",
+    "file": "14-42914.png"
+  },
+  {
+    "id": "14:42915",
+    "name": "R2/Dark|Dashboard|7|R|0|old|||unavailable|small",
+    "file": "14-42915.png"
+  },
+  {
+    "id": "14:42916",
+    "name": "R2/Dark|Dashboard|7|R|0|old|||unknown|small",
+    "file": "14-42916.png"
+  },
+  {
+    "id": "14:42917",
+    "name": "R2/Dark|Dashboard|7|R|0|old|||unlimited|small",
+    "file": "14-42917.png"
+  },
+  {
+    "id": "14:42918",
+    "name": "R2/Dark|Dashboard|7|R|0|old|||noreset|small",
+    "file": "14-42918.png"
+  },
+  {
+    "id": "14:42920",
+    "name": "R2/Dark|Dashboard|7|R|0|old|||due|small",
+    "file": "14-42920.png"
+  },
+  {
+    "id": "14:53566",
+    "name": "R2/Dark|Dashboard|7|R|0|new||||small",
+    "file": "14-53566.png"
+  },
+  {
+    "id": "1:5899",
+    "name": "Dark/Help",
+    "file": "1-5899.png"
+  },
+  {
+    "id": "1:5935",
+    "name": "Dark/Privacy",
+    "file": "1-5935.png"
+  },
+  {
+    "id": "14:45964",
+    "name": "Dark/Licenses",
+    "file": "14-45964.png"
+  },
+  {
+    "id": "14:51970",
+    "name": "Dark/License",
+    "file": "14-51970.png"
+  }
+]

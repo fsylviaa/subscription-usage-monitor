@@ -1,0 +1,59 @@
+{
+  "fileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+  "entries": {
+    "light": "1:500",
+    "dark": "1:4088"
+  },
+  "phase": "complete",
+  "source": "design/figma-plugin",
+  "notes": "Figma MCP Starter rate limited; native authoring plugin used. Advanced reactions unavailable; editable state scenes linked using basic navigation.",
+  "style": "黑白灰，浅色与深色",
+  "date": "2026-10-08",
+  "audit": {
+    "screenTemplates": 146,
+    "prototypeStateScreens": 786,
+    "reactionNodes": 2832,
+    "components": 22,
+    "componentSets": 3,
+    "paintStylesUpdated": 40,
+    "sections": 4,
+    "coloredNodes": 0,
+    "missingFonts": 0,
+    "overflow": 0,
+    "invalidTargets": 0,
+    "fonts": [
+      "Inter",
+      "PingFang SC"
+    ],
+    "unintendedClippedChildren": 0
+  },
+  "fileUrl": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR",
+  "prototypeUrls": {
+    "light": "https://www.figma.com/proto/LwH8GU8iQfxhxIT3YXAcyR?page-id=0%3A1&node-id=1-500&starting-point-node-id=1%3A500&scaling=scale-down",
+    "dark": "https://www.figma.com/proto/LwH8GU8iQfxhxIT3YXAcyR?page-id=0%3A1&node-id=1-4088&starting-point-node-id=1%3A4088&scaling=scale-down"
+  },
+  "mockDataOnly": true,
+  "manualThemeControlInProduct": false,
+  "interactionChecks": [
+    "浅色评审入口到完整看板",
+    "浅色剩余与已用切换",
+    "浅色通知权限允许、拒绝及系统设置示意",
+    "深色首次使用、Claude 模拟连接成功与看板",
+    "深色教程两步定时过渡与完成关闭",
+    "深色选择 Codex 小组件、主屏幕预览、跳转对应账户",
+    "深色断开 Codex 后保留 Claude 与 Cursor",
+    "深色进入与退出演示后保留原账户集合"
+  ],
+  "visualChecks": [
+    "浅色额度看板",
+    "深色评审入口、无账户、连接弹层和看板",
+    "深色中号小组件与教程",
+    "浅色小号及中号小组件",
+    "浅色教程完整插图"
+  ],
+  "authoringNotes": [
+    "此目录仅包含 Figma 设计生成、修订及检查工具，没有编写 App 或后端。",
+    "初版构建脚本 build.js 保留历史生成过程，最终黑白灰修改见 monochrome.js。",
+    "原型使用基础连线与可编辑场景分支。登录、权限、系统设置、通知与小组件均为模拟。"
+  ]
+}

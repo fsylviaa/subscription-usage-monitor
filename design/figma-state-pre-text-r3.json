@@ -1,0 +1,69 @@
+{
+  "fileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+  "fileUrl": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR",
+  "revision": "R3 · 仅画面评审",
+  "date": "2026-10-08",
+  "phase": "visual_review_ready_cloud_synced_interactions_deferred",
+  "scope": {
+    "includedSections": [
+      "1:43251",
+      "1:43253"
+    ],
+    "excludedSections": [
+      "1:43252",
+      "1:43254"
+    ],
+    "visibleFramesPerTheme": 44,
+    "existingReactionsModified": false,
+    "animationsModified": false,
+    "appOrBackendImplemented": false
+  },
+  "style": "黑白灰，完整浅色与深色",
+  "entries": {
+    "light": "1:500",
+    "dark": "1:4088"
+  },
+  "canvasReviewUrls": {
+    "light": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR?node-id=1-536",
+    "dark": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR?node-id=1-4124"
+  },
+  "approvedVisualChanges": [
+    "设置移除额度显示与已用切换，固定剩余显示",
+    "实色条长表示已用；剩余70%对应实色30%",
+    "刷新与连接在订阅额度标题右侧并排，删除刷新提示",
+    "额度与设置展示Claude、两个Codex账户及Cursor；账号标识常显",
+    "账户添加页说明同平台可继续添加，小组件选择区分具体账号",
+    "关联小组件、通知、帮助文案同步；异常页面避免底部遮挡"
+  ],
+  "audit": {
+    "report": "design/figma-review-r3-final-audit.json",
+    "quotaBarsChecked": 152,
+    "widgetBarsChecked": 24,
+    "barErrors": [],
+    "dashboardAndSettingsOverflows": [],
+    "nonGrayLayerIds": [],
+    "branchHashes": {
+      "1:43252": "c9acba72",
+      "1:43254": "d7d84039"
+    },
+    "branchesUnchanged": true,
+    "sharedLibraryUnchanged": true,
+    "existingActionPathsUnchanged": true
+  },
+  "backup": "design/订阅额度 iPhone 原型-R3-画面评审.fig",
+  "backupBytes": 1352565,
+  "backupArchiveIntegrity": "passed",
+  "staticReviewGallery": "design/figma-review-r3-gallery.html",
+  "reviewImages": "design/review-r3/",
+  "authoringEntry": "design/figma-plugin/review-r3.js",
+  "mockDataOnly": true,
+  "productDemoMode": false,
+  "networkCheck": "Requirements 0.4 only. No new Figma network-check screens or integration.",
+  "cloudSyncVerification": "Verified in the existing Chrome Figma editor after navigation to node 1:536: four accounts, horizontal header actions, remaining70/used30 and settings without display preference are visible.",
+  "pending": [
+    "用户审核画面",
+    "审核通过后另行同步多账号交互、返回路径及动画",
+    "删除功能的旧节点本轮在评审区隐藏保留，避免破坏现有连线；交互阶段再统一清理"
+  ],
+  "previousBaseline": "design/figma-state-r2.json"
+}

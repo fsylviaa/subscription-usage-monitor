@@ -1,0 +1,94 @@
+{
+  "fileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+  "entries": {
+    "light": "1:500",
+    "dark": "1:4088"
+  },
+  "phase": "revision_complete_cloud_synced_manual_playback_verified",
+  "source": "design/figma-plugin",
+  "notes": "Figma MCP Starter rate limited; native authoring plugin used. Advanced reactions unavailable; editable state scenes linked using basic navigation.",
+  "style": "黑白灰，浅色与深色",
+  "date": "2026-10-08",
+  "audit": {
+    "prototypeStateScreens": 3596,
+    "mainReviewScreensPerTheme": 48,
+    "sampledScreens": 368,
+    "sampledLinksChecked": 2128,
+    "imageLayers": 0,
+    "sampledTextLayers": 5094,
+    "invalidTargets": 0,
+    "forbiddenDemoCopy": [],
+    "coloredNodes": 0,
+    "textOverflow": 0,
+    "fonts": [
+      "Inter",
+      "PingFang SC"
+    ],
+    "fullRelinkCompleted": true,
+    "relinkedSourceNodesBeforeFinalPolish": 20308,
+    "selfLinksSkipped": 1762,
+    "contrastReport": "design/contrast-audit-r2.json",
+    "resetCardsChecked": 384,
+    "resetBarErrors": 0
+  },
+  "fileUrl": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR",
+  "prototypeUrls": {
+    "light": "https://www.figma.com/proto/LwH8GU8iQfxhxIT3YXAcyR?page-id=0%3A1&node-id=1-500&starting-point-node-id=1%3A500&scaling=scale-down",
+    "dark": "https://www.figma.com/proto/LwH8GU8iQfxhxIT3YXAcyR?page-id=0%3A1&node-id=1-4088&starting-point-node-id=1%3A4088&scaling=scale-down"
+  },
+  "mockDataOnly": true,
+  "manualThemeControlInProduct": false,
+  "interactionChecks": [
+    "浅色：评审入口 → 无账户 → 连接 Claude → 模拟登录 → 加载 → 单账户看板",
+    "浅色：设置切换已用 → 看板显示 61%／28%，账户状态保留",
+    "浅色：通知允许、两步小组件教程自动过渡、完成关闭返回原看板",
+    "浅色：账户菜单 → 断开确认 → 无账户；评审切换深色",
+    "深色：三平台看板、点按刷新、设置滚动、帮助打开与返回",
+    "深色：拒绝通知 → 权限未开启说明 → 系统设置示意 → 开启返回",
+    "深色：设置内 Codex 菜单 → 断开 → 看板只保留 Claude 与 Cursor",
+    "深色：小组件小号／中号切换 → 编辑账户 Codex → 完成 → 主屏幕 → 点击打开 Codex 并展开",
+    "深色：网络失败保留旧值与时间戳 → 点按刷新",
+    "深色：预计重置通知 → 查询过渡 → Claude 5 小时剩余 96%、下次 5 小时后、更新时间 12:41",
+    "重置状态组件修正后复验：96% 进度条长度正确，展开收起和账户菜单仍可操作"
+  ],
+  "visualChecks": [
+    "浅深评审入口、紧凑额度看板和三平台图标",
+    "浅色连接弹层、模拟登录、设置、教程与断开确认",
+    "深色设置滚动、帮助、权限拒绝与开启、小组件、旧数据与锁屏通知",
+    "368 个代表画面抽检：零非灰阶颜色、零文字溢出、零失效链接目标",
+    "384 个重置状态卡片逐一核对：剩余 96%／已用 4% 与进度条比例一致"
+  ],
+  "authoringNotes": [
+    "只制作 Figma 原型，没有编写 App 或后端。",
+    "修订生成源为 revision.js；连线为 relink.js；整理为 arrange-r2.js；结构检查为 polish.js。",
+    "Figma Starter 不支持所需高级变量动作，采用可编辑场景与基础连线保留状态。",
+    "刷新通过点按提供；Figma 拒绝 ON_DRAG + NAVIGATE，未启用下拉刷新手势。",
+    "登录、系统权限、通知、小组件均为模拟。"
+  ],
+  "revision": "R2",
+  "productDemoMode": false,
+  "backup": "design/订阅额度 iPhone 原型-R2-final.fig",
+  "manualPlaybackStatus": "R2 verified in native Figma inline preview after network recovery on 2026-10-08. Major light and dark flows manually tested; all editable scene links structurally checked during full relink, with final representative audit.",
+  "approvedChanges": [
+    "移除产品内体验演示",
+    "黑白灰浅深双外观",
+    "卡片平台名展开账户信息；更多菜单管理账户",
+    "设置分账户、通用、支持；通知直接开关",
+    "剩余／已用在设置切换，小组件跟随",
+    "连接平台使用三列品牌图标网格",
+    "首页与设置直达两步小组件教程",
+    "系统小组件与通知示意仅放评审入口",
+    "状态分支保持账户、显示偏好、通知与刷新结果"
+  ],
+  "cloudSync": {
+    "status": "confirmed",
+    "evidence": "User restored network; fresh Chrome editor loaded R2 sections. Native editor and inline player loaded revised light/dark scenes and final corrections without offline warnings. Browser prototype subsequently displayed the R2 light review entry and navigated to the revised dashboard."
+  },
+  "backupVerified": true,
+  "finalFixes": [
+    "浅深帮助刷新文案改为轻点刷新",
+    "新增四个可复用重置额度组件，使刷新后的 96%／4% 与进度条一致"
+  ],
+  "handoff": "app/docs/figma-handoff-2026-10-08.md",
+  "nextSessionIntent": "Continue local refinements in the existing Figma file after reading the handoff; specific requested refinements are not yet provided."
+}

@@ -1,0 +1,695 @@
+{
+  "status": "Dark 通知状态定域静态审查",
+  "passed": true,
+  "errors": [],
+  "readyModelCount": 20,
+  "additionRouteCount": 4,
+  "modeBoundaryDestinations": [
+    {
+      "mask": 31,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 0,
+      "nextMask": 30
+    },
+    {
+      "mask": 31,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 1,
+      "nextMask": 29
+    },
+    {
+      "mask": 31,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 2,
+      "nextMask": 27
+    },
+    {
+      "mask": 31,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 3,
+      "nextMask": 23
+    },
+    {
+      "mask": 31,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 0,
+      "nextMask": 30
+    },
+    {
+      "mask": 31,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 1,
+      "nextMask": 29
+    },
+    {
+      "mask": 31,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 2,
+      "nextMask": 27
+    },
+    {
+      "mask": 31,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 3,
+      "nextMask": 23
+    },
+    {
+      "mask": 31,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 0,
+      "nextMask": 30
+    },
+    {
+      "mask": 31,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 1,
+      "nextMask": 29
+    },
+    {
+      "mask": 31,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 2,
+      "nextMask": 27
+    },
+    {
+      "mask": 31,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 3,
+      "nextMask": 23
+    },
+    {
+      "mask": 31,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 0,
+      "nextMask": 30
+    },
+    {
+      "mask": 31,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 1,
+      "nextMask": 29
+    },
+    {
+      "mask": 31,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 2,
+      "nextMask": 27
+    },
+    {
+      "mask": 31,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 3,
+      "nextMask": 23
+    },
+    {
+      "mask": 31,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 0,
+      "nextMask": 30
+    },
+    {
+      "mask": 31,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 1,
+      "nextMask": 29
+    },
+    {
+      "mask": 31,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 2,
+      "nextMask": 27
+    },
+    {
+      "mask": 31,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 3,
+      "nextMask": 23
+    },
+    {
+      "mask": 31,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 0,
+      "nextMask": 30
+    },
+    {
+      "mask": 31,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 1,
+      "nextMask": 29
+    },
+    {
+      "mask": 31,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 2,
+      "nextMask": 27
+    },
+    {
+      "mask": 31,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 3,
+      "nextMask": 23
+    },
+    {
+      "mask": 47,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 0,
+      "nextMask": 46
+    },
+    {
+      "mask": 47,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 1,
+      "nextMask": 45
+    },
+    {
+      "mask": 47,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 2,
+      "nextMask": 43
+    },
+    {
+      "mask": 47,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 3,
+      "nextMask": 39
+    },
+    {
+      "mask": 47,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 0,
+      "nextMask": 46
+    },
+    {
+      "mask": 47,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 1,
+      "nextMask": 45
+    },
+    {
+      "mask": 47,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 2,
+      "nextMask": 43
+    },
+    {
+      "mask": 47,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 3,
+      "nextMask": 39
+    },
+    {
+      "mask": 47,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 0,
+      "nextMask": 46
+    },
+    {
+      "mask": 47,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 1,
+      "nextMask": 45
+    },
+    {
+      "mask": 47,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 2,
+      "nextMask": 43
+    },
+    {
+      "mask": 47,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 3,
+      "nextMask": 39
+    },
+    {
+      "mask": 47,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 0,
+      "nextMask": 46
+    },
+    {
+      "mask": 47,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 1,
+      "nextMask": 45
+    },
+    {
+      "mask": 47,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 2,
+      "nextMask": 43
+    },
+    {
+      "mask": 47,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 3,
+      "nextMask": 39
+    },
+    {
+      "mask": 47,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 0,
+      "nextMask": 46
+    },
+    {
+      "mask": 47,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 1,
+      "nextMask": 45
+    },
+    {
+      "mask": 47,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 2,
+      "nextMask": 43
+    },
+    {
+      "mask": 47,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 3,
+      "nextMask": 39
+    },
+    {
+      "mask": 47,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 0,
+      "nextMask": 46
+    },
+    {
+      "mask": 47,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 1,
+      "nextMask": 45
+    },
+    {
+      "mask": 47,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 2,
+      "nextMask": 43
+    },
+    {
+      "mask": 47,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 3,
+      "nextMask": 39
+    },
+    {
+      "mask": 79,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 0,
+      "nextMask": 78
+    },
+    {
+      "mask": 79,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 1,
+      "nextMask": 77
+    },
+    {
+      "mask": 79,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 2,
+      "nextMask": 75
+    },
+    {
+      "mask": 79,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 3,
+      "nextMask": 71
+    },
+    {
+      "mask": 79,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 0,
+      "nextMask": 78
+    },
+    {
+      "mask": 79,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 1,
+      "nextMask": 77
+    },
+    {
+      "mask": 79,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 2,
+      "nextMask": 75
+    },
+    {
+      "mask": 79,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 3,
+      "nextMask": 71
+    },
+    {
+      "mask": 79,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 0,
+      "nextMask": 78
+    },
+    {
+      "mask": 79,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 1,
+      "nextMask": 77
+    },
+    {
+      "mask": 79,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 2,
+      "nextMask": 75
+    },
+    {
+      "mask": 79,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 3,
+      "nextMask": 71
+    },
+    {
+      "mask": 79,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 0,
+      "nextMask": 78
+    },
+    {
+      "mask": 79,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 1,
+      "nextMask": 77
+    },
+    {
+      "mask": 79,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 2,
+      "nextMask": 75
+    },
+    {
+      "mask": 79,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 3,
+      "nextMask": 71
+    },
+    {
+      "mask": 79,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 0,
+      "nextMask": 78
+    },
+    {
+      "mask": 79,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 1,
+      "nextMask": 77
+    },
+    {
+      "mask": 79,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 2,
+      "nextMask": 75
+    },
+    {
+      "mask": 79,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 3,
+      "nextMask": 71
+    },
+    {
+      "mask": 79,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 0,
+      "nextMask": 78
+    },
+    {
+      "mask": 79,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 1,
+      "nextMask": 77
+    },
+    {
+      "mask": 79,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 2,
+      "nextMask": 75
+    },
+    {
+      "mask": 79,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 3,
+      "nextMask": 71
+    },
+    {
+      "mask": 95,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 0,
+      "nextMask": 94
+    },
+    {
+      "mask": 95,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 1,
+      "nextMask": 93
+    },
+    {
+      "mask": 95,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 2,
+      "nextMask": 91
+    },
+    {
+      "mask": 95,
+      "mode": "on",
+      "origin": "d",
+      "removedIdx": 3,
+      "nextMask": 87
+    },
+    {
+      "mask": 95,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 0,
+      "nextMask": 94
+    },
+    {
+      "mask": 95,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 1,
+      "nextMask": 93
+    },
+    {
+      "mask": 95,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 2,
+      "nextMask": 91
+    },
+    {
+      "mask": 95,
+      "mode": "on",
+      "origin": "s",
+      "removedIdx": 3,
+      "nextMask": 87
+    },
+    {
+      "mask": 95,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 0,
+      "nextMask": 94
+    },
+    {
+      "mask": 95,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 1,
+      "nextMask": 93
+    },
+    {
+      "mask": 95,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 2,
+      "nextMask": 91
+    },
+    {
+      "mask": 95,
+      "mode": "off",
+      "origin": "d",
+      "removedIdx": 3,
+      "nextMask": 87
+    },
+    {
+      "mask": 95,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 0,
+      "nextMask": 94
+    },
+    {
+      "mask": 95,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 1,
+      "nextMask": 93
+    },
+    {
+      "mask": 95,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 2,
+      "nextMask": 91
+    },
+    {
+      "mask": 95,
+      "mode": "off",
+      "origin": "s",
+      "removedIdx": 3,
+      "nextMask": 87
+    },
+    {
+      "mask": 95,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 0,
+      "nextMask": 94
+    },
+    {
+      "mask": 95,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 1,
+      "nextMask": 93
+    },
+    {
+      "mask": 95,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 2,
+      "nextMask": 91
+    },
+    {
+      "mask": 95,
+      "mode": "denied",
+      "origin": "d",
+      "removedIdx": 3,
+      "nextMask": 87
+    },
+    {
+      "mask": 95,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 0,
+      "nextMask": 94
+    },
+    {
+      "mask": 95,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 1,
+      "nextMask": 93
+    },
+    {
+      "mask": 95,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 2,
+      "nextMask": 91
+    },
+    {
+      "mask": 95,
+      "mode": "denied",
+      "origin": "s",
+      "removedIdx": 3,
+      "nextMask": 87
+    }
+  ],
+  "declaredBoundaries": [
+    "Disconnect destinations outside the 20 ready masks retain the same mode, but their subsequent account controls are not repaired by this module.",
+    "Pending repair covers only the four declared new-account models: details, all/pending-account query, query cancellation/retry and the pending-account reconnect.",
+    "Disconnects and further additions from these pending views remain outside this scoped repair.",
+    "Successful additions other than Set15 → 31/47/79 and Set31 → 95 are outside this mode-preservation story.",
+    "System Home/widget navigation and separate notification/background review stories remain outside this module."
+  ],
+  "actualClickRequired": [
+    "on/off/denied: Set15 work disconnect → Set11 same mode",
+    "Known account details/query/reconnect → close returns same mode",
+    "Set15 three additions and Set31 Cursor: before-add/auth cancel preserves source and account count",
+    "First-query cancel retains bound unknown account and mode; retry checks before correct ready mode",
+    "Denied target toggle opens system settings; off target toggle enables without re-requesting permission"
+  ]
+}

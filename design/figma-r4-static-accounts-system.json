@@ -1,0 +1,509 @@
+{
+  "schemaVersion": 1,
+  "fileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+  "reviewedDate": "2026-10-09",
+  "reviewer": "flow_audit",
+  "evidenceType": "direct_native_png_pixel_review",
+  "sourceManifest": "design/figma-r4-native-images.json",
+  "sourceManifestComplete": true,
+  "sourceManifestExpectedCount": 90,
+  "sourceManifestExtractedCount": 90,
+  "scope": "仅原生PNG文件名含accounts或system的18张图；非90张全量图审计。",
+  "method": "使用view_image按原始分辨率实际查看全部18张PNG；按浅深9组比较身份、作用范围文字、系统示意、可见关闭/返回控件与文字遮挡。随后核对文件SHA256与原生提取清单一致；未编辑或重编码图片。",
+  "summary": {
+    "reviewedImages": 18,
+    "lightImages": 9,
+    "darkImages": 9,
+    "correspondingPairs": 9,
+    "visibleBlockingIssuesObserved": 0,
+    "result": "no_visible_blocking_issue_in_reviewed_scope",
+    "overallFigmaAcceptance": "not_assessed"
+  },
+  "limitations": [
+    "可见控件只证明静态存在，不证明其实际连线、返回来源或可点击热区正确；这些由click-log与最终连线审计分别验证。",
+    "覆盖层原生导出仅核对覆盖层自身，不能据此判定运行时底层页面保留或叠层关系。",
+    "本次教程导出为第一步；第二步与完成动作不由本静态截图证明。",
+    "不验证动画时序、真实系统权限/通知能力、真实授权或联网服务。",
+    "未覆盖其余72张原生图、任意账号集合或全文件TXT语义审计。"
+  ],
+  "entries": [
+    {
+      "filename": "light-accounts-work-expanded.png",
+      "path": "design/review-r4/native/light-accounts-work-expanded.png",
+      "nodeId": "46:172038",
+      "theme": "Light",
+      "subject": "work账号展开",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "06ab5caa2c15c08b0744227b5a7d47b54dcadd8ce239bef250d2c6d4bc58a2ad",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "四账号常显身份分别为alin.claude@example.com、alin.codex@example.com、work.codex@example.com、alin.cursor@example.com。",
+        "展开对象是work.codex@example.com；周70%、5小时85%，详情为Plus与上次成功09:41。其他卡片可见39%/72%、38%/64%、62%。",
+        "账号展开箭头、各卡菜单、顶部刷新与连接横排、底部额度/设置入口可见。",
+        "数值标签固定剩余；可见进度条左侧实色与已用比例相符。文字未遮挡，账号详情与其他卡片未重叠。"
+      ],
+      "visibleControls": [
+        "work展开/收起箭头",
+        "各账号菜单",
+        "顶部刷新",
+        "顶部连接",
+        "额度页签",
+        "设置页签"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "light-accounts-work-menu.png",
+      "path": "design/review-r4/native/light-accounts-work-menu.png",
+      "nodeId": "53:364540",
+      "theme": "Light",
+      "subject": "work账号菜单",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "99d2bd8ea92c44358dd449dc9d395b86e9d038902d75a5ce6687e66c40696ae2",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "标题Codex账户，下方明确work.codex@example.com；刷新额度、重新连接、断开连接的视觉上下文均为该账号。",
+        "左上X与底部取消均清晰可见；按钮文字完整，未相互遮挡。"
+      ],
+      "visibleControls": [
+        "X关闭",
+        "刷新额度",
+        "重新连接",
+        "断开连接",
+        "取消"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "light-accounts-work-disconnect.png",
+      "path": "design/review-r4/native/light-accounts-work-disconnect.png",
+      "nodeId": "53:364583",
+      "theme": "Light",
+      "subject": "work断开确认",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "aa36600060157b8e9178c692c80b451a3b7c939d9e475b294be1cf468db3bd65",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "断开连接确认明确work.codex@example.com，说明移除此账号额度数据和待发提醒、平台订阅不会取消。",
+        "左上X、断开连接与取消可见；未出现被删除的旧小组件刷新提示；身份与按钮文字没有遮挡。"
+      ],
+      "visibleControls": [
+        "X关闭",
+        "断开连接",
+        "取消"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "light-system-permission.png",
+      "path": "design/review-r4/native/light-system-permission.png",
+      "nodeId": "53:893801",
+      "theme": "Light",
+      "subject": "系统通知权限示意",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "87a95750df7103c7bb512c4686fac430643ec64a876058fbeb6bca1537304a1e",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "标有iOS系统权限·交互示意，主体为“订阅额度”想给你发送通知。",
+        "允许、不允许与X关闭控件均可见；系统说明与按钮文字完整，浅深含义一致。"
+      ],
+      "visibleControls": [
+        "X关闭",
+        "允许",
+        "不允许"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "light-system-denied.png",
+      "path": "design/review-r4/native/light-system-denied.png",
+      "nodeId": "53:893425",
+      "theme": "Light",
+      "subject": "通知权限拒绝后的设置",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "cd507d3055a949a73ac11f74548f929770fe09c51e4a963cd1ba4b0329f995c7",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "设置页四账号身份均清楚列出，个人Codex与work Codex可直接区分。",
+        "通知开关为关闭外观，必要错误提示说明系统通知权限未开启、点按开关可前往设置。",
+        "添加账户、教程、帮助与说明、隐私说明、开源许可和底部页签可见；未见额度显示偏好入口。",
+        "错误提示、开关和支持列表没有相互遮挡。"
+      ],
+      "visibleControls": [
+        "四账号菜单",
+        "添加账户",
+        "通知开关",
+        "教程",
+        "帮助与说明",
+        "隐私说明",
+        "开源许可",
+        "额度/设置页签"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "light-system-ios-on.png",
+      "path": "design/review-r4/native/light-system-ios-on.png",
+      "nodeId": "53:893851",
+      "theme": "Light",
+      "subject": "iOS通知设置开启示意",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "91e2561a9afc0aa3e24f2ce083b5009a3b63f218c081e271e66ab44da3a61b10",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "标题通知·订阅额度，明确iOS设置·交互示意。",
+        "允许通知的开关为开启外观；左上返回箭头清楚可见，提示返回App后使用提醒。",
+        "标题、开关、说明无文字裁切或遮挡；黑白灰两主题对应含义一致。"
+      ],
+      "visibleControls": [
+        "左上返回",
+        "允许通知开关"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "light-system-notification.png",
+      "path": "design/review-r4/native/light-system-notification.png",
+      "nodeId": "14:42460",
+      "theme": "Light",
+      "subject": "锁屏通知示意",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "5bfee4ad91d51d57898760e0e7842362f085c9ae8ccfe349ecc997bb128109bc",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "锁屏时间12:41，标有iOS锁屏通知·交互示意。",
+        "通知明确Claude与alin.claude@example.com；标题及内容使用“预计”，提示打开查看最新额度，没有宣称已查询确认满额。",
+        "左上返回可见；通知标题、账号邮箱和说明均完整，不重叠。"
+      ],
+      "visibleControls": [
+        "左上返回",
+        "通知卡片"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "light-system-notification-removed.png",
+      "path": "design/review-r4/native/light-system-notification-removed.png",
+      "nodeId": "53:1120019",
+      "theme": "Light",
+      "subject": "通知目标已断开提示",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "552b9922fdb4c7452008838d9b9aeb8f115cbfd2cc37fe2f652cf068e73df604",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "标题账号已断开，保留原目标alin.claude@example.com，明确无法更新此账号额度。",
+        "无替换为其他账号的文案、无旧额度假结果；X与关闭均可见，文字未遮挡。"
+      ],
+      "visibleControls": [
+        "X关闭",
+        "关闭"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "light-system-tutorial.png",
+      "path": "design/review-r4/native/light-system-tutorial.png",
+      "nodeId": "14:42067",
+      "theme": "Light",
+      "subject": "添加小组件教程首步",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "9a40ce22ce2cb2c72b4799464b8ef5966a97c17e0283f05e0ec1a302a3df6326",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "标题添加小组件，示意图与“长按主屏幕，添加小组件”步骤清楚可辨。",
+        "说明长按主屏幕空白处、编辑、添加小组件；未宣称点击教程会自动添加。",
+        "X关闭、两步进度指示与下一步按钮均可见，文字与示意图/按钮无重叠。"
+      ],
+      "visibleControls": [
+        "X关闭",
+        "下一步",
+        "两步进度指示（显示）"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "dark-accounts-work-expanded.png",
+      "path": "design/review-r4/native/dark-accounts-work-expanded.png",
+      "nodeId": "53:243283",
+      "theme": "Dark",
+      "subject": "work账号展开",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "9a5a651dee9899d33c7be543cc1ab8ffe89fc13c25cd1b33c5383eb41e817fc3",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "四账号常显身份分别为alin.claude@example.com、alin.codex@example.com、work.codex@example.com、alin.cursor@example.com。",
+        "展开对象是work.codex@example.com；周70%、5小时85%，详情为Plus与上次成功09:41。其他卡片可见39%/72%、38%/64%、62%。",
+        "账号展开箭头、各卡菜单、顶部刷新与连接横排、底部额度/设置入口可见。",
+        "数值标签固定剩余；可见进度条左侧实色与已用比例相符。文字未遮挡，账号详情与其他卡片未重叠。"
+      ],
+      "visibleControls": [
+        "work展开/收起箭头",
+        "各账号菜单",
+        "顶部刷新",
+        "顶部连接",
+        "额度页签",
+        "设置页签"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "dark-accounts-work-menu.png",
+      "path": "design/review-r4/native/dark-accounts-work-menu.png",
+      "nodeId": "53:546437",
+      "theme": "Dark",
+      "subject": "work账号菜单",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "a12dc6aee8c0a2cbe9b7f83013eddc280db5c0ef552021e1295bbb2a76cbee04",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "标题Codex账户，下方明确work.codex@example.com；刷新额度、重新连接、断开连接的视觉上下文均为该账号。",
+        "左上X与底部取消均清晰可见；按钮文字完整，未相互遮挡。"
+      ],
+      "visibleControls": [
+        "X关闭",
+        "刷新额度",
+        "重新连接",
+        "断开连接",
+        "取消"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "dark-accounts-work-disconnect.png",
+      "path": "design/review-r4/native/dark-accounts-work-disconnect.png",
+      "nodeId": "53:546480",
+      "theme": "Dark",
+      "subject": "work断开确认",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "3533484a41e91ce63fa20fefa50528315b4b3684109cf2ea837e397cb32b4f68",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "断开连接确认明确work.codex@example.com，说明移除此账号额度数据和待发提醒、平台订阅不会取消。",
+        "左上X、断开连接与取消可见；未出现被删除的旧小组件刷新提示；身份与按钮文字没有遮挡。"
+      ],
+      "visibleControls": [
+        "X关闭",
+        "断开连接",
+        "取消"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "dark-system-permission.png",
+      "path": "design/review-r4/native/dark-system-permission.png",
+      "nodeId": "53:895404",
+      "theme": "Dark",
+      "subject": "系统通知权限示意",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "1ee400fa73443428456696cbff9847910e1cfda6b1c4a0af7ee2f6341d7a4f71",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "标有iOS系统权限·交互示意，主体为“订阅额度”想给你发送通知。",
+        "允许、不允许与X关闭控件均可见；系统说明与按钮文字完整，浅深含义一致。"
+      ],
+      "visibleControls": [
+        "X关闭",
+        "允许",
+        "不允许"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "dark-system-denied.png",
+      "path": "design/review-r4/native/dark-system-denied.png",
+      "nodeId": "53:895028",
+      "theme": "Dark",
+      "subject": "通知权限拒绝后的设置",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "864a0c2cf98494d5b2c4d5f9f5be5639d55ddbadac1fb32067acb52548802240",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "设置页四账号身份均清楚列出，个人Codex与work Codex可直接区分。",
+        "通知开关为关闭外观，必要错误提示说明系统通知权限未开启、点按开关可前往设置。",
+        "添加账户、教程、帮助与说明、隐私说明、开源许可和底部页签可见；未见额度显示偏好入口。",
+        "错误提示、开关和支持列表没有相互遮挡。"
+      ],
+      "visibleControls": [
+        "四账号菜单",
+        "添加账户",
+        "通知开关",
+        "教程",
+        "帮助与说明",
+        "隐私说明",
+        "开源许可",
+        "额度/设置页签"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "dark-system-ios-on.png",
+      "path": "design/review-r4/native/dark-system-ios-on.png",
+      "nodeId": "53:895454",
+      "theme": "Dark",
+      "subject": "iOS通知设置开启示意",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "a3edf3a50ead154ba19f0a89a86801ab69325d868831eba0c9ebbaee4a2d65cf",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "标题通知·订阅额度，明确iOS设置·交互示意。",
+        "允许通知的开关为开启外观；左上返回箭头清楚可见，提示返回App后使用提醒。",
+        "标题、开关、说明无文字裁切或遮挡；黑白灰两主题对应含义一致。"
+      ],
+      "visibleControls": [
+        "左上返回",
+        "允许通知开关"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "dark-system-notification.png",
+      "path": "design/review-r4/native/dark-system-notification.png",
+      "nodeId": "14:42922",
+      "theme": "Dark",
+      "subject": "锁屏通知示意",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "cb2e602b4fc8c2fc83f8c8b7bb9aad8b31bf36f7d5dbba88e3e45cde95900b17",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "锁屏时间12:41，标有iOS锁屏通知·交互示意。",
+        "通知明确Claude与alin.claude@example.com；标题及内容使用“预计”，提示打开查看最新额度，没有宣称已查询确认满额。",
+        "左上返回可见；通知标题、账号邮箱和说明均完整，不重叠。"
+      ],
+      "visibleControls": [
+        "左上返回",
+        "通知卡片"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "dark-system-notification-removed.png",
+      "path": "design/review-r4/native/dark-system-notification-removed.png",
+      "nodeId": "53:1121579",
+      "theme": "Dark",
+      "subject": "通知目标已断开提示",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "76223779437f3f66b6074eef21fa02b0a85ba8927292ad574e467e08066b81aa",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "标题账号已断开，保留原目标alin.claude@example.com，明确无法更新此账号额度。",
+        "无替换为其他账号的文案、无旧额度假结果；X与关闭均可见，文字未遮挡。"
+      ],
+      "visibleControls": [
+        "X关闭",
+        "关闭"
+      ],
+      "issues": []
+    },
+    {
+      "filename": "dark-system-tutorial.png",
+      "path": "design/review-r4/native/dark-system-tutorial.png",
+      "nodeId": "14:42529",
+      "theme": "Dark",
+      "subject": "添加小组件教程首步",
+      "size": [
+        393,
+        852
+      ],
+      "sha256": "ad4407ee6de85cd05367e9cac97c62aa3b8a31badd8765e4d199101e7db8ad47",
+      "manifestHashMatches": true,
+      "pixelReview": "reviewed_original_resolution",
+      "result": "no_visible_blocking_issue_observed",
+      "observations": [
+        "标题添加小组件，示意图与“长按主屏幕，添加小组件”步骤清楚可辨。",
+        "说明长按主屏幕空白处、编辑、添加小组件；未宣称点击教程会自动添加。",
+        "X关闭、两步进度指示与下一步按钮均可见，文字与示意图/按钮无重叠。"
+      ],
+      "visibleControls": [
+        "X关闭",
+        "下一步",
+        "两步进度指示（显示）"
+      ],
+      "issues": []
+    }
+  ]
+}

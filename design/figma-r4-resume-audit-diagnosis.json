@@ -1,0 +1,1864 @@
+{
+  "status": "Read-only saved-evidence diagnosis; not a live audit, repair, or acceptance result",
+  "createdDate": "2026-10-09",
+  "source": "design/figma-r4-audit-before-final-fixes.json",
+  "sourceSha256": "de1e21f7a9dee0eaaee882f288deff4ac0f20b0ef4926d453d9332cff8b27291",
+  "sourceRunId": "r4compact-1791504787585",
+  "coverage": {
+    "counts": {
+      "Light": {
+        "roots": 14485,
+        "primaryRoots": 14483,
+        "legacyRoots": 2,
+        "visibleRoots": 14483,
+        "nodes": 915107,
+        "visibleNodes": 726851,
+        "texts": 204193,
+        "visibleTexts": 151705,
+        "reactionLayers": 88797,
+        "visibleReactionLayers": 88695,
+        "reactions": 88797,
+        "nodeActions": 58661,
+        "visibleNodeActions": 58559,
+        "closeBackActions": 30136
+      },
+      "Dark": {
+        "roots": 14485,
+        "primaryRoots": 14483,
+        "legacyRoots": 2,
+        "visibleRoots": 14483,
+        "nodes": 915107,
+        "visibleNodes": 726851,
+        "texts": 204193,
+        "visibleTexts": 151705,
+        "reactionLayers": 88796,
+        "visibleReactionLayers": 88695,
+        "reactions": 88796,
+        "nodeActions": 58660,
+        "visibleNodeActions": 58559,
+        "closeBackActions": 30136
+      }
+    },
+    "queues": {
+      "Light": {
+        "processed": 14485,
+        "queued": 14485,
+        "remaining": 0
+      },
+      "Dark": {
+        "processed": 14485,
+        "queued": 14485,
+        "remaining": 0
+      }
+    },
+    "incompleteRoots": 0,
+    "legacyUnscanned": 0,
+    "comparison": {
+      "pairedRoots": 14483,
+      "primaryCanonicalNames": 14483,
+      "normalization": "Theme-normalized root/path/text; NODE destination canonical root/path; full sorted trigger/action/transition values; dual incremental 32-bit hashes plus length/counts. No per-text geometry dump."
+    },
+    "graph": {
+      "configuredDeclaredCount": 2,
+      "configuredEntryCount": 2,
+      "reviewAndConfiguredEntryCount": 94,
+      "reachableRoots": 28642,
+      "inspectedReachableRoots": 28642,
+      "rootsWithKnownEscape": 28966
+    }
+  },
+  "truncation": {
+    "audit": {
+      "sampleCapPerCategory": 80,
+      "sampleBudgetBytes": 1200000,
+      "sampleBytesRetained": 41467,
+      "issueCountTotalsAreUntruncated": true,
+      "outputBytes": 45427,
+      "outputCapBytes": 1800000
+    },
+    "categoryCoverage": {
+      "hiddenTargets": {
+        "count": 53,
+        "retained": 53,
+        "omitted": 0
+      },
+      "legacyTargets": {
+        "count": 52,
+        "retained": 52,
+        "omitted": 0
+      },
+      "themeReactionMismatch": {
+        "count": 1,
+        "retained": 1,
+        "omitted": 0
+      }
+    },
+    "samplesComplete": true,
+    "finding": "No category sample truncation; all 106 category incidences are retained. These represent 53 unique link findings plus one paired-root reaction mismatch, not 106 independent broken links."
+  },
+  "overlap": {
+    "hiddenTargets": 53,
+    "legacyTargets": 52,
+    "intersection": 52,
+    "hiddenOnly": 1,
+    "legacyOnly": 0,
+    "uniqueLinks": 53,
+    "uniqueR4SourceLinks": 37,
+    "uniqueR4VisibleSourceLinks": 10,
+    "uniqueR4HiddenSourceLinks": 27,
+    "hiddenR2CascadeLinks": 16
+  },
+  "groups": {
+    "visible_widget_detail_expand": 6,
+    "hidden_widget_more": 26,
+    "visible_backup_expand": 4,
+    "hidden_display_preference": 1,
+    "legacy_cascade": 16
+  },
+  "proposedMutationScope": {
+    "maximumExistingR4ReactionNodesFromAudit": 37,
+    "homeBackNodesAdditional": 2,
+    "maximumTotalExistingReactionNodes": 39,
+    "newNodes": 0,
+    "removedNodes": 0,
+    "legacyR2Mutations": 0,
+    "requiresLivePreflight": true,
+    "reason": "Only actual R4 source reactions are changed. R2 findings are downstream of the visible entry defects and should disappear from the fresh reachable audit once those entry defects are fixed."
+  },
+  "themeMismatch": {
+    "reported": {
+      "key": "interaction/R4/{theme}/AccountSystem/Set-15/Settings-denied",
+      "lightId": "53:893425",
+      "darkId": "53:895028",
+      "light": "cc4291d4:3fd690dc:6374",
+      "dark": "c23f336b:d13c4805:6051"
+    },
+    "probableCause": "Light alone retains the hidden Row/额度显示 -> Light/Display reaction. Light reaction layers/reactions/nodeActions total exceed Dark by exactly one; visible totals match; normalized reaction digest input lengths differ by 323. This supports but does not prove the single-row diagnosis.",
+    "requiredLiveRead": "Compare all normalized reactions in exact roots 53:893425 and 53:895028, identify the paired hidden row and ensure there are no other differences.",
+    "minimalRepair": "Clear the extra hidden Light row reaction if preflight confirms. Do not alter visible notification or iOS-settings return paths."
+  },
+  "widgetHomeReturn": {
+    "candidate": "design/figma-plugin/r4-widget-return-repair.js",
+    "light": {
+      "home": "46:142410",
+      "config": "46:142344"
+    },
+    "dark": {
+      "home": "46:152771",
+      "config": "46:152705"
+    },
+    "implementationCause": "r4-widgets.js initially links Home/Config/small/C back to Config. The same Home is reused as fallback base, and the later fallback loop overwrites its Action/back with Accounts/ABCD. This is a shared-screen provenance conflict.",
+    "candidateAssessment": "Candidate preflights both themes before writes, scopes exact Home/Config names and parent sections, checks Config completion targets Home, accepts only expected current NAVIGATE targets, mutates only two Navigation/Action/back nodes to BACK, and verifies other Home reactions stay unchanged. Appropriate minimal repair, pending actual prototype history behavior.",
+    "requiredClicks": [
+      "Config/small/C -> 完成 -> Home -> work widget detail OVERLAY -> CLOSE -> Home back should return same Config.",
+      "Widgets/Review -> 断开后的回退 -> shared Home -> back should return Widgets/Review.",
+      "shared Home -> App/订阅额度 -> Accounts/ABCD -> list back -> shared Home -> Home back should return preceding account list.",
+      "Direct Home deep-link retains existing Home indicator exit to review hub."
+    ],
+    "nativeClicksPerformedByThisDiagnosis": false
+  },
+  "compactNextAssessment": {
+    "file": "design/figma-plugin/r4-audit-compact-next.js",
+    "deltaScope": "Geometry bounding boxes are read only for relevant text/action nodes and clip ancestors; cached reactions replace repeated getters; clickable ancestor result is computed once per parent. Counts, issue semantics, scope, queues and finish comparison code are unchanged.",
+    "installRule": "Replace r4-audit-compact.js in the bundle; never load both modules (duplicate API declarations and shared state names).",
+    "auditRule": "Freeze design edits throughout start/batches/finish. Use bounded compact batches, never old full Audit. Retain exact counts and omissions.",
+    "limitation": "Directory checks detect changed root IDs/names/visibility, not in-place content changes during a batch series."
+  },
+  "repairAndValidationOrder": [
+    "Live preflight exact R4 source IDs and paired Settings-denied roots.",
+    "Apply localized reaction edits and shared Home BACK candidate only after both themes preflight.",
+    "Freeze design; run fresh bounded compact audit with replacement compact-next module.",
+    "Confirm zero active R4 hidden/legacy targets, no theme mismatch, no incomplete roots/legacy unscanned, queue empty; historical R2 cascade roots should no longer be enqueued.",
+    "Actually click revised headers/backup controls and all three shared-Home histories in both themes.",
+    "Record any retained legacy/source exceptions explicitly; do not treat absence from audit alone as click acceptance."
+  ],
+  "links": [
+    {
+      "rootId": "46:140983",
+      "root": "R4/Light/Widgets/Detail/B",
+      "nodeId": "46:147874",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+      "sourceVisible": true,
+      "destinationId": "14:42236",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+      "diagnosisId": "R4-RESUME-LINK-001",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "visible_widget_detail_expand",
+      "recommendedRepair": "Inspect current card and paired theme. Already-expanded full-screen detail hides Icon/down by authoring design; remove inherited old-R2 NAVIGATE from this header hotspot, retaining explicit Navigation/Action/back CLOSE. If current rendered header intentionally offers collapse, replace with CLOSE consistently in both themes. No target remap to another account."
+    },
+    {
+      "rootId": "46:140983",
+      "root": "R4/Light/Widgets/Detail/B",
+      "nodeId": "46:147882",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42237",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-002",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:141286",
+      "root": "R4/Light/Widgets/Detail/C",
+      "nodeId": "46:147966",
+      "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Expand account",
+      "sourceVisible": true,
+      "destinationId": "14:42236",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+      "diagnosisId": "R4-RESUME-LINK-003",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "visible_widget_detail_expand",
+      "recommendedRepair": "Inspect current card and paired theme. Already-expanded full-screen detail hides Icon/down by authoring design; remove inherited old-R2 NAVIGATE from this header hotspot, retaining explicit Navigation/Action/back CLOSE. If current rendered header intentionally offers collapse, replace with CLOSE consistently in both themes. No target remap to another account."
+    },
+    {
+      "rootId": "46:141286",
+      "root": "R4/Light/Widgets/Detail/C",
+      "nodeId": "46:147974",
+      "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42237",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-004",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:141589",
+      "root": "R4/Light/Widgets/Detail/D",
+      "nodeId": "46:148048",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+      "sourceVisible": true,
+      "destinationId": "14:42238",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+      "diagnosisId": "R4-RESUME-LINK-005",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "visible_widget_detail_expand",
+      "recommendedRepair": "Inspect current card and paired theme. Already-expanded full-screen detail hides Icon/down by authoring design; remove inherited old-R2 NAVIGATE from this header hotspot, retaining explicit Navigation/Action/back CLOSE. If current rendered header intentionally offers collapse, replace with CLOSE consistently in both themes. No target remap to another account."
+    },
+    {
+      "rootId": "46:141589",
+      "root": "R4/Light/Widgets/Detail/D",
+      "nodeId": "46:148056",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42239",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-006",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:144327",
+      "root": "R4/Light/Widgets/Accounts/ABCD",
+      "nodeId": "46:149137",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42237",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-007",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:144327",
+      "root": "R4/Light/Widgets/Accounts/ABCD",
+      "nodeId": "46:149303",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42239",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-008",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:144914",
+      "root": "R4/Light/Widgets/Accounts/ABD",
+      "nodeId": "46:149558",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42239",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-009",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:145413",
+      "root": "R4/Light/Widgets/Accounts/AD",
+      "nodeId": "46:149725",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42239",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-010",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:146479",
+      "root": "R4/Light/Widgets/Accounts/ABCDE",
+      "nodeId": "46:150169",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42237",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-011",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:146479",
+      "root": "R4/Light/Widgets/Accounts/ABCDE",
+      "nodeId": "46:150335",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42239",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-012",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:146479",
+      "root": "R4/Light/Widgets/Accounts/ABCDE",
+      "nodeId": "46:150405",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+      "sourceVisible": true,
+      "destinationId": "14:42236",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+      "diagnosisId": "R4-RESUME-LINK-013",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "visible_backup_expand",
+      "recommendedRepair": "Inspect current backup card. E has no separate detail target: authoring intentionally displays Account details inline and hides Icon/down. Clear inherited old-R2 NAVIGATE on Expand account; preserve inline backup identity, quota and time. Do not redirect backup to B or C."
+    },
+    {
+      "rootId": "46:146479",
+      "root": "R4/Light/Widgets/Accounts/ABCDE",
+      "nodeId": "46:150413",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42237",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-014",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:147154",
+      "root": "R4/Light/Widgets/Accounts/ABDE",
+      "nodeId": "46:150600",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42237",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-015",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:147154",
+      "root": "R4/Light/Widgets/Accounts/ABDE",
+      "nodeId": "46:150678",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42239",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-016",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:147154",
+      "root": "R4/Light/Widgets/Accounts/ABDE",
+      "nodeId": "46:150748",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+      "sourceVisible": true,
+      "destinationId": "14:42236",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+      "diagnosisId": "R4-RESUME-LINK-017",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "visible_backup_expand",
+      "recommendedRepair": "Inspect current backup card. E has no separate detail target: authoring intentionally displays Account details inline and hides Icon/down. Clear inherited old-R2 NAVIGATE on Expand account; preserve inline backup identity, quota and time. Do not redirect backup to B or C."
+    },
+    {
+      "rootId": "46:147154",
+      "root": "R4/Light/Widgets/Accounts/ABDE",
+      "nodeId": "46:150756",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42237",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-018",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "53:893425",
+      "root": "R4/Light/AccountSystem/Set-15/Settings-denied",
+      "nodeId": "53:893478",
+      "path": "$/Scroll viewport/Content/Group/通用/Row/额度显示",
+      "sourceVisible": false,
+      "destinationId": "1:2249",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "Light/Display",
+      "diagnosisId": "R4-RESUME-LINK-019",
+      "categories": [
+        "hiddenTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_display_preference",
+      "recommendedRepair": "Inspect paired roots 53:893425 and 53:895028; if dark same-path Row/额度显示 has no reactions and both rows are hidden, clear reactions only on light node 53:893478."
+    },
+    {
+      "rootId": "14:42236",
+      "root": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+      "nodeId": "14:43706",
+      "path": "$/Scroll viewport/Content/Refresh status/Action/refresh",
+      "sourceVisible": false,
+      "destinationId": "14:43839",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Dashboard|7|R|0|old|Codex||refresh|small",
+      "diagnosisId": "R4-RESUME-LINK-020",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42236",
+      "root": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+      "nodeId": "I14:43754;14:15212",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42237",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-021",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42236",
+      "root": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+      "nodeId": "I14:43800;14:15286",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+      "sourceVisible": false,
+      "destinationId": "14:42238",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+      "diagnosisId": "R4-RESUME-LINK-022",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42236",
+      "root": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+      "nodeId": "I14:43800;14:15298",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42239",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-023",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42238",
+      "root": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+      "nodeId": "14:43915",
+      "path": "$/Scroll viewport/Content/Refresh status/Action/refresh",
+      "sourceVisible": false,
+      "destinationId": "14:44048",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Dashboard|7|R|0|old|Cursor||refresh|small",
+      "diagnosisId": "R4-RESUME-LINK-024",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42238",
+      "root": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+      "nodeId": "I14:43963;14:15200",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+      "sourceVisible": false,
+      "destinationId": "14:42236",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+      "diagnosisId": "R4-RESUME-LINK-025",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42238",
+      "root": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+      "nodeId": "I14:43963;14:15212",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42237",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-026",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42238",
+      "root": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+      "nodeId": "I14:44007;14:15298",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42239",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Light|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-027",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "46:151344",
+      "root": "R4/Dark/Widgets/Detail/B",
+      "nodeId": "46:151601",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+      "sourceVisible": true,
+      "destinationId": "14:42698",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "diagnosisId": "R4-RESUME-LINK-028",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "visible_widget_detail_expand",
+      "recommendedRepair": "Inspect current card and paired theme. Already-expanded full-screen detail hides Icon/down by authoring design; remove inherited old-R2 NAVIGATE from this header hotspot, retaining explicit Navigation/Action/back CLOSE. If current rendered header intentionally offers collapse, replace with CLOSE consistently in both themes. No target remap to another account."
+    },
+    {
+      "rootId": "46:151344",
+      "root": "R4/Dark/Widgets/Detail/B",
+      "nodeId": "46:151609",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42699",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-029",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:151647",
+      "root": "R4/Dark/Widgets/Detail/C",
+      "nodeId": "46:151904",
+      "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Expand account",
+      "sourceVisible": true,
+      "destinationId": "14:42698",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "diagnosisId": "R4-RESUME-LINK-030",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "visible_widget_detail_expand",
+      "recommendedRepair": "Inspect current card and paired theme. Already-expanded full-screen detail hides Icon/down by authoring design; remove inherited old-R2 NAVIGATE from this header hotspot, retaining explicit Navigation/Action/back CLOSE. If current rendered header intentionally offers collapse, replace with CLOSE consistently in both themes. No target remap to another account."
+    },
+    {
+      "rootId": "46:151647",
+      "root": "R4/Dark/Widgets/Detail/C",
+      "nodeId": "46:151912",
+      "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42699",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-031",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:151950",
+      "root": "R4/Dark/Widgets/Detail/D",
+      "nodeId": "46:152197",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+      "sourceVisible": true,
+      "destinationId": "14:42700",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+      "diagnosisId": "R4-RESUME-LINK-032",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "visible_widget_detail_expand",
+      "recommendedRepair": "Inspect current card and paired theme. Already-expanded full-screen detail hides Icon/down by authoring design; remove inherited old-R2 NAVIGATE from this header hotspot, retaining explicit Navigation/Action/back CLOSE. If current rendered header intentionally offers collapse, replace with CLOSE consistently in both themes. No target remap to another account."
+    },
+    {
+      "rootId": "46:151950",
+      "root": "R4/Dark/Widgets/Detail/D",
+      "nodeId": "46:152205",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42701",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-033",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:154688",
+      "root": "R4/Dark/Widgets/Accounts/ABCD",
+      "nodeId": "46:155045",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42699",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-034",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:154688",
+      "root": "R4/Dark/Widgets/Accounts/ABCD",
+      "nodeId": "46:155211",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42701",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-035",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:155275",
+      "root": "R4/Dark/Widgets/Accounts/ABD",
+      "nodeId": "46:155710",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42701",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-036",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:155774",
+      "root": "R4/Dark/Widgets/Accounts/AD",
+      "nodeId": "46:156121",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42701",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-037",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:156840",
+      "root": "R4/Dark/Widgets/Accounts/ABCDE",
+      "nodeId": "46:157197",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42699",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-038",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:156840",
+      "root": "R4/Dark/Widgets/Accounts/ABCDE",
+      "nodeId": "46:157363",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42701",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-039",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:156840",
+      "root": "R4/Dark/Widgets/Accounts/ABCDE",
+      "nodeId": "46:157433",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+      "sourceVisible": true,
+      "destinationId": "14:42698",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "diagnosisId": "R4-RESUME-LINK-040",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "visible_backup_expand",
+      "recommendedRepair": "Inspect current backup card. E has no separate detail target: authoring intentionally displays Account details inline and hides Icon/down. Clear inherited old-R2 NAVIGATE on Expand account; preserve inline backup identity, quota and time. Do not redirect backup to B or C."
+    },
+    {
+      "rootId": "46:156840",
+      "root": "R4/Dark/Widgets/Accounts/ABCDE",
+      "nodeId": "46:157441",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42699",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-041",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:157515",
+      "root": "R4/Dark/Widgets/Accounts/ABDE",
+      "nodeId": "46:157872",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42699",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-042",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:157515",
+      "root": "R4/Dark/Widgets/Accounts/ABDE",
+      "nodeId": "46:157950",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42701",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-043",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "46:157515",
+      "root": "R4/Dark/Widgets/Accounts/ABDE",
+      "nodeId": "46:158020",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+      "sourceVisible": true,
+      "destinationId": "14:42698",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "diagnosisId": "R4-RESUME-LINK-044",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "visible_backup_expand",
+      "recommendedRepair": "Inspect current backup card. E has no separate detail target: authoring intentionally displays Account details inline and hides Icon/down. Clear inherited old-R2 NAVIGATE on Expand account; preserve inline backup identity, quota and time. Do not redirect backup to B or C."
+    },
+    {
+      "rootId": "46:157515",
+      "root": "R4/Dark/Widgets/Accounts/ABDE",
+      "nodeId": "46:158028",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42699",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-045",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "hidden_widget_more",
+      "recommendedRepair": "Preflight inherited source visibility=false and exact old-R2 destination, then clear reactions only on this hidden Action/more. Preserve node and visible card layout."
+    },
+    {
+      "rootId": "14:42698",
+      "root": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "nodeId": "14:46626",
+      "path": "$/Scroll viewport/Content/Refresh status/Action/refresh",
+      "sourceVisible": false,
+      "destinationId": "14:46759",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex||refresh|small",
+      "diagnosisId": "R4-RESUME-LINK-046",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42698",
+      "root": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "nodeId": "I14:46674;14:15766",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42699",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-047",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42698",
+      "root": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "nodeId": "I14:46720;14:15840",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+      "sourceVisible": false,
+      "destinationId": "14:42700",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+      "diagnosisId": "R4-RESUME-LINK-048",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42698",
+      "root": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "nodeId": "I14:46720;14:15852",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42701",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-049",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42700",
+      "root": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+      "nodeId": "14:46835",
+      "path": "$/Scroll viewport/Content/Refresh status/Action/refresh",
+      "sourceVisible": false,
+      "destinationId": "14:46968",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Dashboard|7|R|0|old|Cursor||refresh|small",
+      "diagnosisId": "R4-RESUME-LINK-050",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42700",
+      "root": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+      "nodeId": "I14:46883;14:15754",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+      "sourceVisible": false,
+      "destinationId": "14:42698",
+      "navigation": "NAVIGATE",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.28,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "SMART_ANIMATE"
+      },
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "diagnosisId": "R4-RESUME-LINK-051",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42700",
+      "root": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+      "nodeId": "I14:46883;14:15766",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42699",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "diagnosisId": "R4-RESUME-LINK-052",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    },
+    {
+      "rootId": "14:42700",
+      "root": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+      "nodeId": "I14:46927;14:15852",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "sourceVisible": false,
+      "destinationId": "14:42701",
+      "navigation": "OVERLAY",
+      "trigger": {
+        "type": "ON_CLICK"
+      },
+      "transition": {
+        "duration": 0.18,
+        "easing": {
+          "type": "EASE_OUT"
+        },
+        "type": "DISSOLVE"
+      },
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "diagnosisId": "R4-RESUME-LINK-053",
+      "categories": [
+        "hiddenTargets",
+        "legacyTargets"
+      ],
+      "targetVisible": false,
+      "targetVisibilityEvidence": "hiddenTargets audit category (inherited visible flags)",
+      "liveRevalidated": false,
+      "group": "legacy_cascade",
+      "recommendedRepair": "Do not mutate historical R2 source. Remove reachable R4 entry edges, then verify this root is no longer queued/reachable in a fresh frozen audit."
+    }
+  ],
+  "limitations": [
+    "Analysis used saved local files only; no current Figma node or UI was accessed.",
+    "sourceVisible is inherited visible flags from the saved audit. A zero-opacity hotspot may still count visible/clickable. Current on-screen affordances need live inspection.",
+    "Graph reachability is over possible visible NODE edges; runtime overlay/history behavior needs actual clicks.",
+    "No design, shared script or existing audit file was changed by this diagnosis."
+  ],
+  "liveInspectionRoots": [
+    {
+      "id": "46:140983",
+      "name": "R4/Light/Widgets/Detail/B"
+    },
+    {
+      "id": "46:141286",
+      "name": "R4/Light/Widgets/Detail/C"
+    },
+    {
+      "id": "46:141589",
+      "name": "R4/Light/Widgets/Detail/D"
+    },
+    {
+      "id": "46:144327",
+      "name": "R4/Light/Widgets/Accounts/ABCD"
+    },
+    {
+      "id": "46:144914",
+      "name": "R4/Light/Widgets/Accounts/ABD"
+    },
+    {
+      "id": "46:145413",
+      "name": "R4/Light/Widgets/Accounts/AD"
+    },
+    {
+      "id": "46:146479",
+      "name": "R4/Light/Widgets/Accounts/ABCDE"
+    },
+    {
+      "id": "46:147154",
+      "name": "R4/Light/Widgets/Accounts/ABDE"
+    },
+    {
+      "id": "53:893425",
+      "name": "R4/Light/AccountSystem/Set-15/Settings-denied"
+    },
+    {
+      "id": "46:151344",
+      "name": "R4/Dark/Widgets/Detail/B"
+    },
+    {
+      "id": "46:151647",
+      "name": "R4/Dark/Widgets/Detail/C"
+    },
+    {
+      "id": "46:151950",
+      "name": "R4/Dark/Widgets/Detail/D"
+    },
+    {
+      "id": "46:154688",
+      "name": "R4/Dark/Widgets/Accounts/ABCD"
+    },
+    {
+      "id": "46:155275",
+      "name": "R4/Dark/Widgets/Accounts/ABD"
+    },
+    {
+      "id": "46:155774",
+      "name": "R4/Dark/Widgets/Accounts/AD"
+    },
+    {
+      "id": "46:156840",
+      "name": "R4/Dark/Widgets/Accounts/ABCDE"
+    },
+    {
+      "id": "46:157515",
+      "name": "R4/Dark/Widgets/Accounts/ABDE"
+    },
+    {
+      "id": "53:895028",
+      "name": "R4/Dark/AccountSystem/Set-15/Settings-denied"
+    },
+    {
+      "id": "46:142410",
+      "name": "R4/Light/Widgets/Home/Config/small/C"
+    },
+    {
+      "id": "46:142344",
+      "name": "R4/Light/Widgets/Config/small/C"
+    },
+    {
+      "id": "46:152771",
+      "name": "R4/Dark/Widgets/Home/Config/small/C"
+    },
+    {
+      "id": "46:152705",
+      "name": "R4/Dark/Widgets/Config/small/C"
+    }
+  ],
+  "liveInspectionModule": "design/figma-plugin/r4-resume-target-inspect.js",
+  "liveInspectionFunction": "inspectR4ResumeTargets()"
+}

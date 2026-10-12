@@ -1,0 +1,1726 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-09",
+  "fileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+  "kind": "draft_acceptance_mapping_after_local_repair",
+  "status": "scoped_acceptance_complete_blocked_only_cloud_sync",
+  "overallAcceptancePassed": false,
+  "scope": "46项验收的可复用证据与剩余差异检查；仅本地只读资料梳理，不是Figma新审计或点击结果。",
+  "basis": {
+    "requirementsVersion": "0.6",
+    "historicalClickRange": "R4-CLICK-001..071",
+    "historicalObservationCount": 71,
+    "historicalPixelVerifiedObservationImages": 45,
+    "curatedNativeImages": 90,
+    "curatedNativeStaticReviewReports": 4,
+    "newMutationReceiptCount": 39,
+    "newNativeClickValidation": "required_representative_followups_completed",
+    "finalAuditRunId": "r4compact-1791522480002",
+    "finalAuditCompleted": true,
+    "actualObservationCount": 87,
+    "newRuntimeEntries": "R4-CLICK-072..087"
+  },
+  "repairInterpretation": {
+    "reactionNodesCleared": 37,
+    "alreadyExpandedVisibleHeaderHotspotsCleared": 10,
+    "hiddenObsoleteReactionsCleared": 27,
+    "homeArrowsChangedToBack": 2,
+    "createdNodes": 0,
+    "removedNodes": 0,
+    "unrelatedNodeSnapshotsVerified": 3034,
+    "meaning": "执行回执而非修复验收。10个可见header已呈现账户详情且无展开箭头，移除旧R2热区，不应另要求新建详情页。",
+    "settingsDenied": "Light多余隐藏偏好reaction已清；最终全量浅深归一化reaction对应，无需为该隐藏节点修改重复权限实际流程。",
+    "staticValidation": "最终分批审计候选清零，计数变化与39处reaction修复相符；尚非运行时通过。"
+  },
+  "evidenceLegend": {
+    "R3": "design/figma-r3-text-final-audit.json",
+    "NB": "design/figma-r4-static-network-background-review.json",
+    "W": "design/figma-r4-static-widgets-review.json",
+    "AS": "design/figma-r4-static-accounts-system.json",
+    "FQ": "design/figma-r4-static-overview-first-query-review.json",
+    "R39": "design/figma-r4-resume-local-repair.json",
+    "DIAG": "design/figma-r4-resume-audit-diagnosis.json",
+    "AF": "design/figma-r4-audit-after-final-fixes.json",
+    "FB": "design/figma-r4-final-backup-2026-10-09.json",
+    "FS": "design/figma-r4-final-sync-2026-10-09.json"
+  },
+  "globalFinalGates": [
+    "已完成：最终只读分批审计，对当前活动R4和可见R3根全量扫描；各14,483根/914,775节点，队列/未扫描/不完整为0，issues及issueCounts为空。",
+    "已完成：浅深14,483对根的归一化文字/反应/时序对应；hidden/legacy/themeMismatch候选清空。历史R2根是失去活动入边后不再被加入，并非删除文件内容。",
+    "已完成指定运行回归：072–081实际验证浅深Home三个来源历史及10个可见标题旧热区；003以真实点击闭环，不仅凭静态审计。",
+    "已完成运行补证：082–087记录Dark三类无结果失败退出、invalid重新检查再授权以及浅深首次失败面板直接Retry；短51数值未逐次捕获明确保留。",
+    "已完成：最终原生.fig保存、ZIP完整性及SHA校验，静态截图索引、画布／浅深入口与真实验收交接记录齐备；唯一受阻：固定云端版本完整读取两次因内存不足失败，整体云同步未确认。"
+  ],
+  "minimumAdditionalClickJudgement": {
+    "darkThreeNoResultCancels": {
+      "recommendation": "required_to_close_existing_per_item_evidence_gaps",
+      "why": "026明确保留缺少逐项取消终点/上下文的限制。N05/N06/N07是三种必要失败，而非任意账户排列；各从有来源的Network Review进结果再Cancel，成本小且能闭合三项。",
+      "minimalScope": "Dark超时、网站不可用、invalid各一次Cancel，核对当前失败理由不含分数并返回同一Review；Light012–014不重做。",
+      "notRequired": "不要求三平台×各账户集×各失败×浅深的笛卡尔积。",
+      "executionResult": "完成：082/083/084；取消后附件两张缺绘，行为由root明确实点报告，附件限制独立保留。"
+    },
+    "invalidRetry": {
+      "recommendation": "strongly_recommended_one_representative_not_both_theme_exhaustion",
+      "why": "已有Light50和Dark超时Retry说明总体机制；无有效评分是不同语义类别且独立生成按钮，71条无其Retry实证。建议与Dark invalid取消合并：再进invalid→Retry，观察重新检查及继续原动作。",
+      "sufficiencyCondition": "若最终原生读取证明两主题invalid/unavailable各Retry均进入51门、保留原source/operation/next且跨主题对应，则补一个invalid实际链足够作为代表；无需强制两主题每个失败都再Retry。",
+      "authorCodeOnlyIsNotEvidence": "r4-network-v2.js相同构造只能帮助定位，不能代替当前原生图读取。",
+      "executionResult": "完成Dark085代表：重试实见检查，自动到backup Codex登录并取消同源；不声称本次看清51数值。"
+    },
+    "firstQueryFailureButtonRetry": {
+      "recommendation": "required_targeted_click_both_themes_to_close_N12_T02_T09",
+      "why": "018/045经新卡菜单刷新，不是失败面板。Review/FirstQuery/Failed按钮是SWAP至pendingQuery；菜单入口为OVERLAY。覆盖层来源/自动跳转语义不同，不能只由目标相同推断运行结果。",
+      "minimalScope": "浅深各从Review→首次失败→直接Retry→重新检查→成功结果，核对new.codex54/91及旧卡/身份；无需重跑每平台所有首次失败。",
+      "executionResult": "完成：Dark086及Light087，直接失败面板Retry，非菜单刷新。"
+    },
+    "settingsDeniedVisiblePermissions": {
+      "recommendation": "not_required_again_static_normalized_reaction_audit_now_matches",
+      "why": "本次只清隐藏偏好行，现有允许/拒绝与系统返回已有双主题实点，3034无关节点快照保持；新审计比对足以证明此次差异已清。",
+      "auditEvidence": "design/figma-r4-audit-after-final-fixes.json"
+    },
+    "shortAnimationPhaseScreenshots": {
+      "recommendation": "not_required_for_every_phase",
+      "why": "90原生图覆盖静态检查A/B及51，已有多条实际自动继续；未保存每一帧不等于功能未验证。应保留限制，检查最新时序和任何新变化，而非重复全部网络路径。"
+    }
+  },
+  "minimalBatchOrderAfterAudit": [
+    "浅深各共享Home：Config来源完整退出、Hub来源返回、Accounts来源返回；合并work详情标题热区验证。",
+    "浅深B/C/D详情及backup已展开标题点按不跳旧R2，保持身份/额度，原关闭正常；Light多候选最后返回同时补041。",
+    "Dark三类无结果失败取消；其中invalid再进入一次Retry，验证51后原动作及退出。",
+    "浅深首次失败面板直接Retry；其他已验收路径仅出现新增修改/审计风险时回归。"
+  ],
+  "requirements": [
+    {
+      "id": "R4-S01",
+      "title": "设计范围",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [],
+      "staticEvidence": [
+        "R3",
+        "NB",
+        "W",
+        "AS",
+        "FQ",
+        "R39"
+      ],
+      "reusableConclusion": "唯一文件、浅深各44个R3评审画面及90张关键静态图；本次39处仅reaction修改，无新增/删除节点。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终分批审计完成：四区范围有效，浅深各44个R3可见评审根保留；当前无新增静态审计缺口。整体交付仍等实际修复回归与备份。"
+    },
+    {
+      "id": "R4-S02",
+      "title": "固定剩余与进度条/顶部布局",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [],
+      "staticEvidence": [
+        "R3",
+        "NB",
+        "W",
+        "FQ",
+        "R39"
+      ],
+      "reusableConclusion": "静态记录已检查固定剩余、左已用右剩余、顶部按钮横排；本次清理隐藏旧显示偏好反应。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终审计hidden/legacy目标及主题动作差异候选已清空；保留原生静态比例/布局证据，无需为本次reaction修复重跑。"
+    },
+    {
+      "id": "R4-S03",
+      "title": "多账户与TXT-01～06",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [],
+      "staticEvidence": [
+        "R3",
+        "NB",
+        "W",
+        "AS",
+        "FQ"
+      ],
+      "reusableConclusion": "R3指定文字零残留；90图可见账号身份、按钮与必要错误/示意标识已检查。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终审计在活动R4与可见R3范围无文字规则候选；90图及R3文字基线可复用。语义同义替换/遮挡仍以已查看截图为证，不能只由审计推断。"
+    },
+    {
+      "id": "R4-S04",
+      "title": "网络状态齐全",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-012",
+        "R4-CLICK-013",
+        "R4-CLICK-014",
+        "R4-CLICK-015",
+        "R4-CLICK-016",
+        "R4-CLICK-026",
+        "R4-CLICK-035",
+        "R4-CLICK-044",
+        "R4-CLICK-046",
+        "R4-CLICK-048",
+        "R4-CLICK-050"
+      ],
+      "staticEvidence": [
+        "NB",
+        "FQ"
+      ],
+      "reusableConclusion": "浅深49/50/51、三种无结果失败、授权失败与查询失败均有对应原生静态证据。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "90图静态状态内容与新审计可复用；Dark三类无结果失败退出等运行时补证按N05–07登记。"
+    },
+    {
+      "id": "R4-S05",
+      "title": "模拟与产品边界",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-049",
+        "R4-CLICK-052",
+        "R4-CLICK-053",
+        "R4-CLICK-065",
+        "R4-CLICK-066"
+      ],
+      "staticEvidence": [
+        "NB",
+        "W",
+        "AS",
+        "FQ"
+      ],
+      "reusableConclusion": "评审目录说明结果模拟，系统/登录标识保留；再次系统查询属于评审。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终审计未发现活动旧偏好/产品演示目标，原评审模拟标识证据保留；不需要增加产品绕过或小组件重试按钮。"
+    },
+    {
+      "id": "R4-S06",
+      "title": "布局完整与浅深对应",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-065",
+        "R4-CLICK-066"
+      ],
+      "staticEvidence": [
+        "NB",
+        "W",
+        "AS",
+        "FQ",
+        "R39"
+      ],
+      "reusableConclusion": "90图各自已像素查看，后台下部滚动缺口已065/066解决；39处修复未涉及布局文字。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终审计geometry/主题候选为空；90图及后台滚动证据可复用。本次只改reaction，仍建议交付少量修复后关键画面，不要求重导90图。"
+    },
+    {
+      "id": "R4-N01",
+      "title": "新增检查中",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-007",
+        "R4-CLICK-008",
+        "R4-CLICK-031",
+        "R4-CLICK-042",
+        "R4-CLICK-043",
+        "R4-CLICK-046",
+        "R4-CLICK-056"
+      ],
+      "staticEvidence": [
+        "NB",
+        "FQ"
+      ],
+      "reusableConclusion": "新增前检查及轻量状态已有浅深实际观察，检查失败不新增。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "新增检查过程中的Cancel未在71条中独立逐相位记录；可按静态检查及已有相同关闭机制限定结论，不扩为每个相位全测。"
+    },
+    {
+      "id": "R4-N02",
+      "title": "有效49阻止",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-016",
+        "R4-CLICK-023",
+        "R4-CLICK-026",
+        "R4-CLICK-046"
+      ],
+      "staticEvidence": [
+        "NB",
+        "FQ"
+      ],
+      "reusableConclusion": "浅深49阻止，显示条件；取消后四账号保持已记录。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终静态候选为空；49样例运行时结论按016/023/046范围保留，未测查询低分/账户排列不扩写。"
+    },
+    {
+      "id": "R4-N03",
+      "title": "有效50阻止",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-015",
+        "R4-CLICK-024"
+      ],
+      "staticEvidence": [
+        "NB"
+      ],
+      "reusableConclusion": "浅色50阻止并Retry；深色50修复后的Cancel同源返回已观察。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终静态候选为空且本次未改路径，可复用015/024；不把其他记录51数值伪写成024的新增观察。"
+    },
+    {
+      "id": "R4-N04",
+      "title": "51自动继续",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-004",
+        "R4-CLICK-008",
+        "R4-CLICK-026",
+        "R4-CLICK-042",
+        "R4-CLICK-052",
+        "R4-CLICK-053",
+        "R4-CLICK-056"
+      ],
+      "staticEvidence": [
+        "NB",
+        "AS",
+        "FQ"
+      ],
+      "reusableConclusion": "浅深通过后自动进入原授权/查询，检查通过与成功状态分离已有样例。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终审计浅深触发/动作/时序对应；既有自动继续实点可复用。部分短pass/query相位未逐帧截图，限制保留。"
+    },
+    {
+      "id": "R4-N05",
+      "title": "超时",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-012",
+        "R4-CLICK-026",
+        "R4-CLICK-019",
+        "R4-CLICK-047"
+      ],
+      "staticEvidence": [
+        "NB"
+      ],
+      "reusableConclusion": "Light明确无分数超时及Cancel；Dark有超时结果/Retry摘要及后台内联详细观察。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "Dark前台超时Cancel终点未明确记录，建议从Network Review补取消同源返回。",
+      "newRuntimeEvidence": [
+        "R4-CLICK-082"
+      ]
+    },
+    {
+      "id": "R4-N06",
+      "title": "网站不可用",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-013",
+        "R4-CLICK-026",
+        "R4-CLICK-049"
+      ],
+      "staticEvidence": [
+        "NB"
+      ],
+      "reusableConclusion": "Light无分数不可用/Cancel；Dark结果被点击但仅摘要；小组件不可用缓存已明确。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "Dark前台不可用Cancel终点未明确记录；Retry分支可按共同构造与最终实读核对，按代表策略补证。",
+      "newRuntimeEvidence": [
+        "R4-CLICK-083"
+      ]
+    },
+    {
+      "id": "R4-N07",
+      "title": "无有效评分",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-014",
+        "R4-CLICK-026"
+      ],
+      "staticEvidence": [
+        "NB"
+      ],
+      "reusableConclusion": "Light无有效评分且非0分，Cancel返回；Dark静态文案与历史结果摘要可复用。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "Dark前台invalid取消返回未记；至少一条invalid Retry实际观察有助闭合无结果恢复类别，其他主题依最终对照与已有retry样例限范围。",
+      "newRuntimeEvidence": [
+        "R4-CLICK-084",
+        "R4-CLICK-085"
+      ]
+    },
+    {
+      "id": "R4-N08",
+      "title": "失败重试至51",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-024",
+        "R4-CLICK-026",
+        "R4-CLICK-019",
+        "R4-CLICK-047",
+        "R4-CLICK-050",
+        "R4-CLICK-060",
+        "R4-CLICK-061",
+        "R4-CLICK-064"
+      ],
+      "staticEvidence": [
+        "NB"
+      ],
+      "reusableConclusion": "低分、超时、后台及查询失败的重试重新检查已有浅深代表行为。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "无效评分/不可用各自的Retry尚无明确点击；非必须穷举所有失败×账号×主题，但最终需静态读取这些按钮保留操作/源/51。",
+      "newRuntimeEvidence": [
+        "R4-CLICK-085"
+      ]
+    },
+    {
+      "id": "R4-N09",
+      "title": "取消关闭真正来源",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-007",
+        "R4-CLICK-010",
+        "R4-CLICK-012",
+        "R4-CLICK-013",
+        "R4-CLICK-014",
+        "R4-CLICK-015",
+        "R4-CLICK-016",
+        "R4-CLICK-031",
+        "R4-CLICK-034",
+        "R4-CLICK-038",
+        "R4-CLICK-043",
+        "R4-CLICK-044",
+        "R4-CLICK-046",
+        "R4-CLICK-050",
+        "R4-CLICK-060",
+        "R4-CLICK-061",
+        "R4-CLICK-064"
+      ],
+      "staticEvidence": [
+        "NB",
+        "W",
+        "AS",
+        "FQ",
+        "R39"
+      ],
+      "reusableConclusion": "多类来源的取消、关闭、旧值保持已有明确观察。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "newRuntimeEvidence": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-075",
+        "R4-CLICK-076",
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079",
+        "R4-CLICK-080",
+        "R4-CLICK-081",
+        "R4-CLICK-082",
+        "R4-CLICK-083",
+        "R4-CLICK-084"
+      ],
+      "runtimeFollowup": "072–087已关闭所列代表运行补证；不改写历史观察事实或扩展为全排列。",
+      "previousReviewNotes": "最终静态hidden/legacy失效候选已清；003的共享Home三种真实历史与标题旧热区需修复后实点，Dark三类无分数Cancel补证。"
+    },
+    {
+      "id": "R4-N10",
+      "title": "授权取消或失败",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-007",
+        "R4-CLICK-026",
+        "R4-CLICK-031",
+        "R4-CLICK-043",
+        "R4-CLICK-048"
+      ],
+      "staticEvidence": [
+        "NB",
+        "AS"
+      ],
+      "reusableConclusion": "Light/Dark授权取消、Cursor空态登录X、Dark授权失败均未新增账号并回来源。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "本次未改授权路径且最终静态候选为空，可复用；048未滚动核对D的限制仍保留，不升为完整五账号值核对。"
+    },
+    {
+      "id": "R4-N11",
+      "title": "查询失败保留数据时间",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-017",
+        "R4-CLICK-020",
+        "R4-CLICK-035",
+        "R4-CLICK-044",
+        "R4-CLICK-047",
+        "R4-CLICK-049",
+        "R4-CLICK-050",
+        "R4-CLICK-060",
+        "R4-CLICK-061",
+        "R4-CLICK-064"
+      ],
+      "staticEvidence": [
+        "NB",
+        "FQ"
+      ],
+      "reusableConclusion": "普通缓存70/85与09:41、特殊09:11/12:41、无缓存未知及小组件保留均有实证。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终静态候选为空且数据/失败路径未修改；旧数据与09:41/09:11/12:41保留实点复用。"
+    },
+    {
+      "id": "R4-N12",
+      "title": "查询失败直接重试",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-035",
+        "R4-CLICK-050",
+        "R4-CLICK-060",
+        "R4-CLICK-061",
+        "R4-CLICK-064",
+        "R4-CLICK-018",
+        "R4-CLICK-045"
+      ],
+      "staticEvidence": [
+        "NB",
+        "FQ"
+      ],
+      "reusableConclusion": "普通可信缓存失败面板Retry重新检查已测；首次无缓存失败后菜单刷新已有观察。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "首次失败面板Retry是SWAP入口，018/045菜单刷新不能证明该按钮与覆盖层栈；建议浅深各直接点一次。",
+      "newRuntimeEvidence": [
+        "R4-CLICK-086",
+        "R4-CLICK-087"
+      ]
+    },
+    {
+      "id": "R4-T01",
+      "title": "三平台新增",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-007",
+        "R4-CLICK-008",
+        "R4-CLICK-031",
+        "R4-CLICK-032",
+        "R4-CLICK-042",
+        "R4-CLICK-043",
+        "R4-CLICK-056",
+        "R4-CLICK-059"
+      ],
+      "staticEvidence": [
+        "AS",
+        "FQ"
+      ],
+      "reusableConclusion": "Codex主链浅深、Claude后续新增、Cursor空来源检查退出及Light后续成功覆盖三平台代表。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "已建有限模型的根与反应已全部扫描、浅深对应无候选；不能将此当每个新增门语义和三平台首个/后续×全部组合都已实点。代表范围保持。"
+    },
+    {
+      "id": "R4-T02",
+      "title": "首次查询再检查",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-008",
+        "R4-CLICK-044",
+        "R4-CLICK-045",
+        "R4-CLICK-056"
+      ],
+      "staticEvidence": [
+        "FQ"
+      ],
+      "reusableConclusion": "浅深首次查询与未知数据保留已有代表实点，Light曾实际看到51。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "首次失败面板Retry的直接入链新测归N12。",
+      "newRuntimeEvidence": [
+        "R4-CLICK-086",
+        "R4-CLICK-087"
+      ]
+    },
+    {
+      "id": "R4-T03",
+      "title": "全部刷新",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-004",
+        "R4-CLICK-028",
+        "R4-CLICK-060",
+        "R4-CLICK-061",
+        "R4-CLICK-064"
+      ],
+      "staticEvidence": [
+        "AS",
+        "NB"
+      ],
+      "reusableConclusion": "浅深范围全部已绑定账号与对应来源返回；失败旧值时间保持有实证。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终图审计完成且本次未改刷新路径；作用范围的真实证据仍引用004/028/060/061/064，不重复。"
+    },
+    {
+      "id": "R4-T04",
+      "title": "单账户刷新",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-005",
+        "R4-CLICK-029",
+        "R4-CLICK-050"
+      ],
+      "staticEvidence": [
+        "AS",
+        "NB"
+      ],
+      "reusableConclusion": "work单账号检查和同源返回已有浅深样例，Light可信数据明确。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终图审计完成；既有work代表实点复用，不扩大任意卡片/排列的实际验证。"
+    },
+    {
+      "id": "R4-T05",
+      "title": "进入App自动更新",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-019",
+        "R4-CLICK-047",
+        "R4-CLICK-052",
+        "R4-CLICK-053",
+        "R4-CLICK-065",
+        "R4-CLICK-066"
+      ],
+      "staticEvidence": [
+        "NB"
+      ],
+      "reusableConclusion": "浅深内联检查/失败/Retry及自动成功09:45；Dark独立查询中仍09:41；无强制弹窗。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "已有滚动下部证据复用；不声称所有卡片控件逐个点击。"
+    },
+    {
+      "id": "R4-T06",
+      "title": "重连后查询",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-006",
+        "R4-CLICK-030"
+      ],
+      "staticEvidence": [
+        "AS"
+      ],
+      "reusableConclusion": "浅深work重连身份和查询前检查实际观察。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终静态图对应完成；只引用浅深work代表重连身份/检查，不穷举任意账户组合。"
+    },
+    {
+      "id": "R4-T07",
+      "title": "通知查询与失效目标",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-022",
+        "R4-CLICK-034",
+        "R4-CLICK-039",
+        "R4-CLICK-069"
+      ],
+      "staticEvidence": [
+        "AS",
+        "NB"
+      ],
+      "reusableConclusion": "浅深通知检查对应Claude后正确详情；已移除目标正式Review Close回源。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终静态对应完成；Dark检查相位未保存截图与原孤立根CLOSE不计验收的限制保留。"
+    },
+    {
+      "id": "R4-T08",
+      "title": "小组件实际联网",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-020",
+        "R4-CLICK-021",
+        "R4-CLICK-049"
+      ],
+      "staticEvidence": [
+        "NB"
+      ],
+      "reusableConclusion": "浅深失败缓存时间保留、系统再次查询评审入口更新09:45；Light组件内检查明确。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终静态对应完成；Dark短检查相位未单独截获的限制保留，不创建产品内重试。"
+    },
+    {
+      "id": "R4-T09",
+      "title": "任一失败后重试",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-019",
+        "R4-CLICK-024",
+        "R4-CLICK-026",
+        "R4-CLICK-035",
+        "R4-CLICK-047",
+        "R4-CLICK-050",
+        "R4-CLICK-060",
+        "R4-CLICK-061",
+        "R4-CLICK-064"
+      ],
+      "staticEvidence": [
+        "NB",
+        "FQ"
+      ],
+      "reusableConclusion": "前台/后台/查询失败的Retry重新检查具备浅深代表。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "补直接首次失败面板Retry；建议一条invalid Retry；最终静态列出各独立门而非以作者代码当运行结果。",
+      "newRuntimeEvidence": [
+        "R4-CLICK-085",
+        "R4-CLICK-086",
+        "R4-CLICK-087"
+      ]
+    },
+    {
+      "id": "R4-T10",
+      "title": "缓存展开倒计时不检查",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-002",
+        "R4-CLICK-003",
+        "R4-CLICK-020",
+        "R4-CLICK-036",
+        "R4-CLICK-037",
+        "R4-CLICK-050",
+        "R4-CLICK-054",
+        "R4-CLICK-055",
+        "R4-CLICK-057",
+        "R4-CLICK-058"
+      ],
+      "staticEvidence": [
+        "W",
+        "NB"
+      ],
+      "reusableConclusion": "展开缓存/旧缓存目标实点未额外查询，原值与成功时间保留。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "newRuntimeEvidence": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-075",
+        "R4-CLICK-076",
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079",
+        "R4-CLICK-080",
+        "R4-CLICK-081"
+      ],
+      "runtimeFollowup": "072–087已关闭所列代表运行补证；不改写历史观察事实或扩展为全排列。",
+      "previousReviewNotes": "新审计无旧热区残留；需实际点清除后的标题保持当前身份/额度且不额外检查，并确认原关闭可用。倒计时不扩写为真实时间运行验证。"
+    },
+    {
+      "id": "R4-I01",
+      "title": "同平台添加退出成功",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-007",
+        "R4-CLICK-008",
+        "R4-CLICK-009",
+        "R4-CLICK-031",
+        "R4-CLICK-032",
+        "R4-CLICK-042",
+        "R4-CLICK-043",
+        "R4-CLICK-048",
+        "R4-CLICK-056",
+        "R4-CLICK-059"
+      ],
+      "staticEvidence": [
+        "AS",
+        "FQ"
+      ],
+      "reusableConclusion": "三平台代表添加、取消、授权失败与独立身份；指定浅深通知On跨新增故事闭环。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "有限模型边界保留，不扩任意组合；直接首次失败Retry另补。"
+    },
+    {
+      "id": "R4-I02",
+      "title": "具体账户展开菜单刷新重连",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-005",
+        "R4-CLICK-006",
+        "R4-CLICK-029",
+        "R4-CLICK-030",
+        "R4-CLICK-050",
+        "R4-CLICK-060",
+        "R4-CLICK-061",
+        "R4-CLICK-064"
+      ],
+      "staticEvidence": [
+        "AS",
+        "R39"
+      ],
+      "reusableConclusion": "具体work操作和来源已测；本轮清理了小组件详情/backup的旧R2热点。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "newRuntimeEvidence": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-075",
+        "R4-CLICK-076",
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079",
+        "R4-CLICK-080",
+        "R4-CLICK-081"
+      ],
+      "runtimeFollowup": "072–087已关闭所列代表运行补证；不改写历史观察事实或扩展为全排列。",
+      "previousReviewNotes": "新审计清除活动R4的隐藏旧目标；浅深Detail B/C/D及backup标题需新实际点击，确认留在已展开内容且可按原Close/Back退出。"
+    },
+    {
+      "id": "R4-I03",
+      "title": "断开取消确认",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-009",
+        "R4-CLICK-033",
+        "R4-CLICK-037",
+        "R4-CLICK-041",
+        "R4-CLICK-054",
+        "R4-CLICK-055"
+      ],
+      "staticEvidence": [
+        "AS",
+        "W"
+      ],
+      "reusableConclusion": "只断开指定账号、Cancel保留、新旧组件回退代表已测。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "本轮未改确认链；共享Home出口与多候选最后返回可与新测合并，不重做整个断开矩阵。"
+    },
+    {
+      "id": "R4-I04",
+      "title": "权限允许返回",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-027",
+        "R4-CLICK-056",
+        "R4-CLICK-059",
+        "R4-CLICK-067"
+      ],
+      "staticEvidence": [
+        "AS"
+      ],
+      "reusableConclusion": "浅深Allow、Off→On及指定新增后保持已记录。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "新审计主题动作已一致；本次只清隐藏旧偏好reaction且无关节点快照保持，原允许/Off→On与跨新增On实点可复用，无须重跑。"
+    },
+    {
+      "id": "R4-I05",
+      "title": "拒绝系统设置返回",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-010",
+        "R4-CLICK-068"
+      ],
+      "staticEvidence": [
+        "AS",
+        "R39"
+      ],
+      "reusableConclusion": "浅深拒绝→系统Off→On→Back返回On已实测。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "新审计themeReactionMismatch已清且全量反应对应；Settings-denied隐藏旧行清理无需新增可见通知权限实点，可复用010/068。"
+    },
+    {
+      "id": "R4-I06",
+      "title": "教程来源与退出",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-011",
+        "R4-CLICK-038",
+        "R4-CLICK-043",
+        "R4-CLICK-062",
+        "R4-CLICK-063"
+      ],
+      "staticEvidence": [
+        "AS"
+      ],
+      "reusableConclusion": "首页浅深X/Next/Done正确，设置与空态来源已有实际样例。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终静态对应无候选，未变化教程可复用既有各来源代表；不声称每个可能来源都已运行。"
+    },
+    {
+      "id": "R4-I07",
+      "title": "小组件配置与点击",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-025",
+        "R4-CLICK-036",
+        "R4-CLICK-054",
+        "R4-CLICK-055",
+        "R4-CLICK-070",
+        "R4-CLICK-071"
+      ],
+      "staticEvidence": [
+        "W",
+        "R39"
+      ],
+      "reusableConclusion": "中号浅深完整返回、各组件正确身份有实证；小号070确认错误。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "newRuntimeEvidence": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-075",
+        "R4-CLICK-076",
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079",
+        "R4-CLICK-080",
+        "R4-CLICK-081"
+      ],
+      "runtimeFollowup": "072–087已关闭所列代表运行补证；不改写历史观察事实或扩展为全排列。",
+      "previousReviewNotes": "003浅深Config→Done→work详情CLOSE→Home BACK→原Config→Gallery→Hub须补；修复清热区不得影响缓存详情/返回。"
+    },
+    {
+      "id": "R4-I08",
+      "title": "全部分支可退出无旧目标",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-034",
+        "R4-CLICK-038",
+        "R4-CLICK-043",
+        "R4-CLICK-050",
+        "R4-CLICK-051",
+        "R4-CLICK-060",
+        "R4-CLICK-061",
+        "R4-CLICK-062",
+        "R4-CLICK-063",
+        "R4-CLICK-065",
+        "R4-CLICK-066",
+        "R4-CLICK-070",
+        "R4-CLICK-071"
+      ],
+      "staticEvidence": [
+        "R39",
+        "DIAG"
+      ],
+      "reusableConclusion": "大量代表退出可复用；本次39处反应修复只有执行回执，不是验收通过。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "newRuntimeEvidence": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-075",
+        "R4-CLICK-076",
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079",
+        "R4-CLICK-080",
+        "R4-CLICK-081"
+      ],
+      "runtimeFollowup": "072–087已关闭所列代表运行补证；不改写历史观察事实或扩展为全排列。",
+      "previousReviewNotes": "冻结后完整新审计已完成，当前活动范围无候选；Home三来源/可见标题热区实点仍待。旧R2因失去活动入边不再扫描，不代表删除旧节点。"
+    },
+    {
+      "id": "R4-W01",
+      "title": "同平台优先",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-001",
+        "R4-CLICK-002",
+        "R4-CLICK-037"
+      ],
+      "staticEvidence": [
+        "W"
+      ],
+      "reusableConclusion": "C work断开选B personal；即使A Claude在更前仍先同平台，身份额度和目标对应。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "newRuntimeEvidence": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-075",
+        "R4-CLICK-076",
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079",
+        "R4-CLICK-080",
+        "R4-CLICK-081"
+      ],
+      "runtimeFollowup": "072–087已关闭所列代表运行补证；不改写历史观察事实或扩展为全排列。",
+      "previousReviewNotes": "B详情旧标题热点本轮已清；与修复热点回归合并，不重复断开全链。"
+    },
+    {
+      "id": "R4-W02",
+      "title": "同平台多候选列表序",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-003",
+        "R4-CLICK-041"
+      ],
+      "staticEvidence": [
+        "W",
+        "R39"
+      ],
+      "reusableConclusion": "当前顺序A/B/C/D/E，断C选B而非E；D不变，浅深已有。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "newRuntimeEvidence": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-075",
+        "R4-CLICK-076",
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079",
+        "R4-CLICK-080",
+        "R4-CLICK-081"
+      ],
+      "runtimeFollowup": "072–087已关闭所列代表运行补证；不改写历史观察事实或扩展为全排列。",
+      "previousReviewNotes": "Light041最后Back未确认；与backup标题清理回归合并确认最终Home。"
+    },
+    {
+      "id": "R4-W03",
+      "title": "跨平台取列表首个",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-001",
+        "R4-CLICK-002",
+        "R4-CLICK-037",
+        "R4-CLICK-055"
+      ],
+      "staticEvidence": [
+        "W"
+      ],
+      "reusableConclusion": "B再断后选列表首A，再断A选D；Dark跨平台未知A也已实测。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "新审计完成且未改回退选择策略；既有跨平台代表复用，Home出口另按003验证。"
+    },
+    {
+      "id": "R4-W04",
+      "title": "全空与连接引导",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-001",
+        "R4-CLICK-037",
+        "R4-CLICK-038",
+        "R4-CLICK-040",
+        "R4-CLICK-043"
+      ],
+      "staticEvidence": [
+        "W"
+      ],
+      "reusableConclusion": "浅深全空、无旧hint、Guide选择器/教程及返回均有明确记录。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "新审计完成且未改空态/Guide内容；原浅深实际点击与像素证据复用。"
+    },
+    {
+      "id": "R4-W05",
+      "title": "未受影响组件保持",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-001",
+        "R4-CLICK-003",
+        "R4-CLICK-037",
+        "R4-CLICK-041",
+        "R4-CLICK-054",
+        "R4-CLICK-055"
+      ],
+      "staticEvidence": [
+        "W"
+      ],
+      "reusableConclusion": "D Cursor在C/B/A移除期间保持62%与自身身份，直到自身被移除。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "新审计完成且未改选择或数据；原D保持代表证据复用。"
+    },
+    {
+      "id": "R4-W06",
+      "title": "未知候选与旧缓存点击",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-054",
+        "R4-CLICK-055",
+        "R4-CLICK-057",
+        "R4-CLICK-058"
+      ],
+      "staticEvidence": [
+        "W"
+      ],
+      "reusableConclusion": "同平台/跨平台未知显示未获取且不挪用C额度；旧work图点击进当前绑定，不复活删除数据。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "新审计完成；未知候选/旧缓存各自双主题代表已足够，不穷举所有排列。"
+    },
+    {
+      "id": "R4-A01",
+      "title": "轻量检查与自动继续",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-004",
+        "R4-CLICK-008",
+        "R4-CLICK-019",
+        "R4-CLICK-024",
+        "R4-CLICK-026",
+        "R4-CLICK-039",
+        "R4-CLICK-042",
+        "R4-CLICK-047",
+        "R4-CLICK-049",
+        "R4-CLICK-052",
+        "R4-CLICK-053",
+        "R4-CLICK-056",
+        "R4-CLICK-069"
+      ],
+      "staticEvidence": [
+        "NB",
+        "FQ"
+      ],
+      "reusableConclusion": "检查/查询/成功的轻量反馈和自动继续已有运行时代表，静态A/B圆点差异已核对。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "previousReviewNotes": "最终审计浅深时序/动作对应且没有无出口候选；既有运行时轻量反馈/自动继续复用，不将保守图分析当无限循环的运行时证明。",
+      "newRuntimeEvidence": [
+        "R4-CLICK-085",
+        "R4-CLICK-086",
+        "R4-CLICK-087"
+      ]
+    },
+    {
+      "id": "R4-A02",
+      "title": "克制过渡与浅深一致",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-011",
+        "R4-CLICK-036",
+        "R4-CLICK-062",
+        "R4-CLICK-063",
+        "R4-CLICK-071"
+      ],
+      "staticEvidence": [
+        "NB",
+        "AS",
+        "DIAG",
+        "R39"
+      ],
+      "reusableConclusion": "教程与配置过渡/返回已有浅深样例，静态文字无需动画也可理解。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "newRuntimeEvidence": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-075",
+        "R4-CLICK-076",
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079",
+        "R4-CLICK-080",
+        "R4-CLICK-081"
+      ],
+      "runtimeFollowup": "072–087已关闭所列代表运行补证；不改写历史观察事实或扩展为全排列。",
+      "previousReviewNotes": "最终审计themeReactionMismatch为空、浅深时长/动作对应。003 BACK真实历史仍待新点击；真实iOS减少动态效果不属于本轮实现。"
+    },
+    {
+      "id": "R4-A03",
+      "title": "静态后真实点击",
+      "status": "verified_within_declared_static_and_representative_runtime_scope",
+      "clickEvidence": [
+        "R4-CLICK-001",
+        "R4-CLICK-003",
+        "R4-CLICK-004",
+        "R4-CLICK-008",
+        "R4-CLICK-014",
+        "R4-CLICK-015",
+        "R4-CLICK-024",
+        "R4-CLICK-026",
+        "R4-CLICK-036",
+        "R4-CLICK-039",
+        "R4-CLICK-044",
+        "R4-CLICK-047",
+        "R4-CLICK-050",
+        "R4-CLICK-054",
+        "R4-CLICK-055",
+        "R4-CLICK-056",
+        "R4-CLICK-057",
+        "R4-CLICK-058",
+        "R4-CLICK-059",
+        "R4-CLICK-060",
+        "R4-CLICK-061",
+        "R4-CLICK-063",
+        "R4-CLICK-064",
+        "R4-CLICK-065",
+        "R4-CLICK-066",
+        "R4-CLICK-067",
+        "R4-CLICK-068",
+        "R4-CLICK-069",
+        "R4-CLICK-070",
+        "R4-CLICK-071"
+      ],
+      "staticEvidence": [
+        "NB",
+        "W",
+        "AS",
+        "FQ",
+        "R39"
+      ],
+      "reusableConclusion": "71条及90图各自证据范围清楚；003真实失败不可被修复回执替代。",
+      "remainingForFinal": "无本轮必需运行补证；既有证据及实际新增样例按记录范围复用，保留未穷举组合和短相位限制。",
+      "newClickNeed": "none_required_for_current_representative_scope",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "newRuntimeEvidence": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-075",
+        "R4-CLICK-076",
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079",
+        "R4-CLICK-080",
+        "R4-CLICK-081",
+        "R4-CLICK-082",
+        "R4-CLICK-083",
+        "R4-CLICK-084",
+        "R4-CLICK-085",
+        "R4-CLICK-086",
+        "R4-CLICK-087"
+      ],
+      "runtimeFollowup": "072–087已关闭所列代表运行补证；不改写历史观察事实或扩展为全排列。",
+      "previousReviewNotes": "最终静态分批审计已完成且无候选；需要之后追加修复后的实际观察，不能由39处写入/新审计关闭003。"
+    },
+    {
+      "id": "R4-A04",
+      "title": "原生备份与交付",
+      "status": "partial",
+      "clickEvidence": [
+        "R4-CLICK-065",
+        "R4-CLICK-066"
+      ],
+      "staticEvidence": [
+        "R39",
+        "FB",
+        "FS"
+      ],
+      "reusableConclusion": "最终本地原生.fig已保存并通过ZIP及SHA校验；canvas.fig与审计后检查点相同。交接、状态、进度、静态证据及入口已登记。命名版本保存成功，但独立Chrome及原生Figma固定版本读取均内存不足，不能证明全文件云端同步。",
+      "remainingForFinal": "整体云端持久化／全量同步核验：独立 Chrome 与原生 Figma 加载固定版本均因内存不足中断，尚无完整读取证据。",
+      "newClickNeed": "不需要重做设计点击或截图；唯一待核验为固定云端版本完整读取及全文件持久化，不能从入口或过渡画布推断。",
+      "finalStaticAudit": {
+        "evidence": "AF",
+        "result": "complete_no_candidates_within_declared_scope",
+        "notRuntimeProof": true
+      },
+      "completionScope": "blocked_only_cloud_sync",
+      "deliveryEvidence": {
+        "status": "partial",
+        "completionScope": "blocked_only_cloud_sync",
+        "overallAcceptancePassed": false,
+        "finalNativeBackup": {
+          "manifest": "design/figma-r4-final-backup-2026-10-09.json",
+          "status": "verified",
+          "path": "design/订阅额度 iPhone 原型-R4-最终验收-2026-10-09.fig",
+          "bytes": 10245818,
+          "sha256": "c259e30b5560459cbc9a2b1c9c2247a4cb3a81afb035b9a2eabd873179913b56",
+          "archiveIntegrity": "passed",
+          "matchesPostAuditCheckpointCanvas": true
+        },
+        "cloudSynchronization": {
+          "report": "design/figma-r4-final-sync-2026-10-09.json",
+          "namedVersionId": "2408215105198163984",
+          "namedVersionUrl": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR?version-id=2408215105198163984&node-id=0-1",
+          "saveOperationSucceeded": true,
+          "completeVersionReadVerified": false,
+          "overallCloudSynchronizationVerified": false,
+          "blocker": "independent_chrome_and_native_fixed_version_loads_out_of_memory",
+          "transitionalCanvasNotProof": true
+        },
+        "documentationAndLinks": {
+          "status": "recorded",
+          "handoff": "app/docs/figma-handoff-2026-10-09.md",
+          "state": "design/figma-state.json",
+          "progress": "design/figma-r4-live-progress.json",
+          "scope": "最终备份、真实验收结果、静态截图索引、画布与浅深原型链接已登记；状态与交接同步反映云端全量核验受阻。"
+        },
+        "remaining": [
+          "整体云端持久化／全量同步核验：独立 Chrome 与原生 Figma 加载固定版本均因内存不足中断，尚无完整读取证据。"
+        ],
+        "evidenceBoundary": "最终本地备份与审计后检查点的canvas.fig相同；不声称固定云端版本已完整加载、已导出或与本地字节相等。原型入口及关键修复可见不等于全量云同步。"
+      }
+    }
+  ],
+  "sourceHashes": {
+    "app/docs/requirements.md": "0a7d9d6aba62715fa2fb4904a1cdbb79bced330b043b4087fc1b8f1e61d4e659",
+    "app/docs/acceptance-r4.md": "828ffffdefefdbe9211d297c3d5cbd2b7621dd85792bdd22db82d86b54b608d7",
+    "design/figma-r4-click-log.json": "c4366174fdd20fb7ca35a2e14c8f58b79bf7750d3f425add0eede59ff72daad6",
+    "design/figma-r3-text-final-audit.json": "89ff20ee30742be3833f142d6aa3799c935b1d9ccb8d7dffb2b30ba1854146a8",
+    "design/figma-r4-static-network-background-review.json": "45a1ab91fdd1f54b6b240cc436484d3f4d90b97ee116b9e4c284313a17f04e41",
+    "design/figma-r4-static-widgets-review.json": "03126c11131d767f42e0424fe6bbc152e006e2fa5d52330e04fa18019e2b8fe6",
+    "design/figma-r4-static-accounts-system.json": "53ac903c93d29503315e3265a5c03249034aa24e6f2cb950e698542bfbbc7cfe",
+    "design/figma-r4-static-overview-first-query-review.json": "c6712f46bcbe5629807d84c90bad6a8d6508da465b1eb459eebc36d88c76a7ff",
+    "design/figma-r4-resume-local-repair.json": "6446e953ff9bada3ea27f3dc3460acb1594b5e6b4a4b9a771d35d7b0a21b84da",
+    "design/figma-r4-resume-audit-diagnosis.json": "b9525646e78bdf5f499c1d774abd994fd258c195436b08c8eb5093efa2e1b3dc",
+    "design/figma-r4-audit-after-final-fixes.json": "edb7510f15196ce2b9cf101f0981563e68102214fb0a35449e53e15ab2a72620",
+    "design/figma-r4-final-backup-2026-10-09.json": "9769787a6841f1c47af636e69e3005fc5b409a7726c37ee5ca8237cf06428f60",
+    "design/figma-r4-final-sync-2026-10-09.json": "0a7754ab97a5b3542630a6a928f30c6e230ddc7e570f79060e6da1da3099c513"
+  },
+  "unmodifiedFiles": [
+    "app/docs/acceptance-r4.md",
+    "app/docs/requirements.md",
+    "design/figma-r4-click-log.json",
+    "design/figma-state.json",
+    "app/docs/figma-handoff-2026-10-09.md"
+  ],
+  "nextStep": "仅在Figma可完整读取固定版本2408215105198163984时核验全文件云端持久化。保留现有最终本地备份及所有验收证据，无需重跑已完成生成、静态审计、代表点击或截图。",
+  "revision": 4,
+  "independentFinalAuditVerification": {
+    "method": "本代理读取最终审计、修复前审计、39处修复回执及四份原生像素报告，并以结构/计数/集合断言交叉核对；未调用Figma或执行新点击。",
+    "result": "passed_internal_consistency_and_static_completion_checks",
+    "audit": "design/figma-r4-audit-after-final-fixes.json",
+    "sha256": "edb7510f15196ce2b9cf101f0981563e68102214fb0a35449e53e15ab2a72620",
+    "runId": "r4compact-1791522480002",
+    "reportedWindowUTC": {
+      "started": "2026-10-09T05:08:00.002Z",
+      "finished": "2026-10-09T05:20:54.055Z"
+    },
+    "perTheme": {
+      "Light": {
+        "roots": 14483,
+        "primaryRoots": 14483,
+        "legacyRoots": 0,
+        "visibleRoots": 14483,
+        "nodes": 914775,
+        "visibleNodes": 726851,
+        "texts": 204115,
+        "visibleTexts": 151705,
+        "reactionLayers": 88758,
+        "visibleReactionLayers": 88690,
+        "reactions": 88758,
+        "nodeActions": 58621,
+        "visibleNodeActions": 58553,
+        "closeBackActions": 30137
+      },
+      "Dark": {
+        "roots": 14483,
+        "primaryRoots": 14483,
+        "legacyRoots": 0,
+        "visibleRoots": 14483,
+        "nodes": 914775,
+        "visibleNodes": 726851,
+        "texts": 204115,
+        "visibleTexts": 151705,
+        "reactionLayers": 88758,
+        "visibleReactionLayers": 88690,
+        "reactions": 88758,
+        "nodeActions": 58621,
+        "visibleNodeActions": 58553,
+        "closeBackActions": 30137
+      }
+    },
+    "queues": {
+      "Light": {
+        "processed": 14483,
+        "queued": 14483,
+        "remaining": 0
+      },
+      "Dark": {
+        "processed": 14483,
+        "queued": 14483,
+        "remaining": 0
+      }
+    },
+    "pairedRoots": 14483,
+    "issueCounts": {},
+    "issues": {},
+    "incompleteRoots": 0,
+    "legacyUnscanned": 0,
+    "reviewVisibleFrames": {
+      "Light": 44,
+      "Dark": 44
+    },
+    "countsDeltaFromBefore": {
+      "Light": {
+        "roots": -2,
+        "primaryRoots": 0,
+        "legacyRoots": -2,
+        "visibleRoots": 0,
+        "nodes": -332,
+        "visibleNodes": 0,
+        "texts": -78,
+        "visibleTexts": 0,
+        "reactionLayers": -39,
+        "visibleReactionLayers": -5,
+        "reactions": -39,
+        "nodeActions": -40,
+        "visibleNodeActions": -6,
+        "closeBackActions": 1
+      },
+      "Dark": {
+        "roots": -2,
+        "primaryRoots": 0,
+        "legacyRoots": -2,
+        "visibleRoots": 0,
+        "nodes": -332,
+        "visibleNodes": 0,
+        "texts": -78,
+        "visibleTexts": 0,
+        "reactionLayers": -38,
+        "visibleReactionLayers": -5,
+        "reactions": -38,
+        "nodeActions": -39,
+        "visibleNodeActions": -6,
+        "closeBackActions": 1
+      }
+    },
+    "deltaInterpretation": [
+      "每主题visibleReactionLayers减少5，对应5个可见已展开标题旧热区移除；visibleNodeActions减少6，另含1个Home NODE变BACK；closeBackActions各增1。",
+      "Light比Dark多清1个隐藏偏好reaction；最终两主题完整计数完全一致。",
+      "每主题root减少2、node减少332、texts减少78；visible roots/nodes/texts均未减少。与2个旧隐藏R2根不再被活动图引用一致，不表示删设计。",
+      "39个mutatedNodeIds互不重复；37个清reaction加2个Home BACK，无新增/删除节点；3034无关节点快照由执行回执记录保持。"
+    ],
+    "legacyCandidatesResolvedAs": "旧53 hidden与52 legacy交叠候选由37个R4入边处置及下游R2不再可达消除；不是105个独立修复。",
+    "sampleTruncation": {
+      "sampleCapPerCategory": 80,
+      "sampleBudgetBytes": 1200000,
+      "sampleBytesRetained": 0,
+      "issueCountTotalsAreUntruncated": true,
+      "outputBytes": 3621,
+      "outputCapBytes": 1800000
+    },
+    "historicalStaticEvidenceReconciliation": {
+      "reports": 4,
+      "reportedImages": [
+        36,
+        22,
+        18,
+        14
+      ],
+      "total": 90,
+      "uniqueFilenames": 90,
+      "exactlyMatchesNativeManifest": true,
+      "newPixelReviewPerformed": false
+    },
+    "limits": [
+      "只是最终静态报告内部一致性与已有证据交叉核对，未独立监听执行期间是否全程冻结；报告也声明不能侦测批次之间的原位修改版本。",
+      "浅深匹配用双hash及长度/计数，是实际工程证据而非无碰撞数学证明。",
+      "扫描当前活动R4与可见R3范围，隐藏不可达旧R2不是主扫描范围；全文件全部隐藏节点不因此宣告清理。",
+      "CLOSE/BACK/外链被保守计算为可退出，不能替代真实历史/覆盖层操作。",
+      "布局标记不检测所有遮挡、字体渲染或TXT同义替代；90已查看原生截图的可见范围仍单独引用。"
+    ]
+  },
+  "runtimeUpdates": [
+    {
+      "theme": "Light",
+      "entries": [
+        "R4-CLICK-072",
+        "R4-CLICK-073",
+        "R4-CLICK-074",
+        "R4-CLICK-075",
+        "R4-CLICK-076"
+      ],
+      "result": "共享Home三来源及5个可见标题旧热点修复后已按root报告实点；041最后返回补齐。",
+      "crossThemeClosure": "历史Light阶段当时Dark待日志；其后077–081已闭环对应Dark路径，当前结论见后续runtimeUpdates及requiredRuntimeGaps。",
+      "screenshotReview": "design/figma-r4-resume-screenshot-review.json"
+    },
+    {
+      "theme": "Dark",
+      "entries": [
+        "R4-CLICK-077",
+        "R4-CLICK-078",
+        "R4-CLICK-079",
+        "R4-CLICK-080",
+        "R4-CLICK-081"
+      ],
+      "result": "与Light对应的Home三来源及5个可见旧标题热区均实际验证；003跨主题指定路径闭环。",
+      "screenshotReview": "design/figma-r4-resume-screenshot-review.json"
+    },
+    {
+      "theme": "Light+Dark",
+      "entries": [
+        "R4-CLICK-082",
+        "R4-CLICK-083",
+        "R4-CLICK-084",
+        "R4-CLICK-085",
+        "R4-CLICK-086",
+        "R4-CLICK-087"
+      ],
+      "result": "Dark三种无分数失败取消/invalid重试以及浅深首次失败面板Retry闭环；所列必需运行补证无剩余。",
+      "limits": "不扩大有限模型全排列、未捕获短51相位或真实服务/iOS能力。"
+    }
+  ],
+  "requiredRuntimeGaps": [],
+  "prototypeAcceptanceWithinDeclaredScope": true,
+  "finalDeliveryComplete": false,
+  "screenshotQualityEvidence": "design/figma-r4-resume-screenshot-review.json",
+  "acceptanceDocumentUpdated": "app/docs/acceptance-r4.md（第1–4节要求原文保持，更新当前结果与072–087证据）",
+  "finalDeliveryEvidence": {
+    "status": "partial",
+    "completionScope": "blocked_only_cloud_sync",
+    "overallAcceptancePassed": false,
+    "finalNativeBackup": {
+      "manifest": "design/figma-r4-final-backup-2026-10-09.json",
+      "status": "verified",
+      "path": "design/订阅额度 iPhone 原型-R4-最终验收-2026-10-09.fig",
+      "bytes": 10245818,
+      "sha256": "c259e30b5560459cbc9a2b1c9c2247a4cb3a81afb035b9a2eabd873179913b56",
+      "archiveIntegrity": "passed",
+      "matchesPostAuditCheckpointCanvas": true
+    },
+    "cloudSynchronization": {
+      "report": "design/figma-r4-final-sync-2026-10-09.json",
+      "namedVersionId": "2408215105198163984",
+      "namedVersionUrl": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR?version-id=2408215105198163984&node-id=0-1",
+      "saveOperationSucceeded": true,
+      "completeVersionReadVerified": false,
+      "overallCloudSynchronizationVerified": false,
+      "blocker": "independent_chrome_and_native_fixed_version_loads_out_of_memory",
+      "transitionalCanvasNotProof": true
+    },
+    "documentationAndLinks": {
+      "status": "recorded",
+      "handoff": "app/docs/figma-handoff-2026-10-09.md",
+      "state": "design/figma-state.json",
+      "progress": "design/figma-r4-live-progress.json",
+      "scope": "最终备份、真实验收结果、静态截图索引、画布与浅深原型链接已登记；状态与交接同步反映云端全量核验受阻。"
+    },
+    "remaining": [
+      "整体云端持久化／全量同步核验：独立 Chrome 与原生 Figma 加载固定版本均因内存不足中断，尚无完整读取证据。"
+    ],
+    "evidenceBoundary": "最终本地备份与审计后检查点的canvas.fig相同；不声称固定云端版本已完整加载、已导出或与本地字节相等。原型入口及关键修复可见不等于全量云同步。"
+  }
+}

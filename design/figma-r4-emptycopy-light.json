@@ -1,0 +1,90 @@
+{
+  "status": "Light 两个指定空小组件根已删除过时说明并收紧",
+  "roots": [
+    {
+      "root": "46:144101",
+      "name": "R4/Light/Widgets/Home/Fallback/Empty",
+      "removed": [
+        {
+          "id": "46:144112",
+          "name": "轻点小组件，打开对应账户",
+          "type": "TEXT",
+          "text": "轻点小组件，打开对应账号"
+        },
+        {
+          "id": "46:144113",
+          "name": "Space",
+          "type": "FRAME",
+          "text": null
+        }
+      ],
+      "before": {
+        "contentHeight": 374,
+        "itemSpacing": 12,
+        "root": {
+          "id": "46:144101",
+          "name": "R4/Light/Widgets/Home/Fallback/Empty",
+          "parent": "1:43252",
+          "x": 4795,
+          "y": 85170,
+          "width": 393,
+          "height": 852
+        }
+      },
+      "after": {
+        "contentHeight": 319,
+        "itemSpacing": 12,
+        "remainingHintCount": 0
+      }
+    },
+    {
+      "root": "65:1127242",
+      "name": "R4/Light/AccountWidgets/Set-0",
+      "removed": [
+        {
+          "id": "65:1127253",
+          "name": "轻点小组件，打开对应账户",
+          "type": "TEXT",
+          "text": "轻点小组件，打开对应账号"
+        },
+        {
+          "id": "65:1127254",
+          "name": "Space",
+          "type": "FRAME",
+          "text": null
+        }
+      ],
+      "before": {
+        "contentHeight": 374,
+        "itemSpacing": 12,
+        "root": {
+          "id": "65:1127242",
+          "name": "R4/Light/AccountWidgets/Set-0",
+          "parent": "1:43252",
+          "x": 2630,
+          "y": 646554,
+          "width": 393,
+          "height": 852
+        }
+      },
+      "after": {
+        "contentHeight": 319,
+        "itemSpacing": 12,
+        "remainingHintCount": 0
+      }
+    }
+  ],
+  "repairedRootCount": 2,
+  "readOnlyOtherEmptyRoots": [
+    {
+      "id": "46:144259",
+      "name": "R4/Light/Widgets/EmptyGuide",
+      "visible": true,
+      "mask": null,
+      "hintMatches": [],
+      "changed": false
+    }
+  ],
+  "additionalRootsModified": 0,
+  "scope": "Only Widgets/Home/Fallback/Empty and AccountWidgets/Set-0 direct hints and their exact adjacent empty 1x14 spacers. Both roots are preflighted before edits. Auto layout closes gaps; no replacement text, reaction, widget content, root geometry, or shared-component changes."
+}

@@ -1,0 +1,50 @@
+name: Frontend CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: &frontend_paths
+      - "packages/frontend/**"
+      - "!packages/frontend/**/*.md"
+      - "crates/tokscale-core/src/clients.rs"
+      - ".github/assets/**"
+      - ".npmrc"
+      - "package.json"
+      - "bun.lock"
+      - ".github/workflows/frontend_ci.yml"
+  pull_request:
+    branches: [main]
+    paths: *frontend_paths
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  BUN_VERSION: 1.3.10
+
+jobs:
+  vitest:
+    name: Frontend Vitest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Install workspace dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run frontend tests
+        run: bun run --cwd packages/frontend test
+
+      - name: Run frontend type check
+        run: bun run --cwd packages/frontend typecheck

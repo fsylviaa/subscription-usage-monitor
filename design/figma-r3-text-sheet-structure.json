@@ -1,0 +1,878 @@
+{
+  "status": "读取节点完成",
+  "node": {
+    "id": "1:939",
+    "type": "FRAME",
+    "name": "Light/Connect",
+    "x": 1331,
+    "y": 70,
+    "width": 393,
+    "height": 852,
+    "visible": true,
+    "layoutMode": "NONE",
+    "primaryAxisSizingMode": "AUTO",
+    "counterAxisSizingMode": "FIXED",
+    "layoutSizingHorizontal": "FIXED",
+    "layoutSizingVertical": "FIXED",
+    "itemSpacing": 0,
+    "paddingTop": 0,
+    "paddingBottom": 0,
+    "paddingLeft": 0,
+    "paddingRight": 0,
+    "clipsContent": true,
+    "reactions": [],
+    "children": [
+      {
+        "id": "14:43113",
+        "type": "RECTANGLE",
+        "name": "Rectangle",
+        "x": 0,
+        "y": 0,
+        "width": 393,
+        "height": 852,
+        "visible": true,
+        "layoutSizingHorizontal": "FIXED",
+        "layoutSizingVertical": "FIXED",
+        "reactions": [
+          {
+            "action": {
+              "type": "CLOSE"
+            },
+            "actions": [
+              {
+                "type": "CLOSE"
+              }
+            ],
+            "trigger": {
+              "type": "ON_CLICK"
+            }
+          }
+        ]
+      },
+      {
+        "id": "14:43114",
+        "type": "FRAME",
+        "name": "Sheet",
+        "x": 0,
+        "y": 462,
+        "width": 393,
+        "height": 390,
+        "visible": true,
+        "layoutMode": "NONE",
+        "primaryAxisSizingMode": "AUTO",
+        "counterAxisSizingMode": "FIXED",
+        "layoutSizingHorizontal": "FIXED",
+        "layoutSizingVertical": "FIXED",
+        "itemSpacing": 0,
+        "paddingTop": 0,
+        "paddingBottom": 0,
+        "paddingLeft": 0,
+        "paddingRight": 0,
+        "clipsContent": false,
+        "reactions": [],
+        "children": [
+          {
+            "id": "14:43115",
+            "type": "RECTANGLE",
+            "name": "Rectangle",
+            "x": 178.5,
+            "y": 10,
+            "width": 36,
+            "height": 5,
+            "visible": true,
+            "layoutSizingHorizontal": "FIXED",
+            "layoutSizingVertical": "FIXED",
+            "reactions": []
+          },
+          {
+            "id": "14:43116",
+            "type": "FRAME",
+            "name": "Sheet heading",
+            "x": 0,
+            "y": 22,
+            "width": 393,
+            "height": 54,
+            "visible": true,
+            "layoutMode": "NONE",
+            "primaryAxisSizingMode": "AUTO",
+            "counterAxisSizingMode": "FIXED",
+            "layoutSizingHorizontal": "FIXED",
+            "layoutSizingVertical": "FIXED",
+            "itemSpacing": 0,
+            "paddingTop": 0,
+            "paddingBottom": 0,
+            "paddingLeft": 0,
+            "paddingRight": 0,
+            "clipsContent": false,
+            "reactions": [],
+            "children": [
+              {
+                "id": "14:43117",
+                "type": "TEXT",
+                "name": "连接账户",
+                "x": 54,
+                "y": 11,
+                "width": 285,
+                "height": 26,
+                "visible": true,
+                "layoutSizingHorizontal": "FIXED",
+                "layoutSizingVertical": "FIXED",
+                "reactions": [],
+                "text": "添加账户",
+                "font": {
+                  "family": "PingFang SC",
+                  "style": "Semibold"
+                },
+                "fontSize": 18,
+                "textAutoResize": "HEIGHT"
+              },
+              {
+                "id": "14:43118",
+                "type": "FRAME",
+                "name": "Action/close",
+                "x": 8,
+                "y": 1,
+                "width": 44,
+                "height": 44,
+                "visible": true,
+                "layoutMode": "HORIZONTAL",
+                "primaryAxisSizingMode": "FIXED",
+                "counterAxisSizingMode": "FIXED",
+                "layoutSizingHorizontal": "FIXED",
+                "layoutSizingVertical": "FIXED",
+                "itemSpacing": 5,
+                "paddingTop": 0,
+                "paddingBottom": 0,
+                "paddingLeft": 0,
+                "paddingRight": 0,
+                "clipsContent": false,
+                "reactions": [
+                  {
+                    "action": {
+                      "type": "CLOSE"
+                    },
+                    "actions": [
+                      {
+                        "type": "CLOSE"
+                      }
+                    ],
+                    "trigger": {
+                      "type": "ON_CLICK"
+                    }
+                  }
+                ],
+                "children": [
+                  {
+                    "id": "14:43119",
+                    "type": "INSTANCE",
+                    "name": "Icon/close",
+                    "x": 12,
+                    "y": 12,
+                    "width": 20,
+                    "height": 20,
+                    "visible": true,
+                    "layoutMode": "NONE",
+                    "primaryAxisSizingMode": "AUTO",
+                    "counterAxisSizingMode": "FIXED",
+                    "layoutSizingHorizontal": "FIXED",
+                    "layoutSizingVertical": "FIXED",
+                    "itemSpacing": 0,
+                    "paddingTop": 0,
+                    "paddingBottom": 0,
+                    "paddingLeft": 0,
+                    "paddingRight": 0,
+                    "clipsContent": false,
+                    "reactions": [],
+                    "children": [
+                      {
+                        "id": "I14:43119;14:15045",
+                        "type": "FRAME",
+                        "name": "Icon",
+                        "x": 0,
+                        "y": 0,
+                        "width": 20,
+                        "height": 20,
+                        "visible": true,
+                        "layoutMode": "NONE",
+                        "primaryAxisSizingMode": "AUTO",
+                        "counterAxisSizingMode": "FIXED",
+                        "layoutSizingHorizontal": "FIXED",
+                        "layoutSizingVertical": "FIXED",
+                        "itemSpacing": 0,
+                        "paddingTop": 0,
+                        "paddingBottom": 0,
+                        "paddingLeft": 0,
+                        "paddingRight": 0,
+                        "clipsContent": true,
+                        "reactions": [],
+                        "children": [
+                          {
+                            "id": "I14:43119;14:15046",
+                            "type": "VECTOR",
+                            "name": "Vector",
+                            "x": 5,
+                            "y": 5,
+                            "width": 10,
+                            "height": 10,
+                            "visible": true,
+                            "layoutSizingHorizontal": "FIXED",
+                            "layoutSizingVertical": "FIXED",
+                            "reactions": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "14:43122",
+            "type": "FRAME",
+            "name": "Sheet viewport",
+            "x": 0,
+            "y": 84,
+            "width": 393,
+            "height": 294,
+            "visible": true,
+            "layoutMode": "NONE",
+            "primaryAxisSizingMode": "AUTO",
+            "counterAxisSizingMode": "FIXED",
+            "layoutSizingHorizontal": "FIXED",
+            "layoutSizingVertical": "FIXED",
+            "itemSpacing": 0,
+            "paddingTop": 0,
+            "paddingBottom": 0,
+            "paddingLeft": 0,
+            "paddingRight": 0,
+            "clipsContent": true,
+            "reactions": [],
+            "children": [
+              {
+                "id": "14:43123",
+                "type": "FRAME",
+                "name": "Content",
+                "x": 0,
+                "y": 0,
+                "width": 393,
+                "height": 217,
+                "visible": true,
+                "layoutMode": "VERTICAL",
+                "primaryAxisSizingMode": "AUTO",
+                "counterAxisSizingMode": "FIXED",
+                "layoutSizingHorizontal": "FIXED",
+                "layoutSizingVertical": "HUG",
+                "itemSpacing": 14,
+                "paddingTop": 0,
+                "paddingBottom": 16,
+                "paddingLeft": 16,
+                "paddingRight": 16,
+                "clipsContent": false,
+                "reactions": [],
+                "children": [
+                  {
+                    "id": "14:43124",
+                    "type": "FRAME",
+                    "name": "Space",
+                    "x": 16,
+                    "y": 0,
+                    "width": 1,
+                    "height": 8,
+                    "visible": true,
+                    "layoutMode": "NONE",
+                    "primaryAxisSizingMode": "AUTO",
+                    "counterAxisSizingMode": "FIXED",
+                    "layoutSizingHorizontal": "FIXED",
+                    "layoutSizingVertical": "FIXED",
+                    "itemSpacing": 0,
+                    "paddingTop": 0,
+                    "paddingBottom": 0,
+                    "paddingLeft": 0,
+                    "paddingRight": 0,
+                    "clipsContent": false,
+                    "reactions": [],
+                    "children": []
+                  },
+                  {
+                    "id": "14:43125",
+                    "type": "FRAME",
+                    "name": "Platform grid",
+                    "x": 16,
+                    "y": 22,
+                    "width": 361,
+                    "height": 147,
+                    "visible": true,
+                    "layoutMode": "HORIZONTAL",
+                    "primaryAxisSizingMode": "FIXED",
+                    "counterAxisSizingMode": "AUTO",
+                    "layoutSizingHorizontal": "FIXED",
+                    "layoutSizingVertical": "HUG",
+                    "itemSpacing": 14,
+                    "paddingTop": 0,
+                    "paddingBottom": 0,
+                    "paddingLeft": 0,
+                    "paddingRight": 0,
+                    "clipsContent": false,
+                    "reactions": [],
+                    "children": [
+                      {
+                        "id": "14:43126",
+                        "type": "FRAME",
+                        "name": "Connect/Claude",
+                        "x": 0,
+                        "y": 0,
+                        "width": 111,
+                        "height": 147,
+                        "visible": true,
+                        "layoutMode": "VERTICAL",
+                        "primaryAxisSizingMode": "AUTO",
+                        "counterAxisSizingMode": "FIXED",
+                        "layoutSizingHorizontal": "FIXED",
+                        "layoutSizingVertical": "HUG",
+                        "itemSpacing": 10,
+                        "paddingTop": 0,
+                        "paddingBottom": 0,
+                        "paddingLeft": 0,
+                        "paddingRight": 0,
+                        "clipsContent": false,
+                        "reactions": [
+                          {
+                            "action": {
+                              "type": "NODE",
+                              "destinationId": "14:42235",
+                              "navigation": "SWAP",
+                              "transition": {
+                                "type": "DISSOLVE",
+                                "easing": {
+                                  "type": "EASE_OUT"
+                                },
+                                "duration": 0.18000000715255737
+                              },
+                              "resetVideoPosition": false,
+                              "resetScrollPosition": true,
+                              "resetInteractiveComponents": false
+                            },
+                            "actions": [
+                              {
+                                "type": "NODE",
+                                "destinationId": "14:42235",
+                                "navigation": "SWAP",
+                                "transition": {
+                                  "type": "DISSOLVE",
+                                  "easing": {
+                                    "type": "EASE_OUT"
+                                  },
+                                  "duration": 0.18000000715255737
+                                },
+                                "resetVideoPosition": false,
+                                "resetScrollPosition": true,
+                                "resetInteractiveComponents": false
+                              }
+                            ],
+                            "trigger": {
+                              "type": "ON_CLICK"
+                            }
+                          }
+                        ],
+                        "children": [
+                          {
+                            "id": "14:43127",
+                            "type": "FRAME",
+                            "name": "Platform tile",
+                            "x": 0,
+                            "y": 0,
+                            "width": 111,
+                            "height": 88,
+                            "visible": true,
+                            "layoutMode": "VERTICAL",
+                            "primaryAxisSizingMode": "FIXED",
+                            "counterAxisSizingMode": "FIXED",
+                            "layoutSizingHorizontal": "FIXED",
+                            "layoutSizingVertical": "FIXED",
+                            "itemSpacing": 0,
+                            "paddingTop": 0,
+                            "paddingBottom": 0,
+                            "paddingLeft": 0,
+                            "paddingRight": 0,
+                            "clipsContent": false,
+                            "reactions": [],
+                            "children": [
+                              {
+                                "id": "14:43128",
+                                "type": "INSTANCE",
+                                "name": "Claude logo",
+                                "x": 34.5,
+                                "y": 23,
+                                "width": 42,
+                                "height": 42,
+                                "visible": true,
+                                "layoutMode": "NONE",
+                                "primaryAxisSizingMode": "AUTO",
+                                "counterAxisSizingMode": "FIXED",
+                                "layoutSizingHorizontal": "FIXED",
+                                "layoutSizingVertical": "FIXED",
+                                "itemSpacing": 0,
+                                "paddingTop": 0,
+                                "paddingBottom": 0,
+                                "paddingLeft": 0,
+                                "paddingRight": 0,
+                                "clipsContent": false,
+                                "reactions": [],
+                                "children": [
+                                  {
+                                    "id": "I14:43128;14:15093",
+                                    "type": "FRAME",
+                                    "name": "Frame",
+                                    "x": 0,
+                                    "y": 0,
+                                    "width": 42,
+                                    "height": 42,
+                                    "visible": true,
+                                    "layoutMode": "NONE",
+                                    "primaryAxisSizingMode": "AUTO",
+                                    "counterAxisSizingMode": "FIXED",
+                                    "layoutSizingHorizontal": "FIXED",
+                                    "layoutSizingVertical": "FIXED",
+                                    "itemSpacing": 0,
+                                    "paddingTop": 0,
+                                    "paddingBottom": 0,
+                                    "paddingLeft": 0,
+                                    "paddingRight": 0,
+                                    "clipsContent": true,
+                                    "reactions": []
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "14:43131",
+                            "type": "TEXT",
+                            "name": "Claude",
+                            "x": 29,
+                            "y": 98,
+                            "width": 53,
+                            "height": 23,
+                            "visible": true,
+                            "layoutSizingHorizontal": "HUG",
+                            "layoutSizingVertical": "HUG",
+                            "reactions": [],
+                            "text": "Claude",
+                            "font": {
+                              "family": "PingFang SC",
+                              "style": "Medium"
+                            },
+                            "fontSize": 16,
+                            "textAutoResize": "WIDTH_AND_HEIGHT"
+                          },
+                          {
+                            "id": "14:43132",
+                            "type": "TEXT",
+                            "name": "已连接",
+                            "x": 27.5,
+                            "y": 131,
+                            "width": 56,
+                            "height": 16,
+                            "visible": true,
+                            "layoutSizingHorizontal": "HUG",
+                            "layoutSizingVertical": "HUG",
+                            "reactions": [],
+                            "text": "已添加 1 个",
+                            "font": {
+                              "family": "PingFang SC",
+                              "style": "Regular"
+                            },
+                            "fontSize": 11,
+                            "textAutoResize": "WIDTH_AND_HEIGHT"
+                          }
+                        ]
+                      },
+                      {
+                        "id": "14:43133",
+                        "type": "FRAME",
+                        "name": "Connect/Codex",
+                        "x": 125,
+                        "y": 0,
+                        "width": 111,
+                        "height": 147,
+                        "visible": true,
+                        "layoutMode": "VERTICAL",
+                        "primaryAxisSizingMode": "AUTO",
+                        "counterAxisSizingMode": "FIXED",
+                        "layoutSizingHorizontal": "FIXED",
+                        "layoutSizingVertical": "HUG",
+                        "itemSpacing": 10,
+                        "paddingTop": 0,
+                        "paddingBottom": 0,
+                        "paddingLeft": 0,
+                        "paddingRight": 0,
+                        "clipsContent": false,
+                        "reactions": [
+                          {
+                            "action": {
+                              "type": "NODE",
+                              "destinationId": "14:42237",
+                              "navigation": "SWAP",
+                              "transition": {
+                                "type": "DISSOLVE",
+                                "easing": {
+                                  "type": "EASE_OUT"
+                                },
+                                "duration": 0.18000000715255737
+                              },
+                              "resetVideoPosition": false,
+                              "resetScrollPosition": true,
+                              "resetInteractiveComponents": false
+                            },
+                            "actions": [
+                              {
+                                "type": "NODE",
+                                "destinationId": "14:42237",
+                                "navigation": "SWAP",
+                                "transition": {
+                                  "type": "DISSOLVE",
+                                  "easing": {
+                                    "type": "EASE_OUT"
+                                  },
+                                  "duration": 0.18000000715255737
+                                },
+                                "resetVideoPosition": false,
+                                "resetScrollPosition": true,
+                                "resetInteractiveComponents": false
+                              }
+                            ],
+                            "trigger": {
+                              "type": "ON_CLICK"
+                            }
+                          }
+                        ],
+                        "children": [
+                          {
+                            "id": "14:43134",
+                            "type": "FRAME",
+                            "name": "Platform tile",
+                            "x": 0,
+                            "y": 0,
+                            "width": 111,
+                            "height": 88,
+                            "visible": true,
+                            "layoutMode": "VERTICAL",
+                            "primaryAxisSizingMode": "FIXED",
+                            "counterAxisSizingMode": "FIXED",
+                            "layoutSizingHorizontal": "FIXED",
+                            "layoutSizingVertical": "FIXED",
+                            "itemSpacing": 0,
+                            "paddingTop": 0,
+                            "paddingBottom": 0,
+                            "paddingLeft": 0,
+                            "paddingRight": 0,
+                            "clipsContent": false,
+                            "reactions": [],
+                            "children": [
+                              {
+                                "id": "14:43135",
+                                "type": "INSTANCE",
+                                "name": "Codex logo",
+                                "x": 34.5,
+                                "y": 23,
+                                "width": 42,
+                                "height": 42,
+                                "visible": true,
+                                "layoutMode": "NONE",
+                                "primaryAxisSizingMode": "AUTO",
+                                "counterAxisSizingMode": "FIXED",
+                                "layoutSizingHorizontal": "FIXED",
+                                "layoutSizingVertical": "FIXED",
+                                "itemSpacing": 0,
+                                "paddingTop": 0,
+                                "paddingBottom": 0,
+                                "paddingLeft": 0,
+                                "paddingRight": 0,
+                                "clipsContent": false,
+                                "reactions": [],
+                                "children": [
+                                  {
+                                    "id": "I14:43135;14:15096",
+                                    "type": "FRAME",
+                                    "name": "Frame",
+                                    "x": 0,
+                                    "y": 0,
+                                    "width": 42,
+                                    "height": 42,
+                                    "visible": true,
+                                    "layoutMode": "NONE",
+                                    "primaryAxisSizingMode": "AUTO",
+                                    "counterAxisSizingMode": "FIXED",
+                                    "layoutSizingHorizontal": "FIXED",
+                                    "layoutSizingVertical": "FIXED",
+                                    "itemSpacing": 0,
+                                    "paddingTop": 0,
+                                    "paddingBottom": 0,
+                                    "paddingLeft": 0,
+                                    "paddingRight": 0,
+                                    "clipsContent": true,
+                                    "reactions": []
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "14:43138",
+                            "type": "TEXT",
+                            "name": "Codex",
+                            "x": 31,
+                            "y": 98,
+                            "width": 49,
+                            "height": 23,
+                            "visible": true,
+                            "layoutSizingHorizontal": "HUG",
+                            "layoutSizingVertical": "HUG",
+                            "reactions": [],
+                            "text": "Codex",
+                            "font": {
+                              "family": "PingFang SC",
+                              "style": "Medium"
+                            },
+                            "fontSize": 16,
+                            "textAutoResize": "WIDTH_AND_HEIGHT"
+                          },
+                          {
+                            "id": "14:43139",
+                            "type": "TEXT",
+                            "name": "已连接",
+                            "x": 26.5,
+                            "y": 131,
+                            "width": 58,
+                            "height": 16,
+                            "visible": true,
+                            "layoutSizingHorizontal": "HUG",
+                            "layoutSizingVertical": "HUG",
+                            "reactions": [],
+                            "text": "已添加 2 个",
+                            "font": {
+                              "family": "PingFang SC",
+                              "style": "Regular"
+                            },
+                            "fontSize": 11,
+                            "textAutoResize": "WIDTH_AND_HEIGHT"
+                          }
+                        ]
+                      },
+                      {
+                        "id": "14:43140",
+                        "type": "FRAME",
+                        "name": "Connect/Cursor",
+                        "x": 250,
+                        "y": 0,
+                        "width": 111,
+                        "height": 147,
+                        "visible": true,
+                        "layoutMode": "VERTICAL",
+                        "primaryAxisSizingMode": "AUTO",
+                        "counterAxisSizingMode": "FIXED",
+                        "layoutSizingHorizontal": "FIXED",
+                        "layoutSizingVertical": "HUG",
+                        "itemSpacing": 10,
+                        "paddingTop": 0,
+                        "paddingBottom": 0,
+                        "paddingLeft": 0,
+                        "paddingRight": 0,
+                        "clipsContent": false,
+                        "reactions": [
+                          {
+                            "action": {
+                              "type": "NODE",
+                              "destinationId": "14:42239",
+                              "navigation": "SWAP",
+                              "transition": {
+                                "type": "DISSOLVE",
+                                "easing": {
+                                  "type": "EASE_OUT"
+                                },
+                                "duration": 0.18000000715255737
+                              },
+                              "resetVideoPosition": false,
+                              "resetScrollPosition": true,
+                              "resetInteractiveComponents": false
+                            },
+                            "actions": [
+                              {
+                                "type": "NODE",
+                                "destinationId": "14:42239",
+                                "navigation": "SWAP",
+                                "transition": {
+                                  "type": "DISSOLVE",
+                                  "easing": {
+                                    "type": "EASE_OUT"
+                                  },
+                                  "duration": 0.18000000715255737
+                                },
+                                "resetVideoPosition": false,
+                                "resetScrollPosition": true,
+                                "resetInteractiveComponents": false
+                              }
+                            ],
+                            "trigger": {
+                              "type": "ON_CLICK"
+                            }
+                          }
+                        ],
+                        "children": [
+                          {
+                            "id": "14:43141",
+                            "type": "FRAME",
+                            "name": "Platform tile",
+                            "x": 0,
+                            "y": 0,
+                            "width": 111,
+                            "height": 88,
+                            "visible": true,
+                            "layoutMode": "VERTICAL",
+                            "primaryAxisSizingMode": "FIXED",
+                            "counterAxisSizingMode": "FIXED",
+                            "layoutSizingHorizontal": "FIXED",
+                            "layoutSizingVertical": "FIXED",
+                            "itemSpacing": 0,
+                            "paddingTop": 0,
+                            "paddingBottom": 0,
+                            "paddingLeft": 0,
+                            "paddingRight": 0,
+                            "clipsContent": false,
+                            "reactions": [],
+                            "children": [
+                              {
+                                "id": "14:43142",
+                                "type": "INSTANCE",
+                                "name": "Cursor logo",
+                                "x": 34.5,
+                                "y": 23,
+                                "width": 42,
+                                "height": 42,
+                                "visible": true,
+                                "layoutMode": "NONE",
+                                "primaryAxisSizingMode": "AUTO",
+                                "counterAxisSizingMode": "FIXED",
+                                "layoutSizingHorizontal": "FIXED",
+                                "layoutSizingVertical": "FIXED",
+                                "itemSpacing": 0,
+                                "paddingTop": 0,
+                                "paddingBottom": 0,
+                                "paddingLeft": 0,
+                                "paddingRight": 0,
+                                "clipsContent": false,
+                                "reactions": [],
+                                "children": [
+                                  {
+                                    "id": "I14:43142;14:15099",
+                                    "type": "FRAME",
+                                    "name": "Frame",
+                                    "x": 0,
+                                    "y": 0,
+                                    "width": 42,
+                                    "height": 42,
+                                    "visible": true,
+                                    "layoutMode": "NONE",
+                                    "primaryAxisSizingMode": "AUTO",
+                                    "counterAxisSizingMode": "FIXED",
+                                    "layoutSizingHorizontal": "FIXED",
+                                    "layoutSizingVertical": "FIXED",
+                                    "itemSpacing": 0,
+                                    "paddingTop": 0,
+                                    "paddingBottom": 0,
+                                    "paddingLeft": 0,
+                                    "paddingRight": 0,
+                                    "clipsContent": true,
+                                    "reactions": []
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "id": "14:43145",
+                            "type": "TEXT",
+                            "name": "Cursor",
+                            "x": 30,
+                            "y": 98,
+                            "width": 51,
+                            "height": 23,
+                            "visible": true,
+                            "layoutSizingHorizontal": "HUG",
+                            "layoutSizingVertical": "HUG",
+                            "reactions": [],
+                            "text": "Cursor",
+                            "font": {
+                              "family": "PingFang SC",
+                              "style": "Medium"
+                            },
+                            "fontSize": 16,
+                            "textAutoResize": "WIDTH_AND_HEIGHT"
+                          },
+                          {
+                            "id": "14:43146",
+                            "type": "TEXT",
+                            "name": "已连接",
+                            "x": 27.5,
+                            "y": 131,
+                            "width": 56,
+                            "height": 16,
+                            "visible": true,
+                            "layoutSizingHorizontal": "HUG",
+                            "layoutSizingVertical": "HUG",
+                            "reactions": [],
+                            "text": "已添加 1 个",
+                            "font": {
+                              "family": "PingFang SC",
+                              "style": "Regular"
+                            },
+                            "fontSize": 11,
+                            "textAutoResize": "WIDTH_AND_HEIGHT"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "14:43147",
+                    "type": "TEXT",
+                    "name": "选择平台，在平台页面完成登录。",
+                    "x": 16,
+                    "y": 183,
+                    "width": 361,
+                    "height": 18,
+                    "visible": true,
+                    "layoutSizingHorizontal": "FIXED",
+                    "layoutSizingVertical": "HUG",
+                    "reactions": [],
+                    "text": "选择平台添加账户。同一平台可继续添加其他账户。",
+                    "font": {
+                      "family": "PingFang SC",
+                      "style": "Regular"
+                    },
+                    "fontSize": 13,
+                    "textAutoResize": "HEIGHT"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "15:287075",
+            "type": "RECTANGLE",
+            "name": "Home indicator",
+            "x": 129.5,
+            "y": 376,
+            "width": 134,
+            "height": 5,
+            "visible": true,
+            "layoutSizingHorizontal": "FIXED",
+            "layoutSizingVertical": "FIXED",
+            "reactions": []
+          }
+        ]
+      }
+    ]
+  }
+}

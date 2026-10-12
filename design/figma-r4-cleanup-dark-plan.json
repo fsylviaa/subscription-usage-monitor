@@ -1,0 +1,1172 @@
+{
+  "status": "Dark R3 局部修复方案（未写入）",
+  "visibleReviewCount": 44,
+  "candidateCount": 32,
+  "expectedCandidateCount": 32,
+  "eligibleForMutation": true,
+  "protected": [
+    {
+      "id": "1:4088",
+      "name": "Dark/Review"
+    },
+    {
+      "id": "1:4124",
+      "name": "Dark/Dashboard"
+    },
+    {
+      "id": "1:5757",
+      "name": "Dark/Settings"
+    },
+    {
+      "id": "14:42529",
+      "name": "Dark/Tutorial1"
+    },
+    {
+      "id": "1:7098",
+      "name": "Dark/Tutorial1b"
+    },
+    {
+      "id": "14:46032",
+      "name": "Dark/Tutorial2"
+    },
+    {
+      "id": "1:7172",
+      "name": "Dark/Tutorial2b"
+    },
+    {
+      "id": "14:42922",
+      "name": "R2/Dark|LockNotification|7|R|1|old||||small"
+    },
+    {
+      "id": "1:5899",
+      "name": "Dark/Help"
+    },
+    {
+      "id": "1:5935",
+      "name": "Dark/Privacy"
+    },
+    {
+      "id": "14:45964",
+      "name": "Dark/Licenses"
+    },
+    {
+      "id": "14:51970",
+      "name": "Dark/License"
+    }
+  ],
+  "candidates": [
+    {
+      "index": 0,
+      "id": "14:41998",
+      "name": "R2/Dark|Dashboard|0|R|0|old||||small",
+      "kind": "Dashboard",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 1,
+      "id": "14:42696",
+      "name": "R2/Dark|Dashboard|7|R|0|old|Claude|||small",
+      "kind": "Dashboard",
+      "specialData": false,
+      "key": "Dashboard-Claude-normal-old"
+    },
+    {
+      "index": 2,
+      "id": "14:52174",
+      "name": "R2/Dark|Settings|7|R|1|old||||small",
+      "kind": "Settings",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 3,
+      "id": "14:42921",
+      "name": "R2/Dark|Settings|7|R|2|old||||small",
+      "kind": "Settings",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 4,
+      "id": "1:4527",
+      "name": "Dark/Connect",
+      "kind": "Connect",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 5,
+      "id": "14:42697",
+      "name": "R2/Dark|Menu|7|R|0|old||Claude||small",
+      "kind": "Menu",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 6,
+      "id": "14:46590",
+      "name": "R2/Dark|Login|7|R|0|old||Claude||small",
+      "kind": "Login",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 7,
+      "id": "14:46799",
+      "name": "R2/Dark|Login|7|R|0|old||Codex||small",
+      "kind": "Login",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 8,
+      "id": "14:47008",
+      "name": "R2/Dark|Login|7|R|0|old||Cursor||small",
+      "kind": "Login",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 9,
+      "id": "14:52367",
+      "name": "R2/Dark|Connecting|7|R|0|old||Claude||small",
+      "kind": "Connecting",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 10,
+      "id": "14:42919",
+      "name": "R2/Dark|Failed|7|R|0|old||Claude||small",
+      "kind": "Failed",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 11,
+      "id": "14:46591",
+      "name": "R2/Dark|Disconnect|7|R|0|old||Claude||small",
+      "kind": "Disconnect",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 12,
+      "id": "1:6091",
+      "name": "Dark/Permission",
+      "kind": "Permission",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 13,
+      "id": "14:48652",
+      "name": "R2/Dark|System|7|R|2|old||||small",
+      "kind": "System",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 14,
+      "id": "14:41999",
+      "name": "R2/Dark|WidgetReview|7|R|0|old||Claude||small",
+      "kind": "WidgetReview",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 15,
+      "id": "14:42759",
+      "name": "R2/Dark|WidgetReview|7|R|0|old||Claude||medium",
+      "kind": "WidgetReview",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 16,
+      "id": "14:42761",
+      "name": "R2/Dark|WidgetConfig|7|R|0|old||Claude||small",
+      "kind": "WidgetConfig",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 17,
+      "id": "14:42760",
+      "name": "R2/Dark|SystemHome|7|R|0|old||Claude||small",
+      "kind": "SystemHome",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 18,
+      "id": "14:47067",
+      "name": "R2/Dark|SystemHome|7|R|0|old||Claude||medium",
+      "kind": "SystemHome",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 19,
+      "id": "14:42923",
+      "name": "R2/Dark|WidgetState|7|R|0|old||Codex||small",
+      "kind": "WidgetState",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 20,
+      "id": "1:7264",
+      "name": "Dark/StateReview",
+      "kind": "StateReview",
+      "specialData": false,
+      "key": "Dashboard-collapsed-normal-old"
+    },
+    {
+      "index": 21,
+      "id": "14:42911",
+      "name": "R2/Dark|Dashboard|0|R|0|old|||initial|small",
+      "kind": "Dashboard",
+      "specialData": false,
+      "key": "Dashboard-collapsed-initial-old"
+    },
+    {
+      "index": 22,
+      "id": "14:42695",
+      "name": "R2/Dark|Dashboard|7|R|0|old|||refresh|small",
+      "kind": "Dashboard",
+      "specialData": false,
+      "key": "Dashboard-collapsed-refresh-old"
+    },
+    {
+      "index": 23,
+      "id": "14:42913",
+      "name": "R2/Dark|Dashboard|7|R|0|old|||stale|small",
+      "kind": "Dashboard",
+      "specialData": true,
+      "key": "Dashboard-collapsed-stale-old"
+    },
+    {
+      "index": 24,
+      "id": "14:42912",
+      "name": "R2/Dark|Dashboard|7|R|0|old|||nodata|small",
+      "kind": "Dashboard",
+      "specialData": true,
+      "key": "Dashboard-collapsed-nodata-old"
+    },
+    {
+      "index": 25,
+      "id": "14:42914",
+      "name": "R2/Dark|Dashboard|7|R|0|old|||expired|small",
+      "kind": "Dashboard",
+      "specialData": true,
+      "key": "Dashboard-collapsed-expired-old"
+    },
+    {
+      "index": 26,
+      "id": "14:42915",
+      "name": "R2/Dark|Dashboard|7|R|0|old|||unavailable|small",
+      "kind": "Dashboard",
+      "specialData": true,
+      "key": "Dashboard-collapsed-unavailable-old"
+    },
+    {
+      "index": 27,
+      "id": "14:42916",
+      "name": "R2/Dark|Dashboard|7|R|0|old|||unknown|small",
+      "kind": "Dashboard",
+      "specialData": true,
+      "key": "Dashboard-collapsed-unknown-old"
+    },
+    {
+      "index": 28,
+      "id": "14:42917",
+      "name": "R2/Dark|Dashboard|7|R|0|old|||unlimited|small",
+      "kind": "Dashboard",
+      "specialData": true,
+      "key": "Dashboard-collapsed-unlimited-old"
+    },
+    {
+      "index": 29,
+      "id": "14:42918",
+      "name": "R2/Dark|Dashboard|7|R|0|old|||noreset|small",
+      "kind": "Dashboard",
+      "specialData": true,
+      "key": "Dashboard-collapsed-noreset-old"
+    },
+    {
+      "index": 30,
+      "id": "14:42920",
+      "name": "R2/Dark|Dashboard|7|R|0|old|||due|small",
+      "kind": "Dashboard",
+      "specialData": true,
+      "key": "Dashboard-collapsed-due-old"
+    },
+    {
+      "index": 31,
+      "id": "14:53566",
+      "name": "R2/Dark|Dashboard|7|R|0|new||||small",
+      "kind": "Dashboard",
+      "specialData": true,
+      "key": "Dashboard-collapsed-normal-new"
+    }
+  ],
+  "rules": [
+    "保留 44 个原 review root、位置和可见性；仅两个旧通知设置根替换为对应当前 R4 子树。",
+    "查询只模拟检查后失败，CLOSE 保留来源、身份、可信数据与成功时间；每次重试重新检查。",
+    "特殊状态的断开副本只删除指定账号；剩余账号仍用来源数据。",
+    "仅旧 stale 页成功时间统一为其既有说明中的 09:11。",
+    "最终只浅层隐藏非 R4 interaction 根，不删除或遍历其子树。"
+  ],
+  "remainingLegacyEdges": [
+    {
+      "source": "14:41998",
+      "node": "14:42476",
+      "nodeName": "Action/link",
+      "destination": "14:42527",
+      "target": "R2/Dark|Connect|0|R|0|old||||small",
+      "protected": false
+    },
+    {
+      "source": "14:41998",
+      "node": "14:42520",
+      "nodeName": "Button/连接账户",
+      "destination": "14:42527",
+      "target": "R2/Dark|Connect|0|R|0|old||||small",
+      "protected": false
+    },
+    {
+      "source": "14:41998",
+      "node": "14:42488",
+      "nodeName": "Tab/设置",
+      "destination": "14:42528",
+      "target": "R2/Dark|Settings|0|R|0|old||||small",
+      "protected": false
+    },
+    {
+      "source": "14:42696",
+      "node": "14:46417",
+      "nodeName": "Action/refresh",
+      "destination": "14:46550",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Claude||refresh|small",
+      "protected": false
+    },
+    {
+      "source": "14:42696",
+      "node": "I14:46467;36:160227",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42696",
+      "node": "I14:46467;36:160235",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42696",
+      "node": "I36:157630;36:160271",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42696",
+      "node": "I36:157630;36:160279",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42696",
+      "node": "I14:46511;36:160315",
+      "nodeName": "Expand account",
+      "destination": "14:42700",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42696",
+      "node": "I14:46511;36:160323",
+      "nodeName": "Action/more",
+      "destination": "14:42701",
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "protected": false
+    },
+    {
+      "source": "14:52174",
+      "node": "14:60048",
+      "nodeName": "Account identity",
+      "destination": "14:60162",
+      "target": "R2/Dark|Dashboard|7|R|1|old|Claude|||small",
+      "protected": false
+    },
+    {
+      "source": "14:52174",
+      "node": "14:60051",
+      "nodeName": "Action/more",
+      "destination": "14:54618",
+      "target": "R2/Dark|Menu|7|R|1|old||Claude||small",
+      "protected": false
+    },
+    {
+      "source": "14:52174",
+      "node": "14:60062",
+      "nodeName": "Account identity",
+      "destination": "14:54619",
+      "target": "R2/Dark|Dashboard|7|R|1|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:52174",
+      "node": "14:60065",
+      "nodeName": "Action/more",
+      "destination": "14:54620",
+      "target": "R2/Dark|Menu|7|R|1|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:52174",
+      "node": "36:157691",
+      "nodeName": "Account identity",
+      "destination": "14:54619",
+      "target": "R2/Dark|Dashboard|7|R|1|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:52174",
+      "node": "36:157694",
+      "nodeName": "Action/more",
+      "destination": "14:54620",
+      "target": "R2/Dark|Menu|7|R|1|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:52174",
+      "node": "14:60076",
+      "nodeName": "Account identity",
+      "destination": "14:54621",
+      "target": "R2/Dark|Dashboard|7|R|1|old|Cursor|||small",
+      "protected": false
+    },
+    {
+      "source": "14:52174",
+      "node": "14:60079",
+      "nodeName": "Action/more",
+      "destination": "14:54622",
+      "target": "R2/Dark|Menu|7|R|1|old||Cursor||small",
+      "protected": false
+    },
+    {
+      "source": "14:52174",
+      "node": "14:60085",
+      "nodeName": "Row/连接账户",
+      "destination": "14:54615",
+      "target": "R2/Dark|Connect|7|R|1|old||||small",
+      "protected": false
+    },
+    {
+      "source": "14:52174",
+      "node": "14:60108",
+      "nodeName": "Row/额度重置通知",
+      "destination": "14:60164",
+      "target": "R2/Dark|Settings|7|R|3|old||||small",
+      "protected": false
+    },
+    {
+      "source": "14:52174",
+      "node": "14:60113",
+      "nodeName": "Toggle/通知",
+      "destination": "14:60164",
+      "target": "R2/Dark|Settings|7|R|3|old||||small",
+      "protected": false
+    },
+    {
+      "source": "14:52174",
+      "node": "14:60029",
+      "nodeName": "Tab/额度",
+      "destination": "14:54617",
+      "target": "R2/Dark|Dashboard|7|R|1|old||||small",
+      "protected": false
+    },
+    {
+      "source": "14:42921",
+      "node": "14:48529",
+      "nodeName": "Account identity",
+      "destination": "14:48644",
+      "target": "R2/Dark|Dashboard|7|R|2|old|Claude|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42921",
+      "node": "14:48532",
+      "nodeName": "Action/more",
+      "destination": "14:48645",
+      "target": "R2/Dark|Menu|7|R|2|old||Claude||small",
+      "protected": false
+    },
+    {
+      "source": "14:42921",
+      "node": "14:48543",
+      "nodeName": "Account identity",
+      "destination": "14:48646",
+      "target": "R2/Dark|Dashboard|7|R|2|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42921",
+      "node": "14:48546",
+      "nodeName": "Action/more",
+      "destination": "14:48647",
+      "target": "R2/Dark|Menu|7|R|2|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42921",
+      "node": "36:157705",
+      "nodeName": "Account identity",
+      "destination": "14:48646",
+      "target": "R2/Dark|Dashboard|7|R|2|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42921",
+      "node": "36:157708",
+      "nodeName": "Action/more",
+      "destination": "14:48647",
+      "target": "R2/Dark|Menu|7|R|2|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42921",
+      "node": "14:48557",
+      "nodeName": "Account identity",
+      "destination": "14:48648",
+      "target": "R2/Dark|Dashboard|7|R|2|old|Cursor|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42921",
+      "node": "14:48560",
+      "nodeName": "Action/more",
+      "destination": "14:48649",
+      "target": "R2/Dark|Menu|7|R|2|old||Cursor||small",
+      "protected": false
+    },
+    {
+      "source": "14:42921",
+      "node": "14:48566",
+      "nodeName": "Row/连接账户",
+      "destination": "14:48650",
+      "target": "R2/Dark|Connect|7|R|2|old||||small",
+      "protected": false
+    },
+    {
+      "source": "14:42921",
+      "node": "14:48510",
+      "nodeName": "Tab/额度",
+      "destination": "14:48643",
+      "target": "R2/Dark|Dashboard|7|R|2|old||||small",
+      "protected": false
+    },
+    {
+      "source": "1:4527",
+      "node": "14:46053",
+      "nodeName": "Connect/Codex",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "1:4527",
+      "node": "14:46060",
+      "nodeName": "Connect/Cursor",
+      "destination": "14:42701",
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "protected": false
+    },
+    {
+      "source": "14:42697",
+      "node": "14:46563",
+      "nodeName": "Row/刷新额度",
+      "destination": "14:46550",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Claude||refresh|small",
+      "protected": false
+    },
+    {
+      "source": "14:46799",
+      "node": "14:52574",
+      "nodeName": "Button/继续",
+      "destination": "14:52578",
+      "target": "R2/Dark|Connecting|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:47008",
+      "node": "14:52784",
+      "nodeName": "Button/继续",
+      "destination": "14:52788",
+      "target": "R2/Dark|Connecting|7|R|0|old||Cursor||small",
+      "protected": false
+    },
+    {
+      "source": "14:46591",
+      "node": "14:52381",
+      "nodeName": "Button/断开连接",
+      "destination": "14:52385",
+      "target": "R2/Dark|Dashboard|6|R|0|old||||small",
+      "protected": false
+    },
+    {
+      "source": "14:42759",
+      "node": "14:47062",
+      "nodeName": "Button/编辑小组件",
+      "destination": "14:47068",
+      "target": "R2/Dark|WidgetConfig|7|R|0|old||Claude||medium",
+      "protected": false
+    },
+    {
+      "source": "14:42761",
+      "node": "14:47177",
+      "nodeName": "Account/Codex",
+      "destination": "14:47196",
+      "target": "R2/Dark|WidgetConfig|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42761",
+      "node": "36:157716",
+      "nodeName": "Account/Codex · work",
+      "destination": "14:47196",
+      "target": "R2/Dark|WidgetConfig|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42761",
+      "node": "14:47185",
+      "nodeName": "Account/Cursor",
+      "destination": "14:47197",
+      "target": "R2/Dark|WidgetConfig|7|R|0|old||Cursor||small",
+      "protected": false
+    },
+    {
+      "source": "14:42760",
+      "node": "14:47093",
+      "nodeName": "Widget/Claude",
+      "destination": "14:47141",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Claude||focus|small",
+      "protected": false
+    },
+    {
+      "source": "14:47067",
+      "node": "14:52830",
+      "nodeName": "Widget/Claude",
+      "destination": "14:47141",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Claude||focus|small",
+      "protected": false
+    },
+    {
+      "source": "14:42923",
+      "node": "14:48717",
+      "nodeName": "Card",
+      "destination": "14:48735",
+      "target": "R2/Dark|Dashboard|5|R|0|old||||small",
+      "protected": false
+    },
+    {
+      "source": "14:42911",
+      "node": "14:47271",
+      "nodeName": "Action/link",
+      "destination": "14:42527",
+      "target": "R2/Dark|Connect|0|R|0|old||||small",
+      "protected": false
+    },
+    {
+      "source": "14:42911",
+      "node": "14:47283",
+      "nodeName": "Tab/设置",
+      "destination": "14:42528",
+      "target": "R2/Dark|Settings|0|R|0|old||||small",
+      "protected": false
+    },
+    {
+      "source": "14:42695",
+      "node": "I14:46300;36:160227",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42695",
+      "node": "I14:46300;36:160235",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42695",
+      "node": "I36:157725;36:160271",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42695",
+      "node": "I36:157725;36:160279",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42695",
+      "node": "I14:46344;36:160315",
+      "nodeName": "Expand account",
+      "destination": "14:42700",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42695",
+      "node": "I14:46344;36:160323",
+      "nodeName": "Action/more",
+      "destination": "14:42701",
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "protected": false
+    },
+    {
+      "source": "14:42913",
+      "node": "I14:47526;36:160227",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42913",
+      "node": "I14:47526;36:160235",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42913",
+      "node": "I36:157770;36:160271",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42913",
+      "node": "I36:157770;36:160279",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42913",
+      "node": "I14:47570;36:160315",
+      "nodeName": "Expand account",
+      "destination": "14:42700",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42913",
+      "node": "I14:47570;36:160323",
+      "nodeName": "Action/more",
+      "destination": "14:42701",
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "protected": false
+    },
+    {
+      "source": "14:42912",
+      "node": "I14:47358;36:160227",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42912",
+      "node": "I14:47358;36:160235",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42912",
+      "node": "I36:157815;36:160271",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42912",
+      "node": "I36:157815;36:160279",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42912",
+      "node": "I14:47402;36:160315",
+      "nodeName": "Expand account",
+      "destination": "14:42700",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42912",
+      "node": "I14:47402;36:160323",
+      "nodeName": "Action/more",
+      "destination": "14:42701",
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "protected": false
+    },
+    {
+      "source": "14:42914",
+      "node": "I14:47658;36:160227",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42914",
+      "node": "I14:47658;36:160235",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42914",
+      "node": "I36:157861;36:160271",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42914",
+      "node": "I36:157861;36:160279",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42914",
+      "node": "I14:47702;36:160315",
+      "nodeName": "Expand account",
+      "destination": "14:42700",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42914",
+      "node": "I14:47702;36:160323",
+      "nodeName": "Action/more",
+      "destination": "14:42701",
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "protected": false
+    },
+    {
+      "source": "14:42915",
+      "node": "I14:47823;36:160227",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42915",
+      "node": "I14:47823;36:160235",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42915",
+      "node": "I36:157907;36:160271",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42915",
+      "node": "I36:157907;36:160279",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42916",
+      "node": "I14:47965;36:160227",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42916",
+      "node": "I14:47965;36:160235",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42916",
+      "node": "I36:157953;36:160271",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42916",
+      "node": "I36:157953;36:160279",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42917",
+      "node": "I14:48107;36:160227",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42917",
+      "node": "I14:48107;36:160235",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42917",
+      "node": "I36:157999;36:160271",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42917",
+      "node": "I36:157999;36:160279",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42918",
+      "node": "I14:48247;36:160227",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42918",
+      "node": "I14:48247;36:160235",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42918",
+      "node": "I36:158045;36:160271",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42918",
+      "node": "I36:158045;36:160279",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42920",
+      "node": "14:48356",
+      "nodeName": "Action/refresh",
+      "destination": "14:48492",
+      "target": "R2/Dark|Dashboard|7|R|0|old|||resetloading|small",
+      "protected": false
+    },
+    {
+      "source": "14:42920",
+      "node": "I14:48407;36:160227",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42920",
+      "node": "I14:48407;36:160235",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42920",
+      "node": "I36:158091;36:160271",
+      "nodeName": "Expand account",
+      "destination": "14:42698",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42920",
+      "node": "I36:158091;36:160279",
+      "nodeName": "Action/more",
+      "destination": "14:42699",
+      "target": "R2/Dark|Menu|7|R|0|old||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:42920",
+      "node": "I14:48451;36:160315",
+      "nodeName": "Expand account",
+      "destination": "14:42700",
+      "target": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+      "protected": false
+    },
+    {
+      "source": "14:42920",
+      "node": "I14:48451;36:160323",
+      "nodeName": "Action/more",
+      "destination": "14:42701",
+      "target": "R2/Dark|Menu|7|R|0|old||Cursor||small",
+      "protected": false
+    },
+    {
+      "source": "14:42920",
+      "node": "14:48485",
+      "nodeName": "Button/查询最新额度",
+      "destination": "14:48492",
+      "target": "R2/Dark|Dashboard|7|R|0|old|||resetloading|small",
+      "protected": false
+    },
+    {
+      "source": "14:53566",
+      "node": "14:61176",
+      "nodeName": "Action/refresh",
+      "destination": "14:61309",
+      "target": "R2/Dark|Dashboard|7|R|0|new|||refresh|small",
+      "protected": false
+    },
+    {
+      "source": "14:53566",
+      "node": "14:61156",
+      "nodeName": "Action/link",
+      "destination": "14:61307",
+      "target": "R2/Dark|Connect|7|R|0|new||||small",
+      "protected": false
+    },
+    {
+      "source": "14:53566",
+      "node": "I14:61180;36:161976",
+      "nodeName": "Expand account",
+      "destination": "14:61310",
+      "target": "R2/Dark|Dashboard|7|R|0|new|Claude|||small",
+      "protected": false
+    },
+    {
+      "source": "14:53566",
+      "node": "I14:61180;36:161984",
+      "nodeName": "Action/more",
+      "destination": "14:61311",
+      "target": "R2/Dark|Menu|7|R|0|new||Claude||small",
+      "protected": false
+    },
+    {
+      "source": "14:53566",
+      "node": "I14:61224;36:160227",
+      "nodeName": "Expand account",
+      "destination": "14:61312",
+      "target": "R2/Dark|Dashboard|7|R|0|new|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:53566",
+      "node": "I14:61224;36:160235",
+      "nodeName": "Action/more",
+      "destination": "14:61313",
+      "target": "R2/Dark|Menu|7|R|0|new||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:53566",
+      "node": "I36:158136;36:160271",
+      "nodeName": "Expand account",
+      "destination": "14:61312",
+      "target": "R2/Dark|Dashboard|7|R|0|new|Codex|||small",
+      "protected": false
+    },
+    {
+      "source": "14:53566",
+      "node": "I36:158136;36:160279",
+      "nodeName": "Action/more",
+      "destination": "14:61313",
+      "target": "R2/Dark|Menu|7|R|0|new||Codex||small",
+      "protected": false
+    },
+    {
+      "source": "14:53566",
+      "node": "I14:61268;36:160315",
+      "nodeName": "Expand account",
+      "destination": "14:61314",
+      "target": "R2/Dark|Dashboard|7|R|0|new|Cursor|||small",
+      "protected": false
+    },
+    {
+      "source": "14:53566",
+      "node": "I14:61268;36:160323",
+      "nodeName": "Action/more",
+      "destination": "14:61315",
+      "target": "R2/Dark|Menu|7|R|0|new||Cursor||small",
+      "protected": false
+    },
+    {
+      "source": "14:53566",
+      "node": "14:61168",
+      "nodeName": "Tab/设置",
+      "destination": "14:61308",
+      "target": "R2/Dark|Settings|7|R|0|new||||small",
+      "protected": false
+    }
+  ]
+}

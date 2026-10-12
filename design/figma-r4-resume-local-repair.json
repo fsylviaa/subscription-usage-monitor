@@ -1,0 +1,1873 @@
+{
+  "status": "39处以内精确局部修复完成，待新审计与实际点击",
+  "mutationCount": 39,
+  "createdNodeIds": [],
+  "removedNodeIds": [],
+  "clearReactions": [
+    {
+      "rootId": "46:140983",
+      "root": "R4/Light/Widgets/Detail/B",
+      "nodeId": "46:147874",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42236",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "type": "SMART_ANIMATE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.2800000011920929
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": false,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42236",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "type": "SMART_ANIMATE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.2800000011920929
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": false,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Already expanded account details; disclosure icon hidden. Remove stale navigation hotspot, preserve all visible identity/quota/detail content."
+    },
+    {
+      "rootId": "46:140983",
+      "root": "R4/Light/Widgets/Detail/B",
+      "nodeId": "46:147882",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42237",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42237",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:141286",
+      "root": "R4/Light/Widgets/Detail/C",
+      "nodeId": "46:147966",
+      "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Expand account",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42236",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "type": "SMART_ANIMATE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.2800000011920929
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": false,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42236",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "type": "SMART_ANIMATE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.2800000011920929
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": false,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Already expanded account details; disclosure icon hidden. Remove stale navigation hotspot, preserve all visible identity/quota/detail content."
+    },
+    {
+      "rootId": "46:141286",
+      "root": "R4/Light/Widgets/Detail/C",
+      "nodeId": "46:147974",
+      "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42237",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42237",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:141589",
+      "root": "R4/Light/Widgets/Detail/D",
+      "nodeId": "46:148048",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42238",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "type": "SMART_ANIMATE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.2800000011920929
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": false,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42238",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "type": "SMART_ANIMATE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.2800000011920929
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": false,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Already expanded account details; disclosure icon hidden. Remove stale navigation hotspot, preserve all visible identity/quota/detail content."
+    },
+    {
+      "rootId": "46:141589",
+      "root": "R4/Light/Widgets/Detail/D",
+      "nodeId": "46:148056",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42239",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42239",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:144327",
+      "root": "R4/Light/Widgets/Accounts/ABCD",
+      "nodeId": "46:149137",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42237",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42237",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:144327",
+      "root": "R4/Light/Widgets/Accounts/ABCD",
+      "nodeId": "46:149303",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42239",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42239",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:144914",
+      "root": "R4/Light/Widgets/Accounts/ABD",
+      "nodeId": "46:149558",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42239",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42239",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:145413",
+      "root": "R4/Light/Widgets/Accounts/AD",
+      "nodeId": "46:149725",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42239",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42239",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:146479",
+      "root": "R4/Light/Widgets/Accounts/ABCDE",
+      "nodeId": "46:150169",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42237",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42237",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:146479",
+      "root": "R4/Light/Widgets/Accounts/ABCDE",
+      "nodeId": "46:150335",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42239",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42239",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:146479",
+      "root": "R4/Light/Widgets/Accounts/ABCDE",
+      "nodeId": "46:150405",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42236",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "type": "SMART_ANIMATE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.2800000011920929
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": false,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42236",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "type": "SMART_ANIMATE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.2800000011920929
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": false,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Already expanded account details; disclosure icon hidden. Remove stale navigation hotspot, preserve all visible identity/quota/detail content."
+    },
+    {
+      "rootId": "46:146479",
+      "root": "R4/Light/Widgets/Accounts/ABCDE",
+      "nodeId": "46:150413",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42237",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42237",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:147154",
+      "root": "R4/Light/Widgets/Accounts/ABDE",
+      "nodeId": "46:150600",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42237",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42237",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:147154",
+      "root": "R4/Light/Widgets/Accounts/ABDE",
+      "nodeId": "46:150678",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42239",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42239",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:147154",
+      "root": "R4/Light/Widgets/Accounts/ABDE",
+      "nodeId": "46:150748",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42236",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "type": "SMART_ANIMATE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.2800000011920929
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": false,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42236",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "type": "SMART_ANIMATE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.2800000011920929
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": false,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Already expanded account details; disclosure icon hidden. Remove stale navigation hotspot, preserve all visible identity/quota/detail content."
+    },
+    {
+      "rootId": "46:147154",
+      "root": "R4/Light/Widgets/Accounts/ABDE",
+      "nodeId": "46:150756",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42237",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42237",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "53:893425",
+      "root": "R4/Light/AccountSystem/Set-15/Settings-denied",
+      "nodeId": "53:893478",
+      "path": "$/Scroll viewport/Content/Group/通用/Row/额度显示",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "1:2249",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "1:2249",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:151344",
+      "root": "R4/Dark/Widgets/Detail/B",
+      "nodeId": "46:151601",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42698",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "type": "SMART_ANIMATE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.2800000011920929
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": false,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42698",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "type": "SMART_ANIMATE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.2800000011920929
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": false,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Already expanded account details; disclosure icon hidden. Remove stale navigation hotspot, preserve all visible identity/quota/detail content."
+    },
+    {
+      "rootId": "46:151344",
+      "root": "R4/Dark/Widgets/Detail/B",
+      "nodeId": "46:151609",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42699",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42699",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:151647",
+      "root": "R4/Dark/Widgets/Detail/C",
+      "nodeId": "46:151904",
+      "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Expand account",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42698",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "type": "SMART_ANIMATE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.2800000011920929
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": false,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42698",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "type": "SMART_ANIMATE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.2800000011920929
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": false,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Already expanded account details; disclosure icon hidden. Remove stale navigation hotspot, preserve all visible identity/quota/detail content."
+    },
+    {
+      "rootId": "46:151647",
+      "root": "R4/Dark/Widgets/Detail/C",
+      "nodeId": "46:151912",
+      "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42699",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42699",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:151950",
+      "root": "R4/Dark/Widgets/Detail/D",
+      "nodeId": "46:152197",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42700",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "type": "SMART_ANIMATE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.2800000011920929
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": false,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42700",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "type": "SMART_ANIMATE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.2800000011920929
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": false,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Already expanded account details; disclosure icon hidden. Remove stale navigation hotspot, preserve all visible identity/quota/detail content."
+    },
+    {
+      "rootId": "46:151950",
+      "root": "R4/Dark/Widgets/Detail/D",
+      "nodeId": "46:152205",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42701",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42701",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:154688",
+      "root": "R4/Dark/Widgets/Accounts/ABCD",
+      "nodeId": "46:155045",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42699",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42699",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:154688",
+      "root": "R4/Dark/Widgets/Accounts/ABCD",
+      "nodeId": "46:155211",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42701",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42701",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:155275",
+      "root": "R4/Dark/Widgets/Accounts/ABD",
+      "nodeId": "46:155710",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42701",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42701",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:155774",
+      "root": "R4/Dark/Widgets/Accounts/AD",
+      "nodeId": "46:156121",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42701",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42701",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:156840",
+      "root": "R4/Dark/Widgets/Accounts/ABCDE",
+      "nodeId": "46:157197",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42699",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42699",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:156840",
+      "root": "R4/Dark/Widgets/Accounts/ABCDE",
+      "nodeId": "46:157363",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42701",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42701",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:156840",
+      "root": "R4/Dark/Widgets/Accounts/ABCDE",
+      "nodeId": "46:157433",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42698",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "type": "SMART_ANIMATE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.2800000011920929
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": false,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42698",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "type": "SMART_ANIMATE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.2800000011920929
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": false,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Already expanded account details; disclosure icon hidden. Remove stale navigation hotspot, preserve all visible identity/quota/detail content."
+    },
+    {
+      "rootId": "46:156840",
+      "root": "R4/Dark/Widgets/Accounts/ABCDE",
+      "nodeId": "46:157441",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42699",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42699",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:157515",
+      "root": "R4/Dark/Widgets/Accounts/ABDE",
+      "nodeId": "46:157872",
+      "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42699",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42699",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:157515",
+      "root": "R4/Dark/Widgets/Accounts/ABDE",
+      "nodeId": "46:157950",
+      "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42701",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42701",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    },
+    {
+      "rootId": "46:157515",
+      "root": "R4/Dark/Widgets/Accounts/ABDE",
+      "nodeId": "46:158020",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42698",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "type": "SMART_ANIMATE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.2800000011920929
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": false,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42698",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "type": "SMART_ANIMATE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.2800000011920929
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": false,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Already expanded account details; disclosure icon hidden. Remove stale navigation hotspot, preserve all visible identity/quota/detail content."
+    },
+    {
+      "rootId": "46:157515",
+      "root": "R4/Dark/Widgets/Accounts/ABDE",
+      "nodeId": "46:158028",
+      "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "14:42699",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "14:42699",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "reason": "Hidden obsolete control; clear legacy reaction only."
+    }
+  ],
+  "homePlans": [
+    {
+      "theme": "Light",
+      "rootId": "46:142410",
+      "root": "R4/Light/Widgets/Home/Config/small/C",
+      "arrowId": "46:142414",
+      "configId": "46:142344",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "46:144327",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "46:144327",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "after": [
+        {
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "actions": [
+            {
+              "type": "BACK"
+            }
+          ]
+        }
+      ],
+      "alreadyBack": false
+    },
+    {
+      "theme": "Dark",
+      "rootId": "46:152771",
+      "root": "R4/Dark/Widgets/Home/Config/small/C",
+      "arrowId": "46:152775",
+      "configId": "46:152705",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "46:154688",
+            "navigation": "NAVIGATE",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": true,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "46:154688",
+              "navigation": "NAVIGATE",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": true,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "after": [
+        {
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "actions": [
+            {
+              "type": "BACK"
+            }
+          ]
+        }
+      ],
+      "alreadyBack": false
+    }
+  ],
+  "mutatedNodeIds": [
+    "46:147874",
+    "46:147882",
+    "46:147966",
+    "46:147974",
+    "46:148048",
+    "46:148056",
+    "46:149137",
+    "46:149303",
+    "46:149558",
+    "46:149725",
+    "46:150169",
+    "46:150335",
+    "46:150405",
+    "46:150413",
+    "46:150600",
+    "46:150678",
+    "46:150748",
+    "46:150756",
+    "53:893478",
+    "46:151601",
+    "46:151609",
+    "46:151904",
+    "46:151912",
+    "46:152197",
+    "46:152205",
+    "46:155045",
+    "46:155211",
+    "46:155710",
+    "46:156121",
+    "46:157197",
+    "46:157363",
+    "46:157433",
+    "46:157441",
+    "46:157872",
+    "46:157950",
+    "46:158020",
+    "46:158028",
+    "46:142414",
+    "46:152775"
+  ],
+  "unrelatedNodeSnapshotsVerified": 3034,
+  "actualClickValidation": "pending"
+}

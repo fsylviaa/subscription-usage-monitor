@@ -1,0 +1,1661 @@
+{
+  "status": "design_validated_cloud_verification_blocked",
+  "fileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+  "requirements": "0.6",
+  "baselineRecovery": "Exact equality of four scoped sections to figma-r4-before.json before R4 writes",
+  "completedWrites": [
+    "network/light",
+    "network/dark",
+    "widgets/light",
+    "widgets/dark",
+    "background/light",
+    "background/dark",
+    "account-foundation/light:64",
+    "account-foundation/dark:64",
+    "account-flow/light:0-15",
+    "account-flow/light:16-63",
+    "account-flow/dark:0-63",
+    "pending/light:176, remaining0",
+    "support/light+dark",
+    "widget-navigation-repair/light+dark",
+    "account-extras/Light+Dark:mask15",
+    "hidden-legacy-reactions/base15:Light+Dark",
+    "cancel-render-repair/Dark50:local-detach-confirmed",
+    "pending/dark:176, remaining0",
+    "final-links/Light+Dark",
+    "background-account-controls/Light+Dark",
+    "account-extras/Light:64 ready",
+    "account-extras/Dark:64 ready",
+    "account-extras/Light:176 pending",
+    "account-extras/Dark:176 pending",
+    "emptycopy/Light+Dark:4 exact empty roots",
+    "cross/Light:16ready+48pending+extras; audit passed; activated",
+    "failure-source/Light+Dark:2 localized review launch frames",
+    "cross/Dark:16ready+48pending+extras; internal audit passed; activated",
+    "app-auto-entry/Light+Dark:4review controls,no new roots",
+    "permission-preservation/Light:20 ready models",
+    "permission-preservation/Light:4 representative addition routes completed",
+    "permission-preservation/Light:scoped ready/add audit passed, 20 models and 4 routes",
+    "pending-widget-review/Light+Dark:2 stale Home roots and 6 design-review buttons",
+    "permission-preservation/Dark:20 ready models, native completion confirmed by executing agent",
+    "permission-preservation/Dark:4 representative addition routes completed",
+    "permission-preservation/Dark:scoped ready/add audit passed, 20 models and 4 routes",
+    "review-cleanup/Light:32 indices complete, remainingLegacyEdges [], 44 original review IDs preserved; final visibility verified by post-fix compact audit",
+    "review-cleanup/Dark:32 indices complete, remainingLegacyEdges [], 44 original review IDs preserved; final visibility verified by post-fix compact audit",
+    "delivery/Light+Dark:14439 R4 roots each, 44 original visible review roots each, legacyVisible0, curated45 each, no duplicate/missing targets",
+    "arrange/Light+Dark:complete true; original 44 review coordinates unchanged per native receipt scope",
+    "entries:only original Light1:500 and Dark1:4088 retained as R4 starting points",
+    "resume-local-repair:37 existing reaction nodes cleared +2 shared Home arrows BACK;0created/0removed",
+    "compact-next:replaced active compact module; frozen full scoped audit complete,issues0",
+    "runtime-followups:072-087 complete;issue003 resolved both themes/three origins;10 visible old hotspots checked",
+    "final-native-backup:verified ZIP/SHA256;canvas.fig matches post-audit checkpoint"
+  ],
+  "prototypeObserved": [
+    {
+      "theme": "light",
+      "scenario": "49 blocked",
+      "observed": "Current valid49 and threshold >50; cancellation returns review hub",
+      "evidence": "review-r4/light-score49-click.jpg"
+    },
+    {
+      "theme": "light",
+      "scenario": "50 blocked then retry",
+      "observed": "50 blocked; retry checks again then reaches Codex login; X returns review hub",
+      "evidence": [
+        "review-r4/light-score50-click.jpg",
+        "review-r4/light-retry-to-login.jpg"
+      ]
+    },
+    {
+      "theme": "light",
+      "scenario": "widget configuration",
+      "observed": "small gallery Add > selected work.codex > Done shows work70/85 and Cursor62; work widget enters correct work.codex detail",
+      "evidence": "review-r4/light-widget-work-selected.jpg"
+    },
+    {
+      "theme": "dark",
+      "scenarios": [
+        "49 blocked",
+        "50 blocked and cancel",
+        "timeout",
+        "unavailable",
+        "invalid",
+        "timeout retry -> network -> login",
+        "direct51 -> login -> authfailure -> cancel"
+      ],
+      "evidence": "review-r4/dark-*.jpg"
+    },
+    {
+      "theme": "dark",
+      "scenario": "50 cancel render repair",
+      "observed": "After local detach and reload Cancel visible; Cancel closes to same network hub",
+      "evidence": "review-r4/dark-score50-fixed.jpg"
+    },
+    {
+      "theme": "light",
+      "scenario": "widget full fallback chain",
+      "observed": "work Codex C removed -> personal Codex B 38/64 -> Claude A39/72 -> Cursor D62 -> empty. Cursor second widget remained unchanged until D disconnected. Tapping B and A entered exact account with original09:41; Back retained correct Home state.",
+      "evidence": [
+        "review-r4/light-widget-same-platform-fallback.jpg",
+        "review-r4/light-widget-cross-platform-fallback.jpg",
+        "review-r4/light-widget-empty.jpg"
+      ]
+    }
+  ],
+  "issuesUnderRepair": [],
+  "checkpoint": {
+    "status": "verified",
+    "path": "design/订阅额度 iPhone 原型-R4-最终验收-2026-10-09.fig",
+    "bytes": 10245818,
+    "sha256": "c259e30b5560459cbc9a2b1c9c2247a4cb3a81afb035b9a2eabd873179913b56",
+    "isFinal": true,
+    "archiveIntegrity": "passed",
+    "archiveMembers": [
+      "canvas.fig",
+      "thumbnail.png",
+      "meta.json",
+      "images/"
+    ],
+    "exportMeta": {
+      "client_meta": {
+        "background_color": {
+          "r": 0.8980392217636108,
+          "g": 0.8980392217636108,
+          "b": 0.8980392217636108,
+          "a": 1
+        },
+        "thumbnail_size": {
+          "width": 7,
+          "height": 381
+        },
+        "render_coordinates": {
+          "x": 100,
+          "y": 100,
+          "width": 18092,
+          "height": 983640
+        }
+      },
+      "file_name": "订阅额度 iPhone 原型",
+      "developer_related_links": [],
+      "exported_at": "2026-10-09T05:35:54.289Z"
+    },
+    "verifiedAt": "2026-10-09T05:36:15.371512+00:00",
+    "scope": "Final same-file native export after 39 localized reaction edits, frozen audit and 87 recorded click observations; cloud synchronization is recorded separately.",
+    "canvasSha256": "5b536085fcb7e497170775c762929eb11c568871fc94437352904303ea42334c",
+    "matchesPostAuditCheckpointCanvas": true,
+    "manifest": "design/figma-r4-final-backup-2026-10-09.json",
+    "cloudSyncVerified": false,
+    "cloudSyncStatus": "blocked_by_figma_memory",
+    "verification": "Final native ZIP, size, SHA256 and canvas.fig equality with the post-audit checkpoint independently checked locally. Cloud fixed-version content verification remains separate.",
+    "purpose": "final_native_delivery_after_repair_audit_and_targeted_clicks",
+    "cloudSyncReport": "design/figma-r4-final-sync-2026-10-09.json"
+  },
+  "pending": [
+    "核验命名云端版本的完整可读取性；原生与独立Chrome均遇Figma内存不足，当前未确认整体云端版本内容。"
+  ],
+  "activeStage": "Design, static review, representative runtime verification and final native backup complete; whole cloud-version verification blocked by Figma memory.",
+  "prototypeObservedLog": "design/figma-r4-click-log.json (87 actual observation records; declared representative runtime scope complete)",
+  "authoringNote": "Resumed by explicit user authorization. Only 39 localized reaction edits were made this resume; full scoped static audit and targeted actual clicks completed. No App/backend/account/scoring integration. No further design writes after audit; current remaining work is cloud-version verification.",
+  "uiAccess": {
+    "status": "same_file_current_canvas_recovered_final_handoff",
+    "finalUiStateConfirmed": true,
+    "evidence": "design/figma-r4-final-sync-2026-10-09.json",
+    "observedAt": "2026-10-09T05:44:41.083401+00:00",
+    "nativeFileLeftOpen": true,
+    "sameFileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+    "nativeRecoveryMode": true,
+    "nativeCurrentUrlStillRecovery": true,
+    "nativeMemoryPercent": 53.64,
+    "nativeFourR4SectionsObserved": true,
+    "pluginClosed": true,
+    "newFileCreated": false,
+    "nodesRemovedForRecovery": false,
+    "userActionRequiredNow": false,
+    "prototypeEntryLoaded": "1:500",
+    "prototypeHandoffImage": "design/review-r4/resume-final-light-entry.jpg",
+    "cloudVersionVerificationStillBlocked": true
+  },
+  "pendingWidgetReview": {
+    "status": "completed_native_write",
+    "report": "design/figma-r4-pending-widget-review.json",
+    "createdRootCount": 2,
+    "createdReviewButtonCount": 6,
+    "results": [
+      {
+        "theme": "Light",
+        "review": "46:140634",
+        "stale": "94:2477991",
+        "staleTarget": "53:337214",
+        "entries": [
+          {
+            "caption": "同平台回退 · 未获取额度",
+            "button": "94:2478089",
+            "destination": "65:1364715"
+          },
+          {
+            "caption": "跨平台回退 · 未获取额度",
+            "button": "94:2478091",
+            "destination": "65:1360170"
+          },
+          {
+            "caption": "旧组件画面 · 失效目标",
+            "button": "94:2478093",
+            "destination": "94:2477991"
+          }
+        ]
+      },
+      {
+        "theme": "Dark",
+        "review": "46:150995",
+        "stale": "94:2478095",
+        "staleTarget": "53:519111",
+        "entries": [
+          {
+            "caption": "同平台回退 · 未获取额度",
+            "button": "94:2478193",
+            "destination": "65:1654572"
+          },
+          {
+            "caption": "跨平台回退 · 未获取额度",
+            "button": "94:2478195",
+            "destination": "65:1650027"
+          },
+          {
+            "caption": "旧组件画面 · 失效目标",
+            "button": "94:2478197",
+            "destination": "94:2478095"
+          }
+        ]
+      }
+    ],
+    "actualClickValidation": "specified_stories_observed_054_055_057_058",
+    "history": [
+      {
+        "status": "preflight_stopped_before_writes",
+        "rootsWritten": 0,
+        "buttonsWritten": 0,
+        "reason": "Existing R3 widget header timestamps intentionally hidden; preflight wrongly demanded visibility",
+        "resolution": "Source checks raw preserved header values; visible quota and details remain checked. Corrected module subsequently executed successfully."
+      }
+    ]
+  },
+  "uiAccessHistory": [
+    {
+      "status": "resolved",
+      "reason": "Computer tool reports Mac locked; automatic unlock unavailable",
+      "userAsked": true,
+      "localSourceWorkContinues": true,
+      "resolvedOn": "2026-10-09",
+      "resolution": "User manually unlocked Mac; UI recovered. Light add completion was then confirmed."
+    }
+  ],
+  "nativeReceipts": {
+    "darkCross": "design/figma-r4-cross-dark.json",
+    "appAutoEntry": "design/figma-r4-app-auto-entry.json",
+    "pendingWidgetReview": "design/figma-r4-pending-widget-review.json",
+    "lightPermissionAdd": "design/figma-r4-permissions-light-add.json",
+    "lightPermissionAudit": "design/figma-r4-permissions-light-audit.json",
+    "darkPermissionAudit": "design/figma-r4-permissions-dark-audit.json",
+    "darkCleanup": "design/figma-r4-cleanup-dark-complete.json",
+    "windowRecoveredPreviousDarkReport": "design/figma-r4-window-recovered-report.json",
+    "lightDelivery": "design/figma-r4-delivery-light.json",
+    "arrangeLight": "design/figma-r4-arrange-light.json",
+    "arrangeDark": "design/figma-r4-arrange-dark.json",
+    "entries": "design/figma-r4-entries-final.json",
+    "nativeImages": "design/figma-r4-native-images.json",
+    "darkDelivery": "design/figma-r4-delivery-dark.json"
+  },
+  "permissionPreservation": {
+    "light": {
+      "ready": "completed",
+      "add": "completed",
+      "scopedAudit": "passed",
+      "readyModelCount": 20,
+      "additionRouteCount": 4,
+      "report": "design/figma-r4-permissions-light-audit.json",
+      "actualClicks": "specified_main_story_observed_R4-CLICK-056"
+    },
+    "dark": {
+      "ready": "completed",
+      "readyModelCount": 20,
+      "readyEvidence": "Executing agent confirmed native completion on 2026-10-09",
+      "add": "completed",
+      "scopedAudit": "passed",
+      "additionRouteCount": 4,
+      "report": "design/figma-r4-permissions-dark-audit.json",
+      "actualClicks": "specified_main_story_observed_R4-CLICK-059"
+    },
+    "finalWholeFileAudit": "passed_final_frozen_scoped_static_audit",
+    "finalAuditReport": "design/figma-r4-audit-after-final-fixes.json"
+  },
+  "checkpointHistory": [
+    {
+      "path": "design/订阅额度 iPhone 原型-R4-连续添加阶段备份.fig",
+      "bytes": 8277117,
+      "sha256": "91053cc3cae789d96fd06aa22a40913a1aece25dba2f552df4cd74204b054375",
+      "nativeHeaderHex": "504b0304140008080000b209495d0000",
+      "isFinal": false
+    },
+    {
+      "path": "design/订阅额度 iPhone 原型-R4-双主题权限完成备份.fig",
+      "bytes": 10116512,
+      "sha256": "817654ce5c4e6c59f88afbda449ff3827aa0263292045ebf8b2ad66b2fc3a7be",
+      "isFinal": false,
+      "archiveIntegrity": "passed",
+      "archiveMembers": 4,
+      "verification": "Local bytes, SHA-256 and all ZIP members verified on 2026-10-09. Stage checkpoint only.",
+      "coverageNote": "Checkpoint after both-theme permission-preservation completion; original review cleanup and final acceptance/export remain pending."
+    },
+    {
+      "path": "design/订阅额度 iPhone 原型-R4-浅色旧路径完成备份.fig",
+      "bytes": 10236766,
+      "sha256": "c70debf14e1ec849a1569e92c2a2ff3cd51a77f8c9798aea6e3d13ed8a1d96c3",
+      "isFinal": false,
+      "archiveIntegrity": "passed",
+      "archiveMembers": 4,
+      "verification": "Local bytes, SHA-256 and all ZIP members independently verified on 2026-10-09.",
+      "coverageNote": "Verified backup after Light cleanup and before now-completed Dark cleanup. No newer native .fig is confirmed; delayed saved JSON was only the prior Dark cleanup report."
+    },
+    {
+      "path": "design/订阅额度 iPhone 原型-R4-双主题旧路径完成备份.fig",
+      "bytes": 10336062,
+      "sha256": "2f183435415b07aad897cd0cb969ab3b2ad407f934f22980c14471cdac380307",
+      "isFinal": false,
+      "archiveIntegrity": "passed",
+      "archiveMembers": 4,
+      "verification": "Local byte size, SHA-256 and all four ZIP members independently verified on 2026-10-09.",
+      "coverageNote": "Verified stage checkpoint after both-theme cleanup, before later arrangement/entries. It is not the required final native backup."
+    },
+    {
+      "path": "design/订阅额度 iPhone 原型-R4-检查暂停点-2026-10-09.fig",
+      "bytes": 10293242,
+      "sha256": "f795c2d9c5a842126ee60ccd7a836c1120a5916dc00d5612b73198dd48cf9359",
+      "isFinal": false,
+      "purpose": "user_requested_pause_checkpoint",
+      "archiveIntegrity": "passed",
+      "archiveMembers": 4,
+      "members": [
+        "canvas.fig",
+        "thumbnail.png",
+        "meta.json",
+        "images/"
+      ],
+      "verification": "Executing agent saved native .fig and verified ZIP integrity; exact receipt is the pause checkpoint.",
+      "coverageNote": "Includes current both-theme cleanup, arrangement and entries. Neither candidate repair has been applied. Not final delivery."
+    },
+    {
+      "path": "design/订阅额度 iPhone 原型-R4-局部修复与审计-2026-10-09.fig",
+      "bytes": 10245818,
+      "sha256": "18dd6b2f89a07b26625f5170abb69a74216d724c76963b5444792fc6c3a69f77",
+      "isFinal": false,
+      "purpose": "after_local_repair_and_frozen_audit",
+      "archiveIntegrity": "passed",
+      "manifest": "design/figma-r4-resume-repair-checkpoint-2026-10-09.json"
+    }
+  ],
+  "executionCondition": {
+    "status": "blocked_by_figma_memory",
+    "interrupted": false,
+    "blocking": true,
+    "blockingScope": "whole_cloud_version_verification_only",
+    "designCompleteWithinDeclaredScope": true,
+    "staticAuditComplete": true,
+    "representativeRuntimeComplete": true,
+    "finalNativeBackupComplete": true,
+    "workStoppedByUser": false,
+    "isUserPause": false,
+    "evidence": [
+      "design/figma-r4-audit-after-final-fixes.json",
+      "design/figma-r4-click-log.json",
+      "design/figma-r4-final-backup-2026-10-09.json",
+      "design/figma-r4-final-sync-2026-10-09.json"
+    ],
+    "latestObservation": "After fixed-version OOM, the same current file recovered: four R4 sections visible, recovery=true, memory53.64%, plugin closed, native file left open; original Light prototype entry1:500 loaded for handoff. Whole fixed-version verification remains blocked.",
+    "nextAction": "核验命名云端版本的完整可读取性；原生与独立Chrome均遇Figma内存不足，当前未确认整体云端版本内容。",
+    "noFurtherDesignWritesPlanned": true,
+    "priorExecutionHistory": "history.preFinalizationSummary.record.executionCondition",
+    "finalUiState": {
+      "observedAt": "2026-10-09T05:44:41.083401+00:00",
+      "nativeSameFileRecovered": true,
+      "nativeFileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+      "nativeCurrentUrlStillRecovery": true,
+      "nativeMemoryPercent": 53.64,
+      "nativeFourR4SectionsObserved": true,
+      "pluginClosed": true,
+      "nativeFileLeftOpen": true,
+      "originalLightPrototypeEntryLoaded": "1:500",
+      "prototypeHandoffImage": "design/review-r4/resume-final-light-entry.jpg",
+      "cloudVersionVerificationStillBlocked": true
+    },
+    "finalCloudSyncReport": "design/figma-r4-final-sync-2026-10-09.json"
+  },
+  "reviewCleanup": {
+    "status": "both_themes_completed_native_stage",
+    "light": {
+      "completedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "runningIndexAtSync": null,
+      "totalPlannedIndices": 32,
+      "receiptPattern": "design/figma-r4-cleanup-light-N.json",
+      "savedReceiptsVerified": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "index0": {
+        "status": "completed_observed",
+        "nativeReceiptSaved": false,
+        "madeObserved": 29,
+        "evidence": "Executing agent observed successful native completion; no separate index-0 receipt saved."
+      },
+      "index1Recovery": {
+        "initialFailure": "Native flush rejected OVERLAY with SmartAnimate",
+        "fix": "OVERLAY transition changed to DISSOLVE",
+        "retry": "succeeded",
+        "existingRootsReused": true
+      },
+      "aggregateReceipt": "design/figma-r4-cleanup-light-summary.json",
+      "status": "completed_native_stage",
+      "complete": true,
+      "finalReceipt": "design/figma-r4-cleanup-light-complete.json",
+      "remainingLegacyEdges": [],
+      "preservedReviewRootCount": 44,
+      "createdRootCount": null,
+      "createdRootCountUnavailableIndices": [
+        0,
+        23,
+        31
+      ],
+      "legacyVisibleCount": 0,
+      "finalRepeatInterpretation": "The prior successful final execution already hid legacy roots. This repeated receipt lists no newly hidden roots and does not mean hiding was omitted.",
+      "legacyVisibilityEvidence": "design/figma-r4-delivery-light.json"
+    },
+    "dark": {
+      "status": "completed_native_stage",
+      "complete": true,
+      "completedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "totalPlannedIndices": 32,
+      "finalReceipt": "design/figma-r4-cleanup-dark-complete.json",
+      "remainingLegacyEdges": [],
+      "preservedReviewRootCount": 44,
+      "legacyVisibleCount": 0,
+      "delayedReportConfirmation": "design/figma-r4-window-recovered-report.json",
+      "legacyVisibilityEvidence": "design/figma-r4-delivery-dark.json"
+    },
+    "finalAudit": "passed_final_frozen_scoped_static_audit",
+    "finalAuditReport": "design/figma-r4-audit-after-final-fixes.json"
+  },
+  "currentBlocker": {
+    "type": "cloud_version_full_verification",
+    "status": "blocked_by_figma_memory",
+    "versionId": "2408215105198163984",
+    "isCurrentBlocker": true,
+    "blocksDesignWork": false,
+    "blocksOnly": "whole_cloud_version_verification",
+    "reason": "Both native fixed-version loading and independent Chrome encountered Figma browser-memory exhaustion.",
+    "userPause": false,
+    "requiresUserActionNow": false,
+    "evidence": "design/figma-r4-final-sync-2026-10-09.json"
+  },
+  "blockerHistory": [
+    {
+      "type": "figma_browser_memory_exhausted",
+      "status": "resolved",
+      "message": "This file has run out of browser memory",
+      "sameFileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+      "recoveryModeRequested": true,
+      "recoveryUrlParameter": "recovery=true",
+      "recovered": true,
+      "requiresUserAction": false,
+      "impact": "Normal editing cannot yet resume; the same file is loading in recovery mode. Memory reduction and recovery-mode exit have not been achieved.",
+      "resolvedOn": "2026-10-09",
+      "resolution": "Same-file recovery=true view fully rendered; Manage memory showed 56.0% total memory and 1,674,964 layers; ordinary canvas and tools available.",
+      "causeOfMemoryReduction": "unconfirmed; no causal inference",
+      "isCurrentBlocker": false
+    },
+    {
+      "type": "figma_desktop_editor_unresponsive_with_save_connection_issue",
+      "status": "ui_resolved_sync_issue_remains",
+      "isCurrentBlocker": false,
+      "observedAfter": "Dark cleanup completed",
+      "memoryAtUnresponsivePercent": 58.22,
+      "canvasAndPluginButtonsResponded": false,
+      "nativeFileAndViewMenusResponded": true,
+      "browserPrototypeResponded": true,
+      "figmaSavingMessage": "Connection issue affecting saving; locally saved changes will sync",
+      "saveLocalAtIncident": "Requested, but no native .fig save dialog or new .fig confirmed",
+      "deliveryLightAtIncident": "Execution not confirmed; plugin report remained the preceding Dark cleanup result",
+      "userAskedAsync": true,
+      "userReplyReceived": false,
+      "userReplyStillRequired": false,
+      "resolution": "Window resumed response autonomously; a delayed report-save dialog from an earlier action appeared. Saved report parsed as the prior Dark cleanup complete result. Existing tool closed; reopening local tool.",
+      "recoveredReport": "design/figma-r4-window-recovered-report.json",
+      "memoryAfterUiRecoveryPercent": 79.43,
+      "cloudSyncRecovered": false,
+      "cause": "unconfirmed; no new lock or memory-exhaustion diagnosis"
+    },
+    {
+      "type": "manual_mac_unlock",
+      "status": "resolved_user_unlocked",
+      "confirmedBy": "Native computer-use tool",
+      "message": "The Mac is locked and automatic unlock could not unlock it. Ask the user to unlock the Mac manually before continuing.",
+      "userAskedAgain": true,
+      "pendingUserAction": "Unlock the Mac manually again.",
+      "lastMemoryPercentObserved": 79.41,
+      "causeOfEarlierButtonDelay": "unconfirmed; this lock confirmation does not establish the cause of earlier desktop delays",
+      "impact": "Native UI work cannot continue until manual unlock; local preparation can continue.",
+      "firstActionAfterUnlock": "Read the current author-tool report to distinguish a pending delivery request from the prior Dark completion report; do not blindly retry.",
+      "event": "new_lock_confirmation_after_temporary_ui_recovery",
+      "isCurrentBlocker": false,
+      "resolved": true,
+      "resolvedOn": "2026-10-09",
+      "resolution": "User unlocked again; actual UI access restored and pending Light delivery native report received."
+    }
+  ],
+  "clickEvidenceAtSync": {
+    "clickLog": "design/figma-r4-click-log.json",
+    "entryCount": 87,
+    "latestClickRecord": "R4-CLICK-087",
+    "newResumeEntries": "R4-CLICK-072..087",
+    "pixelCheckedScreenshotCount": 70,
+    "screenshotCountSource": "Unique screenshotEvidencePolicy.verifiedFiles in current click log; scoped/partial captures retain their separate limits. Native 90-PNG delivery is counted separately.",
+    "partialCaptureCount": 7,
+    "newScreenshotReview": "design/figma-r4-resume-screenshot-review.json",
+    "overallResult": "required_representative_runtime_checks_completed",
+    "openObservedDesignIssues": [],
+    "requiredRuntimeGaps": [],
+    "acceptanceMapping": "design/figma-r4-resume-acceptance-mapping.json",
+    "scope": "Recorded representative scenarios only; not an exhaustive click-through of all finite account combinations or every short animation phase."
+  },
+  "latestSaveAttempt": {
+    "status": "final_native_backup_saved_and_verified",
+    "path": "design/订阅额度 iPhone 原型-R4-最终验收-2026-10-09.fig",
+    "bytes": 10245818,
+    "sha256": "c259e30b5560459cbc9a2b1c9c2247a4cb3a81afb035b9a2eabd873179913b56",
+    "isFinal": true,
+    "archiveIntegrity": "passed",
+    "archiveMembers": [
+      "canvas.fig",
+      "thumbnail.png",
+      "meta.json",
+      "images/"
+    ],
+    "exportMeta": {
+      "client_meta": {
+        "background_color": {
+          "r": 0.8980392217636108,
+          "g": 0.8980392217636108,
+          "b": 0.8980392217636108,
+          "a": 1
+        },
+        "thumbnail_size": {
+          "width": 7,
+          "height": 381
+        },
+        "render_coordinates": {
+          "x": 100,
+          "y": 100,
+          "width": 18092,
+          "height": 983640
+        }
+      },
+      "file_name": "订阅额度 iPhone 原型",
+      "developer_related_links": [],
+      "exported_at": "2026-10-09T05:35:54.289Z"
+    },
+    "verifiedAt": "2026-10-09T05:36:15.371512+00:00",
+    "scope": "Final same-file native export after 39 localized reaction edits, frozen audit and 87 recorded click observations; cloud synchronization is recorded separately.",
+    "canvasSha256": "5b536085fcb7e497170775c762929eb11c568871fc94437352904303ea42334c",
+    "matchesPostAuditCheckpointCanvas": true,
+    "manifest": "design/figma-r4-final-backup-2026-10-09.json",
+    "cloudSyncVerified": false,
+    "cloudSyncStatus": "blocked_by_figma_memory",
+    "verification": "Final native ZIP, size, SHA256 and canvas.fig equality with the post-audit checkpoint independently checked locally. Cloud fixed-version content verification remains separate.",
+    "purpose": "final_native_delivery_after_repair_audit_and_targeted_clicks",
+    "cloudSyncReport": "design/figma-r4-final-sync-2026-10-09.json"
+  },
+  "deliveryAttempt": {
+    "status": "design_static_runtime_and_final_native_complete_cloud_verification_blocked",
+    "reports": {
+      "light": "design/figma-r4-delivery-light.json",
+      "dark": "design/figma-r4-delivery-dark.json",
+      "arrangeLight": "design/figma-r4-arrange-light.json",
+      "arrangeDark": "design/figma-r4-arrange-dark.json",
+      "entries": "design/figma-r4-entries-final.json",
+      "nativePng": "design/figma-r4-native-images.json"
+    },
+    "finalAcceptance": "prototype_scope_verified_overall_delivery_blocked_by_cloud_version_verification",
+    "finalNativeBackupManifest": "design/figma-r4-final-backup-2026-10-09.json"
+  },
+  "unconfirmedDeliveryStages": [
+    "whole_cloud_version_verification_blocked_by_figma_memory"
+  ],
+  "localDeliveryPerformancePreparation": {
+    "status": "native_arrangement_completed_both_themes",
+    "bundleModules": 24,
+    "bundleSyntaxCheck": "passed_reported_by_executing_agent",
+    "inActiveBundle": true,
+    "nativeUiStarted": true,
+    "appliedInFigma": "Tool loaded; arrange/Light/0 requested, mutation completion not confirmed",
+    "nativePerformanceValidation": "Both native arrangement receipts complete; this is not final graph audit.",
+    "nativeArrangeCompleted": true
+  },
+  "delivery": {
+    "light": {
+      "report": "design/figma-r4-delivery-light.json",
+      "counts": {
+        "originalVisibleReview": 44,
+        "expectedOriginalVisibleReview": 44,
+        "r4Roots": 14439,
+        "r4Visible": 14439,
+        "legacyVisible": 0,
+        "curated": 45
+      },
+      "duplicates": [],
+      "missingCurated": [],
+      "arrangement": {
+        "report": "design/figma-r4-arrange-light.json",
+        "complete": true,
+        "total": 14439,
+        "scope": "只移动当前交互区现有 R4 根；不改原 44 页坐标，不改根名称、父级、反应或组件。"
+      }
+    },
+    "dark": {
+      "report": "design/figma-r4-delivery-dark.json",
+      "counts": {
+        "originalVisibleReview": 44,
+        "expectedOriginalVisibleReview": 44,
+        "r4Roots": 14439,
+        "r4Visible": 14439,
+        "legacyVisible": 0,
+        "curated": 45
+      },
+      "duplicates": [],
+      "missingCurated": [],
+      "arrangement": {
+        "report": "design/figma-r4-arrange-dark.json",
+        "complete": true,
+        "total": 14439,
+        "scope": "只移动当前交互区现有 R4 根；不改原 44 页坐标，不改根名称、父级、反应或组件。"
+      }
+    },
+    "prototypeEntries": {
+      "report": "design/figma-r4-entries-final.json",
+      "current": [
+        {
+          "nodeId": "1:500",
+          "name": "R4 · 浅色 · 交互状态与返回路径"
+        },
+        {
+          "nodeId": "1:4088",
+          "name": "R4 · 深色 · 交互状态与返回路径"
+        }
+      ],
+      "count": 2,
+      "publicationVerification": {
+        "status": "confirmed_by_executing_agent",
+        "light": "1:500 freshly loaded and pixels reviewed",
+        "dark": "1:4088 freshly loaded and pixels reviewed",
+        "hubReturns": "Network and widget review hubs return to R4 directory correctly",
+        "browserFlows": "Exactly two R4 theme flows observed",
+        "evidence": "design/review-r4/final-cloud-flows.jpg",
+        "doesNotProveAllEditsCloudSynced": true
+      }
+    },
+    "nativePng": {
+      "report": "design/figma-r4-native-images.json",
+      "expectedCount": 90,
+      "extractedCount": 90,
+      "complete": true,
+      "missingIds": [],
+      "nativeBytesUnchanged": true,
+      "reencoded": false,
+      "hashesVerifiedAgainstSavedFiles": true,
+      "directory": "design/review-r4/native",
+      "lightGallery": "design/figma-r4-gallery-light.html",
+      "darkGallery": "design/figma-r4-gallery-dark.html"
+    },
+    "staticPixelReview": {
+      "recordedCount": 90,
+      "totalNativePng": 90,
+      "reports": [
+        {
+          "report": "design/figma-r4-static-overview-first-query-review.json",
+          "reviewedCount": 14,
+          "result": "passed_for_static_scope",
+          "scope": "14 unchanged native PNGs, overview and first-query, Light/Dark"
+        },
+        {
+          "report": "design/figma-r4-static-accounts-system.json",
+          "reviewedCount": 18,
+          "result": "no_visible_blocking_issue_in_reviewed_scope",
+          "scope": "仅原生PNG文件名含accounts或system的18张图；非90张全量图审计。"
+        },
+        {
+          "report": "design/figma-r4-static-widgets-review.json",
+          "reviewedCount": 22,
+          "result": "passed_for_reviewed_static_scope",
+          "scope": "design/review-r4/native/*widgets*.png；浅深各11张，共22张。只检查这些原生静态图片的可见内容。"
+        },
+        {
+          "report": "design/figma-r4-static-network-background-review.json",
+          "reviewedCount": 36,
+          "result": "no_confirmed_visible_defects_followup_scroll_resolved",
+          "scope": "Independent read-only review of 36 network/background native PNGs plus binary/decode validation of all 90 curated PNGs."
+        }
+      ],
+      "remainingReportCount": 0,
+      "remainingFilenames": [],
+      "scope": "Saved pixel-review reports only; not whole-file or interaction acceptance.",
+      "confirmedVisibleDefects": 0,
+      "backgroundScrollFollowup": "resolved_by_both_theme_runtime_scroll_evidence",
+      "postRepairReuseJustification": "39 edits changed reactions only; 3034 unaffected-node snapshots verified and final native canvas matches post-audit checkpoint. Existing 90 native PNG visual review remains applicable; targeted new click screenshots are separate."
+    },
+    "finalNativeBackup": {
+      "status": "verified",
+      "path": "design/订阅额度 iPhone 原型-R4-最终验收-2026-10-09.fig",
+      "bytes": 10245818,
+      "sha256": "c259e30b5560459cbc9a2b1c9c2247a4cb3a81afb035b9a2eabd873179913b56",
+      "isFinal": true,
+      "archiveIntegrity": "passed",
+      "archiveMembers": [
+        "canvas.fig",
+        "thumbnail.png",
+        "meta.json",
+        "images/"
+      ],
+      "exportMeta": {
+        "client_meta": {
+          "background_color": {
+            "r": 0.8980392217636108,
+            "g": 0.8980392217636108,
+            "b": 0.8980392217636108,
+            "a": 1
+          },
+          "thumbnail_size": {
+            "width": 7,
+            "height": 381
+          },
+          "render_coordinates": {
+            "x": 100,
+            "y": 100,
+            "width": 18092,
+            "height": 983640
+          }
+        },
+        "file_name": "订阅额度 iPhone 原型",
+        "developer_related_links": [],
+        "exported_at": "2026-10-09T05:35:54.289Z"
+      },
+      "verifiedAt": "2026-10-09T05:36:15.371512+00:00",
+      "scope": "Final same-file native export after 39 localized reaction edits, frozen audit and 87 recorded click observations; cloud synchronization is recorded separately.",
+      "canvasSha256": "5b536085fcb7e497170775c762929eb11c568871fc94437352904303ea42334c",
+      "matchesPostAuditCheckpointCanvas": true,
+      "manifest": "design/figma-r4-final-backup-2026-10-09.json",
+      "cloudSyncVerified": false,
+      "cloudSyncStatus": "blocked_by_figma_memory",
+      "verification": "Final native ZIP, size, SHA256 and canvas.fig equality with the post-audit checkpoint independently checked locally. Cloud fixed-version content verification remains separate.",
+      "purpose": "final_native_delivery_after_repair_audit_and_targeted_clicks",
+      "cloudSyncReport": "design/figma-r4-final-sync-2026-10-09.json"
+    },
+    "cloudSynchronization": {
+      "status": "blocked_by_figma_memory",
+      "overallVerified": false,
+      "onlyRemainingDeliveryGate": true,
+      "namedVersionSave": {
+        "status": "save_operation_reported_successful",
+        "versionId": "2408215105198163984",
+        "url": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR?version-id=2408215105198163984&node-id=0-1",
+        "namedVersion": true,
+        "copyLinkObtained": true,
+        "evidenceSource": "Root agent observed native Save to Version History success and copied version link.",
+        "title": "R4 · 网络检查与返回路径验收 · 2026-10-09",
+        "historyListObserved": true
+      },
+      "latestCriticalChangesPublished": {
+        "status": "confirmed_by_reported_cloud_prototype_actual_clicks",
+        "entries": "R4-CLICK-072..081",
+        "scope": "Both themes: shared Home BACK from Config/review/recent Accounts and 10 cleared visible expanded-header hotspots. This verifies these observed changes, not complete named-version content."
+      },
+      "fixedVersionRead": {
+        "status": "blocked_by_figma_memory",
+        "nativeClient": "Version selected (URL version-id and selected entry Value=1), but subsequent accessibility state showed This file has run out of browser memory.",
+        "independentChrome": "Fixed version loading hit browser-memory exhaustion; recovery removed version-id and opened the same file current canvas.",
+        "completeNativeVersionReopenVerified": false,
+        "completeIndependentBrowserReadVerified": false,
+        "versionExportProduced": false,
+        "cloudLocalByteEqualityVerified": false
+      },
+      "withdrawnInference": "Earlier apparent canvas rendering while selecting the fixed version is withdrawn as evidence of complete reopening: the subsequent native OOM means it may have been the previous canvas during loading. Do not use resume-final-version-native.jpg alone as proof of fixed-version completeness.",
+      "localFinalBackupVerified": true,
+      "finalBackupManifest": "design/figma-r4-final-backup-2026-10-09.json",
+      "recoveryScope": "Root confirmed same-file current canvas recovered in recovery=true, four R4 sections visible, memory 53.64%, plugin closed and file left open. No design changes, Restore, Duplicate, archive removal or new file. This current-file recovery is not fixed-version verification.",
+      "isUserPause": false,
+      "requiresUserActionNow": false,
+      "interpretation": "Design, static review, required representative runtime checks and final native backup are complete. Named cloud save operation succeeded; whole-version verification remains blocked. Overall round completion is not claimed.",
+      "report": "design/figma-r4-final-sync-2026-10-09.json",
+      "reportSha256": "0a7754ab97a5b3542630a6a928f30c6e230ddc7e570f79060e6da1da3099c513",
+      "recordedAt": "2026-10-09T05:43:31.660503+00:00",
+      "reportStatus": "cloud_full_verification_blocked_by_figma_memory",
+      "namedVersion": {
+        "title": "R4 · 网络检查与返回路径验收 · 2026-10-09",
+        "id": "2408215105198163984",
+        "url": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR?version-id=2408215105198163984&node-id=0-1",
+        "saveOperationSucceeded": true,
+        "historyListObserved": true,
+        "copyLinkSucceeded": true,
+        "completeVersionReadVerified": false
+      },
+      "fixedVersionAttempts": [
+        {
+          "client": "independent Chrome",
+          "result": "Figma out-of-browser-memory at about 3.2 GB; fixed version never confirmed fully loaded",
+          "recovery": "Open in recovery mode removed version-id and rendered current same-file canvas; this is not fixed-version verification",
+          "currentFileMemoryPercentAfterRecovery": 55.3
+        },
+        {
+          "client": "native Figma",
+          "result": "Named row selected and URL contained fixed version-id; prior canvas remained visible before a later out-of-browser-memory dialog. Earlier screenshot cannot prove completed fixed-version load.",
+          "export": "Save Local Copy requested while version selected; no fixed-version export or save dialog confirmed. No cloud/local byte equality claimed.",
+          "evidence": [
+            "design/review-r4/resume-final-version-native.jpg",
+            "design/review-r4/resume-final-version-native-oom.jpg",
+            "design/figma-r4-final-version-native-ax.txt"
+          ],
+          "recovery": "Requested same-file current recovery; final UI observation to be appended"
+        }
+      ],
+      "finalUiState": {
+        "observedAt": "2026-10-09T05:44:41.083401+00:00",
+        "nativeSameFileRecovered": true,
+        "nativeFileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+        "nativeCurrentUrlStillRecovery": true,
+        "nativeMemoryPercent": 53.64,
+        "nativeFourR4SectionsObserved": true,
+        "pluginClosed": true,
+        "nativeFileLeftOpen": true,
+        "originalLightPrototypeEntryLoaded": "1:500",
+        "prototypeHandoffImage": "design/review-r4/resume-final-light-entry.jpg",
+        "cloudVersionVerificationStillBlocked": true
+      },
+      "reference": {
+        "url": "https://help.figma.com/hc/en-us/articles/360038006754-View-a-file-s-version-history",
+        "use": "Official semantics: named versions are file snapshots; used only to understand save/view behavior, not as evidence that this particular snapshot finished loading."
+      }
+    }
+  },
+  "compactAuditRun": {
+    "status": "passed_final_frozen_scoped_static_audit",
+    "runId": "r4compact-1791522480002",
+    "snapshotReport": "design/figma-r4-audit-after-final-fixes.json",
+    "snapshotBytes": 4471,
+    "auditNoLongerRunning": true,
+    "started": "2026-10-09T05:08:00.002Z",
+    "finished": "2026-10-09T05:20:54.055Z",
+    "authoringFrozenDuringRunReported": true,
+    "queues": {
+      "Light": {
+        "processed": 14483,
+        "queued": 14483,
+        "remaining": 0
+      },
+      "Dark": {
+        "processed": 14483,
+        "queued": 14483,
+        "remaining": 0
+      }
+    },
+    "counts": {
+      "Light": {
+        "roots": 14483,
+        "primaryRoots": 14483,
+        "legacyRoots": 0,
+        "visibleRoots": 14483,
+        "nodes": 914775,
+        "visibleNodes": 726851,
+        "texts": 204115,
+        "visibleTexts": 151705,
+        "reactionLayers": 88758,
+        "visibleReactionLayers": 88690,
+        "reactions": 88758,
+        "nodeActions": 58621,
+        "visibleNodeActions": 58553,
+        "closeBackActions": 30137
+      },
+      "Dark": {
+        "roots": 14483,
+        "primaryRoots": 14483,
+        "legacyRoots": 0,
+        "visibleRoots": 14483,
+        "nodes": 914775,
+        "visibleNodes": 726851,
+        "texts": 204115,
+        "visibleTexts": 151705,
+        "reactionLayers": 88758,
+        "visibleReactionLayers": 88690,
+        "reactions": 88758,
+        "nodeActions": 58621,
+        "visibleNodeActions": 58553,
+        "closeBackActions": 30137
+      }
+    },
+    "incompleteRoots": 0,
+    "legacyUnscanned": 0,
+    "graph": {
+      "configuredDeclaredCount": 2,
+      "configuredEntryCount": 2,
+      "reviewAndConfiguredEntryCount": 94,
+      "reachableRoots": 28638,
+      "inspectedReachableRoots": 28638,
+      "rootsWithKnownEscape": 28966
+    },
+    "pairedPrimaryRoots": 14483,
+    "issueCounts": {},
+    "issues": {},
+    "finalReport": "design/figma-r4-audit-after-final-fixes.json",
+    "finalStaticAuditPassed": true,
+    "finalAcceptancePassed": false,
+    "acceptanceInterpretation": "Static audit passed within active R4 and preserved visible R3 scope; cloud-version verification is the only remaining delivery gate. Actual clicks are separate evidence.",
+    "preFixReport": "design/figma-r4-audit-before-final-fixes.json",
+    "diagnosisReport": "design/figma-r4-resume-audit-diagnosis.json",
+    "repairReceipt": "design/figma-r4-resume-local-repair.json",
+    "sampleTruncation": 0,
+    "originalReviewFramesPerTheme": 44,
+    "sectionDirectorySnapshotsUnchangedFromPreFix": true,
+    "legacyInterpretation": "The previous 53 hidden/52 legacy category findings overlap; 37 existing R4 reactions were cleared and two Home arrows changed to BACK. Four hidden R2 roots lost visible entry edges and were no longer enqueued; no nodes were deleted."
+  },
+  "cloudSynchronization": {
+    "status": "blocked_by_figma_memory",
+    "overallVerified": false,
+    "onlyRemainingDeliveryGate": true,
+    "namedVersionSave": {
+      "status": "save_operation_reported_successful",
+      "versionId": "2408215105198163984",
+      "url": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR?version-id=2408215105198163984&node-id=0-1",
+      "namedVersion": true,
+      "copyLinkObtained": true,
+      "evidenceSource": "Root agent observed native Save to Version History success and copied version link.",
+      "title": "R4 · 网络检查与返回路径验收 · 2026-10-09",
+      "historyListObserved": true
+    },
+    "latestCriticalChangesPublished": {
+      "status": "confirmed_by_reported_cloud_prototype_actual_clicks",
+      "entries": "R4-CLICK-072..081",
+      "scope": "Both themes: shared Home BACK from Config/review/recent Accounts and 10 cleared visible expanded-header hotspots. This verifies these observed changes, not complete named-version content."
+    },
+    "fixedVersionRead": {
+      "status": "blocked_by_figma_memory",
+      "nativeClient": "Version selected (URL version-id and selected entry Value=1), but subsequent accessibility state showed This file has run out of browser memory.",
+      "independentChrome": "Fixed version loading hit browser-memory exhaustion; recovery removed version-id and opened the same file current canvas.",
+      "completeNativeVersionReopenVerified": false,
+      "completeIndependentBrowserReadVerified": false,
+      "versionExportProduced": false,
+      "cloudLocalByteEqualityVerified": false
+    },
+    "withdrawnInference": "Earlier apparent canvas rendering while selecting the fixed version is withdrawn as evidence of complete reopening: the subsequent native OOM means it may have been the previous canvas during loading. Do not use resume-final-version-native.jpg alone as proof of fixed-version completeness.",
+    "localFinalBackupVerified": true,
+    "finalBackupManifest": "design/figma-r4-final-backup-2026-10-09.json",
+    "recoveryScope": "Root confirmed same-file current canvas recovered in recovery=true, four R4 sections visible, memory 53.64%, plugin closed and file left open. No design changes, Restore, Duplicate, archive removal or new file. This current-file recovery is not fixed-version verification.",
+    "isUserPause": false,
+    "requiresUserActionNow": false,
+    "interpretation": "Design, static review, required representative runtime checks and final native backup are complete. Named cloud save operation succeeded; whole-version verification remains blocked. Overall round completion is not claimed.",
+    "report": "design/figma-r4-final-sync-2026-10-09.json",
+    "reportSha256": "0a7754ab97a5b3542630a6a928f30c6e230ddc7e570f79060e6da1da3099c513",
+    "recordedAt": "2026-10-09T05:43:31.660503+00:00",
+    "reportStatus": "cloud_full_verification_blocked_by_figma_memory",
+    "namedVersion": {
+      "title": "R4 · 网络检查与返回路径验收 · 2026-10-09",
+      "id": "2408215105198163984",
+      "url": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR?version-id=2408215105198163984&node-id=0-1",
+      "saveOperationSucceeded": true,
+      "historyListObserved": true,
+      "copyLinkSucceeded": true,
+      "completeVersionReadVerified": false
+    },
+    "fixedVersionAttempts": [
+      {
+        "client": "independent Chrome",
+        "result": "Figma out-of-browser-memory at about 3.2 GB; fixed version never confirmed fully loaded",
+        "recovery": "Open in recovery mode removed version-id and rendered current same-file canvas; this is not fixed-version verification",
+        "currentFileMemoryPercentAfterRecovery": 55.3
+      },
+      {
+        "client": "native Figma",
+        "result": "Named row selected and URL contained fixed version-id; prior canvas remained visible before a later out-of-browser-memory dialog. Earlier screenshot cannot prove completed fixed-version load.",
+        "export": "Save Local Copy requested while version selected; no fixed-version export or save dialog confirmed. No cloud/local byte equality claimed.",
+        "evidence": [
+          "design/review-r4/resume-final-version-native.jpg",
+          "design/review-r4/resume-final-version-native-oom.jpg",
+          "design/figma-r4-final-version-native-ax.txt"
+        ],
+        "recovery": "Requested same-file current recovery; final UI observation to be appended"
+      }
+    ],
+    "finalUiState": {
+      "observedAt": "2026-10-09T05:44:41.083401+00:00",
+      "nativeSameFileRecovered": true,
+      "nativeFileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+      "nativeCurrentUrlStillRecovery": true,
+      "nativeMemoryPercent": 53.64,
+      "nativeFourR4SectionsObserved": true,
+      "pluginClosed": true,
+      "nativeFileLeftOpen": true,
+      "originalLightPrototypeEntryLoaded": "1:500",
+      "prototypeHandoffImage": "design/review-r4/resume-final-light-entry.jpg",
+      "cloudVersionVerificationStillBlocked": true
+    },
+    "reference": {
+      "url": "https://help.figma.com/hc/en-us/articles/360038006754-View-a-file-s-version-history",
+      "use": "Official semantics: named versions are file snapshots; used only to understand save/view behavior, not as evidence that this particular snapshot finished loading."
+    }
+  },
+  "pause": {
+    "status": "resumed_by_explicit_user_authorization",
+    "historicalCheckpoint": "design/figma-r4-pause-checkpoint-2026-10-09.json",
+    "authorizedAt": "2026-10-09",
+    "authorization": "User explicitly resumed the saved project and authorized continued local Figma work.",
+    "requiresExplicitResume": false,
+    "workStoppedByUser": false
+  },
+  "openActualIssue": null,
+  "unappliedCandidates": {
+    "paths": [],
+    "remainingCount": 0,
+    "status": "no_unapplied_resume_candidates",
+    "originalCandidatesApplied": true,
+    "appliedModules": [
+      "design/figma-plugin/r4-widget-return-repair.js",
+      "design/figma-plugin/r4-audit-compact-next.js",
+      "design/figma-plugin/r4-resume-local-repair.js"
+    ],
+    "auditModuleRule": "compact-next replaced compact; duplicate definitions were not loaded concurrently.",
+    "repairReceipt": "design/figma-r4-resume-local-repair.json",
+    "auditReport": "design/figma-r4-audit-after-final-fixes.json",
+    "diagnosisOrRepairContinuedOnlyAfterExplicitResume": true
+  },
+  "resume": {
+    "at": "2026-10-09T05:04:00.448846+00:00",
+    "authorizedBy": "用户2026-10-09明确恢复",
+    "pauseBackupVerified": true,
+    "backupSha256": "f795c2d9c5a842126ee60ccd7a836c1120a5916dc00d5612b73198dd48cf9359",
+    "stage": "design_validation_complete_cloud_version_verification_blocked",
+    "figmaWritesThisResume": true,
+    "repairReceipt": "design/figma-r4-resume-local-repair.json",
+    "liveInspection": "design/figma-r4-resume-live-inspection.json",
+    "mutatedReactionNodes": 39,
+    "createdNodes": 0,
+    "removedNodes": 0,
+    "memoryPercentAfterRepair": 55.55,
+    "cloudReloadObservation": {
+      "at": "2026-10-09T05:17:08.729776+00:00",
+      "sameFile": true,
+      "browserNormalReload": "Figma reported out of browser memory",
+      "recoveryRequested": true,
+      "newFileCreated": false,
+      "archiveRemoved": false,
+      "historicalObservation": true,
+      "nativeAuditContinuedAtThatObservation": true,
+      "currentAuditStatus": "completed; see compactAuditRun"
+    },
+    "postRepairAudit": "design/figma-r4-audit-after-final-fixes.json",
+    "actualClicksCompleteThrough": "R4-CLICK-087",
+    "finalNativeBackupManifest": "design/figma-r4-final-backup-2026-10-09.json",
+    "cloudVersionId": "2408215105198163984",
+    "overallCloudVerification": "blocked_by_figma_memory",
+    "noFurtherDesignWritesAfterAudit": true,
+    "postAuditCanvasEqualityVerified": true,
+    "finalCloudSyncReport": "design/figma-r4-final-sync-2026-10-09.json",
+    "finalUiState": {
+      "observedAt": "2026-10-09T05:44:41.083401+00:00",
+      "nativeSameFileRecovered": true,
+      "nativeFileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+      "nativeCurrentUrlStillRecovery": true,
+      "nativeMemoryPercent": 53.64,
+      "nativeFourR4SectionsObserved": true,
+      "pluginClosed": true,
+      "nativeFileLeftOpen": true,
+      "originalLightPrototypeEntryLoaded": "1:500",
+      "prototypeHandoffImage": "design/review-r4/resume-final-light-entry.jpg",
+      "cloudVersionVerificationStillBlocked": true
+    },
+    "cloudFixedVersionReadComplete": false,
+    "cloudSaveOperationSucceeded": true
+  },
+  "completionClaimed": false,
+  "history": {
+    "preFinalizationSummary": {
+      "historical": true,
+      "supersededAt": "2026-10-09T13:44:42.970396+08:00",
+      "note": "Preserved old pause/pre-final summaries; explicit user resume superseded the pause.",
+      "record": {
+        "status": "in_progress",
+        "issuesUnderRepair": [
+          "R4-OBS-ISSUE-003 remains open; two candidate modules unapplied",
+          "Audit candidates remain undiagnosed: hidden53 / legacy52 overlap, themeReactionMismatch1",
+          "Final post-fix audit, final backup and overall cloud sync incomplete"
+        ],
+        "checkpoint": {
+          "path": "design/订阅额度 iPhone 原型-R4-检查暂停点-2026-10-09.fig",
+          "bytes": 10293242,
+          "sha256": "f795c2d9c5a842126ee60ccd7a836c1120a5916dc00d5612b73198dd48cf9359",
+          "isFinal": false,
+          "purpose": "user_requested_pause_checkpoint",
+          "archiveIntegrity": "passed",
+          "archiveMembers": 4,
+          "members": [
+            "canvas.fig",
+            "thumbnail.png",
+            "meta.json",
+            "images/"
+          ],
+          "verification": "Executing agent saved native .fig and verified ZIP integrity; exact receipt is the pause checkpoint.",
+          "coverageNote": "Includes current both-theme cleanup, arrangement and entries. Neither candidate repair has been applied. Not final delivery."
+        },
+        "pending": [
+          "Paused by user; do not advance until explicit resume",
+          "Diagnose R4-OBS-ISSUE-003 and audit candidates (53 hiddenTargets / 52 legacyTargets overlap; 1 themeReactionMismatch)",
+          "Review the two unapplied candidate modules before any targeted application",
+          "After fixes, repeat scoped actual clicks and final read-only audit",
+          "Verify overall cloud sync, save final native backup and finalize delivery"
+        ],
+        "activeStage": "paused_by_user — native pause checkpoint and before-final-fixes audit saved; author plugin closed",
+        "prototypeObservedLog": "design/figma-r4-click-log.json (actual observations only; ongoing)",
+        "authoringNote": "Stopped at user request. No further node editing, diagnosis, audit or UI operation after saving this pause record.",
+        "uiAccess": {
+          "status": "not_operating_paused_by_user",
+          "pluginClosed": true,
+          "nativeFileLeftOpen": true,
+          "nativeRecoveryMode": true,
+          "nativeMemoryPercentAtPause": 94.28,
+          "userActionRequiredNow": false
+        },
+        "executionCondition": {
+          "status": "paused_by_user",
+          "figmaMemoryPercentObserved": 94.28,
+          "interrupted": false,
+          "blocking": false,
+          "evidence": "Both-theme native arrange and final entries reports plus complete 90-PNG extraction verified; executing agent reports compact audit running.",
+          "nextAction": "None until explicit user resume.",
+          "originalReviewCleanupExecuted": true,
+          "memoryObservationHistory": [
+            {
+              "percent": 96.46,
+              "context": "Before original-review cleanup"
+            },
+            {
+              "percent": 96.87,
+              "context": "During sequential Light cleanup"
+            },
+            {
+              "percent": 97.9,
+              "context": "Before memory-exhaustion dialog and same-file recovery"
+            },
+            {
+              "percent": 58.22,
+              "context": "After Dark cleanup, desktop canvas/plugin temporarily unresponsive"
+            },
+            {
+              "percent": 79.43,
+              "context": "Window resumed response; saving connection issue remains"
+            },
+            {
+              "percent": 79.41,
+              "context": "Last observation before native tool explicitly confirmed the Mac was locked"
+            }
+          ],
+          "latestObservation": "User requested save-and-pause; audit snapshot and native pause checkpoint saved; plugin closed, native file left open.",
+          "sessionReopen": {
+            "status": "same_file_editing_available",
+            "sameFile": true,
+            "fileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+            "extraCheckpointVerified": true,
+            "memoryReleased": null,
+            "history": [
+              {
+                "action": "Close prior tab",
+                "warning": "Figma reported unsynced changes but said local changes would not be lost; closed after native checkpoint verified."
+              },
+              {
+                "action": "Reopen unique same-name Design from Recent",
+                "confirmedFileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+                "observedLabel": "Edited 4 minutes ago"
+              },
+              {
+                "action": "Enter recovery mode after browser-memory-exhaustion dialog",
+                "recoveryRequested": true,
+                "stillLoading": true
+              },
+              {
+                "action": "Confirm editable same-file recovery view",
+                "memoryPercent": 56.0,
+                "totalLayers": 1674964,
+                "normalCanvasAndToolsAvailable": true
+              }
+            ],
+            "memoryReductionObserved": true,
+            "causeOfMemoryReduction": "unconfirmed",
+            "recoveryUrlStillTrue": true
+          },
+          "recoveryPlan": {
+            "status": "on_hold_no_archive_removal",
+            "target": "Replaced legacy interaction archive roots with no current references, same existing file only",
+            "removeOnlyAfterExecutingAgentReview": true,
+            "removalExecuted": false,
+            "newFileCreated": false,
+            "exitThresholdPercent": 90,
+            "exitCondition": "Observed memory 56.0% is below the referenced 90% threshold; ordinary canvas/tools available. URL still includes recovery=true; no Exit recovery action was shown or clicked.",
+            "backup": "design/订阅额度 iPhone 原型-R4-浅色旧路径完成备份.fig"
+          },
+          "totalLayersObserved": 1674964,
+          "workStopped": true
+        },
+        "clickEvidenceAtSync": {
+          "clickLog": "design/figma-r4-click-log.json",
+          "entryCount": 71,
+          "latestClickRecord": "R4-CLICK-071",
+          "pixelCheckedScreenshotCount": 45,
+          "screenshotCountSource": "Unique screenshotEvidencePolicy.verifiedFiles in current click log; not final native PNG delivery.",
+          "overallResult": "not_final_acceptance",
+          "scope": "Observed cases only; not whole-round acceptance.",
+          "pauseCheckpoint": "design/figma-r4-pause-checkpoint-2026-10-09.json"
+        },
+        "latestSaveAttempt": {
+          "status": "native_pause_checkpoint_saved_and_zip_verified",
+          "path": "design/订阅额度 iPhone 原型-R4-检查暂停点-2026-10-09.fig",
+          "bytes": 10293242,
+          "sha256": "f795c2d9c5a842126ee60ccd7a836c1120a5916dc00d5612b73198dd48cf9359",
+          "isFinal": false,
+          "cloudSyncVerified": false
+        },
+        "deliveryAttempt": {
+          "status": "read_only_arrangement_entries_and_native_png_completed",
+          "reports": {
+            "light": "design/figma-r4-delivery-light.json",
+            "dark": "design/figma-r4-delivery-dark.json",
+            "arrangeLight": "design/figma-r4-arrange-light.json",
+            "arrangeDark": "design/figma-r4-arrange-dark.json",
+            "entries": "design/figma-r4-entries-final.json",
+            "nativePng": "design/figma-r4-native-images.json"
+          },
+          "finalAcceptance": "pending"
+        },
+        "unconfirmedDeliveryStages": [
+          "diagnosis and repair of R4-OBS-ISSUE-003 and audit candidates",
+          "post-fix final read-only audit acceptance",
+          "final native .fig delivery backup",
+          "overall cloud synchronization confirmation"
+        ],
+        "compactAuditRun": {
+          "status": "snapshot_saved_not_final_pass",
+          "runId": "r4compact-1791504787585",
+          "snapshotReport": "design/figma-r4-audit-before-final-fixes.json",
+          "snapshotBytes": 72230,
+          "auditNoLongerRunning": true,
+          "queues": {
+            "Light": {
+              "processed": 14485,
+              "queued": 14485,
+              "remaining": 0
+            },
+            "Dark": {
+              "processed": 14485,
+              "queued": 14485,
+              "remaining": 0
+            }
+          },
+          "incompleteRoots": 0,
+          "legacyUnscanned": 0,
+          "graph": {
+            "configuredDeclaredCount": 2,
+            "configuredEntryCount": 2,
+            "reviewAndConfiguredEntryCount": 94,
+            "reachableRoots": 28642,
+            "inspectedReachableRoots": 28642,
+            "rootsWithKnownEscape": 28966
+          },
+          "pairedPrimaryRoots": 14483,
+          "issueCounts": {
+            "hiddenTargets": 53,
+            "legacyTargets": 52,
+            "themeReactionMismatch": 1
+          },
+          "candidateInterpretation": "hiddenTargets与legacyTargets重叠，不能相加；均尚未逐项诊断。此文件不是最终通过报告。",
+          "finalReport": null,
+          "finalAcceptancePassed": false
+        },
+        "cloudSynchronization": {
+          "status": "not_fully_verified",
+          "entryPublication": "previously_confirmed",
+          "pauseNote": "Filename currently shows no warning, but full overall synchronization remains unproven. No extra sync diagnosis performed for pause."
+        },
+        "pause": {
+          "status": "paused_by_user",
+          "checkpoint": "design/figma-r4-pause-checkpoint-2026-10-09.json",
+          "savedAt": "2026-10-09T00:29:23.640100+00:00",
+          "reason": "用户要求记录保存当前检查结果后暂停，等待明确继续指令。",
+          "requiresExplicitResume": true,
+          "pluginClosed": true,
+          "workStopped": true
+        },
+        "openActualIssue": {
+          "id": "R4-OBS-ISSUE-003",
+          "description": "小号组件work配置完成、详情关闭后，Home返回进入账号管理页。浅深共享Home对应修复候选尚未应用。",
+          "homeIds": [
+            "46:142410",
+            "46:152771"
+          ],
+          "configIds": [
+            "46:142344",
+            "46:152705"
+          ]
+        },
+        "unappliedCandidates": {
+          "paths": [
+            "design/figma-plugin/r4-widget-return-repair.js",
+            "design/figma-plugin/r4-audit-compact-next.js"
+          ],
+          "applied": false,
+          "diagnosisOrRepairContinuedAfterPause": false
+        },
+        "completedWrites": [
+          "network/light",
+          "network/dark",
+          "widgets/light",
+          "widgets/dark",
+          "background/light",
+          "background/dark",
+          "account-foundation/light:64",
+          "account-foundation/dark:64",
+          "account-flow/light:0-15",
+          "account-flow/light:16-63",
+          "account-flow/dark:0-63",
+          "pending/light:176, remaining0",
+          "support/light+dark",
+          "widget-navigation-repair/light+dark",
+          "account-extras/Light+Dark:mask15",
+          "hidden-legacy-reactions/base15:Light+Dark",
+          "cancel-render-repair/Dark50:local-detach-confirmed",
+          "pending/dark:176, remaining0",
+          "final-links/Light+Dark",
+          "background-account-controls/Light+Dark",
+          "account-extras/Light:64 ready",
+          "account-extras/Dark:64 ready",
+          "account-extras/Light:176 pending",
+          "account-extras/Dark:176 pending",
+          "emptycopy/Light+Dark:4 exact empty roots",
+          "cross/Light:16ready+48pending+extras; audit passed; activated",
+          "failure-source/Light+Dark:2 localized review launch frames",
+          "cross/Dark:16ready+48pending+extras; internal audit passed; activated",
+          "app-auto-entry/Light+Dark:4review controls,no new roots",
+          "permission-preservation/Light:20 ready models",
+          "permission-preservation/Light:4 representative addition routes completed",
+          "permission-preservation/Light:scoped ready/add audit passed, 20 models and 4 routes",
+          "pending-widget-review/Light+Dark:2 stale Home roots and 6 design-review buttons",
+          "permission-preservation/Dark:20 ready models, native completion confirmed by executing agent",
+          "permission-preservation/Dark:4 representative addition routes completed",
+          "permission-preservation/Dark:scoped ready/add audit passed, 20 models and 4 routes",
+          "review-cleanup/Light:32 indices complete, remainingLegacyEdges [], 44 original review IDs preserved; final visibility verification pending",
+          "review-cleanup/Dark:32 indices complete, remainingLegacyEdges [], 44 original review IDs preserved; final visibility verification pending",
+          "delivery/Light+Dark:14439 R4 roots each, 44 original visible review roots each, legacyVisible0, curated45 each, no duplicate/missing targets",
+          "arrange/Light+Dark:complete true; original 44 review coordinates unchanged per native receipt scope",
+          "entries:only original Light1:500 and Dark1:4088 retained as R4 starting points"
+        ],
+        "permissionPreservation": {
+          "light": {
+            "ready": "completed",
+            "add": "completed",
+            "scopedAudit": "passed",
+            "readyModelCount": 20,
+            "additionRouteCount": 4,
+            "report": "design/figma-r4-permissions-light-audit.json",
+            "actualClicks": "pending"
+          },
+          "dark": {
+            "ready": "completed",
+            "readyModelCount": 20,
+            "readyEvidence": "Executing agent confirmed native completion on 2026-10-09",
+            "add": "completed",
+            "scopedAudit": "passed",
+            "additionRouteCount": 4,
+            "report": "design/figma-r4-permissions-dark-audit.json",
+            "actualClicks": "pending"
+          },
+          "finalWholeFileAudit": "pending"
+        },
+        "reviewCleanup": {
+          "status": "both_themes_completed_native_stage",
+          "light": {
+            "completedIndices": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31
+            ],
+            "runningIndexAtSync": null,
+            "totalPlannedIndices": 32,
+            "receiptPattern": "design/figma-r4-cleanup-light-N.json",
+            "savedReceiptsVerified": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22
+            ],
+            "index0": {
+              "status": "completed_observed",
+              "nativeReceiptSaved": false,
+              "madeObserved": 29,
+              "evidence": "Executing agent observed successful native completion; no separate index-0 receipt saved."
+            },
+            "index1Recovery": {
+              "initialFailure": "Native flush rejected OVERLAY with SmartAnimate",
+              "fix": "OVERLAY transition changed to DISSOLVE",
+              "retry": "succeeded",
+              "existingRootsReused": true
+            },
+            "aggregateReceipt": "design/figma-r4-cleanup-light-summary.json",
+            "status": "completed_native_stage",
+            "complete": true,
+            "finalReceipt": "design/figma-r4-cleanup-light-complete.json",
+            "remainingLegacyEdges": [],
+            "preservedReviewRootCount": 44,
+            "createdRootCount": null,
+            "createdRootCountUnavailableIndices": [
+              0,
+              23,
+              31
+            ],
+            "legacyVisibleCount": 0,
+            "finalRepeatInterpretation": "The prior successful final execution already hid legacy roots. This repeated receipt lists no newly hidden roots and does not mean hiding was omitted.",
+            "legacyVisibilityEvidence": "design/figma-r4-delivery-light.json"
+          },
+          "dark": {
+            "status": "completed_native_stage",
+            "complete": true,
+            "completedIndices": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31
+            ],
+            "totalPlannedIndices": 32,
+            "finalReceipt": "design/figma-r4-cleanup-dark-complete.json",
+            "remainingLegacyEdges": [],
+            "preservedReviewRootCount": 44,
+            "legacyVisibleCount": 0,
+            "delayedReportConfirmation": "design/figma-r4-window-recovered-report.json",
+            "legacyVisibilityEvidence": "design/figma-r4-delivery-dark.json"
+          },
+          "finalAudit": "pending"
+        }
+      }
+    }
+  },
+  "updatedAt": "2026-10-09T13:45:31.849079+08:00",
+  "localResumeRepair": {
+    "status": "completed_and_targeted_runtime_verified",
+    "receipt": "design/figma-r4-resume-local-repair.json",
+    "inspection": "design/figma-r4-resume-live-inspection.json",
+    "diagnosis": "design/figma-r4-resume-audit-diagnosis.json",
+    "mutationCount": 39,
+    "clearedReactionNodes": 37,
+    "homeBackNodes": 2,
+    "createdNodes": 0,
+    "removedNodes": 0,
+    "unrelatedNodeSnapshotsVerified": 3034,
+    "visibleHeaderHotspotsActuallyClicked": 10,
+    "homeReturnOriginsActuallyClickedPerTheme": [
+      "Config/small/C",
+      "Widgets/Review",
+      "recent Accounts/ABCD"
+    ],
+    "runtimeEntries": "R4-CLICK-072..081",
+    "issue003Status": "resolved_verified_light_dark_three_origins"
+  },
+  "prototypeAcceptanceWithinDeclaredScope": true,
+  "finalNativeBackupComplete": true,
+  "resolvedActualIssue003": {
+    "id": "R4-OBS-ISSUE-003",
+    "status": "resolved_verified_light_dark_three_origins",
+    "theme": "Dark",
+    "description": "小号组件从work配置完成到共享baseHome后，账号详情CLOSE返回Home正确；随后Home的导航Back进入Accounts46:154688，未回实际来源Config46:152705。",
+    "sourceNodeId": "46:152771",
+    "expectedTargetNodeId": "46:152705",
+    "actualTargetNodeId": "46:154688",
+    "relatedEntries": [
+      "R4-CLICK-070"
+    ],
+    "reportedCodeCause": "主执行代理已源码确认：共享baseHome的Action/back被fallback链覆盖。",
+    "repairStatus": "39处局部reaction修复后，新全量分批静态审计候选为空；072–074及077–079实测共享Home三来源正确。",
+    "confirmedScope": "已实点的Dark小号work配置后Home返回；不将问题扩大为未观察的任意主题/配置。",
+    "notAffectedRecordedScope": [
+      "R4-CLICK-036：深色中号配置与逐层返回，原观察保留。"
+    ],
+    "resolutionEntries": [
+      "R4-CLICK-072",
+      "R4-CLICK-073",
+      "R4-CLICK-074",
+      "R4-CLICK-077",
+      "R4-CLICK-078",
+      "R4-CLICK-079"
+    ],
+    "resolutionScope": "保留070历史错误事实；本次只对浅深指定Config、Hub、最近Accounts来源关闭该问题。"
+  }
+}

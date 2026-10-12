@@ -1,0 +1,2258 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-09",
+  "scope": "Independent read-only review of 36 network/background native PNGs plus binary/decode validation of all 90 curated PNGs.",
+  "reviewer": "requirements subagent",
+  "overallAcceptancePassed": null,
+  "nativeFigmaModified": false,
+  "imageBytesModified": false,
+  "dataIntegrity": {
+    "expectedCount": 90,
+    "reportCount": 90,
+    "decodedCount": 90,
+    "allChecksPassed": true,
+    "missingIds": [],
+    "unexpectedIds": [],
+    "unexpectedPngFiles": [],
+    "errors": [],
+    "sourceHtmlCount": 2,
+    "allSha256Match": true,
+    "allDimensions393x852": true,
+    "monochromeRGBAll90": true,
+    "paletteIssues": [],
+    "method": "Pillow verify() then reopen load() for each original PNG; size/bytes/SHA256/native HTML raw bytes matched. Only in-memory pixel reads, no raster writes or re-encoding."
+  },
+  "visualReview": {
+    "viewedCount": 36,
+    "themes": {
+      "Light": 18,
+      "Dark": 18
+    },
+    "confirmedDefects": [],
+    "followupChecks": [
+      {
+        "id": "R4-STATIC-NB-01",
+        "type": "interaction_verification_needed",
+        "severity": "pending_check",
+        "filenames": [
+          "light-background-app-failed.png",
+          "dark-background-app-failed.png"
+        ],
+        "nodeIds": [
+          "46:158267",
+          "53:302679"
+        ],
+        "observation": "失败提示增加高度后，首屏第四张Cursor卡片只露出标题和身份，下方额度位于固定Tab区域之后。",
+        "sourceEvidence": "r4-background.js makeRoot sets Scroll viewport.overflowDirection=VERTICAL; Content primaryAxisSizingMode=AUTO.",
+        "requiredFollowup": "在两主题Background/App/Failed实际向上滚动，确认Cursor额度/进度条可完整看见且账号控件可操作；通过前不将此项标为视觉缺陷或通过。",
+        "isConfirmedDefect": false,
+        "status": "resolved_by_runtime_scroll_evidence",
+        "resolution": "Root实际在两主题Background/App/Failed上滑；独立查看两张原生滚动截图，Cursor身份、62%额度和进度条、如何添加小组件入口均完整可见，固定Tab未遮挡。",
+        "evidence": [
+          {
+            "path": "design/review-r4/light-background-failed-scroll.jpg",
+            "sha256": "76cfb509cf69b4e7c2452aa2d17c4b8908c559e9f8552133f72f5d659c7aab38",
+            "nativePixelsIndependentlyViewed": true
+          },
+          {
+            "path": "design/review-r4/dark-background-failed-scroll.jpg",
+            "sha256": "2f9452fdd8f73ce46edd08e60fe3e5b2b200767326968dea5a17d8ddcec6c8de",
+            "nativePixelsIndependentlyViewed": true
+          }
+        ]
+      }
+    ],
+    "checks": [
+      {
+        "id": "46:137296",
+        "filename": "light-network-check-a.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "检查中、Net.Coffee · Claude AI 信任评分来源、添加Codex操作及取消/X清楚；第一动画圆点高亮。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:137334",
+        "filename": "light-network-check-b.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "第二动画圆点高亮，与A相位有像素差别；静态图不证明计时与循环。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:137380",
+        "filename": "light-network-pass51.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "显示当前评分51及高于50条件，说明继续添加Codex；没有宣称额度查询成功。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:136872",
+        "filename": "light-network-score49.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "当前评分49，需高于50；明确阻止添加Codex，重试/取消/X均可见。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:137126",
+        "filename": "light-network-score50.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "当前评分50，需高于50；明确阻止添加Codex，重试/取消/X均可见。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:137506",
+        "filename": "light-network-timeout.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "网络检查失败明确为超时，无法完成检查；未显示评分，尚未执行添加。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:137760",
+        "filename": "light-network-unavailable.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "明确评分网站暂不可用，无法完成检查；未显示评分，尚未执行添加。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:138014",
+        "filename": "light-network-invalid.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "明确未取得有效评分，无法完成检查；未显示评分，尚未执行添加。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:138225",
+        "filename": "light-network-query-failed.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "标题额度查询失败，显示平台未返回额度、work.codex@example.com与保留上次成功数据09:41；有重试/关闭/X。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:136625",
+        "filename": "light-network-authorization-failed.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "标题授权未完成，未添加新账号、已有账号保持不变；有重新尝试/取消/X。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:158486",
+        "filename": "light-background-app-checka.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "前台看板内联正在检查网络及Claude AI来源，保留09:41和四账号；顶部刷新/连接横排。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:158267",
+        "filename": "light-background-app-failed.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue_after_runtime_scroll",
+        "observation": "内联网络检查超时与无法完成检查，保留09:41及旧额度；重试/关闭可读；Cursor卡片下部超出初始视口，已通过另存的原生实际滚动截图确认完整可达。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:158922",
+        "filename": "light-background-app-passed.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "内联检查通过/51/高于50/继续查询；仍为上次成功09:41，没有将检查通过当查询成功。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:159136",
+        "filename": "light-background-app-querying.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "内联正在查询额度及轻量圆点，仍保留09:41与旧额度。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:159354",
+        "filename": "light-background-app-success.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "已更新，成功时间09:45；四账号与额度清楚，进度条左侧实色已用/右侧灰色剩余。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:159568",
+        "filename": "light-background-widget-failed.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "iOS主屏幕交互示意标识保留；Claude · alin.claude、39%/72%与重置时间一致；评分网站不可用/上次成功09:41，无前台弹窗。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:159956",
+        "filename": "light-background-widget-querying.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "Claude身份、39%/72%、重置时间不变，正在查询额度与09:41同显；小型圆点反馈。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:160055",
+        "filename": "light-background-widget-success.png",
+        "theme": "light",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "Claude身份与39%/72%保持一致，只有成功状态更新为09:45。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:139357",
+        "filename": "dark-network-check-a.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "检查中、Net.Coffee · Claude AI 信任评分来源、添加Codex操作及取消/X清楚；第一动画圆点高亮。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:139395",
+        "filename": "dark-network-check-b.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "第二动画圆点高亮，与A相位有像素差别；静态图不证明计时与循环。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:139441",
+        "filename": "dark-network-pass51.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "显示当前评分51及高于50条件，说明继续添加Codex；没有宣称额度查询成功。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:138933",
+        "filename": "dark-network-score49.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "当前评分49，需高于50；明确阻止添加Codex，重试/取消/X均可见。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:139187",
+        "filename": "dark-network-score50.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "当前评分50，需高于50；明确阻止添加Codex，重试/取消/X均可见。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:139567",
+        "filename": "dark-network-timeout.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "网络检查失败明确为超时，无法完成检查；未显示评分，尚未执行添加。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:139821",
+        "filename": "dark-network-unavailable.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "明确评分网站暂不可用，无法完成检查；未显示评分，尚未执行添加。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:140075",
+        "filename": "dark-network-invalid.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "明确未取得有效评分，无法完成检查；未显示评分，尚未执行添加。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:140286",
+        "filename": "dark-network-query-failed.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "标题额度查询失败，显示平台未返回额度、work.codex@example.com与保留上次成功数据09:41；有重试/关闭/X。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "46:138686",
+        "filename": "dark-network-authorization-failed.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "标题授权未完成，未添加新账号、已有账号保持不变；有重新尝试/取消/X。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "53:302898",
+        "filename": "dark-background-app-checka.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "前台看板内联正在检查网络及Claude AI来源，保留09:41和四账号；顶部刷新/连接横排。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "53:302679",
+        "filename": "dark-background-app-failed.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue_after_runtime_scroll",
+        "observation": "内联网络检查超时与无法完成检查，保留09:41及旧额度；重试/关闭可读；Cursor卡片下部超出初始视口，已通过另存的原生实际滚动截图确认完整可达。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "53:303334",
+        "filename": "dark-background-app-passed.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "内联检查通过/51/高于50/继续查询；仍为上次成功09:41，没有将检查通过当查询成功。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "53:303548",
+        "filename": "dark-background-app-querying.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "内联正在查询额度及轻量圆点，仍保留09:41与旧额度。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "53:303766",
+        "filename": "dark-background-app-success.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "已更新，成功时间09:45；四账号与额度清楚，进度条左侧实色已用/右侧灰色剩余。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "53:303980",
+        "filename": "dark-background-widget-failed.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "iOS主屏幕交互示意标识保留；Claude · alin.claude、39%/72%与重置时间一致；评分网站不可用/上次成功09:41，无前台弹窗。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "53:304368",
+        "filename": "dark-background-widget-querying.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "Claude身份、39%/72%、重置时间不变，正在查询额度与09:41同显；小型圆点反馈。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      },
+      {
+        "id": "53:304467",
+        "filename": "dark-background-widget-success.png",
+        "theme": "dark",
+        "viewedNativePixels": true,
+        "result": "checked_no_observed_issue",
+        "observation": "Claude身份与39%/72%保持一致，只有成功状态更新为09:45。",
+        "legibility": "No observed overlap or missing button label within visible viewport",
+        "palette": "black-white-gray"
+      }
+    ],
+    "limits": [
+      "Static PNGs do not prove prototype targets, retries, return behavior, dynamic transition timing, or scroll reachability.",
+      "This report reviews only network/background visual pixels; other PNGs received full decode/dimension/hash validation but no visual sign-off here.",
+      "Overlay root exports show their own scrim/sheet content; absence of underlying source page in an isolated PNG is not a navigation failure conclusion."
+    ],
+    "pendingFollowupCount": 0
+  },
+  "files": [
+    {
+      "id": "53:1119634",
+      "filename": "light-overview-review.png",
+      "path": "design/review-r4/native/light-overview-review.png",
+      "bytes": 43964,
+      "sha256": "1bea30a8e9bd45694a89ab3bba4ffa5f418d7ce4b8148860b3d94314c69c685e",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "1:536",
+      "filename": "light-overview-dashboard.png",
+      "path": "design/review-r4/native/light-overview-dashboard.png",
+      "bytes": 43092,
+      "sha256": "4c62c861fc6973a35444db415eb0b9bd32d9f59309686e8b2c962f5cb52f1d0d",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "1:2169",
+      "filename": "light-overview-settings.png",
+      "path": "design/review-r4/native/light-overview-settings.png",
+      "bytes": 33031,
+      "sha256": "725915f832375964e00e2c3c89ea34aae16b82fa77528ace7ea6fec8bf435617",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:137296",
+      "filename": "light-network-check-a.png",
+      "path": "design/review-r4/native/light-network-check-a.png",
+      "bytes": 11901,
+      "sha256": "4ad498874890d93f4e6db37ec0b663a7bdb265dcf30b57bc8842f8883b5b3e81",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:137334",
+      "filename": "light-network-check-b.png",
+      "path": "design/review-r4/native/light-network-check-b.png",
+      "bytes": 11904,
+      "sha256": "0c73efeb5a67cda3b2e005e7f2717dd6cb6d977a6d3fbc75bbdd1b78ee1f6fc1",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:137380",
+      "filename": "light-network-pass51.png",
+      "path": "design/review-r4/native/light-network-pass51.png",
+      "bytes": 11784,
+      "sha256": "2405f0ed8180de6bf17ce82e4260461abac897a069fec5bab7a74e8cac5526b9",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:136872",
+      "filename": "light-network-score49.png",
+      "path": "design/review-r4/native/light-network-score49.png",
+      "bytes": 15569,
+      "sha256": "750f0e4aa2fa080f3073eee3da6a20715b03c26b2da2cf7c16faf68f7005a22f",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:137126",
+      "filename": "light-network-score50.png",
+      "path": "design/review-r4/native/light-network-score50.png",
+      "bytes": 15592,
+      "sha256": "414fc66d029b200f3406fe94f162400881739addfe038893d75ac8da0ef553f0",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:137506",
+      "filename": "light-network-timeout.png",
+      "path": "design/review-r4/native/light-network-timeout.png",
+      "bytes": 13693,
+      "sha256": "faa65991bcb501336eca4686fc4cca98ae586c6a96e19083fdff3eab95d27278",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:137760",
+      "filename": "light-network-unavailable.png",
+      "path": "design/review-r4/native/light-network-unavailable.png",
+      "bytes": 14345,
+      "sha256": "34f2333ec60a0905dab7f4b2b41fe1a40ae6eb1150c272d6327e576496740547",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:138014",
+      "filename": "light-network-invalid.png",
+      "path": "design/review-r4/native/light-network-invalid.png",
+      "bytes": 14414,
+      "sha256": "77c72fef989f2fd8f4cd268ba6f12e35f904d3ec1eecb7a12761b45d3918c079",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:138225",
+      "filename": "light-network-query-failed.png",
+      "path": "design/review-r4/native/light-network-query-failed.png",
+      "bytes": 14791,
+      "sha256": "bf27db51115188055d62a89dd6bf910149ae36555ff3b3b0c84a69fef9ff60f5",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:136625",
+      "filename": "light-network-authorization-failed.png",
+      "path": "design/review-r4/native/light-network-authorization-failed.png",
+      "bytes": 11925,
+      "sha256": "83afb1801f2a057e3d1271cf7454c29764f3062d05606553439dd04fc33c82b8",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:1120517",
+      "filename": "light-first-query-before-add-source.png",
+      "path": "design/review-r4/native/light-first-query-before-add-source.png",
+      "bytes": 43091,
+      "sha256": "b08819eccac2ba5c02ba7d869a1ca0287001d1c68a2ec5e3567b3ad3961b47e4",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:1120812",
+      "filename": "light-first-query-before-add49.png",
+      "path": "design/review-r4/native/light-first-query-before-add49.png",
+      "bytes": 15569,
+      "sha256": "750f0e4aa2fa080f3073eee3da6a20715b03c26b2da2cf7c16faf68f7005a22f",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:1120057",
+      "filename": "light-first-query-pending.png",
+      "path": "design/review-r4/native/light-first-query-pending.png",
+      "bytes": 43325,
+      "sha256": "de47a6b15b7e1359abdf7082b62fd68184fe47198a1473475348b51b45b1d586",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:1120353",
+      "filename": "light-first-query-failed.png",
+      "path": "design/review-r4/native/light-first-query-failed.png",
+      "bytes": 13729,
+      "sha256": "25c1e61ef53753add431e71c14adc1a44abbae9bdbde6e245e8001f6c9f9663a",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:158486",
+      "filename": "light-background-app-checka.png",
+      "path": "design/review-r4/native/light-background-app-checka.png",
+      "bytes": 44798,
+      "sha256": "92ee162c4f170d0e3e2de97fc6cb078b8dc36796aced187c7b625cf8214541ed",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:158267",
+      "filename": "light-background-app-failed.png",
+      "path": "design/review-r4/native/light-background-app-failed.png",
+      "bytes": 44060,
+      "sha256": "7cc3f2fbaaef018fd55760c1487c0bdfe4ac727bf1e00b54c8b35b744eacc877",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:158922",
+      "filename": "light-background-app-passed.png",
+      "path": "design/review-r4/native/light-background-app-passed.png",
+      "bytes": 45884,
+      "sha256": "0881feca1ad8ddff32bd15cacd2f4476be1654301fa286935e40cb6a9b95b98e",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:159136",
+      "filename": "light-background-app-querying.png",
+      "path": "design/review-r4/native/light-background-app-querying.png",
+      "bytes": 43849,
+      "sha256": "c65c24e2cb9f765dde0af57bddadcd27c51647b3bc976a453960fe6aa4f6a99f",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:159354",
+      "filename": "light-background-app-success.png",
+      "path": "design/review-r4/native/light-background-app-success.png",
+      "bytes": 43445,
+      "sha256": "32bef88910846168cb40c85d380fd45e8202a6a2db6503fa12eac4d5b6309989",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:159568",
+      "filename": "light-background-widget-failed.png",
+      "path": "design/review-r4/native/light-background-widget-failed.png",
+      "bytes": 20477,
+      "sha256": "511755c9c71c6e56d0ea58ad8e80b7de57f780aec28f1596e436fe89404da7e3",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:159956",
+      "filename": "light-background-widget-querying.png",
+      "path": "design/review-r4/native/light-background-widget-querying.png",
+      "bytes": 20235,
+      "sha256": "169f7f3752267566f85682aeb8ed292f54b41c0e84971114f6b47d51d6860b78",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:160055",
+      "filename": "light-background-widget-success.png",
+      "path": "design/review-r4/native/light-background-widget-success.png",
+      "bytes": 19633,
+      "sha256": "efb863a87af7463aaad881ada901d8e6c3847c72cb05c762fe13ede0b821e0c4",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:141872",
+      "filename": "light-widgets-gallery-small.png",
+      "path": "design/review-r4/native/light-widgets-gallery-small.png",
+      "bytes": 25275,
+      "sha256": "4c944fb3b02e105300305efd0f6ccf4677fafe7a68960b941ba12e2583dd5d9e",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:142760",
+      "filename": "light-widgets-gallery-medium.png",
+      "path": "design/review-r4/native/light-widgets-gallery-medium.png",
+      "bytes": 25858,
+      "sha256": "8e722bea0a869a085cda41ca4c4644d863fa0d9487213b5abc15abf6b953347d",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:142344",
+      "filename": "light-widgets-choose-work.png",
+      "path": "design/review-r4/native/light-widgets-choose-work.png",
+      "bytes": 23633,
+      "sha256": "2d22d4a1a7678cf03418f83a17a54651c6da1c9cf621db9a6965a6d35dc19337",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:142410",
+      "filename": "light-widgets-configured-pair.png",
+      "path": "design/review-r4/native/light-widgets-configured-pair.png",
+      "bytes": 22493,
+      "sha256": "5aee2b8453f315811524f065c1577b7dd9f66423048dc887f04aca8e9170e87a",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:143605",
+      "filename": "light-widgets-same-platform.png",
+      "path": "design/review-r4/native/light-widgets-same-platform.png",
+      "bytes": 22571,
+      "sha256": "f9b7c06160649c4204089dd685cdc28fb659a1ad95fb0df471b6b98aae86d457",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:143770",
+      "filename": "light-widgets-cross-platform.png",
+      "path": "design/review-r4/native/light-widgets-cross-platform.png",
+      "bytes": 22318,
+      "sha256": "6b9eb1edf0060e21c84f430130103c943d42c1d4d89899cf9aedb11e34b80342",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:144101",
+      "filename": "light-widgets-empty.png",
+      "path": "design/review-r4/native/light-widgets-empty.png",
+      "bytes": 13370,
+      "sha256": "ed7eed9712257962f08112dde7bb6d12f143e113fe87baef5f7d7c86b31d77bb",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:146314",
+      "filename": "light-widgets-multiple-candidates.png",
+      "path": "design/review-r4/native/light-widgets-multiple-candidates.png",
+      "bytes": 22571,
+      "sha256": "f9b7c06160649c4204089dd685cdc28fb659a1ad95fb0df471b6b98aae86d457",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "65:1349611",
+      "filename": "light-widgets-same-platform-pending.png",
+      "path": "design/review-r4/native/light-widgets-same-platform-pending.png",
+      "bytes": 20118,
+      "sha256": "f25ea884a4743233fb74eddf20684f38950e6acbb7d4b8843149e6d9ae6159de",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "65:1346604",
+      "filename": "light-widgets-cross-platform-pending.png",
+      "path": "design/review-r4/native/light-widgets-cross-platform-pending.png",
+      "bytes": 20146,
+      "sha256": "3d810f24352929654e349099854757374945e12f5cb39225abde896c0958099d",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "94:2477991",
+      "filename": "light-widgets-stale-target.png",
+      "path": "design/review-r4/native/light-widgets-stale-target.png",
+      "bytes": 22493,
+      "sha256": "5aee2b8453f315811524f065c1577b7dd9f66423048dc887f04aca8e9170e87a",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:172038",
+      "filename": "light-accounts-work-expanded.png",
+      "path": "design/review-r4/native/light-accounts-work-expanded.png",
+      "bytes": 44416,
+      "sha256": "06ab5caa2c15c08b0744227b5a7d47b54dcadd8ce239bef250d2c6d4bc58a2ad",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:364540",
+      "filename": "light-accounts-work-menu.png",
+      "path": "design/review-r4/native/light-accounts-work-menu.png",
+      "bytes": 14313,
+      "sha256": "99d2bd8ea92c44358dd449dc9d395b86e9d038902d75a5ce6687e66c40696ae2",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:364583",
+      "filename": "light-accounts-work-disconnect.png",
+      "path": "design/review-r4/native/light-accounts-work-disconnect.png",
+      "bytes": 15240,
+      "sha256": "aa36600060157b8e9178c692c80b451a3b7c939d9e475b294be1cf468db3bd65",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:893801",
+      "filename": "light-system-permission.png",
+      "path": "design/review-r4/native/light-system-permission.png",
+      "bytes": 19345,
+      "sha256": "87a95750df7103c7bb512c4686fac430643ec64a876058fbeb6bca1537304a1e",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:893425",
+      "filename": "light-system-denied.png",
+      "path": "design/review-r4/native/light-system-denied.png",
+      "bytes": 35517,
+      "sha256": "cd507d3055a949a73ac11f74548f929770fe09c51e4a963cd1ba4b0329f995c7",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:893851",
+      "filename": "light-system-ios-on.png",
+      "path": "design/review-r4/native/light-system-ios-on.png",
+      "bytes": 14432,
+      "sha256": "91e2561a9afc0aa3e24f2ce083b5009a3b63f218c081e271e66ab44da3a61b10",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "14:42460",
+      "filename": "light-system-notification.png",
+      "path": "design/review-r4/native/light-system-notification.png",
+      "bytes": 19712,
+      "sha256": "5bfee4ad91d51d57898760e0e7842362f085c9ae8ccfe349ecc997bb128109bc",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:1120019",
+      "filename": "light-system-notification-removed.png",
+      "path": "design/review-r4/native/light-system-notification-removed.png",
+      "bytes": 11236,
+      "sha256": "552b9922fdb4c7452008838d9b9aeb8f115cbfd2cc37fe2f652cf068e73df604",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "14:42067",
+      "filename": "light-system-tutorial.png",
+      "path": "design/review-r4/native/light-system-tutorial.png",
+      "bytes": 20195,
+      "sha256": "9a40ce22ce2cb2c72b4799464b8ef5966a97c17e0283f05e0ec1a302a3df6326",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:1121194",
+      "filename": "dark-overview-review.png",
+      "path": "design/review-r4/native/dark-overview-review.png",
+      "bytes": 46460,
+      "sha256": "261ddc6d3112d029a4801139d3a7d36fbc18e3f1aa346f200d13592ab30db408",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "1:4124",
+      "filename": "dark-overview-dashboard.png",
+      "path": "design/review-r4/native/dark-overview-dashboard.png",
+      "bytes": 41538,
+      "sha256": "04dd85113518a9b0eeff3dbc22cd8d61a2661c7083f43d997a21357eadefdfb2",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "1:5757",
+      "filename": "dark-overview-settings.png",
+      "path": "design/review-r4/native/dark-overview-settings.png",
+      "bytes": 32439,
+      "sha256": "3f7c4265a73034128d81c2b6afcb368e4e7aad4c42baf1b925d751649ed3f228",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:139357",
+      "filename": "dark-network-check-a.png",
+      "path": "design/review-r4/native/dark-network-check-a.png",
+      "bytes": 11605,
+      "sha256": "26b6547c9e4b995889fd23fae48442be40456f3ea40949a0d26f72411453fbdb",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:139395",
+      "filename": "dark-network-check-b.png",
+      "path": "design/review-r4/native/dark-network-check-b.png",
+      "bytes": 11607,
+      "sha256": "9845bcc64762ab7970de97f3b372a6ce0e9d5313893b5651a9e40590846b0066",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:139441",
+      "filename": "dark-network-pass51.png",
+      "path": "design/review-r4/native/dark-network-pass51.png",
+      "bytes": 11436,
+      "sha256": "b935827fac5a0978acb43856598b8375ccda9c1b475de63b7e488379736a2379",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:138933",
+      "filename": "dark-network-score49.png",
+      "path": "design/review-r4/native/dark-network-score49.png",
+      "bytes": 15210,
+      "sha256": "df15a484486dfe5dd470218e7f9fc4b0a870c1b66e48d62598689c7215950b81",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:139187",
+      "filename": "dark-network-score50.png",
+      "path": "design/review-r4/native/dark-network-score50.png",
+      "bytes": 15223,
+      "sha256": "5d00fd58c3e6c18c5ea8832d77bea24ae5e50f096fab1f2f4b10f5e0e1431b27",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:139567",
+      "filename": "dark-network-timeout.png",
+      "path": "design/review-r4/native/dark-network-timeout.png",
+      "bytes": 13420,
+      "sha256": "719fc139d54b79a068c11638e0c06a9928219b2bc89a7ed875530bdeb8deb786",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:139821",
+      "filename": "dark-network-unavailable.png",
+      "path": "design/review-r4/native/dark-network-unavailable.png",
+      "bytes": 14029,
+      "sha256": "aa25ce494901f66207c58cb2ec1da3b78fe3b785409213d473ba7e10c6e877a6",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:140075",
+      "filename": "dark-network-invalid.png",
+      "path": "design/review-r4/native/dark-network-invalid.png",
+      "bytes": 14102,
+      "sha256": "d072246aaf8d8d3f042885372a7589460cbc915c6a83533880824e0bca5a713b",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:140286",
+      "filename": "dark-network-query-failed.png",
+      "path": "design/review-r4/native/dark-network-query-failed.png",
+      "bytes": 14390,
+      "sha256": "f4c358f242beb8d775c4669e0452a6b39e125b9b44a98e746d2b89b731c75d5c",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:138686",
+      "filename": "dark-network-authorization-failed.png",
+      "path": "design/review-r4/native/dark-network-authorization-failed.png",
+      "bytes": 11796,
+      "sha256": "53cf678a893b0586504a0fcc5c73e5644ce64829498c54c0dd82144090aecf18",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:1122077",
+      "filename": "dark-first-query-before-add-source.png",
+      "path": "design/review-r4/native/dark-first-query-before-add-source.png",
+      "bytes": 41537,
+      "sha256": "5ea58ed5e64ecc60833627a4c200b78d27023200f6e28ce0f78e763f065af5b0",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:1122372",
+      "filename": "dark-first-query-before-add49.png",
+      "path": "design/review-r4/native/dark-first-query-before-add49.png",
+      "bytes": 15210,
+      "sha256": "df15a484486dfe5dd470218e7f9fc4b0a870c1b66e48d62598689c7215950b81",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:1121617",
+      "filename": "dark-first-query-pending.png",
+      "path": "design/review-r4/native/dark-first-query-pending.png",
+      "bytes": 41784,
+      "sha256": "e6c71ba37e3f34c40b876e02ef314682df9f57037d3f2c7de0c6e070aff9ac30",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:1121913",
+      "filename": "dark-first-query-failed.png",
+      "path": "design/review-r4/native/dark-first-query-failed.png",
+      "bytes": 13397,
+      "sha256": "f527fe27c5c142ec5969e738f208e510104fdf0bec8387896cc5c322cf20529b",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:302898",
+      "filename": "dark-background-app-checka.png",
+      "path": "design/review-r4/native/dark-background-app-checka.png",
+      "bytes": 43516,
+      "sha256": "8e131f02b06766488d82971f0a4ef0d862fbccc20916a55df21706bffe7b661f",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:302679",
+      "filename": "dark-background-app-failed.png",
+      "path": "design/review-r4/native/dark-background-app-failed.png",
+      "bytes": 42971,
+      "sha256": "15be4be13e5ed901faf220ab569d3b6da5da95bd176eb4e74c2f0e041292e47c",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:303334",
+      "filename": "dark-background-app-passed.png",
+      "path": "design/review-r4/native/dark-background-app-passed.png",
+      "bytes": 44502,
+      "sha256": "cd6ae3d43f21c7c1169ebfc72881786e56eb1d4548032a4df97a64bd2dc62b7c",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:303548",
+      "filename": "dark-background-app-querying.png",
+      "path": "design/review-r4/native/dark-background-app-querying.png",
+      "bytes": 42643,
+      "sha256": "4443f59df1d48597735b23d9b49c6a5753a4eb581ae07c0620e31baffd778b09",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:303766",
+      "filename": "dark-background-app-success.png",
+      "path": "design/review-r4/native/dark-background-app-success.png",
+      "bytes": 42206,
+      "sha256": "ddbb44bf1a2718a956ec3c3ac09bf31b15dbb42b20886b4adedc43243bbef630",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:303980",
+      "filename": "dark-background-widget-failed.png",
+      "path": "design/review-r4/native/dark-background-widget-failed.png",
+      "bytes": 20361,
+      "sha256": "ce6167719a5eae962f836dbe00d2fefb457ca38a8444575e10dfbc4ed104a141",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:304368",
+      "filename": "dark-background-widget-querying.png",
+      "path": "design/review-r4/native/dark-background-widget-querying.png",
+      "bytes": 20176,
+      "sha256": "0479278b250e2f98996b028cf7c4f1042437466fcdd0e5172fb198252a136892",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:304467",
+      "filename": "dark-background-widget-success.png",
+      "path": "design/review-r4/native/dark-background-widget-success.png",
+      "bytes": 19560,
+      "sha256": "e7280064cb060d32d993f377e4bcd444ec90923171fe7561bf480d5c16cdd50d",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:152233",
+      "filename": "dark-widgets-gallery-small.png",
+      "path": "design/review-r4/native/dark-widgets-gallery-small.png",
+      "bytes": 25407,
+      "sha256": "63196712925988e8cc77443a858bc294d89f6175481fffaa70fc1717871eeda1",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:153121",
+      "filename": "dark-widgets-gallery-medium.png",
+      "path": "design/review-r4/native/dark-widgets-gallery-medium.png",
+      "bytes": 26013,
+      "sha256": "4e140d9800846a4a6cdf9f2295279da30010eb0b0d9fc1d618c6b5c1b584b89e",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:152705",
+      "filename": "dark-widgets-choose-work.png",
+      "path": "design/review-r4/native/dark-widgets-choose-work.png",
+      "bytes": 23190,
+      "sha256": "d9bc54202b4b12c6df29c180ba9eb1761c2cd898d9c06660149216dd11ca5b41",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:152771",
+      "filename": "dark-widgets-configured-pair.png",
+      "path": "design/review-r4/native/dark-widgets-configured-pair.png",
+      "bytes": 22330,
+      "sha256": "725fa34a44a780e044bcedac615634698aecc036001ba0208c0dd152fca380e6",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:153966",
+      "filename": "dark-widgets-same-platform.png",
+      "path": "design/review-r4/native/dark-widgets-same-platform.png",
+      "bytes": 22399,
+      "sha256": "4df8863058e1430407d7d4caf3d3f1a5d1d3d6ebe81735f0f4e8b6e61f83e429",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:154131",
+      "filename": "dark-widgets-cross-platform.png",
+      "path": "design/review-r4/native/dark-widgets-cross-platform.png",
+      "bytes": 22081,
+      "sha256": "bfba5dc5beb05c0cf8ad4a6308b896dd62fcc6c8692cd8c95d5f412c1f51c14f",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:154462",
+      "filename": "dark-widgets-empty.png",
+      "path": "design/review-r4/native/dark-widgets-empty.png",
+      "bytes": 13304,
+      "sha256": "c986c9c71bec5ce393fc2f63bcf38e44390d759f811ba36a83c4bcb40652e84b",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "46:156675",
+      "filename": "dark-widgets-multiple-candidates.png",
+      "path": "design/review-r4/native/dark-widgets-multiple-candidates.png",
+      "bytes": 22399,
+      "sha256": "4df8863058e1430407d7d4caf3d3f1a5d1d3d6ebe81735f0f4e8b6e61f83e429",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "65:1639468",
+      "filename": "dark-widgets-same-platform-pending.png",
+      "path": "design/review-r4/native/dark-widgets-same-platform-pending.png",
+      "bytes": 20193,
+      "sha256": "ac32a5168ac4b0888906584432d6e74a37ab1e31825a84be82c50bfcf8be52c3",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "65:1636461",
+      "filename": "dark-widgets-cross-platform-pending.png",
+      "path": "design/review-r4/native/dark-widgets-cross-platform-pending.png",
+      "bytes": 20149,
+      "sha256": "ae8fcc01cb8665a692c91eba372c6c741e8c37e4a1b9b1bed9e2a6f35b949f27",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "94:2478095",
+      "filename": "dark-widgets-stale-target.png",
+      "path": "design/review-r4/native/dark-widgets-stale-target.png",
+      "bytes": 22330,
+      "sha256": "725fa34a44a780e044bcedac615634698aecc036001ba0208c0dd152fca380e6",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:243283",
+      "filename": "dark-accounts-work-expanded.png",
+      "path": "design/review-r4/native/dark-accounts-work-expanded.png",
+      "bytes": 42847,
+      "sha256": "9a5a651dee9899d33c7be543cc1ab8ffe89fc13c25cd1b33c5383eb41e817fc3",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:546437",
+      "filename": "dark-accounts-work-menu.png",
+      "path": "design/review-r4/native/dark-accounts-work-menu.png",
+      "bytes": 14486,
+      "sha256": "a12dc6aee8c0a2cbe9b7f83013eddc280db5c0ef552021e1295bbb2a76cbee04",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:546480",
+      "filename": "dark-accounts-work-disconnect.png",
+      "path": "design/review-r4/native/dark-accounts-work-disconnect.png",
+      "bytes": 14937,
+      "sha256": "3533484a41e91ce63fa20fefa50528315b4b3684109cf2ea837e397cb32b4f68",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:895404",
+      "filename": "dark-system-permission.png",
+      "path": "design/review-r4/native/dark-system-permission.png",
+      "bytes": 18790,
+      "sha256": "1ee400fa73443428456696cbff9847910e1cfda6b1c4a0af7ee2f6341d7a4f71",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:895028",
+      "filename": "dark-system-denied.png",
+      "path": "design/review-r4/native/dark-system-denied.png",
+      "bytes": 35016,
+      "sha256": "864a0c2cf98494d5b2c4d5f9f5be5639d55ddbadac1fb32067acb52548802240",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:895454",
+      "filename": "dark-system-ios-on.png",
+      "path": "design/review-r4/native/dark-system-ios-on.png",
+      "bytes": 14343,
+      "sha256": "a3edf3a50ead154ba19f0a89a86801ab69325d868831eba0c9ebbaee4a2d65cf",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "14:42922",
+      "filename": "dark-system-notification.png",
+      "path": "design/review-r4/native/dark-system-notification.png",
+      "bytes": 19043,
+      "sha256": "cb2e602b4fc8c2fc83f8c8b7bb9aad8b31bf36f7d5dbba88e3e45cde95900b17",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "53:1121579",
+      "filename": "dark-system-notification-removed.png",
+      "path": "design/review-r4/native/dark-system-notification-removed.png",
+      "bytes": 10942,
+      "sha256": "76223779437f3f66b6074eef21fa02b0a85ba8927292ad574e467e08066b81aa",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    },
+    {
+      "id": "14:42529",
+      "filename": "dark-system-tutorial.png",
+      "path": "design/review-r4/native/dark-system-tutorial.png",
+      "bytes": 19975,
+      "sha256": "ad4407ee6de85cd05367e9cac97c62aa3b8a31badd8765e4d199101e7db8ad47",
+      "dimensions": [
+        393,
+        852
+      ],
+      "mode": "RGBA",
+      "fullDecodePassed": true,
+      "nativeHtmlBytesEqual": true,
+      "maximumRGBChannelDifference": 0,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "errors": []
+    }
+  ],
+  "sourceRecords": [
+    {
+      "path": "design/figma-r4-delivery-light.json",
+      "sha256": "2a96987edf543354088b5b9ce27ee66f91fbce2d847cee2921aece9a3e381302"
+    },
+    {
+      "path": "design/figma-r4-delivery-dark.json",
+      "sha256": "aa4cdb572bc5497c5d14383058c2f6465ca7ddea94c1e13d2a138981fb3664a5"
+    },
+    {
+      "path": "design/figma-r4-native-images.json",
+      "sha256": "0f95c2d5c893fe38fcef65700d59254a212d5023c0d9271e8e566fe2c40929ea"
+    },
+    {
+      "path": "design/figma-r4-gallery-light.html",
+      "sha256": "53c6445d7f27f27248d22220e24c3fbcfae99784050a07700f76b6938e5c8ca0"
+    },
+    {
+      "path": "design/figma-r4-gallery-dark.html",
+      "sha256": "9c03b5abb0416aab5435fb33efe242b944dd21efe4dd39a576f92317e97a52e3"
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+CodexBar iOS 复用审计笔记（只读源码研究；未构建 iOS、未读取真实凭据、未发起账户请求）
+代码根目录：/Users/iceflying/codex/订阅用量监控/Reference/CodexBar
+以下路径和行号均相对此根目录。结论分为源码事实、推论和建议，不把潜在问题当成已发现漏洞。
+
+一、总判断
+源码事实：这是 Swift 6.2 的 macOS App + macOS/Linux CLI 项目，现有 Core 不能直接当 iOS SDK 导入后就用。
+Package.swift:1 声明 swift-tools-version 6.2；:24-25 只声明 macOS 14；:29 提供 CodexBarCore 库；:35-41 仅 macOS 提供 App、Watchdog、Widget、WebProbe 可执行程序。
+Package.swift:75-92 的 Core 仍直接依赖 CQuickJS、SweetCookieKit、Crypto、Logging；并非已经完全剥离桌面能力的纯网络库。
+Sources/CodexBarCore/Host/Process/SubprocessRunner.swift:1-8 只有 Darwin/Linux import 判断；:167 直接创建 Foundation Process 执行外部程序。
+Sources/CodexBarCore/UsageFetcher.swift:895-911 的 CodexRPCClient 直接创建 Process，默认启动 codex app-server。
+Sources/CodexBarCore/DarwinProcessEnumerator.swift:80-99 仅以 canImport(Darwin) 包围 proc_listallpids/proc_pidpath 进程扫描；Darwin 不是“只有 Mac”的同义词。
+推论：改 Package.swift 的平台声明不足以完成移植；需要新建 iOS target，把纯模型/解析/HTTP 与桌面凭据发现、CLI、进程扫描分离。没有实际 iOS 编译验证，因此不要估计可复用百分比。
+
+二、三组复用清单
+较能直接抽取复用（仍须在新 target 编译和验证）：
+- 平台目录、请求地址与字段映射、返回数据解析、fixture 测试、时间窗/百分比/金额模型。
+- ProviderHTTPTransport/ProviderHTTPRetryPolicy（Sources/CodexBarCore/ProviderHTTPClient.swift:6-8、:38-105）抽象了 URLSession 请求与有限重试，结构比较干净。
+- RateWindow 的窗口时长、恢复时间、是否真有数据（UsageFetcher.swift:3-35），ProviderIdentitySnapshot 的平台/账户/组织（ProviderIdentitySnapshot.swift:3-29），UsageDataConfidence 的 exact/estimated/percentOnly/unknown（同文件:49-53）。
+- 换成手机可用的凭据来源后，纯 API-key 提供商的请求/解析或随 App 打包的 JS 适配脚本有较高复用价值。
+- 防止账户串号、旧任务覆盖新任务、取消/超时/限流、未知值不当成零等设计值得直接借鉴。
+
+需要改造：
+- 凭据存储：当前配置可序列化 API key、cookie、pluginSecrets 进普通 JSON；手机应单独设计 Keychain、数据保护、备份策略、删除/退出登录。
+- 登录入口及续期：目前经常接手其他桌面程序已完成的登录；手机要有自己的、平台允许的网页登录/授权/Key 输入路线。
+- 缓存与目录：默认 .config/codexbar、Library/Application Support/CodexBar 等路径需要改为 App 容器/App Group 路径。
+- 刷新调度/小组件/通知/界面：适配 iOS 生命周期；不要承诺像菜单栏驻留程序那样固定频率永远后台刷新。Apple 规则由主研究另查。
+- 脚本宿主：QuickJS/JavaScriptCore 机制和脚本可研究复用，但必须梳理依赖、线程、内存、包资源、平台 API；不可将“支持 Linux”理解成“iOS 已支持”。
+- 账户模型：应按 platform + stable account ID + workspace/org + credential version 分隔缓存，邮箱只做展示；同邮箱多工作区已有复杂保护。
+
+不能原样搬到独立 iPhone App：
+- 从 Mac 的 Chrome/Safari/Firefox Cookie 数据库取登录态。
+- 读取 ~/.codex/auth.json、Claude Code 的 Keychain 项、IDE 配置/数据库、桌面 JSONL 历史。
+- 执行 codex/claude/arkcli 等 CLI、PTY 抓终端输出、进程扫描、本地语言服务探测。
+- NSStatusItem/AppKit 菜单栏、全局快捷键、Sparkle 桌面自更新。
+这里的“不能”是不能原样在独立 iOS App 内实现原桌面路径；某平台若另外提供 API/授权，仍可新做适配。
+
+三、Cookie 登录可移植性的明确源码证据
+Sources/CodexBarCore/Plugins/ProviderPluginCookieBroker.swift:408-430：自动 importCookieHeaders 在 #if os(macOS) 内调用 BrowserCookieClient + BrowserCookieImportSupport；非 macOS 直接返回空数组。
+同文件:433-452：Cookie jar 同样仅 macOS 用 SweetCookieKit 读取 profile 数据。
+Sources/CodexBarCore/Plugins/ProviderBrowserProfile.swift:30-68：读取指定 browser profile 的非 macOS 分支直接报 Selected browser profiles require macOS。
+docs/codex.md:169-176 具体记录 Safari ~/Library/Cookies/Cookies.binarycookies、Chrome ~/Library/Application Support/Google/Chrome/*/Cookies、Firefox cookies.sqlite 等；不是通过某个通用手机登录 SDK 登录。
+docs/codex.md:159-182：可选 OpenAI web extras 用隐藏 WKWebView，按账户隔离 WKWebsiteDataStore；Codex 已知邮箱与网页邮箱不匹配会拒绝，说明浏览器登录账号与 CLI 登录账号常常不相同。
+
+四、凭据实际安全边界（重要：不能说“所有凭据都加密存在钥匙串”）
+Sources/CodexBarCore/Config/ProviderConfigCoding.swift:9-21 / :71-85：apiKey、secretKey、cookieHeader、tokenAccounts、pluginSecrets 会进入 Codable JSON。
+Sources/CodexBarCore/Config/CodexBarConfig.swift:100-105：JSONEncoder 序列化，没有这里进行加密。
+Sources/CodexBarCore/Config/CodexBarConfigStore.swift:72-75：通过 CredentialFileWriter.writePrivate 保存配置；:120-159 默认 .config/codexbar/config.json 或历史 .codexbar/config.json。
+Sources/CodexBarCore/CredentialFileWriter.swift:10-25、:38-60、:70-74：临时目录 0700、文件 0600、先设权限再写入、同步后 rename 原子替换。它防别的本地系统用户读取和半写文件，不是密文保险箱。
+CodexBarConfigStore.swift:96-116 用独立 flock 锁协调写入并检查锁文件所有者；updateIfAvailable:78-84 遇锁竞争会放弃尽力而为的更新，避免旧凭据覆盖新写入。
+README.md:215 也明确说 Provider tokens/token-account settings 在限制权限的配置文件。
+docs/plugins.md:287-294 插件非秘密状态同样 0600 原子保存且未加密；secure setting 的 secure 是访问/遮蔽语义，不应向用户误说保证磁盘加密。
+有部分 Cookie 缓存使用 Keychain（例 docs/codex.md:175），但这不改变主配置可含明文秘密的事实。
+建议手机重新设计“只保存在本机”的承诺；若另加自家云服务，不要将全部原始 Cookie/token 默认上传。
+
+五、不能只做“拿到一次 token 就完事”
+CodexOAuthCredentials.swift:51-61 判断 token 过期/即将过期：原生五分钟续期窗口，外部来源一分钟；无 exp 时才以 lastRefresh 八天回退。:65-87 分开 notFound/unreadable/malformed/nativeRefreshRequired/readOnlySource。
+docs/codex-oauth.md:47-76、docs/codex.md:35-41：目前共享 auth.json 的使用路径只读；续期交回拥有文件的 Codex CLI，避免两边抢刷新令牌。外部 OpenCode 等旧凭据过期则报错，不冒然兑换或覆盖文件。
+源码交叉索引：Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:362/399 loadForUsage；:473-474 分别给 nativeRefreshRequired/readOnlySource。
+因此：把桌面 token 复制进手机只能证明某次请求能通，不能证明可持续登录；续期所有权、撤销、跨设备、多账户切换都要另外设计。
+docs/codex.md:87-99、:147-157 支持一个邮箱多个工作区且选择变化丢弃旧结果；Apple 隐藏邮箱等不应成为业务账户唯一主键（后一句是设计建议，非声称已验证每个 Apple 登录路径）。
+
+六、数据不准与串号的实际边缘案例
+1. 不同东西都叫额度：RateWindow 是时间窗百分比；providerCost/costUsage 又是金额或用量历史；UsageSnapshot:148-183 分别保存。不要把订阅剩余百分比换算为“还能对话 N 次”或把 Token 估算当账单。
+2. 空不等于零：RateWindow:13-21 专门标记 Claude five_hour=null 时合成的 0% 占位，measured:72-75 返回 nil 防止当真窗口；新 App 不能只取 usedPercent 就画满格。
+3. 不同可信度：ProviderIdentitySnapshot.swift:49-53；PluginSnapshotMapper.swift:104-110 校验 exact/estimated/percentOnly/unknown，缺失默认 unknown。exact 仅是项目的来源标记，并非第三方计费保证。
+4. 恢复时间可能借用旧缓存：RateWindow:81-99 可用仍未过期的旧 resetsAt 补新响应，所以字段未必都是同一时刻的最新服务端数据；保留 updatedAt/source/是否缓存。
+5. 老请求覆盖新账户：UsageStore+Refresh.swift:170-181 对比任务代次、启用修订、配置修订、tokenCostScope；UsageStore+UserPlugins.swift:64-91 还对比插件实例。手机移植不能只复制 fetch 函数而删掉这些校验。
+6. 失败后旧读数仍可能保留：UsageStore+UserPlugins.swift:87-92 成功替换 snapshot，错误仅改 errors；UsageStore+Refresh.swift:1400-1409 调 shouldPreservePriorSnapshot。刷新按钮转完不代表数字必定更新；需明显显示上次成功时间和错误。
+7. 账户/凭据隔离：UsageStore+Refresh.swift:1466-1489 验证 token account UUID 和 cacheKey，防把旧账户 OAuth cache 作为新账户回退。
+8. 同一平台不同登录路径字段不齐：docs/doubao.md:31-44 明确 Ark API key 只得到 request-limit 探测，arkcli/AK-SK 才有丰富 Plan windows；“支持该平台”不能等于“任何登录方式都显示全部额度”。
+9. 本地费用估算仅覆盖电脑上的日志，不是账户全设备账单。docs/model-pricing.md:12-21 外部 models.dev + 内置回退、24h 缓存；:73-83 明确 list-price estimate，缺计数/价格保持 unpriced，不显示为 $0。
+10. 周期与单位：月额度、5h、weekly、rolling 恢复、USD/CNY/credits/请求数，必须带单位和账户范围；不能相加成一个“总剩余”。
+
+七、查额度也可能真的消耗额度（非常重要）
+Sources/CodexBarCore/Providers/Doubao/DoubaoUsageFetcher.swift:698-734 对 chat/completions 发送 POST，max_tokens=1，messages=[user:hi]，读取 rate-limit 响应头。
+:652-665 在成功响应却报剩余零的歧义情况下再发一次确认。
+docs/doubao.md:41-44 对应 /api/coding/v3/chat/completions 的文档。
+确切结论是“会发真实模型请求”；是否扣多少钱/多少请求取决于平台当时计费规则，未在线验证，不能断言免费或一定收费。
+复用时需逐个审计适配器是否有写操作、探测请求、会话保活，不要全 App 宣传为绝对只读/绝不消耗。
+
+八、脚本插件的好处、边界和手机提醒
+docs/plugins.md:11-17：本地 JS/TS 文件，1 MiB 源码限制，不下载插件/资源，不解析 imports，无 Node、子进程、文件、DB、OAuth、WebView 或任意原生 API。
+:163-167：主引擎 QuickJS-NG 0.17.0，Apple JavaScriptCore 作为 rollback；QuickJS 无 Intl，使用宿主 helper。
+ProviderPluginRuntime.swift:17-18 默认整次 fetch 20s，最大响应 5 MiB（内置通用默认）。QuickJSProviderPluginEngine.swift:197-198、:268-271 设置 64 MiB 内存和栈限制。
+docs/plugins.md:269-274 用户插件更严格：临时网络会话、无环境 Cookie/凭据/URL cache、拒绝重定向、压缩响应失败、1 MiB 响应；精确批准的 origin 才能请求。
+UserProviderPlugins.swift:10-18 的 ApprovalBinding 记录 instanceID、origins、auth、secretNames、capabilities、cookieDomains；:152-165 fetch 前必须批准。绑定不包含 sourceHash，代码版本改变但权限范围未变并不必然重新授权（源码事实，非漏洞定性）。
+docs/plugins.md:396-398 权限变化才 invalidates approval；:421-424 文档提醒视为本地代码，DNS 变化不在威胁模型。
+ProviderPluginRuntime.swift:242-274 取消/超时中断并废弃 worker；QuickJS 有 watchdog，防死循环。
+复用优点：增加提供商不用大改 UI，多平台输出统一；明确权限、上限、取消处理值得保留。
+手机建议：首版优先只随 App 打包审核过的适配脚本。不要因“有 JS 引擎”就承诺能远程任意下发新功能/插件，上架规则由主研究确认；同时别把桌面的本地文件插件目录体验直接搬手机。
+
+九、频繁刷新、限流、并发
+ProviderHTTPClient.swift:38-105 有仅对 GET/HEAD/OPTIONS 的 transientIdempotent 一次重试；408/429/500/502/503/504、网络中断等可重试，Retry-After capped 10s。
+docs/plugins.md:171-181 可选附加请求与主请求分开；可选最多5s，默认收集预算0.2s，超时/失败丢弃，主额度仍可显示；这是避免一个附加消费明细拖垮全部的好设计。
+客户端手机后台策略不能照搬长期驻留；服务端/伴侣 App 如每个手机各扫所有平台，也会放大请求量，应共享缓存/合并并发、尊重平台限流。
+不要删除现有保留旧值/标记错误逻辑只留下“每60秒刷新一次”。
+
+十、已有可供伴侣手机使用的出口（可作方案比较，不是用户已选架构）
+docs/dashboard-api.md:12-29：codexbar dashboard 一次 JSON；codexbar serve 提供 GET /dashboard/v1/snapshot + Bearer token。
+DashboardSnapshotBuilder.swift:11 说明 display-oriented 合约；CLIServeAuth.swift:125-142 非 loopback 数据路由要求 token + allow-plain-http。
+docs/dashboard-api.md:90-121：原生 serve 是 plain HTTP，没有 TLS；必须加安全传输/HTTPS网关，不能直接公网裸露。
+:138-155 缓存+同配置并发合并，可能立即返回 stale 最后良好值；:228-233 多账户 Codex 行从 App 保存的 snapshot 投影，服务本身不重新刷新这些账户。
+方案含义：Mac 负责难移植的 Cookie/CLI/本地日志，手机只收显示数据，复用面最大且平台token不必搬到手机；但需要电脑在线，不是独立手机产品。自家云转发又增加运维和隐私责任，不能当“已有安全云后端”。
+
+十一、许可证与维护注意
+LICENSE:1-21 MIT，可修改分发商用，需保留版权和许可文本，按现状提供；只能据此判断主项目代码，不等于获得平台接口商用授权、商标许可、App Store 上架保证。
+Sources/CQuickJS/LICENSE:1-24 同为 MIT，多位作者署名；docs/THIRD_PARTY_LICENSES.md:9-30 为 Sucrase 3.35.1 MIT 归属。
+Package.resolved:4-74 锁定 Commander 0.2.4、KeyboardShortcuts 3.1.0、Sparkle 2.9.6、SweetCookieKit 0.5.5、swift-asn1 1.7.2、swift-crypto 4.5.2、swift-log 1.15.1、Vortex commit。
+本次没有下载每个依赖全文许可证；公开发布前仍应对实际带入 iOS 的依赖/资源做清单和版权 notices 审核，不能笼统说“全部 MIT”。
+桌面无关依赖 Sparkle/KeyboardShortcuts/CLI Commander 不建议带入独立 iOS target。
+维护成本核心是每个平台内部接口/网页/登录变化，必须保留回归样本、失败分类和字段缺失容错，而不是一次性把请求地址抄下来。
+
+补充：iCloud、签名和数据出本机（研究过程中追加的重要事实）
+- Sources/CodexBar/SettingsStore.swift:682-684：iCloudSyncEnabled 默认 false；iCloudSyncIncludeSecrets 默认 true；iCloudSyncSnapshotsEnabled 默认 true。即总开关未开启时不同步，但不能说秘密同步子开关默认关闭。
+- Sources/CodexBarCore/Sync/SyncModels.swift:126-145：仅 includeSecrets 为 true 时提取 apiKey/secretKey/cookieHeader/tokenAccounts 四种秘密字段。
+- Sources/CodexBar/Sync/CloudSyncEngine.swift:724-742：配置公开部分写 payload，秘密部分放 CloudKit CKRecord.encryptedValues；:953-968 从同步记录合并后写回配置。因此不能声称项目所有凭据与用量永远不离开本机。
+- CloudSyncEngine.swift:434-435 固定容器 iCloud.com.steipete.codexbar、zone CodexBarSync；Fork 的 iOS App 不能直接复用上游开发者的 CloudKit 容器。
+- Scripts/package_app.sh:287-318 说明 CloudKit 受 provisioning profile 限制，并为上游 bundle ID/team 生成相关权限。要用自己的 Bundle ID、开发者账户、CloudKit 容器、App Group 和 provisioning profile，不能只把显示名字换掉。
+- Scripts/package_app.sh:317-329 生成主 App entitlement 没有 app-sandbox；:331-342 只给 widget 生成 app-sandbox=true。其桌面跨应用读取能力建立在和 iOS 不同的运行环境上。
+- iCloud 同步代码可作为“桌面抄表→同 Apple 账号手机看缓存”的架构参考，但现成代码归 macOS App，绑定 SettingsStore/CloudSyncState，需要抽取；未见现成 iOS 客户端。即使有快照同步，Mac 不刷新时手机也不会魔法得到最新额度。
+
+十二、给用户的白话结论
+“值得借它的‘读表方法和翻译规则’，不能把整台‘装在 Mac 上的抄表机’塞进 iPhone。它很多时候借的是电脑已经登录好的门卡；手机没有那张门卡，也进不了别的 App 的抽屉。真正难的不是画几条剩余额度进度条，而是每个平台允许怎样拿门卡、门卡过期怎么续、确定读的是哪个人的哪个工作区，以及手机不在前台时还能更新多少。”
+最值得提前做的验证：为目标平台逐一验证手机独立登录 -> 得到允许使用的凭据 -> 读取正确订阅窗口 -> 续期 -> 切账户 -> 撤销/退出，而非先承诺完整平台数量。

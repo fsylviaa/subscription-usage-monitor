@@ -1,0 +1,16 @@
+{
+	"$schema": "https://unpkg.com/oxlint/configuration_schema.json",
+	"ignorePatterns": [
+		"dist",
+		"target",
+		"node_modules",
+		"coverage",
+		".git",
+		".claude/settings.local.json",
+		"nix/tools/models-dev-gen/gen.ts"
+	],
+	"options": {
+		"typeAware": true,
+		"typeCheck": true
+	}
+}

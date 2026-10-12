@@ -1,0 +1,207 @@
+{
+  "status": "浅深待获取额度回退节点（只读）",
+  "results": [
+    {
+      "theme": "Light",
+      "review": {
+        "key": "R4/Light/Widgets/Review",
+        "id": "46:140634",
+        "visible": true
+      },
+      "stories": [
+        {
+          "kind": "samePlatform",
+          "account": "alin.codex@example.com",
+          "beforeHome": {
+            "key": "R4/Light/AccountWidgets/Set-14/Pending-1",
+            "id": "65:1364715",
+            "visible": true
+          },
+          "beforeDashboard": {
+            "key": "R4/Light/AccountFlow/Pending-14-1/Dashboard",
+            "id": "53:351234",
+            "visible": true
+          },
+          "menu": {
+            "key": "R4/Light/AccountFlow/Pending-14-1/d/Menu-2",
+            "id": "53:691051",
+            "visible": true
+          },
+          "disconnect": {
+            "key": "R4/Light/AccountFlow/Pending-14-1/d/Disconnect-2",
+            "id": "53:691094",
+            "visible": true
+          },
+          "home": {
+            "key": "R4/Light/AccountWidgets/Set-10/Pending-1",
+            "id": "65:1349611",
+            "visible": true
+          },
+          "dashboard": {
+            "key": "R4/Light/AccountFlow/Pending-10-1/Dashboard",
+            "id": "53:337214",
+            "visible": true
+          },
+          "unknown": {
+            "key": "R4/Light/AccountFlow/Pending-10-1/WidgetUnknown",
+            "id": "65:1349573",
+            "visible": true
+          }
+        },
+        {
+          "kind": "crossPlatform",
+          "account": "alin.claude@example.com",
+          "beforeHome": {
+            "key": "R4/Light/AccountWidgets/Set-13/Pending-0",
+            "id": "65:1360170",
+            "visible": true
+          },
+          "beforeDashboard": {
+            "key": "R4/Light/AccountFlow/Pending-13-0/Dashboard",
+            "id": "53:350293",
+            "visible": true
+          },
+          "menu": {
+            "key": "R4/Light/AccountFlow/Pending-13-0/d/Menu-2",
+            "id": "53:688871",
+            "visible": true
+          },
+          "disconnect": {
+            "key": "R4/Light/AccountFlow/Pending-13-0/d/Disconnect-2",
+            "id": "53:688914",
+            "visible": true
+          },
+          "home": {
+            "key": "R4/Light/AccountWidgets/Set-9/Pending-0",
+            "id": "65:1346604",
+            "visible": true
+          },
+          "dashboard": {
+            "key": "R4/Light/AccountFlow/Pending-9-0/Dashboard",
+            "id": "53:336273",
+            "visible": true
+          },
+          "unknown": {
+            "key": "R4/Light/AccountFlow/Pending-9-0/WidgetUnknown",
+            "id": "65:1346566",
+            "visible": true
+          }
+        }
+      ],
+      "unaffectedCursorDetail": {
+        "key": "R4/Light/AccountFlow/Details/3",
+        "id": "53:306870",
+        "visible": true
+      },
+      "stale": {
+        "key": "R4/Light/Widgets/Stale/Pending-10-1",
+        "id": null,
+        "visible": null
+      }
+    },
+    {
+      "theme": "Dark",
+      "review": {
+        "key": "R4/Dark/Widgets/Review",
+        "id": "46:150995",
+        "visible": true
+      },
+      "stories": [
+        {
+          "kind": "samePlatform",
+          "account": "alin.codex@example.com",
+          "beforeHome": {
+            "key": "R4/Dark/AccountWidgets/Set-14/Pending-1",
+            "id": "65:1654572",
+            "visible": true
+          },
+          "beforeDashboard": {
+            "key": "R4/Dark/AccountFlow/Pending-14-1/Dashboard",
+            "id": "53:533131",
+            "visible": true
+          },
+          "menu": {
+            "key": "R4/Dark/AccountFlow/Pending-14-1/d/Menu-2",
+            "id": "53:918262",
+            "visible": true
+          },
+          "disconnect": {
+            "key": "R4/Dark/AccountFlow/Pending-14-1/d/Disconnect-2",
+            "id": "53:918305",
+            "visible": true
+          },
+          "home": {
+            "key": "R4/Dark/AccountWidgets/Set-10/Pending-1",
+            "id": "65:1639468",
+            "visible": true
+          },
+          "dashboard": {
+            "key": "R4/Dark/AccountFlow/Pending-10-1/Dashboard",
+            "id": "53:519111",
+            "visible": true
+          },
+          "unknown": {
+            "key": "R4/Dark/AccountFlow/Pending-10-1/WidgetUnknown",
+            "id": "65:1639430",
+            "visible": true
+          }
+        },
+        {
+          "kind": "crossPlatform",
+          "account": "alin.claude@example.com",
+          "beforeHome": {
+            "key": "R4/Dark/AccountWidgets/Set-13/Pending-0",
+            "id": "65:1650027",
+            "visible": true
+          },
+          "beforeDashboard": {
+            "key": "R4/Dark/AccountFlow/Pending-13-0/Dashboard",
+            "id": "53:532190",
+            "visible": true
+          },
+          "menu": {
+            "key": "R4/Dark/AccountFlow/Pending-13-0/d/Menu-2",
+            "id": "53:916082",
+            "visible": true
+          },
+          "disconnect": {
+            "key": "R4/Dark/AccountFlow/Pending-13-0/d/Disconnect-2",
+            "id": "53:916125",
+            "visible": true
+          },
+          "home": {
+            "key": "R4/Dark/AccountWidgets/Set-9/Pending-0",
+            "id": "65:1636461",
+            "visible": true
+          },
+          "dashboard": {
+            "key": "R4/Dark/AccountFlow/Pending-9-0/Dashboard",
+            "id": "53:518170",
+            "visible": true
+          },
+          "unknown": {
+            "key": "R4/Dark/AccountFlow/Pending-9-0/WidgetUnknown",
+            "id": "65:1636423",
+            "visible": true
+          }
+        }
+      ],
+      "unaffectedCursorDetail": {
+        "key": "R4/Dark/AccountFlow/Details/3",
+        "id": "53:488767",
+        "visible": true
+      },
+      "stale": {
+        "key": "R4/Dark/Widgets/Stale/Pending-10-1",
+        "id": null,
+        "visible": null
+      }
+    }
+  ],
+  "missing": [
+    "R4/Light/Widgets/Stale/Pending-10-1",
+    "R4/Dark/Widgets/Stale/Pending-10-1"
+  ],
+  "duplicates": [],
+  "mutationCount": 0
+}

@@ -1,0 +1,118 @@
+Codex 额度取数深挖（仅本地源码与既有测试审阅；未运行账户、未读真实凭据、未做 iOS 实测）
+源码根目录：/Users/iceflying/codex/订阅用量监控/Reference/CodexBar
+
+1. 必须保留的结论
+
+OAuth 与网页最后读的是同一个默认额度入口：GET https://chatgpt.com/backend-api/wham/usage。差别主要在怎样拿到可用凭据、怎样核对账户，以及网页额外抓取历史图表。5 小时/每周使用百分比不是本地估算；读取服务端窗口值。Credits 余额、个人月度 credit cap、重置券又是三个独立概念。
+
+“纯 HTTP 可抽取”成立于核心当前额度层，不代表整条现有网页策略没有 WebView，更不代表 iOS 登录/续期已经实现。具体顺序分三种：
+ A. 显式 .web 策略：先导入/验证浏览器 Cookie（此阶段通常已加载 WK 页面）→ loadLatestDashboard 内 HTTP preflight → 默认再使用 WK 抓历史→身份授权判断→结果。
+ B. App 已有 WK 会话的刷新：可以跳过浏览器重新导入；loadLatestDashboard 先 HTTP；调用方禁用 page scrape 且得到数据和可信 email 时，可以完全不创建/加载 WebView。
+ C. OAuth：已有 CLI auth.json 的 access token→纯 HTTP，无网页步骤；登录/令牌续期由凭据原持有者处理。
+证据：Sources/CodexBarCore/Providers/Codex/CodexWebDashboardStrategy.swift:294–339；Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardBrowserCookieImporter.swift:579–619、775–815；Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher.swift:242–301；Sources/CodexBar/UsageStore+OpenAIWeb.swift:567–568、1052–1081。
+
+2. OAuth 完整链
+
+入口选择：CodexProviderDescriptor.resolveStrategies 默认 auto 为 PAT→OAuth→CLI；managed workspace 下 PAT→OAuth（不允许 CLI 错读另一个 workspace）。明确 .oauth 为 OAuth→有条件 native refresh CLI，.web 才是网页策略。网页并不是 auto 列表里的第三/第四 fallback。
+证据：Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:150–171。
+
+凭据输入：CodexOAuthCredentialsStore.loadForUsage 从被选中 CODEX_HOME 的 auth.json 读 access_token、refresh_token、id_token、account_id；account_id 缺失时从 JWT 信息补。只在显式开启 allowExternalOAuthSources 且原生来源满足 fallback 条件时查旧 ~/.config/codex/auth.json 或 OpenCode 来源。这里是读取现有登录结果，不是 OAuth 授权页面实现。
+证据：Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexOAuthCredentials.swift:150–190、269–302、381–393；Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:391–413。
+
+有效期：原生 access token 解析 expiresAt，距到期 5 分钟就算需续期；外部来源窗口 60 秒；没有 expiresAt 则参考 lastRefresh，超过 8 天算 stale。读取时短暂重读两次，等待原持有者正在发布的新凭据，绝不因此自行兑换 refresh token。
+证据：Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexOAuthCredentials.swift:51–62、293；Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:395–412。
+
+关键：当前使用量主路径 prepareCredentialsForUsage 明确拒绝 stale credentials，native 抛 nativeRefreshRequired，外部只读来源抛 readOnlySource。注释直接说明，共享 refresh token 的轮换若没能回写给原持有者，会让原 CLI 持有旧 token。显式 OAuth 只有 native stale、有 CLI、无 managed workspace 才用 CLI 回退。
+证据：Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:339–370、465–474。
+
+仓库虽保留 CodexTokenRefresher：POST https://auth.openai.com/oauth/token，JSON client_id/grant_type=refresh_token/refresh_token/scope=openid profile email，解析 access_token/refresh_token/id_token；但是全文调用核对未发现生产路径调用 refresh()，仅测试直接调用。不能把这个类存在写成“CodexBar 查额度时自动替所有账户续期”。其中 client_id 也不是给自有 iOS App 直接照搬即可上线的授权凭据。
+证据：Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexTokenRefresher.swift:6–8、33–82；Tests/CodexBarTests/CodexOAuthRequestTests.swift:148。
+
+网络主请求：GET /backend-api/wham/usage；Authorization: Bearer <accessToken>；非空 accountId 加 ChatGPT-Account-Id；Accept: application/json；User-Agent: CodexBar；30 秒；忽略本地缓存。managedWorkspaceAccountID 可先替换凭据 accountId，保证指定 workspace。网络失败按 401→unauthorized，其余非 2xx→serverError，JSON 无法解码→invalidResponse。
+证据：Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:420–438；Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexOAuthUsageFetcher.swift:379–423；Sources/CodexBarCore/Providers/Codex/CodexAuthenticatedHTTPTransport.swift:18–39。
+
+默认网址可被桌面 config.toml 的 chatgpt_base_url 改写，非 backend-api 基址走 /api/codex/usage。手机提取版若只支持官方服务，应把固定允许域名注入客户端，而不是继续读桌面 HOME/config.toml 或任意基址。
+证据：Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexOAuthUsageFetcher.swift:568–683。
+
+3. 响应字段→数据结果
+
+rate_limit.primary_window / secondary_window：used_percent（整数）、reset_at（Unix 秒）、limit_window_seconds（秒）。makeWindow 转成 RateWindow.usedPercent、resetsAt、windowMinutes=秒/60。再按时长归位：300 分钟=5 小时栏；10080 分钟=周栏。因此不能死认 JSON primary 永远是 5 小时：Free 可仅给一个 primary 周窗口，代码会放到 secondary。
+证据：Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexOAuthUsageFetcher.swift:161–222；Sources/CodexBarCore/Providers/Codex/CodexReconciledState.swift:40–52、128–162；Sources/CodexBarCore/Providers/Codex/CodexRateWindowNormalizer.swift:9–51。
+
+CodexReconciledState.toUsageSnapshot：session→UsageSnapshot.primary，weekly→secondary，extraRateWindows→额外具名窗口，identity→账户和 plan，updatedAt→本次时间。additional_rate_limits 的 limit_name/metered_feature/rate_limit 经 CodexAdditionalRateLimitMapper 映射，例如 Spark 5h、Spark 周，不能加到主额度里。坏的可选窗口只降置信度，尽量保留正常窗口。
+证据：Sources/CodexBarCore/Providers/Codex/CodexReconciledState.swift:40–52、94–103；Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:629–642；Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexOAuthUsageFetcher.swift:34–61、225–264。
+
+credits：has_credits、unlimited、balance。balance 接受数字或数字字符串；缺失/null 是未知/可能无权限，不等于 0。CreditsSnapshot.remaining 虽用 0 占位，但必须同时看 balanceReadSucceeded=false；has_credits=true 不保证用户可看到余额。
+证据：Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexOAuthUsageFetcher.swift:308–331；Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:528–545；Sources/CodexBarCore/OpenAIDashboardModels.swift:204–216。
+
+月度个人 credit cap：individual_limit 可位于顶层、rate_limit 或 spend_control；从 limit/used/remaining_percent/reset_at 等字段解码，单独放 codexCreditLimit，不等同额外购买余额。若组织计划有 spend_control 却没拿到 cap，includeCredits 时 GET /backend-api/accounts/{id}/spend-controls/current-user/monthly-usage；响应 current_month_usage + effective_monthly_limit.limit/enforcement_mode →已用、上限、100-used/limit*100；none/off/disabled/no_limit 不当成有效 cap；这个响应无 reset 时间时保持 nil。
+证据：Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexOAuthUsageFetcher.swift:72–75、279–305、496–519；Sources/CodexBarCore/Providers/Codex/CodexSpendControlsMonthlyUsage.swift:3–56、132–143；Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:735–770。
+
+组织余额补充：仅 has_credits=true、非 unlimited、balance 缺失、includeCredits、response.account_id 存在且不与 credentials.accountId 冲突时，GET /backend-api/accounts/{id}/remaining_balance。返回 balance 后标 balanceIsWorkspace=true，不能把团队共用余额冒充个人剩余额度；owner-scoped 请求失败保留已得窗口。
+证据：Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:570–613；Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexOAuthUsageFetcher.swift:359–375、468–493。
+
+重置券：另 GET /backend-api/wham/rate-limit-reset-credits，加 OpenAI-Beta: codex-1、originator: Codex Desktop；返回 credits[]、available_count，进入 codexResetCredits。这是可用重置库存，不能当 credits.balance。App 路径会尝试，CLI 只有 includeCredits 请求；补充失败不推翻主窗口。
+证据：Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:477–486、783–814；Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexOAuthUsageFetcher.swift:524–558、686–703。
+
+最终 ProviderFetchResult：usage + 独立 credits + sourceLabel=oauth。即使没 5h/周窗口，只要有余额、cap 或重置库存仍可能保留部分结果。CodexExtraUsageCost 将 cap/余额附到 usage.providerCost，currencyCode 是 Credits，不是 USD；UI不应自己擅自换算钱。
+证据：Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:616–669；Sources/CodexBarCore/Providers/Codex/CodexExtraUsageCost.swift:3–38。
+
+4. 网页完整链与纯 HTTP 的真实边界
+
+桌面登录来源：自动读取浏览器 Cookie（SweetCookieKit；Safari/Chrome 等），或用户手动贴 Cookie header。不是项目自己做 Apple/邮箱密码登录表单。Cookie importer 先 /backend-api/me、再 /api/auth/session 查身份；身份未知时临时 WK 非持久 store 加 Cookie 再 probeUsagePage。匹配后写隔离的持久 WK store，并通过 probeUsagePage 验证持久会话。因此首次导入阶段就可能/通常包含 WK 页面加载。
+证据：Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardBrowserCookieImporter.swift:150–165、282–338、341–418、579–619、680–719、775–815；Sources/CodexBar/Providers/Codex/CodexProviderImplementation.swift:179–211。
+
+WK store 以 email+source scope 隔离（注意仅 email 不够）；macOS 下 WKWebsiteDataStore(forIdentifier: stableUUID)。随后 fetcher 从该 store.httpCookieStore.getAllCookies 取 chatgpt.com Cookie，拼 Cookie header。手机不应照搬 contains("chatgpt.com") 域判断/手动复制为所有域的办法，应保留 Cookie domain/path/secure/expiry 属性并精确匹配目标域。
+证据：Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardWebsiteDataStore.swift:6–38、85–87；Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher.swift:771–781；Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardBrowserCookieImporter.swift:853–869。
+
+Dashboard HTTP preflight：
+ 1) Cookie GET /backend-api/wham/usage，不带 bearer。
+ 2) 仅 401：用同一个 Cookie GET /api/auth/session，读取严格类型的 accessToken 与 user.email；token 空/含空白控制符/email空拒绝。
+ 3) 同一 Cookie + Authorization: Bearer <session.accessToken> 重试一次 usage；403/429/500 不进入登录重试，第二次401也不循环。
+ 4) 同一 Cookie/bearer 给可选 monthly cap、workspace balance 请求；附加请求失败不删除主额度。
+ 5) 初次 Cookie usage 就成功时没有凭空产生可信 email，preflight 再 /me 或 /api/auth/session 补身份；401 bootstrap 得到的 identity 只能与同 session token 配对。
+证据：Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher+SessionAuthorization.swift:11–80、89–128；Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher.swift:644–708、966–1074、1086–1188。
+
+Web API 使用同一个 CodexUsageResponse decoder，再 dashboardAPIData 转 primaryLimit/secondaryLimit/extraRateWindows/creditsRemaining/creditsAvailable/codexCreditLimit/plan。这里没有新的“网页额度算法”。
+证据：Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher.swift:631–641。
+
+HTTP 后：allowPageScrape=false 且 apiData.hasUsageData、verified email 都满足，就 snapshotByMergingAPI 直接返回，零新增 WK 加载；若 API失败而有 previousSnapshot，可原样返回旧结果，必须UI标注更新时间。allowPageScrape=true 则 acquire WK、等网页渲染、用脚本读取 DOM/React 图表结构，取得代码审查比例、credit历史、daily/usage breakdown、购买链接等；API窗口/余额优先。日历史不是当前 usage JSON 已全部提供的数据，纯 HTTP 小版本可暂不支持这些。
+证据：Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher.swift:242–301、112–172；Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher+ReturnableData.swift:68–105；Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher+PageScrape.swift:49–156；Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardScrapeScript.swift:559–609。
+
+显式 .web 目前不传 allowPageScrape，所以默认 true。App loader 根据历史为空、手动强制刷新、距上次抓图间隔决定。不要把 fetcher 的 skip 分支说成“全项目网页一律不打开WK”。
+证据：Sources/CodexBarCore/Providers/Codex/CodexWebDashboardStrategy.swift:317–322；Sources/CodexBar/UsageStore+OpenAIWeb.swift:1052–1081、1515–1530。
+
+网页结果最终经 CodexDashboardAuthority 账户归属检查：attach 才 dashboard.toUsageSnapshot/toCreditsSnapshot，再 CodexExtraUsageCost；displayOnly/failClosed 拒绝静默混进另一个账户。toUsageSnapshot 仍走同一个 CodexReconciledState/窗口归位器。
+证据：Sources/CodexBarCore/Providers/Codex/CodexWebDashboardStrategy.swift:225–267；Sources/CodexBarCore/OpenAIDashboardModels.swift:190–216。
+
+订阅到期/续费日期另行请求 /backend-api/subscriptions，HTTP 失败再加载 billing 页捕获；这不是 5h/周重置时间，也不是 refresh token 续期。
+证据：Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher.swift:711–768、1245–1289。
+
+5. UI 登录与 iOS 最小复用建议
+
+Codex 菜单登录：runCodexLoginFlow→CodexLoginRunner.run→CLILoginRunner，Process('/usr/bin/env', [codexExecutable,'login'])。用户在 CLI 打开的官方登录流程选择 Apple ID/邮箱；本项目仅等 CLI 完成，随后使用 auth.json。网页登录 Cookie 模式则让用户先在现有浏览器登录再导入；并没有已实现的 iOS WK login→Keychain 一体流程。
+证据：Sources/CodexBar/Providers/Codex/CodexLoginFlow.swift:5–29；Sources/CodexBar/CodexLoginRunner.swift:12–23；Sources/CodexBar/CLILoginRunner.swift:21–34；Sources/CodexBar/UsageStore+OpenAIWeb.swift:222–223。
+
+建议提取的最小层：
+ - 小数据类型/解析器：CodexUsageResponse、RateWindow/窗口归位、credits未知状态、月cap、具名额外窗口，不必整搬巨大UsageStore。
+ - 纯HTTP客户端：以明确传入的 cookieHeader 或 accessToken+accountId 作参数；提取 OAuthUsageFetcher 请求与 SessionAuthorization 的401一次恢复链。
+ - 独立账户校验：账户ID+workspace+同会话身份；缓存按账户隔离，旧数据带时间，不以一个email无限合并。
+ - 新做 iOS 凭据层：用户在获支持的正式授权回调方案登录，或在平台允许的自有 WKWebView 内登录后读取该 WK cookie store；存入 Keychain；原生请求后保存平台真正更新的 Cookie/token。不能从 ASWebAuthenticationSession 得到 Safari cookie，也不能读桌面 CLI 文件。
+ - 服务层触发：前台刷新、允许的后台机会刷新；过期/验证码/组织切换时明确重登，不能承诺永久静默续期。
+
+已有 transport 值得借：CodexAuthenticatedHTTPTransport 使用 ephemeral URLSession、无urlCache、无httpCookieStorage、httpShouldSetCookies=false、无URLCredentialStorage，同源HTTPS重定向保护。好处是账户隔离与不会借系统Cookie；代价是不会自动把服务器 Set-Cookie 写回保存层。要做手机长期会话，需要另写更新/保存逻辑；把静态Cookie放Keychain不会自动延长它。
+证据：Sources/CodexBarCore/Providers/Codex/CodexAuthenticatedHTTPTransport.swift:42–55；Sources/CodexBarCore/ProviderHTTPClient.swift:198–234。
+
+不能直接作为iOS成品编译的证据：Package.swift:24–26 只声明macOS14；OpenAIDashboardFetcher.swift:1–4/#if os(macOS)，非macOS分支1315–1325直接抛unsupported；CodexWebDashboardStrategy.swift:1–2 引AppKit，非macOS分支351–366不可用；OpenAIDashboardWebViewCache.swift:642–684 用NSWindow/NSScreen伪可见窗口保证网页hydration；CLILoginRunner.swift:31–34用进程/桌面CLI；SweetCookieKit桌面浏览器数据导入也不能在iOS沙盒照搬。纯 Foundation 请求/解析本身是可抽取候选；本轮未进行裁剪后iOS编译或真机登录证明。
+
+6. 有意义的既有 fixture（只审阅，未声称本轮执行通过）
+
+Tests/CodexBarTests/OpenAIDashboardSessionAuthorizationTests.swift:8–42：stub验证精确 initial→session→retry→balance 请求顺序，Cookie固定、同bearer/同workspace；余额0和1234两种都支持；令牌不进日志/序列化结果。308–315为业务fixture（Business、5h12%、余额null）。
+同文件45–55：Cookie直接成功不请求session、不编造authenticated email；58–81：坏token/email不允许重试；84–123：403/429/500不启登录，第二次401不循环；127–155：两个Cookie隔离令牌/身份/组织余额；158–182：补充401/403仍保留主额度。
+Tests/CodexBarTests/OpenAIDashboardFetcherCreditsWaitTests.swift:326–358：pro fixture used_percent12/34 +18000/604800秒 +balance42.5→300/10080分钟与credits42.5，直观证明两条额度与余额独立；438–440只验证skip策略，不能冒称真机WK零加载实验。
+Tests/CodexBarTests/CodexOAuthTests.swift:270–294：Free primary_window实际上周窗口，最终primary=nil、secondary=周；431–460：坏secondary不丢有效primary；465–496：坏primary保留周。
+Tests/CodexBarTests/CodexAdditionalRateLimitsTests.swift:7–72：基础22%/43%，Spark另外30%/100%，映射两条具名extra窗口；76–111：坏额外条目不抹掉正常Spark。
+Tests/CodexBarTests/CodexOAuthCreditLimitTests.swift:167–193：balance字符串0，同时month cap100000-used7761=92239，证明零余额不等于月cap没剩；223–246：Business balance:null→balanceReadSucceeded=false，内部remaining=0仅占位。
+Tests/CodexBarTests/CodexOAuthExpiryPipelineTests.swift:9–41：凭据发布中短暂重读得到新token，只有一次usageHTTP；60–98：过期/坏凭据最多3次读、不发HTTP；128–163：managed过期先拒绝，原持有者替换凭据后下次才成功。证明不是自己刷新共享refresh token。
+
+建议报告用一句话概括：可以复用“拿到通行证之后去柜台查额度、把不同格式整理成卡片”的部分；手机上怎样拿到、保管和更新通行证，要重新设计并逐平台验证。对于 Codex，当前代码已证明额度查询可用纯 HTTP 表达，但未证明你的 iOS App 已获可发布的登录入口，也未证明网页 Cookie 在手机可长期不掉线。

@@ -1,0 +1,1623 @@
+use std::collections::BTreeMap;
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::time::Duration;
+
+use anyhow::{bail, Context, Result};
+use fs2::FileExt;
+use serde::{Deserialize, Serialize};
+use serde_json::value::RawValue;
+use tokscale_core::scanner::ScannerSettings;
+
+use super::i18n::TuiLanguage;
+use super::themes::ThemeName;
+
+const DEFAULT_AUTO_REFRESH_MS: u64 = 60_000;
+const MIN_AUTO_REFRESH_MS: u64 = 30_000;
+const MAX_AUTO_REFRESH_MS: u64 = 3_600_000;
+
+const DEFAULT_NATIVE_TIMEOUT_MS: u64 = 300_000;
+const MIN_NATIVE_TIMEOUT_MS: u64 = 5_000;
+const MAX_NATIVE_TIMEOUT_MS: u64 = 3_600_000;
+
+pub const DEFAULT_AUTOSUBMIT_INTERVAL_MINUTES: u64 = 24 * 60;
+pub const MIN_AUTOSUBMIT_INTERVAL_MINUTES: u64 = 15;
+pub const MAX_AUTOSUBMIT_INTERVAL_MINUTES: u64 = 7 * 24 * 60;
+
+/// An opaque snapshot of the settings files read by
+/// [`Settings::load_with_origin`].
+///
+/// Saving requires complete settings and checks the source files immediately
+/// before replacement. Tokscale writers coordinate through a sibling lock;
+/// external editors that ignore it can still race the final check and rename.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SettingsOrigin {
+    primary_path: Option<PathBuf>,
+    primary_snapshot: SettingsFileSnapshot,
+    legacy_snapshot: Option<(PathBuf, SettingsFileSnapshot)>,
+    safe_to_overwrite: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum SettingsFileSnapshot {
+    Missing,
+    Present(String),
+    Unreadable,
+}
+
+impl SettingsOrigin {
+    fn from_raw(
+        primary_path: Option<PathBuf>,
+        primary: &RawSettings,
+        legacy: Option<(&Path, &RawSettings)>,
+    ) -> Self {
+        Self {
+            primary_path,
+            primary_snapshot: SettingsFileSnapshot::from_raw(primary),
+            legacy_snapshot: legacy
+                .map(|(path, raw)| (path.to_path_buf(), SettingsFileSnapshot::from_raw(raw))),
+            safe_to_overwrite: false,
+        }
+    }
+
+    fn writable(mut self) -> Self {
+        self.safe_to_overwrite = true;
+        self
+    }
+
+    /// Whether the settings loaded with this origin are complete enough to save.
+    ///
+    /// False when loading produced defaults rather than complete settings,
+    /// where saving would overwrite settings we could not read.
+    pub fn is_safe_to_overwrite(&self) -> bool {
+        self.safe_to_overwrite
+    }
+
+    fn settings_json(&self) -> Result<BTreeMap<String, Box<RawValue>>> {
+        if !self.is_safe_to_overwrite() {
+            bail!("could not read this machine's tokscale settings, so refusing to replace them");
+        }
+        let snapshot = match &self.primary_snapshot {
+            SettingsFileSnapshot::Missing => self
+                .legacy_snapshot
+                .as_ref()
+                .map(|(_, snapshot)| snapshot)
+                .unwrap_or(&self.primary_snapshot),
+            snapshot => snapshot,
+        };
+        match snapshot {
+            SettingsFileSnapshot::Present(content) => Ok(serde_json::from_str(content)?),
+            SettingsFileSnapshot::Missing => Ok(BTreeMap::new()),
+            SettingsFileSnapshot::Unreadable => {
+                bail!(
+                    "could not read this machine's tokscale settings, so refusing to replace them"
+                )
+            }
+        }
+    }
+
+    fn verify_unchanged(&self) -> Result<&Path> {
+        let path = self
+            .primary_path
+            .as_deref()
+            .ok_or_else(|| anyhow::anyhow!("could not resolve the tokscale settings location"))?;
+        if SettingsFileSnapshot::from_raw(&Settings::read_config_file(path))
+            != self.primary_snapshot
+        {
+            bail!("settings.json changed since it was loaded; refusing to replace it");
+        }
+        if let Some((legacy_path, legacy_snapshot)) = &self.legacy_snapshot {
+            if SettingsFileSnapshot::from_raw(&Settings::read_config_file(legacy_path))
+                != *legacy_snapshot
+            {
+                bail!("settings.json changed since it was loaded; refusing to replace it");
+            }
+        }
+        Ok(path)
+    }
+}
+
+/// Resolve the file an atomic rename must replace for `path`.
+///
+/// `rename(2)` replaces a symlink itself rather than the file it points at, so
+/// renaming onto a linked settings.json turns the link into a regular file. A
+/// link that is dangling, unreadable, or does not point at a regular file keeps
+/// the link path: there is no file to write through, and a rename at the link
+/// path is then the only write that can succeed.
+fn symlink_target(path: &Path) -> PathBuf {
+    let is_symlink = fs::symlink_metadata(path)
+        .map(|metadata| metadata.file_type().is_symlink())
+        .unwrap_or(false);
+    if !is_symlink {
+        return path.to_path_buf();
+    }
+    match fs::canonicalize(path) {
+        Ok(target) if fs::metadata(&target).map(|m| m.is_file()).unwrap_or(false) => target,
+        _ => path.to_path_buf(),
+    }
+}
+
+/// Refuse a staged write when the link no longer resolves to the staged target.
+///
+/// The target is resolved before the temp file is staged, and the snapshot check
+/// compares contents only: a link retargeted at a file with identical contents
+/// would otherwise land the rename on the file the link used to point at, and
+/// leave the file it points at now stale.
+fn verify_target_unchanged(path: &Path, staged: &Path) -> Result<()> {
+    if symlink_target(path) != staged {
+        bail!("settings.json now resolves to a different file; refusing to replace it");
+    }
+    Ok(())
+}
+
+impl SettingsFileSnapshot {
+    fn from_raw(raw: &RawSettings) -> Self {
+        match raw {
+            RawSettings::Missing => Self::Missing,
+            RawSettings::Present(content) => Self::Present(content.clone()),
+            RawSettings::Unreadable => Self::Unreadable,
+        }
+    }
+}
+
+/// The raw read of a settings file, before parsing.
+enum RawSettings {
+    Missing,
+    Present(String),
+    Unreadable,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum ExplicitHomeConfigLayout {
+    UnixDotConfig,
+    WindowsRoaming,
+}
+
+impl ExplicitHomeConfigLayout {
+    fn current() -> Self {
+        if cfg!(target_os = "windows") {
+            Self::WindowsRoaming
+        } else {
+            Self::UnixDotConfig
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LightSettings {
+    /// When true, every `tokscale --light` run atomically overwrites the
+    /// TUI cache (same semantics as `--light --write-cache`). The CLI
+    /// flags `--write-cache` / `--no-write-cache` override this per-invocation.
+    #[serde(default)]
+    pub write_cache: bool,
+}
+
+/// Subscription-usage providers hidden from both `tokscale usage` and the TUI.
+///
+/// Values are stable provider ids rather than display labels so a copy of the
+/// settings file continues to work when a provider's branding changes.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UsageSettings {
+    #[serde(
+        default,
+        deserialize_with = "deserialize_disabled_providers_string_array_lossy"
+    )]
+    pub disabled_providers: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AutosubmitSettings {
+    #[serde(default)]
+    pub enabled: bool,
+    #[serde(default = "default_autosubmit_interval_minutes")]
+    pub interval_minutes: u64,
+    #[serde(default, deserialize_with = "deserialize_string_array_lossy")]
+    pub clients: Vec<String>,
+    #[serde(default)]
+    pub since: Option<String>,
+    #[serde(default)]
+    pub until: Option<String>,
+    #[serde(default)]
+    pub year: Option<String>,
+    #[serde(default)]
+    pub today: bool,
+    #[serde(default)]
+    pub yesterday: bool,
+    #[serde(default)]
+    pub week: bool,
+    #[serde(default)]
+    pub month: bool,
+    #[serde(default)]
+    pub scheduler: Option<String>,
+    #[serde(default)]
+    pub managed_executable: Option<String>,
+    /// Version of the build that `managed_executable` was copied from.
+    ///
+    /// The copy is written only by `autosubmit enable`, so upgrading the
+    /// installed binary leaves the scheduled job on the old build. Without this
+    /// there is no way to tell a stale scheduled job from a current one, and
+    /// the drift is silent. `None` on configs written before this field
+    /// existed, and on those the version is reported as unknown rather than
+    /// assumed current.
+    #[serde(default)]
+    pub managed_executable_version: Option<String>,
+    #[serde(default)]
+    pub last_run_at_ms: Option<i64>,
+    #[serde(default)]
+    pub last_error: Option<String>,
+}
+
+impl Default for AutosubmitSettings {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            interval_minutes: DEFAULT_AUTOSUBMIT_INTERVAL_MINUTES,
+            clients: Vec::new(),
+            since: None,
+            until: None,
+            year: None,
+            today: false,
+            yesterday: false,
+            week: false,
+            month: false,
+            scheduler: None,
+            managed_executable: None,
+            managed_executable_version: None,
+            last_run_at_ms: None,
+            last_error: None,
+        }
+    }
+}
+
+impl AutosubmitSettings {
+    fn normalize(mut self) -> Self {
+        self.interval_minutes = self.interval_minutes.clamp(
+            MIN_AUTOSUBMIT_INTERVAL_MINUTES,
+            MAX_AUTOSUBMIT_INTERVAL_MINUTES,
+        );
+        self
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Settings {
+    #[serde(default = "default_color_palette")]
+    pub color_palette: String,
+    #[serde(default)]
+    pub auto_refresh_enabled: bool,
+    #[serde(default = "default_auto_refresh_ms")]
+    pub auto_refresh_ms: u64,
+    #[serde(default)]
+    pub include_unused_models: bool,
+    #[serde(default = "default_native_timeout_ms")]
+    pub native_timeout_ms: u64,
+    /// Persistent scanner configuration. Allows users to pin additional
+    /// OpenCode SQLite paths (and, in future, other scanner overrides)
+    /// without having to set env vars on every invocation.
+    ///
+    /// `#[serde(default)]` makes this a drop-in addition — settings.json
+    /// files written before the field existed still load cleanly, and an
+    /// empty `"scanner": {}` is equivalent to not setting it at all.
+    #[serde(default)]
+    pub scanner: ScannerSettings,
+    /// Default `--client` filter applied when the user does not pass any
+    /// CLI client flag. Lets people pin "I only care about my OpenCode and
+    /// Claude usage" without typing `--client opencode,claude` on every
+    /// invocation.
+    ///
+    /// Stored as canonical lowercase ids matching `ClientFilter::as_filter_str`
+    /// (e.g. `["opencode", "claude", "synthetic"]`). Unknown ids are dropped
+    /// silently at load time so a typo or stale entry never breaks tokscale.
+    /// CLI flags always override this list completely — no merging.
+    #[serde(default, deserialize_with = "deserialize_string_array_lossy")]
+    pub default_clients: Vec<String>,
+    #[serde(default)]
+    pub light: LightSettings,
+    /// Subscription-usage providers to skip before credential discovery or
+    /// network access. Unknown ids are ignored by the usage provider registry.
+    #[serde(default)]
+    pub usage: UsageSettings,
+    /// Opt-in toggle for the per-minute breakdown tab. Default is `false`
+    /// to keep the tab strip focused on the daily/hourly views most users
+    /// want and to skip the minute-bucket aggregation cost in DataLoader
+    /// for users who never need it. Set to `true` to surface the Minutely
+    /// tab and enable its aggregation in subsequent loads.
+    #[serde(default)]
+    pub minutely_tab_enabled: bool,
+    #[serde(default)]
+    pub autosubmit: AutosubmitSettings,
+    /// User-defined model-name aliases folded at grouping time. Different
+    /// name-strings for one physical model (e.g. `claude-opus-4-8-cc`,
+    /// `anthropic/claude-opus-4-8`) map to a single canonical name so usage
+    /// stats do not split across rows. Keys and values are matched
+    /// case-insensitively against the normalized model name.
+    ///
+    /// `#[serde(default)]` keeps settings.json files written before the field
+    /// existed loading cleanly; an absent or empty map means no folding.
+    #[serde(default)]
+    pub model_aliases: tokscale_core::ModelAliasMap,
+    /// When true, the interactive TUI uses a light background instead of the
+    /// hardcoded dark one. Toggled live with the `L` key and persisted.
+    #[serde(default)]
+    pub tui_light_mode: bool,
+    /// Preferred UI language for the TUI interface.
+    #[serde(default, deserialize_with = "deserialize_tui_language_lossy")]
+    pub tui_language: TuiLanguage,
+}
+
+/// Lossy deserializer for `tuiLanguage`: unrecognized language codes, hand-edited
+/// typos, or non-string values silently fall back to `TuiLanguage::En` (default)
+/// rather than failing Settings deserialization and discarding other preferences.
+fn deserialize_tui_language_lossy<'de, D>(deserializer: D) -> Result<TuiLanguage, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let opt: Option<serde_json::Value> = Option::deserialize(deserializer).ok().flatten();
+    match opt {
+        Some(serde_json::Value::String(s)) => Ok(TuiLanguage::from_code(&s).unwrap_or_default()),
+        _ => Ok(TuiLanguage::default()),
+    }
+}
+
+/// Lossy deserializer for `defaultClients`: accepts an array of arbitrary
+/// JSON values, keeps only string elements, and silently drops anything
+/// else. Hand-edited settings.json files sometimes end up with stray nulls,
+/// numbers, or trailing trash; failing the whole load over one bad element
+/// would silently fall back to defaults for *every* setting in the file
+/// (theme, scanner paths, etc.), which is a much worse user experience
+/// than dropping the bad entry.
+fn deserialize_string_array_lossy<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value: Option<Vec<serde_json::Value>> = Option::deserialize(deserializer).ok().flatten();
+    Ok(value
+        .into_iter()
+        .flatten()
+        .filter_map(|v| v.as_str().map(|s| s.to_string()))
+        .collect())
+}
+
+/// Lossy deserializer for `usage.disabledProviders`: individual non-string
+/// array members are ignored, but the field itself must be an array. A wrong
+/// top-level shape means the settings file could not be faithfully recovered,
+/// so callers that may save it must keep it untouched.
+fn deserialize_disabled_providers_string_array_lossy<'de, D>(
+    deserializer: D,
+) -> Result<Vec<String>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let values = Vec::<serde_json::Value>::deserialize(deserializer)?;
+    Ok(values
+        .into_iter()
+        .filter_map(|value| value.as_str().map(ToString::to_string))
+        .collect())
+}
+
+fn default_color_palette() -> String {
+    "blue".to_string()
+}
+
+fn default_auto_refresh_ms() -> u64 {
+    DEFAULT_AUTO_REFRESH_MS
+}
+
+fn default_native_timeout_ms() -> u64 {
+    DEFAULT_NATIVE_TIMEOUT_MS
+}
+
+fn default_autosubmit_interval_minutes() -> u64 {
+    DEFAULT_AUTOSUBMIT_INTERVAL_MINUTES
+}
+
+impl Default for Settings {
+    fn default() -> Self {
+        Self {
+            color_palette: default_color_palette(),
+            auto_refresh_enabled: false,
+            auto_refresh_ms: DEFAULT_AUTO_REFRESH_MS,
+            include_unused_models: false,
+            native_timeout_ms: DEFAULT_NATIVE_TIMEOUT_MS,
+            scanner: ScannerSettings::default(),
+            default_clients: Vec::new(),
+            light: LightSettings::default(),
+            usage: UsageSettings::default(),
+            minutely_tab_enabled: false,
+            autosubmit: AutosubmitSettings::default(),
+            model_aliases: tokscale_core::ModelAliasMap::default(),
+            tui_light_mode: false,
+            tui_language: TuiLanguage::En,
+        }
+    }
+}
+
+/// Thin helper that loads settings and returns just the scanner portion.
+///
+/// Every CLI entry point that builds `LocalParseOptions`/`ReportOptions`
+/// calls this so user-configured scanner paths are honored on every
+/// invocation. Errors during load fall through to
+/// [`ScannerSettings::default`] — a missing or malformed settings.json
+/// should never break `tokscale` runs.
+pub fn load_scanner_settings() -> ScannerSettings {
+    Settings::load().scanner
+}
+
+pub fn load_scanner_settings_for_home(home_dir: &Option<String>) -> ScannerSettings {
+    Settings::load_for_home_override(home_dir.as_deref().map(Path::new)).scanner
+}
+
+/// Record this machine's IANA timezone as the device's bucketing zone, once.
+///
+/// Day keys used to be derived from `chrono::Local` on every scan, so moving
+/// machines or changing `TZ` re-split the same history across different days
+/// and the server's monotonic per-day guard turned that into permanent
+/// inflation. Pinning the zone removes the cause, but only for devices that
+/// actually have one pinned — so the CLI pins on first run rather than waiting
+/// for every user to discover a config command.
+///
+/// This is deliberately not a behaviour change on the machine that runs it: the
+/// zone written is the one `chrono::Local` would have resolved anyway, so the
+/// first scan after pinning reports exactly what it would have reported before.
+/// What changes is the *next* scan, from somewhere else.
+///
+/// Does nothing when:
+/// - a zone is already pinned — including one the user set by hand;
+/// - settings.json exists but could not be read. This is the one place in the
+///   CLI that loads settings and then unconditionally writes them back, and
+///   [`Settings::load`] answers a parse failure with `Settings::default()`. The
+///   two together would replace a hand-edited or truncated settings.json with
+///   defaults plus a timezone, destroying scanner paths, aliases, autosubmit
+///   config and UI preferences — on a plain `tokscale report`, with no prompt.
+///   A device that stays unpinned keeps a bug it already had; a device whose
+///   settings are erased cannot get them back.
+/// - the platform cannot name its zone (`TZ=+09:00`, a container with no
+///   zoneinfo). A fixed offset cannot follow DST, so pinning one would swap this
+///   bug for a smaller version of itself. Staying unpinned is the honest state.
+/// - the caller passed `--home`, which points at another machine's data
+///   directory. This machine's zone is not that device's zone, and `save()`
+///   writes to *this* machine's config path regardless, so the two would not
+///   even agree on a file.
+///
+/// A value that is present but does not name a zone the tz database knows — an
+/// empty string, a typo, a raw offset — is *not* treated as pinned, because
+/// bucketing does not treat it as pinned either: it degrades to host-local and
+/// the device keeps the exposure this function exists to close. Those are
+/// re-detected. Overwriting one is safe in a way that overwriting an unreadable
+/// file is not: the file parsed, so everything else in it survives the write,
+/// and the only value lost is one nothing could act on.
+///
+/// A failed save is ignored: the next run retries, and an unpinned device is
+/// exactly as correct as it was before this function existed.
+pub fn pin_bucket_timezone_if_unset(home_dir: &Option<String>) {
+    if home_dir.is_some() {
+        return;
+    }
+
+    let (mut settings, origin) = Settings::load_with_origin();
+    if !origin.is_safe_to_overwrite() {
+        tracing::warn!(
+            "settings.json could not be read — leaving it untouched rather than \
+             replacing it with defaults to record scanner.bucketTimezone"
+        );
+        return;
+    }
+
+    if tokscale_core::BucketTimezone::from_scanner_settings(&settings.scanner).is_pinned() {
+        return;
+    }
+
+    let Some(zone) = tokscale_core::bucket_tz::detect_local_iana_name() else {
+        tracing::debug!(
+            "could not resolve an IANA timezone name for this machine — \
+             leaving scanner.bucketTimezone unset"
+        );
+        return;
+    };
+
+    settings.scanner.bucket_timezone = Some(zone);
+    if let Err(error) = settings.save_with_origin(origin) {
+        tracing::debug!(%error, "failed to persist scanner.bucketTimezone");
+    }
+}
+
+/// Loads the user's configured model aliases, honoring a `--home` override the
+/// same way [`load_scanner_settings_for_home`] does. A missing or malformed
+/// settings.json yields an empty map (no folding); this never errors.
+pub fn load_model_aliases_for_home(home_dir: &Option<String>) -> tokscale_core::ModelAliasMap {
+    Settings::load_for_home_override(home_dir.as_deref().map(Path::new)).model_aliases
+}
+
+/// Returns the user's configured `defaultClients` list as raw lowercase
+/// ids. Validation against the live `ClientFilter` enum happens at the
+/// CLI boundary so this module stays independent of the CLI types.
+///
+/// Returns an empty `Vec` when settings.json is missing, malformed, or
+/// the field is unset — never errors.
+pub fn load_default_clients() -> Vec<String> {
+    Settings::load().default_clients
+}
+
+pub fn load_default_clients_for_home(home_dir: &Option<String>) -> Vec<String> {
+    Settings::load_for_home_override(home_dir.as_deref().map(Path::new)).default_clients
+}
+
+impl Settings {
+    fn normalize(mut self) -> Self {
+        self.auto_refresh_ms = self
+            .auto_refresh_ms
+            .clamp(MIN_AUTO_REFRESH_MS, MAX_AUTO_REFRESH_MS);
+        self.native_timeout_ms = self
+            .native_timeout_ms
+            .clamp(MIN_NATIVE_TIMEOUT_MS, MAX_NATIVE_TIMEOUT_MS);
+        self.autosubmit = self.autosubmit.normalize();
+        self
+    }
+
+    fn config_path() -> Result<PathBuf> {
+        let config_dir = crate::paths::get_config_dir();
+
+        if !config_dir.exists() {
+            fs::create_dir_all(&config_dir)?;
+        }
+
+        Ok(config_dir.join("settings.json"))
+    }
+
+    fn explicit_home_config_path_for_layout(
+        home_dir: &Path,
+        layout: ExplicitHomeConfigLayout,
+    ) -> PathBuf {
+        match layout {
+            ExplicitHomeConfigLayout::UnixDotConfig => home_dir
+                .join(".config")
+                .join("tokscale")
+                .join("settings.json"),
+            ExplicitHomeConfigLayout::WindowsRoaming => home_dir
+                .join("AppData")
+                .join("Roaming")
+                .join("tokscale")
+                .join("settings.json"),
+        }
+    }
+
+    fn explicit_home_config_path(home_dir: &Path) -> PathBuf {
+        Self::explicit_home_config_path_for_layout(home_dir, ExplicitHomeConfigLayout::current())
+    }
+
+    fn explicit_home_legacy_macos_path(home_dir: &Path) -> PathBuf {
+        home_dir.join("Library/Application Support/tokscale/settings.json")
+    }
+
+    /// Returns the legacy `~/Library/Application Support/tokscale/settings.json`
+    /// path on macOS so `load()` can fall back to it during the transition.
+    /// Returns `None` on other platforms or when HOME cannot be resolved.
+    fn legacy_macos_path() -> Option<PathBuf> {
+        crate::paths::legacy_macos_config_dir().map(|d| d.join("settings.json"))
+    }
+
+    pub fn load() -> Self {
+        Self::load_with_origin().0
+    }
+
+    /// [`Settings::load`], plus where the returned value came from.
+    ///
+    /// `load()` answers "what settings should this run use", and defaults are
+    /// the right answer to that question however the read went. They are the
+    /// wrong answer to "what is safe to write back": a file that exists but
+    /// cannot be parsed still holds the user's scanner paths, aliases,
+    /// autosubmit config and UI preferences, and none of them are in the
+    /// defaults handed back. Anything that loads in order to save has to be
+    /// able to tell those two cases apart, so it can decline instead of
+    /// replacing data it never saw.
+    pub fn load_with_origin() -> (Self, SettingsOrigin) {
+        let (primary_path, primary) = match Self::config_path() {
+            Ok(path) => {
+                let raw = Self::read_config_file(&path);
+                (Some(path), raw)
+            }
+            // Cannot even resolve where settings live. Not "absent": a save
+            // would fail the same way, so do not report this as writable.
+            Err(_) => (None, RawSettings::Unreadable),
+        };
+
+        // Transparent macOS fallback: pre-fix releases wrote settings.json under
+        // `~/Library/Application Support/tokscale/`. Read it once if the new
+        // path is empty so users don't lose theme / scanner / defaultClients
+        // preferences after upgrading. The next `save()` lands at the new
+        // canonical path under `~/.config/tokscale/`. Skipped when the user
+        // has explicitly pinned a config root via `TOKSCALE_CONFIG_DIR` so
+        // CI sandboxes and isolated profiles stay hermetic instead of
+        // silently ingesting personal settings from the legacy macOS path.
+        //
+        // The fallback is attempted whenever the primary is not readable, not
+        // only when it is missing — that is what it did before this function
+        // reported an origin, and narrowing it would lose the legacy file to a
+        // permissions error on the new path.
+        let legacy_path = match primary {
+            RawSettings::Present(_) => None,
+            _ if crate::paths::is_config_dir_overridden() => None,
+            _ => Self::legacy_macos_path(),
+        };
+        let legacy = legacy_path.as_deref().map(Self::read_config_file);
+
+        // Snapshot the primary rather than the selected `raw`: a valid legacy
+        // macOS fallback is deliberately saved to a still-missing primary path.
+        let origin = SettingsOrigin::from_raw(
+            primary_path,
+            &primary,
+            legacy_path.as_deref().zip(legacy.as_ref()),
+        );
+
+        // `save()` writes to the primary path whatever was read, so an
+        // unreadable primary stays unreadable even when the legacy file
+        // supplies the values: a write would still land on top of the file we
+        // could not see.
+        let primary_was_unreadable = matches!(primary, RawSettings::Unreadable);
+
+        let raw = match (primary, legacy) {
+            (RawSettings::Present(content), _) => RawSettings::Present(content),
+            (_, Some(RawSettings::Present(content))) => RawSettings::Present(content),
+            // A legacy file we could not *open* outranks a missing primary.
+            // (Legacy content that fails to parse is already `Present` here and
+            // is caught below.) It holds settings the user can still repair,
+            // and writing a primary would shadow it permanently: the fallback
+            // only fires while the primary is absent, so the repaired legacy
+            // file would never be read again.
+            (_, Some(RawSettings::Unreadable)) => RawSettings::Unreadable,
+            (primary, _) => primary,
+        };
+
+        match raw {
+            RawSettings::Missing => (Self::default(), origin.writable()),
+            RawSettings::Unreadable => (Self::default(), origin),
+            RawSettings::Present(content) => match serde_json::from_str::<Settings>(&content) {
+                Ok(settings) if primary_was_unreadable => (settings.normalize(), origin),
+                Ok(settings) => (settings.normalize(), origin.writable()),
+                Err(_) => (Self::default(), origin),
+            },
+        }
+    }
+
+    /// Read a settings file, keeping "there is no file" distinct from "there is
+    /// a file and we could not read it". `read_to_string(..).ok()` collapses
+    /// the two, and the difference is the whole point here.
+    fn read_config_file(path: &Path) -> RawSettings {
+        match fs::read_to_string(path) {
+            Ok(content) => RawSettings::Present(content),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => RawSettings::Missing,
+            Err(_) => RawSettings::Unreadable,
+        }
+    }
+
+    pub fn load_for_home_override(home_dir: Option<&Path>) -> Self {
+        let Some(home_dir) = home_dir else {
+            return Self::load();
+        };
+
+        let raw = fs::read_to_string(Self::explicit_home_config_path(home_dir))
+            .ok()
+            .or_else(|| fs::read_to_string(Self::explicit_home_legacy_macos_path(home_dir)).ok());
+
+        raw.and_then(|content| serde_json::from_str(&content).ok())
+            .map(Settings::normalize)
+            .unwrap_or_default()
+    }
+
+    /// Replace the complete settings file with this value.
+    ///
+    /// This cannot detect edits made before this call. Long-lived callers
+    /// changing individual fields should use [`Self::update_and_save`].
+    pub fn save(&self) -> Result<()> {
+        self.save_with_origin(Self::load_with_origin().1)
+    }
+
+    /// Validate the latest settings, then replace one top-level preference.
+    /// Unmodified values retain their original JSON, including number precision.
+    pub(crate) fn update_and_save(field: &str, value: impl Serialize) -> Result<()> {
+        let (_, origin) = Self::load_with_origin();
+        let mut settings = origin.settings_json()?;
+        settings.insert(field.to_string(), serde_json::value::to_raw_value(&value)?);
+        Self::save_json_with_origin(&settings, origin)
+    }
+
+    /// Save settings using the origin returned when those settings were loaded.
+    ///
+    /// Keep the settings and origin from the same load together. Callers
+    /// updating individual fields without an origin should use
+    /// [`Self::update_and_save`] to preserve unrelated edits.
+    pub(crate) fn save_with_origin(&self, origin: SettingsOrigin) -> Result<()> {
+        Self::save_json_with_origin(self, origin)
+    }
+
+    fn save_json_with_origin(settings: &impl Serialize, origin: SettingsOrigin) -> Result<()> {
+        if !origin.is_safe_to_overwrite() {
+            bail!("could not read this machine's tokscale settings, so refusing to replace them");
+        }
+
+        let path = origin
+            .primary_path
+            .as_deref()
+            .ok_or_else(|| anyhow::anyhow!("could not resolve the tokscale settings location"))?;
+        // Rename onto the link target, not the link: dotfile managers (GNU Stow,
+        // chezmoi) keep settings.json as a symlink into a version-controlled
+        // checkout, and replacing the link with a regular file silently breaks
+        // that setup.
+        let write_path = symlink_target(path);
+        // Coordinate Tokscale writers across the final comparison and rename.
+        // A non-cooperating editor can still race an atomic rename, but any edit
+        // present at this final check is rejected rather than overwritten.
+        let lock_path = path.with_file_name(".settings.lock");
+        let lock = fs::OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .write(true)
+            .open(lock_path)?;
+        lock.lock_exclusive()?;
+        let content = serde_json::to_string_pretty(settings)?;
+
+        // Atomic write: write to temp file, sync, then rename
+        // Matches the pattern used in tui/cache.rs and pricing/cache.rs
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_nanos() as u64)
+            .unwrap_or(0);
+        let tmp_filename = format!(".settings.{}.{:x}.tmp", std::process::id(), nanos);
+        let staging_dir = write_path.parent().unwrap_or(std::path::Path::new("."));
+        let temp_path = staging_dir.join(&tmp_filename);
+        // A write routed through a link is staged in the target's directory,
+        // which can refuse it (read-only mount, store path, checkout owned by
+        // another user). Name that directory instead of surfacing a bare errno.
+        let write_through_link = write_path.as_path() != path;
+
+        let write_result = (|| -> Result<()> {
+            let mut file = fs::File::create(&temp_path).with_context(|| {
+                if write_through_link {
+                    format!(
+                        "could not stage a settings write in {}, the directory holding the file that {} links to",
+                        staging_dir.display(),
+                        path.display()
+                    )
+                } else {
+                    format!("could not create {}", temp_path.display())
+                }
+            })?;
+            use std::io::Write;
+            file.write_all(content.as_bytes())?;
+            file.sync_all()?;
+            // Check after staging and syncing: edits made during those slower
+            // operations must leave the destination untouched as well.
+            origin.verify_unchanged()?;
+            // The snapshot check compares contents; the link itself must still
+            // name the file the write was staged against.
+            verify_target_unchanged(path, &write_path)?;
+            tokscale_core::fs_atomic::replace_file(&temp_path, &write_path)?;
+            Ok(())
+        })();
+
+        if write_result.is_err() {
+            let _ = fs::remove_file(&temp_path);
+        }
+
+        write_result
+    }
+
+    pub fn theme_name(&self) -> ThemeName {
+        self.color_palette.parse().unwrap_or(ThemeName::Blue)
+    }
+
+    pub fn set_theme(&mut self, theme: ThemeName) {
+        self.color_palette = theme.as_str().to_string();
+    }
+
+    pub fn get_auto_refresh_interval(&self) -> Option<Duration> {
+        if self.auto_refresh_enabled && self.auto_refresh_ms > 0 {
+            Some(Duration::from_millis(self.auto_refresh_ms))
+        } else {
+            None
+        }
+    }
+
+    pub fn get_native_timeout(&self) -> Duration {
+        let timeout_ms = if let Ok(env_val) = std::env::var("TOKSCALE_NATIVE_TIMEOUT_MS") {
+            env_val.parse::<u64>().unwrap_or(self.native_timeout_ms)
+        } else {
+            self.native_timeout_ms
+        };
+
+        let clamped = timeout_ms.clamp(MIN_NATIVE_TIMEOUT_MS, MAX_NATIVE_TIMEOUT_MS);
+        Duration::from_millis(clamped)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    struct EnvVarGuard {
+        key: &'static str,
+        previous: Option<std::ffi::OsString>,
+    }
+
+    impl EnvVarGuard {
+        fn set(key: &'static str, value: impl AsRef<std::ffi::OsStr>) -> Self {
+            let previous = std::env::var_os(key);
+            unsafe {
+                std::env::set_var(key, value);
+            }
+            Self { key, previous }
+        }
+    }
+
+    impl Drop for EnvVarGuard {
+        fn drop(&mut self) {
+            unsafe {
+                match &self.previous {
+                    Some(value) => std::env::set_var(self.key, value),
+                    None => std::env::remove_var(self.key),
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn saving_patched_json_rejects_edits_since_load() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let path = temp.path().join("settings.json");
+        fs::write(&path, r#"{"colorPalette":"blue"}"#).unwrap();
+        let origin =
+            SettingsOrigin::from_raw(Some(path.clone()), &Settings::read_config_file(&path), None)
+                .writable();
+        let mut settings = origin.settings_json().unwrap();
+        settings.insert(
+            "tuiLightMode".into(),
+            serde_json::value::to_raw_value(&true).unwrap(),
+        );
+        let replacement = r#"{"usage":{"disabledProviders":["copilot"]}}"#;
+        fs::write(&path, replacement).unwrap();
+
+        let error = Settings::save_json_with_origin(&settings, origin).unwrap_err();
+
+        assert!(error.to_string().contains("changed since it was loaded"));
+        assert_eq!(fs::read_to_string(&path).unwrap(), replacement);
+    }
+
+    #[test]
+    fn settings_json_preserves_unknown_legacy_members() {
+        let legacy = RawSettings::Present(
+            r#"{"colorPalette":"green","future":{"nested":true}}"#.to_string(),
+        );
+        let origin = SettingsOrigin::from_raw(
+            Some(PathBuf::from("settings.json")),
+            &RawSettings::Missing,
+            Some((Path::new("legacy/settings.json"), &legacy)),
+        )
+        .writable();
+
+        assert_eq!(
+            serde_json::to_value(origin.settings_json().unwrap()).unwrap(),
+            serde_json::json!({"colorPalette": "green", "future": {"nested": true}})
+        );
+    }
+
+    #[test]
+    fn explicit_home_config_path_uses_unix_dot_config_layout() {
+        assert_eq!(
+            Settings::explicit_home_config_path_for_layout(
+                Path::new("/home/alice"),
+                ExplicitHomeConfigLayout::UnixDotConfig,
+            ),
+            PathBuf::from("/home/alice/.config/tokscale/settings.json")
+        );
+    }
+
+    #[test]
+    fn explicit_home_config_path_uses_windows_roaming_layout() {
+        assert_eq!(
+            Settings::explicit_home_config_path_for_layout(
+                Path::new("C:/Users/Alice"),
+                ExplicitHomeConfigLayout::WindowsRoaming,
+            ),
+            PathBuf::from("C:/Users/Alice/AppData/Roaming/tokscale/settings.json")
+        );
+    }
+
+    #[test]
+    fn load_for_home_override_reads_current_platform_config_path() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let path = Settings::explicit_home_config_path(temp.path());
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        fs::write(
+            &path,
+            r#"{"colorPalette":"halloween","defaultClients":["codex"]}"#,
+        )
+        .unwrap();
+
+        let loaded = Settings::load_for_home_override(Some(temp.path()));
+        assert_eq!(loaded.color_palette, "halloween");
+        assert_eq!(loaded.default_clients, vec!["codex".to_string()]);
+    }
+
+    #[test]
+    #[cfg(target_os = "macos")]
+    #[serial_test::serial]
+    fn load_falls_back_to_legacy_macos_path_when_new_path_missing() {
+        // Sandbox HOME so the test never reads or writes a real user's
+        // settings.json. Existing macOS users upgrading to the unified
+        // path must keep the theme + scanner settings they already have
+        // under `~/Library/Application Support/tokscale/`.
+        use std::env;
+        let temp = tempfile::TempDir::new().unwrap();
+        let prev_home = env::var_os("HOME");
+        let prev_override = env::var_os("TOKSCALE_CONFIG_DIR");
+        unsafe {
+            env::set_var("HOME", temp.path());
+            env::remove_var("TOKSCALE_CONFIG_DIR");
+        }
+
+        let legacy_dir = temp.path().join("Library/Application Support/tokscale");
+        fs::create_dir_all(&legacy_dir).unwrap();
+        fs::write(
+            legacy_dir.join("settings.json"),
+            r#"{"colorPalette":"halloween","defaultClients":["opencode"]}"#,
+        )
+        .unwrap();
+
+        // Sanity: new path must be empty so the fallback is what we exercise.
+        let new_path = temp.path().join(".config/tokscale/settings.json");
+        assert!(!new_path.exists());
+
+        let loaded = Settings::load();
+        assert_eq!(loaded.color_palette, "halloween");
+        assert_eq!(loaded.default_clients, vec!["opencode".to_string()]);
+
+        unsafe {
+            match prev_home {
+                Some(v) => env::set_var("HOME", v),
+                None => env::remove_var("HOME"),
+            }
+            match prev_override {
+                Some(v) => env::set_var("TOKSCALE_CONFIG_DIR", v),
+                None => env::remove_var("TOKSCALE_CONFIG_DIR"),
+            }
+        }
+    }
+
+    #[test]
+    #[cfg(target_os = "macos")]
+    #[serial_test::serial]
+    fn load_skips_legacy_macos_fallback_when_config_dir_overridden() {
+        // The whole point of TOKSCALE_CONFIG_DIR is hermeticity. CI sandboxes,
+        // tests, and isolated profiles MUST NOT silently inherit theme /
+        // scanner / defaultClients from `~/Library/Application Support/`
+        // when the user explicitly pinned a config root.
+        use std::env;
+        let temp = tempfile::TempDir::new().unwrap();
+        let legacy_root = tempfile::TempDir::new().unwrap();
+        let prev_home = env::var_os("HOME");
+        let prev_override = env::var_os("TOKSCALE_CONFIG_DIR");
+        unsafe {
+            env::set_var("HOME", legacy_root.path());
+            env::set_var("TOKSCALE_CONFIG_DIR", temp.path());
+        }
+
+        let legacy_dir = legacy_root
+            .path()
+            .join("Library/Application Support/tokscale");
+        fs::create_dir_all(&legacy_dir).unwrap();
+        fs::write(
+            legacy_dir.join("settings.json"),
+            r#"{"colorPalette":"halloween","defaultClients":["opencode"]}"#,
+        )
+        .unwrap();
+
+        let loaded = Settings::load();
+        assert_eq!(
+            loaded.color_palette,
+            Settings::default().color_palette,
+            "override must yield default settings, not the legacy file's halloween palette"
+        );
+        assert!(
+            loaded.default_clients.is_empty(),
+            "override must not leak defaultClients from the legacy macOS path"
+        );
+
+        unsafe {
+            match prev_home {
+                Some(v) => env::set_var("HOME", v),
+                None => env::remove_var("HOME"),
+            }
+            match prev_override {
+                Some(v) => env::set_var("TOKSCALE_CONFIG_DIR", v),
+                None => env::remove_var("TOKSCALE_CONFIG_DIR"),
+            }
+        }
+    }
+
+    #[test]
+    fn settings_load_backfills_scanner_when_missing_from_json() {
+        // Older settings.json files predate the `scanner` key. They must
+        // still deserialize cleanly and fall through to ScannerSettings::default.
+        let json = r#"{
+            "colorPalette": "blue",
+            "autoRefreshEnabled": false,
+            "autoRefreshMs": 60000,
+            "includeUnusedModels": false,
+            "nativeTimeoutMs": 300000
+        }"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        assert!(parsed.scanner.opencode_db_paths.is_empty());
+    }
+
+    #[test]
+    fn settings_load_backfills_autosubmit_interval_when_missing_from_json() {
+        let json = r#"{
+            "colorPalette": "blue",
+            "autoRefreshEnabled": false,
+            "autoRefreshMs": 60000,
+            "includeUnusedModels": false,
+            "nativeTimeoutMs": 300000
+        }"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+
+        assert!(!parsed.autosubmit.enabled);
+        assert_eq!(
+            parsed.autosubmit.interval_minutes,
+            DEFAULT_AUTOSUBMIT_INTERVAL_MINUTES
+        );
+        assert_eq!(
+            AutosubmitSettings::default().interval_minutes,
+            DEFAULT_AUTOSUBMIT_INTERVAL_MINUTES
+        );
+    }
+
+    #[test]
+    fn settings_backfills_model_aliases_when_missing_from_json() {
+        // Older settings.json files predate the `modelAliases` key; they must
+        // still deserialize cleanly and default to an empty (no-op) alias map.
+        let json = r#"{
+            "colorPalette": "blue",
+            "autoRefreshEnabled": false,
+            "autoRefreshMs": 60000,
+            "includeUnusedModels": false,
+            "nativeTimeoutMs": 300000
+        }"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        assert!(parsed.model_aliases.entries.is_empty());
+    }
+
+    #[test]
+    fn settings_malformed_model_aliases_does_not_wipe_other_fields() {
+        // A malformed `modelAliases` (not an object, or non-string values) must
+        // degrade to an empty map without failing the whole settings load, so
+        // unrelated settings survive.
+        let json = r#"{
+            "colorPalette": "custom",
+            "modelAliases": ["oops", 5]
+        }"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        assert!(parsed.model_aliases.entries.is_empty());
+        assert_eq!(parsed.color_palette, "custom");
+    }
+
+    #[test]
+    fn settings_load_reads_scanner_opencode_db_paths() {
+        let json = r#"{
+            "colorPalette": "blue",
+            "autoRefreshEnabled": false,
+            "autoRefreshMs": 60000,
+            "includeUnusedModels": false,
+            "nativeTimeoutMs": 300000,
+            "scanner": {
+                "opencodeDbPaths": [
+                    "/custom/one.db",
+                    "/custom/opencode-stable.db"
+                ]
+            }
+        }"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        assert_eq!(
+            parsed.scanner.opencode_db_paths,
+            vec![
+                PathBuf::from("/custom/one.db"),
+                PathBuf::from("/custom/opencode-stable.db"),
+            ]
+        );
+    }
+
+    #[test]
+    fn settings_load_reads_scanner_extra_scan_paths() {
+        let json = r#"{
+            "colorPalette": "blue",
+            "autoRefreshEnabled": false,
+            "autoRefreshMs": 60000,
+            "includeUnusedModels": false,
+            "nativeTimeoutMs": 300000,
+            "scanner": {
+                "extraScanPaths": {
+                    "codex": ["/tmp/project-a/.codex/sessions"],
+                    "openclaw": ["/tmp/imports/openclaw/agents"]
+                }
+            }
+        }"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        let serialized = serde_json::to_value(&parsed).unwrap();
+
+        assert_eq!(
+            serialized["scanner"]["extraScanPaths"]["codex"][0],
+            serde_json::json!("/tmp/project-a/.codex/sessions")
+        );
+        assert_eq!(
+            serialized["scanner"]["extraScanPaths"]["openclaw"][0],
+            serde_json::json!("/tmp/imports/openclaw/agents")
+        );
+    }
+
+    #[test]
+    fn settings_accepts_empty_scanner_object() {
+        // `"scanner": {}` is the documented "no-op" form; must be valid.
+        let json = r#"{
+            "colorPalette": "blue",
+            "autoRefreshEnabled": false,
+            "autoRefreshMs": 60000,
+            "includeUnusedModels": false,
+            "nativeTimeoutMs": 300000,
+            "scanner": {}
+        }"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        assert!(parsed.scanner.opencode_db_paths.is_empty());
+    }
+
+    #[test]
+    fn settings_round_trips_scanner_section_through_json() {
+        // Saving and loading must preserve scanner paths verbatim so that
+        // the TUI settings save flow never drops the key silently.
+        let mut settings = Settings::default();
+        settings.scanner.opencode_db_paths = vec![PathBuf::from("/a/b/opencode.db")];
+        let serialized = serde_json::to_string(&settings).unwrap();
+        let parsed: Settings = serde_json::from_str(&serialized).unwrap();
+        assert_eq!(
+            parsed.scanner.opencode_db_paths,
+            vec![PathBuf::from("/a/b/opencode.db")]
+        );
+    }
+
+    #[test]
+    fn settings_round_trips_scanner_extra_scan_paths_through_json() {
+        let json = r#"{
+            "colorPalette": "blue",
+            "autoRefreshEnabled": false,
+            "autoRefreshMs": 60000,
+            "includeUnusedModels": false,
+            "nativeTimeoutMs": 300000,
+            "scanner": {
+                "extraScanPaths": {
+                    "gemini": ["/tmp/imports/gemini/tmp"]
+                }
+            }
+        }"#;
+
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        let serialized = serde_json::to_string(&parsed).unwrap();
+        let round_trip: serde_json::Value = serde_json::from_str(&serialized).unwrap();
+
+        assert_eq!(
+            round_trip["scanner"]["extraScanPaths"]["gemini"][0],
+            serde_json::json!("/tmp/imports/gemini/tmp")
+        );
+    }
+
+    #[test]
+    fn settings_default_clients_defaults_to_empty() {
+        // Older settings.json files have no `defaultClients` key — they
+        // must still parse and yield the "no defaults configured" state.
+        let json = r#"{
+            "colorPalette": "blue",
+            "autoRefreshEnabled": false,
+            "autoRefreshMs": 60000,
+            "includeUnusedModels": false,
+            "nativeTimeoutMs": 300000
+        }"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        assert!(parsed.default_clients.is_empty());
+    }
+
+    #[test]
+    fn settings_default_clients_round_trips() {
+        // User-configured list must survive load+save unchanged. This is
+        // what `tokscale --client opencode,claude` consults when no CLI
+        // flag is present.
+        let json = r#"{
+            "colorPalette": "blue",
+            "autoRefreshEnabled": false,
+            "autoRefreshMs": 60000,
+            "includeUnusedModels": false,
+            "nativeTimeoutMs": 300000,
+            "defaultClients": ["opencode", "claude", "synthetic"]
+        }"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        assert_eq!(
+            parsed.default_clients,
+            vec![
+                "opencode".to_string(),
+                "claude".to_string(),
+                "synthetic".to_string()
+            ]
+        );
+
+        let serialized = serde_json::to_string(&parsed).unwrap();
+        let round_trip: serde_json::Value = serde_json::from_str(&serialized).unwrap();
+        assert_eq!(
+            round_trip["defaultClients"],
+            serde_json::json!(["opencode", "claude", "synthetic"])
+        );
+    }
+
+    #[test]
+    fn settings_default_clients_drops_non_string_elements_silently() {
+        let json = r#"{
+            "colorPalette": "halloween",
+            "defaultClients": ["opencode", 123, null, "claude", true, {"x":1}]
+        }"#;
+        let parsed: Settings = serde_json::from_str(json).expect("settings should still load");
+        assert_eq!(parsed.color_palette, "halloween");
+        assert_eq!(
+            parsed.default_clients,
+            vec!["opencode".to_string(), "claude".to_string()]
+        );
+    }
+
+    #[test]
+    fn settings_load_accepts_legacy_json_without_light_section() {
+        let json = r#"{
+            "colorPalette": "blue",
+            "autoRefreshEnabled": false,
+            "autoRefreshMs": 60000,
+            "includeUnusedModels": false,
+            "nativeTimeoutMs": 300000
+        }"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        assert!(!parsed.light.write_cache);
+    }
+
+    #[test]
+    fn light_settings_round_trip() {
+        let light = LightSettings { write_cache: true };
+        let serialized = serde_json::to_string(&light).unwrap();
+        let parsed: LightSettings = serde_json::from_str(&serialized).unwrap();
+        assert!(parsed.write_cache);
+    }
+
+    #[test]
+    fn settings_minutely_tab_enabled_defaults_to_false() {
+        let json = r#"{ "colorPalette": "blue" }"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        assert!(!parsed.minutely_tab_enabled);
+        assert!(!Settings::default().minutely_tab_enabled);
+    }
+
+    #[test]
+    fn settings_minutely_tab_enabled_round_trips_when_set() {
+        let json = r#"{
+            "colorPalette": "blue",
+            "minutelyTabEnabled": true
+        }"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        assert!(parsed.minutely_tab_enabled);
+
+        let serialized = serde_json::to_string(&parsed).unwrap();
+        let round_trip: serde_json::Value = serde_json::from_str(&serialized).unwrap();
+        assert_eq!(
+            round_trip["minutelyTabEnabled"],
+            serde_json::Value::Bool(true)
+        );
+    }
+
+    #[test]
+    fn usage_disabled_providers_defaults_for_legacy_settings() {
+        let parsed: Settings = serde_json::from_str(r#"{"colorPalette":"blue"}"#).unwrap();
+        assert!(parsed.usage.disabled_providers.is_empty());
+    }
+
+    #[test]
+    fn usage_disabled_providers_rejects_a_non_array_field() {
+        for invalid in ["null", "true", "42", r#"{"copilot":true}"#, r#""copilot""#] {
+            let json = format!(r#"{{"usage":{{"disabledProviders":{invalid}}}}}"#);
+            assert!(
+                serde_json::from_str::<Settings>(&json).is_err(),
+                "disabledProviders must reject {invalid}"
+            );
+        }
+    }
+
+    #[test]
+    fn usage_disabled_providers_keeps_valid_string_entries() {
+        let parsed: Settings = serde_json::from_str(
+            r#"{"usage":{"disabledProviders":["copilot", null, 42, " CODEX "]}}"#,
+        )
+        .unwrap();
+        assert_eq!(parsed.usage.disabled_providers, ["copilot", " CODEX "]);
+
+        let serialized = serde_json::to_value(&parsed).unwrap();
+        assert_eq!(
+            serialized["usage"]["disabledProviders"],
+            serde_json::json!(["copilot", " CODEX "])
+        );
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn load_with_origin_marks_invalid_disabled_providers_as_unreadable() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let _config_dir = EnvVarGuard::set("TOKSCALE_CONFIG_DIR", temp.path());
+
+        let path = temp.path().join("settings.json");
+        let malformed = r#"{"usage":{"disabledProviders":{"copilot":true}}}"#;
+        fs::write(&path, malformed).unwrap();
+
+        let (settings, origin) = Settings::load_with_origin();
+        assert!(!origin.is_safe_to_overwrite());
+        assert_eq!(settings.color_palette, Settings::default().color_palette);
+        assert_eq!(fs::read_to_string(&path).unwrap(), malformed);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn save_refuses_to_replace_unreadable_settings() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let _config_dir = EnvVarGuard::set("TOKSCALE_CONFIG_DIR", temp.path());
+
+        let path = temp.path().join("settings.json");
+        let malformed = r#"{"usage":{"disabledProviders":{"copilot":true}}}"#;
+        fs::write(&path, malformed).unwrap();
+
+        let save_error = Settings::load().save().unwrap_err();
+        assert!(save_error.to_string().contains("refusing to replace them"));
+        assert_eq!(fs::read_to_string(&path).unwrap(), malformed);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn save_with_origin_refuses_to_replace_unreadable_settings() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let _config_dir = EnvVarGuard::set("TOKSCALE_CONFIG_DIR", temp.path());
+
+        let path = temp.path().join("settings.json");
+        let malformed = r#"{"usage":{"disabledProviders":{"copilot":true}}}"#;
+        fs::write(&path, malformed).unwrap();
+
+        let (settings, origin) = Settings::load_with_origin();
+        let save_error = settings.save_with_origin(origin).unwrap_err();
+        assert!(save_error.to_string().contains("refusing to replace them"));
+        assert_eq!(fs::read_to_string(&path).unwrap(), malformed);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn save_initializes_missing_settings() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let _config_dir = EnvVarGuard::set("TOKSCALE_CONFIG_DIR", temp.path());
+
+        let settings = Settings {
+            color_palette: "green".to_string(),
+            ..Settings::default()
+        };
+        settings.save().unwrap();
+
+        let saved: Settings =
+            serde_json::from_str(&fs::read_to_string(temp.path().join("settings.json")).unwrap())
+                .unwrap();
+        assert_eq!(saved.color_palette, "green");
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn save_with_origin_initializes_missing_settings() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let _config_dir = EnvVarGuard::set("TOKSCALE_CONFIG_DIR", temp.path());
+
+        let (_, origin) = Settings::load_with_origin();
+        let settings = Settings {
+            color_palette: "green".to_string(),
+            ..Settings::default()
+        };
+        settings.save_with_origin(origin).unwrap();
+
+        let saved: Settings =
+            serde_json::from_str(&fs::read_to_string(temp.path().join("settings.json")).unwrap())
+                .unwrap();
+        assert_eq!(saved.color_palette, "green");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    #[serial_test::serial]
+    fn save_writes_through_a_symlinked_settings_file() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let config_dir = temp.path().join("config");
+        fs::create_dir_all(&config_dir).unwrap();
+        let _config_dir = EnvVarGuard::set("TOKSCALE_CONFIG_DIR", &config_dir);
+
+        // Dotfile managers link settings.json into a version-controlled checkout.
+        // Saving must update the file behind the link, not replace the link.
+        let tracked = temp.path().join("settings.json");
+        fs::write(&tracked, r#"{"colorPalette":"blue"}"#).unwrap();
+        let path = config_dir.join("settings.json");
+        std::os::unix::fs::symlink(&tracked, &path).unwrap();
+
+        let (mut settings, origin) = Settings::load_with_origin();
+        settings.color_palette = "green".to_string();
+        settings.save_with_origin(origin).unwrap();
+
+        assert!(
+            fs::symlink_metadata(&path)
+                .unwrap()
+                .file_type()
+                .is_symlink(),
+            "saving must keep settings.json a symlink"
+        );
+        let saved: Settings = serde_json::from_str(&fs::read_to_string(&tracked).unwrap()).unwrap();
+        assert_eq!(saved.color_palette, "green");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    #[serial_test::serial]
+    fn save_replaces_a_dangling_settings_symlink() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let config_dir = temp.path().join("config");
+        fs::create_dir_all(&config_dir).unwrap();
+        let _config_dir = EnvVarGuard::set("TOKSCALE_CONFIG_DIR", &config_dir);
+
+        // Nothing exists behind this link, so there is no file to write through.
+        // The save must still succeed, replacing the link rather than failing.
+        let path = config_dir.join("settings.json");
+        std::os::unix::fs::symlink(temp.path().join("checkout/settings.json"), &path).unwrap();
+
+        let (mut settings, origin) = Settings::load_with_origin();
+        settings.color_palette = "green".to_string();
+        settings.save_with_origin(origin).unwrap();
+
+        let saved: Settings = serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();
+        assert_eq!(saved.color_palette, "green");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn staged_write_is_rejected_when_settings_json_is_relinked() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let path = temp.path().join("settings.json");
+        let tracked = temp.path().join("tracked.json");
+        let other = temp.path().join("other.json");
+        fs::write(&tracked, r#"{"colorPalette":"blue"}"#).unwrap();
+        fs::write(&other, r#"{"colorPalette":"blue"}"#).unwrap();
+        std::os::unix::fs::symlink(&tracked, &path).unwrap();
+
+        // Staged while the link points at `tracked`.
+        let staged = symlink_target(&path);
+        verify_target_unchanged(&path, &staged).unwrap();
+
+        // A dotfile manager retargets the link before the rename. The two files
+        // hold identical contents, so the snapshot check cannot catch this.
+        fs::remove_file(&path).unwrap();
+        std::os::unix::fs::symlink(&other, &path).unwrap();
+        assert!(verify_target_unchanged(&path, &staged).is_err());
+
+        // Unpacking a regular file over the link is the same hazard.
+        fs::remove_file(&path).unwrap();
+        fs::write(&path, r#"{"colorPalette":"blue"}"#).unwrap();
+        assert!(verify_target_unchanged(&path, &staged).is_err());
+
+        // Without a link the staged target is the settings path itself.
+        let plain = temp.path().join("plain.json");
+        fs::write(&plain, "{}").unwrap();
+        verify_target_unchanged(&plain, &symlink_target(&plain)).unwrap();
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn save_with_origin_refuses_to_replace_settings_changed_after_load() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let _config_dir = EnvVarGuard::set("TOKSCALE_CONFIG_DIR", temp.path());
+
+        let path = temp.path().join("settings.json");
+        fs::write(&path, r#"{"colorPalette":"blue"}"#).unwrap();
+        let (settings, origin) = Settings::load_with_origin();
+
+        let replacement = r#"{"colorPalette":"halloween"}"#;
+        fs::write(&path, replacement).unwrap();
+
+        let save_error = settings.save_with_origin(origin).unwrap_err();
+        assert!(save_error
+            .to_string()
+            .contains("changed since it was loaded"));
+        assert_eq!(fs::read_to_string(&path).unwrap(), replacement);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn save_with_origin_refuses_to_replace_malformed_settings_created_after_load() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let _config_dir = EnvVarGuard::set("TOKSCALE_CONFIG_DIR", temp.path());
+
+        let (settings, origin) = Settings::load_with_origin();
+        let path = temp.path().join("settings.json");
+        let malformed = r#"{"usage":{"disabledProviders":{"copilot":true}}}"#;
+        fs::write(&path, malformed).unwrap();
+
+        let save_error = settings.save_with_origin(origin).unwrap_err();
+        assert!(save_error
+            .to_string()
+            .contains("changed since it was loaded"));
+        assert_eq!(fs::read_to_string(&path).unwrap(), malformed);
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn save_with_origin_refuses_to_replace_settings_made_malformed_after_load() {
+        let temp = tempfile::TempDir::new().unwrap();
+        let _config_dir = EnvVarGuard::set("TOKSCALE_CONFIG_DIR", temp.path());
+
+        let path = temp.path().join("settings.json");
+        fs::write(&path, r#"{"colorPalette":"blue"}"#).unwrap();
+        let (settings, origin) = Settings::load_with_origin();
+
+        let malformed = r#"{"usage":{"disabledProviders":{"copilot":true}}}"#;
+        fs::write(&path, malformed).unwrap();
+
+        let save_error = settings.save_with_origin(origin).unwrap_err();
+        assert!(save_error
+            .to_string()
+            .contains("changed since it was loaded"));
+        assert_eq!(fs::read_to_string(&path).unwrap(), malformed);
+    }
+
+    #[test]
+    fn test_tui_language_serialization_and_fallback() {
+        // Missing field defaults to English
+        let json = r#"{"colorPalette":"blue"}"#;
+        let parsed: Settings = serde_json::from_str(json).unwrap();
+        assert_eq!(parsed.tui_language, TuiLanguage::En);
+
+        // Explicit languages parse properly
+        let json_ko = r#"{"tuiLanguage":"ko"}"#;
+        let parsed: Settings = serde_json::from_str(json_ko).unwrap();
+        assert_eq!(parsed.tui_language, TuiLanguage::Ko);
+
+        let json_ja = r#"{"tuiLanguage":"ja"}"#;
+        let parsed: Settings = serde_json::from_str(json_ja).unwrap();
+        assert_eq!(parsed.tui_language, TuiLanguage::Ja);
+
+        let json_zh = r#"{"tuiLanguage":"zh-CN"}"#;
+        let parsed: Settings = serde_json::from_str(json_zh).unwrap();
+        assert_eq!(parsed.tui_language, TuiLanguage::ZhCn);
+
+        let json_fr = r#"{"tuiLanguage":"fr"}"#;
+        let parsed: Settings = serde_json::from_str(json_fr).unwrap();
+        assert_eq!(parsed.tui_language, TuiLanguage::Fr);
+
+        // Serialization outputs camelCase tuiLanguage with canonical code
+        let serialized = serde_json::to_string(&parsed).unwrap();
+        assert!(serialized.contains(r#""tuiLanguage":"fr""#));
+
+        // Unknown / unrecognized values fall back to En safely without error
+        let json_invalid = r#"{"tuiLanguage":"es","colorPalette":"dark"}"#;
+        let parsed: Settings = serde_json::from_str(json_invalid).unwrap();
+        assert_eq!(parsed.tui_language, TuiLanguage::En);
+        assert_eq!(parsed.color_palette, "dark");
+
+        let json_num = r#"{"tuiLanguage":42}"#;
+        let parsed: Settings = serde_json::from_str(json_num).unwrap();
+        assert_eq!(parsed.tui_language, TuiLanguage::En);
+
+        // Case-insensitive & common alias formats recover correctly
+        let json_zh_alias = r#"{"tuiLanguage":"zh_cn"}"#;
+        let parsed: Settings = serde_json::from_str(json_zh_alias).unwrap();
+        assert_eq!(parsed.tui_language, TuiLanguage::ZhCn);
+    }
+}

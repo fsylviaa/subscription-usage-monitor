@@ -1,0 +1,789 @@
+{
+  "status": "Light 连续添加静态审查",
+  "passed": true,
+  "activated": false,
+  "errors": [],
+  "sourceMask": 31,
+  "targetMask": 95,
+  "readyModels": 16,
+  "expectedPendingModels": 48,
+  "pendingDiscovered": 48,
+  "pendingRemaining": 0,
+  "models": [
+    {
+      "mask": 80,
+      "accounts": [
+        4,
+        6
+      ],
+      "dashboard": "65:1910216",
+      "settings": "65:1910427"
+    },
+    {
+      "mask": 81,
+      "accounts": [
+        0,
+        4,
+        6
+      ],
+      "dashboard": "65:1911381",
+      "settings": "65:1911592"
+    },
+    {
+      "mask": 82,
+      "accounts": [
+        4,
+        1,
+        6
+      ],
+      "dashboard": "65:1913923",
+      "settings": "65:1914134"
+    },
+    {
+      "mask": 83,
+      "accounts": [
+        0,
+        4,
+        1,
+        6
+      ],
+      "dashboard": "65:1919574",
+      "settings": "65:1919785"
+    },
+    {
+      "mask": 84,
+      "accounts": [
+        4,
+        2,
+        6
+      ],
+      "dashboard": "65:1940695",
+      "settings": "65:1940906"
+    },
+    {
+      "mask": 85,
+      "accounts": [
+        0,
+        4,
+        2,
+        6
+      ],
+      "dashboard": "65:1942149",
+      "settings": "65:1942360"
+    },
+    {
+      "mask": 86,
+      "accounts": [
+        4,
+        1,
+        2,
+        6
+      ],
+      "dashboard": "65:1927096",
+      "settings": "65:1927307"
+    },
+    {
+      "mask": 87,
+      "accounts": [
+        0,
+        4,
+        1,
+        2,
+        6
+      ],
+      "dashboard": "65:1933530",
+      "settings": "65:1933741"
+    },
+    {
+      "mask": 88,
+      "accounts": [
+        4,
+        3,
+        6
+      ],
+      "dashboard": "65:1916465",
+      "settings": "65:1916676"
+    },
+    {
+      "mask": 89,
+      "accounts": [
+        0,
+        4,
+        3,
+        6
+      ],
+      "dashboard": "65:1922405",
+      "settings": "65:1922616"
+    },
+    {
+      "mask": 90,
+      "accounts": [
+        4,
+        1,
+        3,
+        6
+      ],
+      "dashboard": "65:1929927",
+      "settings": "65:1930138"
+    },
+    {
+      "mask": 91,
+      "accounts": [
+        0,
+        4,
+        1,
+        3,
+        6
+      ],
+      "dashboard": "65:1936654",
+      "settings": "65:1936865"
+    },
+    {
+      "mask": 92,
+      "accounts": [
+        4,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1946101",
+      "settings": "65:1946312"
+    },
+    {
+      "mask": 93,
+      "accounts": [
+        0,
+        4,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1950835",
+      "settings": "65:1951046"
+    },
+    {
+      "mask": 94,
+      "accounts": [
+        4,
+        1,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1956024",
+      "settings": "65:1956235"
+    },
+    {
+      "mask": 95,
+      "accounts": [
+        0,
+        4,
+        1,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1906752",
+      "settings": "65:1906963"
+    },
+    {
+      "mask": 80,
+      "pendingIdx": 6,
+      "accounts": [
+        4,
+        6
+      ],
+      "dashboard": "65:2037402",
+      "settings": "65:2037691"
+    },
+    {
+      "mask": 81,
+      "pendingIdx": 0,
+      "accounts": [
+        0,
+        4,
+        6
+      ],
+      "dashboard": "65:1912802",
+      "settings": "65:1913091"
+    },
+    {
+      "mask": 81,
+      "pendingIdx": 6,
+      "accounts": [
+        0,
+        4,
+        6
+      ],
+      "dashboard": "65:2035643",
+      "settings": "65:2035932"
+    },
+    {
+      "mask": 82,
+      "pendingIdx": 1,
+      "accounts": [
+        4,
+        1,
+        6
+      ],
+      "dashboard": "65:1915344",
+      "settings": "65:1915633"
+    },
+    {
+      "mask": 82,
+      "pendingIdx": 6,
+      "accounts": [
+        4,
+        1,
+        6
+      ],
+      "dashboard": "65:2035001",
+      "settings": "65:2035290"
+    },
+    {
+      "mask": 83,
+      "pendingIdx": 0,
+      "accounts": [
+        0,
+        4,
+        1,
+        6
+      ],
+      "dashboard": "65:1925975",
+      "settings": "65:1926264"
+    },
+    {
+      "mask": 83,
+      "pendingIdx": 1,
+      "accounts": [
+        0,
+        4,
+        1,
+        6
+      ],
+      "dashboard": "65:1921284",
+      "settings": "65:1921573"
+    },
+    {
+      "mask": 83,
+      "pendingIdx": 6,
+      "accounts": [
+        0,
+        4,
+        1,
+        6
+      ],
+      "dashboard": "65:2033135",
+      "settings": "65:2033424"
+    },
+    {
+      "mask": 84,
+      "pendingIdx": 2,
+      "accounts": [
+        4,
+        2,
+        6
+      ],
+      "dashboard": "65:1989077",
+      "settings": "65:1989366"
+    },
+    {
+      "mask": 84,
+      "pendingIdx": 6,
+      "accounts": [
+        4,
+        2,
+        6
+      ],
+      "dashboard": "65:2041465",
+      "settings": "65:2041754"
+    },
+    {
+      "mask": 85,
+      "pendingIdx": 0,
+      "accounts": [
+        0,
+        4,
+        2,
+        6
+      ],
+      "dashboard": "65:1943859",
+      "settings": "65:1944148"
+    },
+    {
+      "mask": 85,
+      "pendingIdx": 2,
+      "accounts": [
+        0,
+        4,
+        2,
+        6
+      ],
+      "dashboard": "65:1995125",
+      "settings": "65:1995414"
+    },
+    {
+      "mask": 85,
+      "pendingIdx": 6,
+      "accounts": [
+        0,
+        4,
+        2,
+        6
+      ],
+      "dashboard": "65:2032576",
+      "settings": "65:2032865"
+    },
+    {
+      "mask": 86,
+      "pendingIdx": 1,
+      "accounts": [
+        4,
+        1,
+        2,
+        6
+      ],
+      "dashboard": "65:1944980",
+      "settings": "65:1945269"
+    },
+    {
+      "mask": 86,
+      "pendingIdx": 2,
+      "accounts": [
+        4,
+        1,
+        2,
+        6
+      ],
+      "dashboard": "65:1928806",
+      "settings": "65:1929095"
+    },
+    {
+      "mask": 86,
+      "pendingIdx": 6,
+      "accounts": [
+        4,
+        1,
+        2,
+        6
+      ],
+      "dashboard": "65:2031934",
+      "settings": "65:2032223"
+    },
+    {
+      "mask": 87,
+      "pendingIdx": 0,
+      "accounts": [
+        0,
+        4,
+        1,
+        2,
+        6
+      ],
+      "dashboard": "65:1954901",
+      "settings": "65:1955190"
+    },
+    {
+      "mask": 87,
+      "pendingIdx": 1,
+      "accounts": [
+        0,
+        4,
+        1,
+        2,
+        6
+      ],
+      "dashboard": "65:1949712",
+      "settings": "65:1950001"
+    },
+    {
+      "mask": 87,
+      "pendingIdx": 2,
+      "accounts": [
+        0,
+        4,
+        1,
+        2,
+        6
+      ],
+      "dashboard": "65:1935531",
+      "settings": "65:1935820"
+    },
+    {
+      "mask": 87,
+      "pendingIdx": 6,
+      "accounts": [
+        0,
+        4,
+        1,
+        2,
+        6
+      ],
+      "dashboard": "65:2030122",
+      "settings": "65:2030411"
+    },
+    {
+      "mask": 88,
+      "pendingIdx": 3,
+      "accounts": [
+        4,
+        3,
+        6
+      ],
+      "dashboard": "65:1917886",
+      "settings": "65:1918175"
+    },
+    {
+      "mask": 88,
+      "pendingIdx": 6,
+      "accounts": [
+        4,
+        3,
+        6
+      ],
+      "dashboard": "65:2048689",
+      "settings": "65:2048978"
+    },
+    {
+      "mask": 89,
+      "pendingIdx": 0,
+      "accounts": [
+        0,
+        4,
+        3,
+        6
+      ],
+      "dashboard": "65:1962321",
+      "settings": "65:1962610"
+    },
+    {
+      "mask": 89,
+      "pendingIdx": 3,
+      "accounts": [
+        0,
+        4,
+        3,
+        6
+      ],
+      "dashboard": "65:1924115",
+      "settings": "65:1924404"
+    },
+    {
+      "mask": 89,
+      "pendingIdx": 6,
+      "accounts": [
+        0,
+        4,
+        3,
+        6
+      ],
+      "dashboard": "65:2046740",
+      "settings": "65:2047029"
+    },
+    {
+      "mask": 90,
+      "pendingIdx": 1,
+      "accounts": [
+        4,
+        1,
+        3,
+        6
+      ],
+      "dashboard": "65:1963442",
+      "settings": "65:1963731"
+    },
+    {
+      "mask": 90,
+      "pendingIdx": 3,
+      "accounts": [
+        4,
+        1,
+        3,
+        6
+      ],
+      "dashboard": "65:1931637",
+      "settings": "65:1931926"
+    },
+    {
+      "mask": 90,
+      "pendingIdx": 6,
+      "accounts": [
+        4,
+        1,
+        3,
+        6
+      ],
+      "dashboard": "65:2046098",
+      "settings": "65:2046387"
+    },
+    {
+      "mask": 91,
+      "pendingIdx": 0,
+      "accounts": [
+        0,
+        4,
+        1,
+        3,
+        6
+      ],
+      "dashboard": "65:1967302",
+      "settings": "65:1967591"
+    },
+    {
+      "mask": 91,
+      "pendingIdx": 1,
+      "accounts": [
+        0,
+        4,
+        1,
+        3,
+        6
+      ],
+      "dashboard": "65:1965284",
+      "settings": "65:1965573"
+    },
+    {
+      "mask": 91,
+      "pendingIdx": 3,
+      "accounts": [
+        0,
+        4,
+        1,
+        3,
+        6
+      ],
+      "dashboard": "65:1938655",
+      "settings": "65:1938944"
+    },
+    {
+      "mask": 91,
+      "pendingIdx": 6,
+      "accounts": [
+        0,
+        4,
+        1,
+        3,
+        6
+      ],
+      "dashboard": "65:2029561",
+      "settings": "65:2029850"
+    },
+    {
+      "mask": 92,
+      "pendingIdx": 2,
+      "accounts": [
+        4,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:2014785",
+      "settings": "65:2015074"
+    },
+    {
+      "mask": 92,
+      "pendingIdx": 3,
+      "accounts": [
+        4,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1947811",
+      "settings": "65:1948100"
+    },
+    {
+      "mask": 92,
+      "pendingIdx": 6,
+      "accounts": [
+        4,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:2053322",
+      "settings": "65:2053611"
+    },
+    {
+      "mask": 93,
+      "pendingIdx": 0,
+      "accounts": [
+        0,
+        4,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1972711",
+      "settings": "65:1973000"
+    },
+    {
+      "mask": 93,
+      "pendingIdx": 2,
+      "accounts": [
+        0,
+        4,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:2023073",
+      "settings": "65:2023362"
+    },
+    {
+      "mask": 93,
+      "pendingIdx": 3,
+      "accounts": [
+        0,
+        4,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1952836",
+      "settings": "65:1953125"
+    },
+    {
+      "mask": 93,
+      "pendingIdx": 6,
+      "accounts": [
+        0,
+        4,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:2029000",
+      "settings": "65:2029289"
+    },
+    {
+      "mask": 94,
+      "pendingIdx": 1,
+      "accounts": [
+        4,
+        1,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1973834",
+      "settings": "65:1974123"
+    },
+    {
+      "mask": 94,
+      "pendingIdx": 2,
+      "accounts": [
+        4,
+        1,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1968425",
+      "settings": "65:1968714"
+    },
+    {
+      "mask": 94,
+      "pendingIdx": 3,
+      "accounts": [
+        4,
+        1,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1958025",
+      "settings": "65:1958314"
+    },
+    {
+      "mask": 94,
+      "pendingIdx": 6,
+      "accounts": [
+        4,
+        1,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:2028356",
+      "settings": "65:2028645"
+    },
+    {
+      "mask": 95,
+      "pendingIdx": 0,
+      "accounts": [
+        0,
+        4,
+        1,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1978120",
+      "settings": "65:1978409"
+    },
+    {
+      "mask": 95,
+      "pendingIdx": 1,
+      "accounts": [
+        0,
+        4,
+        1,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1975887",
+      "settings": "65:1976176"
+    },
+    {
+      "mask": 95,
+      "pendingIdx": 2,
+      "accounts": [
+        0,
+        4,
+        1,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1970478",
+      "settings": "65:1970767"
+    },
+    {
+      "mask": 95,
+      "pendingIdx": 3,
+      "accounts": [
+        0,
+        4,
+        1,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1960088",
+      "settings": "65:1960377"
+    },
+    {
+      "mask": 95,
+      "pendingIdx": 6,
+      "accounts": [
+        0,
+        4,
+        1,
+        2,
+        3,
+        6
+      ],
+      "dashboard": "65:1909044",
+      "settings": "65:1909333"
+    }
+  ],
+  "unverified": [
+    "Actual click: both pre-add/authorization Cancel return to unchanged Set-31",
+    "Actual click: cancel first quota query leaves G bound with no quota",
+    "Actual click: query retry checks again before Set-95",
+    "Actual click: disconnect G returns Set-31; disconnect F returns Set-79; deleting originals preserves both extras",
+    "Actual click: widget Cursor fallback to G uses G identity, quota or pending state, and click target"
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "status": "只读分批审计汇总；不代表实际点击验证",
+  "schemaVersion": 1,
+  "runId": "r4compact-1791522480002",
+  "started": "2026-10-09T05:08:00.002Z",
+  "counts": {
+    "Light": {
+      "roots": 14483,
+      "primaryRoots": 14483,
+      "legacyRoots": 0,
+      "visibleRoots": 14483,
+      "nodes": 914775,
+      "visibleNodes": 726851,
+      "texts": 204115,
+      "visibleTexts": 151705,
+      "reactionLayers": 88758,
+      "visibleReactionLayers": 88690,
+      "reactions": 88758,
+      "nodeActions": 58621,
+      "visibleNodeActions": 58553,
+      "closeBackActions": 30137
+    },
+    "Dark": {
+      "roots": 14483,
+      "primaryRoots": 14483,
+      "legacyRoots": 0,
+      "visibleRoots": 14483,
+      "nodes": 914775,
+      "visibleNodes": 726851,
+      "texts": 204115,
+      "visibleTexts": 151705,
+      "reactionLayers": 88758,
+      "visibleReactionLayers": 88690,
+      "reactions": 88758,
+      "nodeActions": 58621,
+      "visibleNodeActions": 58553,
+      "closeBackActions": 30137
+    }
+  },
+  "queues": {
+    "Light": {
+      "processed": 14483,
+      "queued": 14483,
+      "remaining": 0
+    },
+    "Dark": {
+      "processed": 14483,
+      "queued": 14483,
+      "remaining": 0
+    }
+  },
+  "issueCounts": {},
+  "incompleteRoots": 0,
+  "legacyUnscanned": 0,
+  "finished": "2026-10-09T05:20:54.055Z",
+  "sections": [
+    {
+      "id": "1:43251",
+      "theme": "Light",
+      "role": "review",
+      "name": "浅色 · R4 画面评审 · 保留 44 页",
+      "childCount": 49,
+      "frameCount": 49,
+      "visibleFrameCount": 44,
+      "primaryRootCount": 44,
+      "directoryHash": "bb5727df:79873673:2622"
+    },
+    {
+      "id": "1:43252",
+      "theme": "Light",
+      "role": "interaction",
+      "name": "浅色 · R4 交互状态与返回路径 · 关键评审置顶",
+      "childCount": 16189,
+      "frameCount": 16189,
+      "visibleFrameCount": 14439,
+      "primaryRootCount": 14439,
+      "directoryHash": "192ae7f4:4f2d8114:1181677"
+    },
+    {
+      "id": "1:43253",
+      "theme": "Dark",
+      "role": "review",
+      "name": "深色 · R4 画面评审 · 保留 44 页",
+      "childCount": 49,
+      "frameCount": 49,
+      "visibleFrameCount": 44,
+      "primaryRootCount": 44,
+      "directoryHash": "3beebb9b:7581ad65:2577"
+    },
+    {
+      "id": "1:43254",
+      "theme": "Dark",
+      "role": "interaction",
+      "name": "深色 · R4 交互状态与返回路径 · 关键评审置顶",
+      "childCount": 16189,
+      "frameCount": 16189,
+      "visibleFrameCount": 14439,
+      "primaryRootCount": 14439,
+      "directoryHash": "668f0066:3d40452a:1165146"
+    }
+  ],
+  "comparison": {
+    "pairedRoots": 14483,
+    "primaryCanonicalNames": 14483,
+    "normalization": "Theme-normalized root/path/text; NODE destination canonical root/path; full sorted trigger/action/transition values; dual incremental 32-bit hashes plus length/counts. No per-text geometry dump."
+  },
+  "graph": {
+    "configuredDeclaredCount": 2,
+    "configuredEntryCount": 2,
+    "reviewAndConfiguredEntryCount": 94,
+    "reachableRoots": 28638,
+    "inspectedReachableRoots": 28638,
+    "rootsWithKnownEscape": 28966
+  },
+  "issues": {},
+  "truncation": {
+    "sampleCapPerCategory": 80,
+    "sampleBudgetBytes": 1200000,
+    "sampleBytesRetained": 0,
+    "issueCountTotalsAreUntruncated": true,
+    "outputBytes": 3621,
+    "outputCapBytes": 1800000
+  },
+  "limitations": [
+    "Freeze authoring during all batches. Directory changes are detected; in-place content changes between batches are not versioned by this read-only audit.",
+    "Only R4 roots and visible R3 review frames are primary; visible edges may add up to the declared legacy-root budget. Unscanned legacy targets are counted.",
+    "Theme equality uses dual hashes plus lengths/counts rather than retaining every normalized text/reaction object. Hash equality is practical evidence, not a mathematical collision proof.",
+    "Visible means inherited visible flags. Zero opacity does not disable a clickable hotspot. Background/overlay runtime stack behavior needs actual click validation.",
+    "Geometry flags focus on text/click targets clipped or outside root/button bounds; legitimate scroll axes are excluded. Occlusion, font rendering and semantic TXT synonyms need screenshots.",
+    "No-exit candidates are conservative: CLOSE/BACK/URL/external actions and paths to them count as escape. Conditional branches are treated as possible."
+  ]
+}

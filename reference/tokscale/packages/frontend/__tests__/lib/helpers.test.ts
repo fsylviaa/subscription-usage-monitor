@@ -1,0 +1,468 @@
+import { describe, expect, it } from "vitest";
+import {
+  applyCostCompleteness,
+  mergeClientBreakdownsWithRegressionGuard,
+  reapplyReplaceFamilyCostFloor,
+  reapplyReplaceLayoutCostFloors,
+  type ClientBreakdownData,
+} from "../../src/lib/db/helpers";
+
+// Minimal client breakdown fixture
+function makeClient(tokens: number, messages: number, modelCount: number) {
+  const models: Record<string, { tokens: number; cost: number; input: number; output: number; cacheRead: number; cacheWrite: number; reasoning: number; messages: number }> = {};
+  for (let i = 0; i < modelCount; i++) {
+    models[`model-${i}`] = { tokens, cost: 0, input: tokens, output: 0, cacheRead: 0, cacheWrite: 0, reasoning: 0, messages };
+  }
+  return {
+    tokens,
+    cost: 0,
+    input: tokens,
+    output: 0,
+    cacheRead: 0,
+    cacheWrite: 0,
+    reasoning: 0,
+    messages,
+    models,
+  };
+}
+
+describe("mergeClientBreakdownsWithRegressionGuard", () => {
+  it("preserves existing when incoming has fewer tokens and equal coverage (A2 regression guard)", () => {
+    // Before the A2 fix, equal coverage + fewer tokens would NOT be preserved
+    // because the guard required BOTH fewer tokens AND lower coverage.
+    const existing = { codex: makeClient(1000, 5, 2) };
+    // Same message count and model count, but fewer tokens — signals a parse regression
+    const incoming = { codex: makeClient(800, 5, 2) };
+
+    const result = mergeClientBreakdownsWithRegressionGuard(
+      existing,
+      incoming,
+      new Set(["codex"])
+    );
+
+    expect(result.merged.codex.tokens).toBe(1000);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("1,000");
+    expect(result.warnings[0]).toContain("800");
+  });
+
+  it("preserves existing when incoming has fewer tokens and lower coverage", () => {
+    const existing = { codex: makeClient(1000, 5, 2) };
+    const incoming = { codex: makeClient(800, 3, 1) };
+
+    const result = mergeClientBreakdownsWithRegressionGuard(
+      existing,
+      incoming,
+      new Set(["codex"])
+    );
+
+    expect(result.merged.codex.tokens).toBe(1000);
+    expect(result.warnings).toHaveLength(1);
+  });
+
+  it("accepts incoming when it has more tokens than existing", () => {
+    const existing = { codex: makeClient(800, 5, 2) };
+    const incoming = { codex: makeClient(1000, 5, 2) };
+
+    const result = mergeClientBreakdownsWithRegressionGuard(
+      existing,
+      incoming,
+      new Set(["codex"])
+    );
+
+    expect(result.merged.codex.tokens).toBe(1000);
+    expect(result.warnings).toHaveLength(0);
+  });
+
+  it("accepts incoming when tokens are equal", () => {
+    const existing = { codex: makeClient(1000, 5, 2) };
+    const incoming = { codex: makeClient(1000, 5, 2) };
+
+    const result = mergeClientBreakdownsWithRegressionGuard(
+      existing,
+      incoming,
+      new Set(["codex"])
+    );
+
+    expect(result.merged.codex.tokens).toBe(1000);
+    expect(result.warnings).toHaveLength(0);
+  });
+
+  it("preserves existing client that disappeared from incoming resubmit", () => {
+    const existing = { codex: makeClient(1000, 5, 2), cursor: makeClient(500, 3, 1) };
+    const incoming = { codex: makeClient(1200, 6, 2) };
+
+    const result = mergeClientBreakdownsWithRegressionGuard(
+      existing,
+      incoming,
+      new Set(["codex", "cursor"])
+    );
+
+    // codex is updated (more tokens)
+    expect(result.merged.codex.tokens).toBe(1200);
+    // cursor is preserved (disappeared from incoming but had tokens)
+    expect(result.merged.cursor.tokens).toBe(500);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("cursor");
+  });
+
+  describe("foldedClientFloors parameter (alias-fold double-count healing)", () => {
+    it("lets a lower incoming value at or above the floor replace a folded client", () => {
+      // Simulates the healed state normalizeClientBreakdownAliases would produce:
+      // a stored kilocode(100)+kilo(100) double count folded into a single
+      // 200-token "kilo" entry with a floor of 100 (largest single component),
+      // and the incoming complete-day resubmit reporting the true 100-token
+      // total — exactly at the floor, so it heals.
+      const existing = { kilo: makeClient(200, 5, 1) };
+      const incoming = { kilo: makeClient(100, 5, 1) };
+
+      const result = mergeClientBreakdownsWithRegressionGuard(
+        existing,
+        incoming,
+        new Set(["kilo"]),
+        new Map([["kilo", 100]])
+      );
+
+      expect(result.merged.kilo.tokens).toBe(100);
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("Healed");
+      expect(result.warnings[0]).not.toMatch(/parser regression|Preserved/i);
+      // Healed -> the fold is resolved; nothing to preserve raw keys for.
+      expect(result.foldPreservedClients.size).toBe(0);
+    });
+
+    it("keeps the regression guard when the incoming value is below the floor", () => {
+      // An incoming value below the largest single contribution to the fold
+      // is indistinguishable from a partial re-parse — the exact data-loss
+      // case the guard exists for — so the fold must be preserved, not
+      // "healed" down to the partial value.
+      const existing = { kilo: makeClient(200, 5, 1) };
+      const incoming = { kilo: makeClient(40, 5, 1) };
+
+      const result = mergeClientBreakdownsWithRegressionGuard(
+        existing,
+        incoming,
+        new Set(["kilo"]),
+        new Map([["kilo", 100]])
+      );
+
+      expect(result.merged.kilo.tokens).toBe(200);
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("Preserved");
+      // Preserved fold -> the caller must write the raw alias keys back so
+      // the heal floor survives this partial resubmit.
+      expect(result.foldPreservedClients).toEqual(new Set(["kilo"]));
+    });
+
+    it("keeps the normal regression guard for a non-folded client with the same shape", () => {
+      // Same numbers as above, but the client was NOT flagged as folded
+      // (e.g. a plain rename-only case) -- normal preserve-and-warn behavior
+      // must still apply.
+      const existing = { kilo: makeClient(200, 5, 1) };
+      const incoming = { kilo: makeClient(100, 5, 1) };
+
+      const result = mergeClientBreakdownsWithRegressionGuard(
+        existing,
+        incoming,
+        new Set(["kilo"])
+      );
+
+      expect(result.merged.kilo.tokens).toBe(200);
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("Preserved");
+      // Not folded -> nothing to preserve raw keys for.
+      expect(result.foldPreservedClients.size).toBe(0);
+    });
+
+    it("marks an untouched folded client as preserved (carry-over must not collapse it)", () => {
+      // The incoming submission doesn't claim kilo at all (different client
+      // set); the folded entry is carried over by the spread and must still
+      // be flagged so the raw keys survive the writeback.
+      const existing = { kilo: makeClient(200, 5, 1) };
+      const incoming = { cursor: makeClient(50, 2, 1) };
+
+      const result = mergeClientBreakdownsWithRegressionGuard(
+        existing,
+        incoming,
+        new Set(["cursor"]),
+        new Map([["kilo", 100]])
+      );
+
+      expect(result.merged.kilo.tokens).toBe(200);
+      expect(result.merged.cursor.tokens).toBe(50);
+      expect(result.foldPreservedClients).toEqual(new Set(["kilo"]));
+    });
+
+    it("keeps the folded value when the incoming submission does not include the client", () => {
+      const existing = { kilo: makeClient(200, 5, 1) };
+
+      const result = mergeClientBreakdownsWithRegressionGuard(
+        existing,
+        {},
+        new Set(["kilo"]),
+        new Map([["kilo", 100]])
+      );
+
+      expect(result.merged.kilo.tokens).toBe(200);
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("disappeared");
+      expect(result.foldPreservedClients).toEqual(new Set(["kilo"]));
+    });
+  });
+});
+
+describe("applyCostCompleteness", () => {
+  it("keeps the stored cost floor and incompleteness tag when incoming pricing is missing", () => {
+    const existing = makeClient(240_000, 12, 1);
+    existing.cost = 240;
+    existing.models["model-0"].cost = 240;
+    const incoming = makeClient(40_000, 2, 1);
+
+    const next = applyCostCompleteness(incoming, existing, false);
+
+    expect(next.tokens).toBe(40_000);
+    expect(next.cost).toBe(240);
+    expect(next.provenance?.costIsComplete).toBe(false);
+  });
+});
+
+describe("reapplyReplaceLayoutCostFloors", () => {
+  function incompleteClient(tokens: number, messages: number, modelCount: number): ClientBreakdownData {
+    return {
+      ...makeClient(tokens, messages, modelCount),
+      provenance: { schemaVersion: 1, messageCount: messages, modelCount, costIsComplete: false },
+    };
+  }
+
+  it("does not overspend a rounded deficit across days", () => {
+    const rows = Array.from({ length: 4 }, () => ({
+      sourceBreakdown: { droid: incompleteClient(1, 1, 1) },
+    }));
+    reapplyReplaceLayoutCostFloors(rows, new Map([["droid", 0.0002]]), new Set(["droid"]));
+    expect(rows.reduce((sum, row) => sum + row.sourceBreakdown.droid.cost, 0)).toBeCloseTo(0.0002, 10);
+    expect(rows.every(({ sourceBreakdown }) => sourceBreakdown.droid.cost >= 0)).toBe(true);
+    const beforeReplay = structuredClone(rows);
+    reapplyReplaceLayoutCostFloors(rows, new Map([["droid", 0.0002]]), new Set(["droid"]));
+    expect(rows).toEqual(beforeReplay);
+  });
+
+  it("never subtracts a rounded remainder from the last model", () => {
+    const cell = incompleteClient(1, 1, 4);
+    cell.tokens = 4;
+    cell.messages = 4;
+    reapplyReplaceLayoutCostFloors(
+      [{ sourceBreakdown: { droid: cell } }],
+      new Map([["droid", 0.0002]]),
+      new Set(["droid"]),
+    );
+    expect(Object.values(cell.models).every(({ cost }) => cost >= 0)).toBe(true);
+    expect(Object.values(cell.models).reduce((sum, model) => sum + model.cost, 0)).toBeCloseTo(0.0002, 10);
+    expect(cell.cost).toBeCloseTo(0.0002, 10);
+  });
+
+  it("assigns rounding residuals by model ID order regardless of host locale", () => {
+    const cell = incompleteClient(1, 1, 1);
+    const model = cell.models["model-0"];
+    cell.models = Object.fromEntries(
+      ["ä-model", "z-model", "a-model"].map((id) => [id, { ...model }]),
+    );
+    cell.tokens = 3;
+    cell.messages = 3;
+
+    reapplyReplaceLayoutCostFloors(
+      [{ sourceBreakdown: { droid: cell } }],
+      new Map([["droid", 0.0001]]),
+      new Set(["droid"]),
+    );
+
+    // Locale collation can put ä before z; ordinal ordering always puts it
+    // last, so the same model receives the undistributed 0.0001 on any host.
+    expect(cell.models["a-model"].cost).toBe(0);
+    expect(cell.models["z-model"].cost).toBe(0);
+    expect(cell.models["ä-model"].cost).toBe(0.0001);
+  });
+
+  it("spreads a pre-rewrite cost floor onto days that had no stored cell", () => {
+    const first = incompleteClient(120_000, 6, 1);
+    const second = incompleteClient(120_000, 6, 1);
+    const rows = [{ sourceBreakdown: { droid: first } }, { sourceBreakdown: { droid: second } }];
+
+    reapplyReplaceLayoutCostFloors(
+      rows,
+      new Map([["droid", 240]]),
+      new Set(["droid"])
+    );
+
+    expect(first.cost + second.cost).toBe(240);
+    expect(first.provenance?.costIsComplete).toBe(false);
+    expect(second.provenance?.costIsComplete).toBe(false);
+  });
+
+  it("splits a cell's cost floor across models by token share", () => {
+    const cell = incompleteClient(100_000, 4, 2);
+    cell.models["model-0"].tokens = 75_000;
+    cell.models["model-1"].tokens = 25_000;
+    cell.tokens = 100_000;
+
+    reapplyReplaceLayoutCostFloors(
+      [{ sourceBreakdown: { droid: cell } }],
+      new Map([["droid", 40]]),
+      new Set(["droid"])
+    );
+
+    expect(cell.models["model-0"].cost).toBe(30);
+    expect(cell.models["model-1"].cost).toBe(10);
+    expect(cell.cost).toBe(40);
+  });
+});
+
+
+describe("reapplyReplaceFamilyCostFloor", () => {
+  const family = ["antigravity", "antigravity-cli", "antigravity-extension"] as const;
+
+  function cell(
+    tokens: number,
+    cost: number,
+    complete: boolean
+  ): ClientBreakdownData {
+    return {
+      tokens,
+      cost,
+      input: tokens,
+      output: 0,
+      cacheRead: 0,
+      cacheWrite: 0,
+      reasoning: 0,
+      messages: tokens,
+      models: {
+        "gemini-3-pro": {
+          tokens,
+          cost,
+          input: tokens,
+          output: 0,
+          cacheRead: 0,
+          cacheWrite: 0,
+          reasoning: 0,
+          messages: tokens,
+        },
+      },
+      ...(complete
+        ? {}
+        : {
+            provenance: {
+              schemaVersion: 2,
+              messageCount: 1,
+              modelCount: 1,
+              costIsComplete: false,
+            },
+          }),
+    };
+  }
+
+  it("restores the family lifetime deficit after the original source disappears", () => {
+    // Prior credited family cost was $10 on the desktop source. The
+    // replacement carries the usage on the extension only, unpriced: without
+    // a family-wide floor the $10 is lost (the per-client floor keyed on the
+    // desktop has no cells to land on).
+    const rows = [
+      {
+        sourceBreakdown: {
+          "antigravity-extension": cell(100, 0, false),
+        },
+      },
+    ];
+    reapplyReplaceFamilyCostFloor(rows, family, 10);
+    expect(rows[0].sourceBreakdown["antigravity-extension"]!.cost).toBeCloseTo(10, 8);
+    expect(
+      rows[0].sourceBreakdown["antigravity-extension"]!.models["gemini-3-pro"]!.cost
+    ).toBeCloseTo(10, 8);
+  });
+
+  it("counts complete sibling cells toward the family total without flooring them", () => {
+    // $10 prior family cost, replacement has a COMPLETE $10 extension cell
+    // plus an INCOMPLETE $0 desktop cell: the family total already reaches
+    // the floor, so nothing is added and the complete cell stays exact.
+    const rows = [
+      {
+        sourceBreakdown: {
+          "antigravity-extension": cell(60, 10, true),
+          antigravity: cell(40, 0, false),
+        },
+      },
+    ];
+    reapplyReplaceFamilyCostFloor(rows, family, 10);
+    expect(rows[0].sourceBreakdown["antigravity-extension"]!.cost).toBeCloseTo(10, 8);
+    expect(rows[0].sourceBreakdown.antigravity!.cost).toBeCloseTo(0, 8);
+  });
+
+  it("spreads the deficit only over incomplete cells, complete cells stay exact", () => {
+    const rows = [
+      {
+        sourceBreakdown: {
+          "antigravity-extension": cell(60, 7, true),
+          "antigravity-cli": cell(40, 0, false),
+        },
+      },
+    ];
+    reapplyReplaceFamilyCostFloor(rows, family, 10);
+    // $7 complete stays exact; the $3 deficit lands on the incomplete cell.
+    expect(rows[0].sourceBreakdown["antigravity-extension"]!.cost).toBeCloseTo(7, 8);
+    expect(rows[0].sourceBreakdown["antigravity-cli"]!.cost).toBeCloseTo(3, 8);
+    expect(
+      rows[0].sourceBreakdown["antigravity-cli"]!.models["gemini-3-pro"]!.cost
+    ).toBeCloseTo(3, 8);
+    expect(
+      rows[0].sourceBreakdown["antigravity-cli"]!.provenance?.costIsComplete
+    ).toBe(false);
+  });
+
+  it("leaves a fully priced replacement alone (the floor is not a ratchet)", () => {
+    const rows = [
+      {
+        sourceBreakdown: {
+          "antigravity-extension": cell(100, 6, true),
+        },
+      },
+    ];
+    reapplyReplaceFamilyCostFloor(rows, family, 10);
+    expect(rows[0].sourceBreakdown["antigravity-extension"]!.cost).toBeCloseTo(6, 8);
+  });
+
+  it("spreads a fractional deficit deterministically across dates and members", () => {
+    const rows: Array<{ sourceBreakdown: Record<string, ClientBreakdownData> }> = [
+      {
+        sourceBreakdown: {
+          "antigravity-cli": cell(10, 0, false),
+        },
+      },
+      {
+        sourceBreakdown: {
+          "antigravity-extension": cell(30, 0, false),
+        },
+      },
+    ];
+    reapplyReplaceFamilyCostFloor(rows, family, 0.1);
+    const first = rows[0].sourceBreakdown["antigravity-cli"]!.cost;
+    const second = rows[1].sourceBreakdown["antigravity-extension"]!.cost;
+    expect(first + second).toBeCloseTo(0.1, 8);
+    expect(first).toBeCloseTo(0.025, 8);
+    expect(second).toBeCloseTo(0.075, 8);
+
+    // Replay with the same shapes reproduces the same placement.
+    const replay: Array<{ sourceBreakdown: Record<string, ClientBreakdownData> }> = [
+      {
+        sourceBreakdown: {
+          "antigravity-cli": cell(10, 0, false),
+        },
+      },
+      {
+        sourceBreakdown: {
+          "antigravity-extension": cell(30, 0, false),
+        },
+      },
+    ];
+    reapplyReplaceFamilyCostFloor(replay, family, 0.1);
+    expect(replay[0].sourceBreakdown["antigravity-cli"]!.cost).toBeCloseTo(first, 8);
+    expect(replay[1].sourceBreakdown["antigravity-extension"]!.cost).toBeCloseTo(second, 8);
+  });
+});

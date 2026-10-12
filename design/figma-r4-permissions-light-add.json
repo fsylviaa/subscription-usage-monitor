@@ -1,0 +1,89 @@
+{
+  "status": "Light权限状态新增保留完成",
+  "batches": [
+    {
+      "status": "Light 定域新增通知状态保持完成",
+      "start": 0,
+      "end": 1,
+      "total": 4,
+      "routes": [
+        {
+          "source": 15,
+          "idx": 4,
+          "next": 31,
+          "skipped": true
+        }
+      ],
+      "boundaries": [
+        "Disconnect destinations outside the 20 ready masks retain the same mode, but their subsequent account controls are not repaired by this module.",
+        "Pending repair covers only the four declared new-account models: details, all/pending-account query, query cancellation/retry and the pending-account reconnect.",
+        "Disconnects and further additions from these pending views remain outside this scoped repair.",
+        "Successful additions other than Set15 → 31/47/79 and Set31 → 95 are outside this mode-preservation story.",
+        "System Home/widget navigation and separate notification/background review stories remain outside this module."
+      ]
+    },
+    {
+      "status": "Light 定域新增通知状态保持完成",
+      "start": 1,
+      "end": 2,
+      "total": 4,
+      "routes": [
+        {
+          "source": 15,
+          "idx": 5,
+          "next": 47,
+          "skipped": true
+        }
+      ],
+      "boundaries": [
+        "Disconnect destinations outside the 20 ready masks retain the same mode, but their subsequent account controls are not repaired by this module.",
+        "Pending repair covers only the four declared new-account models: details, all/pending-account query, query cancellation/retry and the pending-account reconnect.",
+        "Disconnects and further additions from these pending views remain outside this scoped repair.",
+        "Successful additions other than Set15 → 31/47/79 and Set31 → 95 are outside this mode-preservation story.",
+        "System Home/widget navigation and separate notification/background review stories remain outside this module."
+      ]
+    },
+    {
+      "status": "Light 定域新增通知状态保持完成",
+      "start": 2,
+      "end": 3,
+      "total": 4,
+      "routes": [
+        {
+          "source": 15,
+          "idx": 6,
+          "next": 79,
+          "skipped": true
+        }
+      ],
+      "boundaries": [
+        "Disconnect destinations outside the 20 ready masks retain the same mode, but their subsequent account controls are not repaired by this module.",
+        "Pending repair covers only the four declared new-account models: details, all/pending-account query, query cancellation/retry and the pending-account reconnect.",
+        "Disconnects and further additions from these pending views remain outside this scoped repair.",
+        "Successful additions other than Set15 → 31/47/79 and Set31 → 95 are outside this mode-preservation story.",
+        "System Home/widget navigation and separate notification/background review stories remain outside this module."
+      ]
+    },
+    {
+      "status": "Light 定域新增通知状态保持完成",
+      "start": 3,
+      "end": 4,
+      "total": 4,
+      "routes": [
+        {
+          "source": 31,
+          "idx": 6,
+          "next": 95,
+          "skipped": true
+        }
+      ],
+      "boundaries": [
+        "Disconnect destinations outside the 20 ready masks retain the same mode, but their subsequent account controls are not repaired by this module.",
+        "Pending repair covers only the four declared new-account models: details, all/pending-account query, query cancellation/retry and the pending-account reconnect.",
+        "Disconnects and further additions from these pending views remain outside this scoped repair.",
+        "Successful additions other than Set15 → 31/47/79 and Set31 → 95 are outside this mode-preservation story.",
+        "System Home/widget navigation and separate notification/background review stories remain outside this module."
+      ]
+    }
+  ]
+}

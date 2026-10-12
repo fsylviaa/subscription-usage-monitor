@@ -1,0 +1,16 @@
+{
+  "name": "订阅额度 · 原型设计工具",
+  "id": "quota-iphone-prototype-local",
+  "api": "1.0.0",
+  "main": "r4-live.js",
+  "ui": "interaction-r4.html",
+  "editorType": [
+    "figma"
+  ],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ]
+  }
+}

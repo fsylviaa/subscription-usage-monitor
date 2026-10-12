@@ -1,0 +1,173 @@
+{
+  "date": "2026-10-09",
+  "scope": "14 unchanged native PNGs, overview and first-query, Light/Dark",
+  "pixelCheckedCount": 14,
+  "result": "passed_for_static_scope",
+  "observations": [
+    "浅深主页面与设置常显具体账号身份，剩余数值与左侧实色已用比例一致，刷新和连接横排。",
+    "设计评审目录明确结果为模拟且不属于产品界面，12入口无文字遮挡。",
+    "新增前49分失败显示当前评分、严格高于50条件及阻止原因，来源仍为四账号。",
+    "首次查询已绑定new.codex但额度尚未获取，以横线显示且没有虚构成功时间；失败为独立查询失败，重试/关闭可见。",
+    "首次查询pending列表超出首屏需滚动查看Cursor；该静态导出不是滚动行为证据。"
+  ],
+  "limitations": [
+    "PNG仅证明像素，不证明连线、动画、关闭栈或所有组合；实际点击及最终图审计另记。",
+    "独立弹层PNG包含透明上部；在原型中应叠加来源页。"
+  ],
+  "images": [
+    {
+      "id": "53:1119634",
+      "filename": "light-overview-review.png",
+      "path": "design/review-r4/native/light-overview-review.png",
+      "bytes": 43964,
+      "sha256": "1bea30a8e9bd45694a89ab3bba4ffa5f418d7ce4b8148860b3d94314c69c685e",
+      "sourceHtml": [
+        "design/figma-r4-gallery-light.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "1:536",
+      "filename": "light-overview-dashboard.png",
+      "path": "design/review-r4/native/light-overview-dashboard.png",
+      "bytes": 43092,
+      "sha256": "4c62c861fc6973a35444db415eb0b9bd32d9f59309686e8b2c962f5cb52f1d0d",
+      "sourceHtml": [
+        "design/figma-r4-gallery-light.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "1:2169",
+      "filename": "light-overview-settings.png",
+      "path": "design/review-r4/native/light-overview-settings.png",
+      "bytes": 33031,
+      "sha256": "725915f832375964e00e2c3c89ea34aae16b82fa77528ace7ea6fec8bf435617",
+      "sourceHtml": [
+        "design/figma-r4-gallery-light.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "53:1120517",
+      "filename": "light-first-query-before-add-source.png",
+      "path": "design/review-r4/native/light-first-query-before-add-source.png",
+      "bytes": 43091,
+      "sha256": "b08819eccac2ba5c02ba7d869a1ca0287001d1c68a2ec5e3567b3ad3961b47e4",
+      "sourceHtml": [
+        "design/figma-r4-gallery-light.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "53:1120812",
+      "filename": "light-first-query-before-add49.png",
+      "path": "design/review-r4/native/light-first-query-before-add49.png",
+      "bytes": 15569,
+      "sha256": "750f0e4aa2fa080f3073eee3da6a20715b03c26b2da2cf7c16faf68f7005a22f",
+      "sourceHtml": [
+        "design/figma-r4-gallery-light.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "53:1120057",
+      "filename": "light-first-query-pending.png",
+      "path": "design/review-r4/native/light-first-query-pending.png",
+      "bytes": 43325,
+      "sha256": "de47a6b15b7e1359abdf7082b62fd68184fe47198a1473475348b51b45b1d586",
+      "sourceHtml": [
+        "design/figma-r4-gallery-light.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "53:1120353",
+      "filename": "light-first-query-failed.png",
+      "path": "design/review-r4/native/light-first-query-failed.png",
+      "bytes": 13729,
+      "sha256": "25c1e61ef53753add431e71c14adc1a44abbae9bdbde6e245e8001f6c9f9663a",
+      "sourceHtml": [
+        "design/figma-r4-gallery-light.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "53:1121194",
+      "filename": "dark-overview-review.png",
+      "path": "design/review-r4/native/dark-overview-review.png",
+      "bytes": 46460,
+      "sha256": "261ddc6d3112d029a4801139d3a7d36fbc18e3f1aa346f200d13592ab30db408",
+      "sourceHtml": [
+        "design/figma-r4-gallery-dark.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "1:4124",
+      "filename": "dark-overview-dashboard.png",
+      "path": "design/review-r4/native/dark-overview-dashboard.png",
+      "bytes": 41538,
+      "sha256": "04dd85113518a9b0eeff3dbc22cd8d61a2661c7083f43d997a21357eadefdfb2",
+      "sourceHtml": [
+        "design/figma-r4-gallery-dark.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "1:5757",
+      "filename": "dark-overview-settings.png",
+      "path": "design/review-r4/native/dark-overview-settings.png",
+      "bytes": 32439,
+      "sha256": "3f7c4265a73034128d81c2b6afcb368e4e7aad4c42baf1b925d751649ed3f228",
+      "sourceHtml": [
+        "design/figma-r4-gallery-dark.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "53:1122077",
+      "filename": "dark-first-query-before-add-source.png",
+      "path": "design/review-r4/native/dark-first-query-before-add-source.png",
+      "bytes": 41537,
+      "sha256": "5ea58ed5e64ecc60833627a4c200b78d27023200f6e28ce0f78e763f065af5b0",
+      "sourceHtml": [
+        "design/figma-r4-gallery-dark.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "53:1122372",
+      "filename": "dark-first-query-before-add49.png",
+      "path": "design/review-r4/native/dark-first-query-before-add49.png",
+      "bytes": 15210,
+      "sha256": "df15a484486dfe5dd470218e7f9fc4b0a870c1b66e48d62598689c7215950b81",
+      "sourceHtml": [
+        "design/figma-r4-gallery-dark.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "53:1121617",
+      "filename": "dark-first-query-pending.png",
+      "path": "design/review-r4/native/dark-first-query-pending.png",
+      "bytes": 41784,
+      "sha256": "e6c71ba37e3f34c40b876e02ef314682df9f57037d3f2c7de0c6e070aff9ac30",
+      "sourceHtml": [
+        "design/figma-r4-gallery-dark.html"
+      ],
+      "pixelChecked": true
+    },
+    {
+      "id": "53:1121913",
+      "filename": "dark-first-query-failed.png",
+      "path": "design/review-r4/native/dark-first-query-failed.png",
+      "bytes": 13397,
+      "sha256": "f527fe27c5c142ec5969e738f208e510104fdf0bec8387896cc5c322cf20529b",
+      "sourceHtml": [
+        "design/figma-r4-gallery-dark.html"
+      ],
+      "pixelChecked": true
+    }
+  ]
+}

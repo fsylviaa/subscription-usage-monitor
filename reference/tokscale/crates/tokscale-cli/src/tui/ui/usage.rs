@@ -1,0 +1,5384 @@
+use ratatui::layout::Flex;
+use ratatui::prelude::*;
+use ratatui::widgets::{Block, Borders, Cell, HighlightSpacing, Paragraph, Row, Table, TableState};
+
+use crate::commands::usage::{
+    helpers, UsageFetchDiagnostic, UsageFetchDiagnosticSeverity, UsageMetric, UsageOutput,
+};
+use crate::tui::app::{App, ClickAction};
+use crate::tui::codex_login::CodexLoginOutcome;
+use crate::tui::i18n::{tr, MessageKey, TuiLanguage};
+use crate::tui::privacy::looks_like_email;
+use crate::tui::ui::widgets::{
+    display_width, get_provider_shade, light_ratio_bar_spans, pad_start_to_width, pad_to_width,
+    truncate_ellipsis_to_width as truncate_string, AMBIENT_STABLE_BORDER_SET,
+};
+
+struct ButtonSpec {
+    label: String,
+    /// Compact catalog form for narrow rows: a translation wider than
+    /// English must not cost the user the action (`push_click_buttons`).
+    short_label: Option<String>,
+    kind: ButtonKind,
+    action: ClickAction,
+}
+
+#[derive(Clone, Copy)]
+enum ButtonKind {
+    Primary,
+    Secondary,
+    Warning,
+    Danger,
+    Disabled,
+}
+
+struct UsageProviderGroup<'a> {
+    provider: &'a str,
+    outputs: Vec<(usize, &'a UsageOutput)>,
+}
+
+struct UsageInventory {
+    providers: usize,
+    saved: usize,
+    managed: usize,
+}
+
+struct UsageRowView<'a> {
+    account: String,
+    account_summary: String,
+    plan: String,
+    limit: String,
+    reset: String,
+    readiness: UsageReadiness,
+    metric: Option<&'a UsageMetric>,
+}
+
+pub fn render(frame: &mut Frame, app: &mut App, area: Rect) {
+    let lang = app.settings.tui_language;
+    let block = Block::default()
+        .borders(Borders::ALL)
+        .border_set(AMBIENT_STABLE_BORDER_SET)
+        .border_style(Style::default().fg(app.theme.border))
+        .title(Span::styled(
+            format!(" {} ", tr(lang, MessageKey::TabUsage)),
+            Style::default()
+                .fg(app.theme.accent)
+                .add_modifier(Modifier::BOLD),
+        ))
+        .title_top(
+            Line::from(Span::styled(
+                status_label(app),
+                app.theme.subtle_text_style(),
+            ))
+            .right_aligned(),
+        )
+        .style(Style::default().bg(app.theme.background));
+
+    let inner = block.inner(area);
+    frame.render_widget(block, area);
+
+    if inner.width == 0 || inner.height == 0 {
+        return;
+    }
+
+    let content = render_action_bar(frame, app, inner);
+    let content = render_codex_login_panel(frame, app, content);
+
+    let outputs = app.subscription_usage.clone();
+    if outputs.is_empty() {
+        if app.is_fetching_usage() {
+            render_fetching(frame, app, content);
+        } else if app.usage_fetch_attempted {
+            render_empty(frame, app, content);
+        } else {
+            render_ready(frame, app, content);
+        }
+    } else {
+        render_loaded(frame, app, content, &outputs);
+    }
+}
+
+fn status_label(app: &App) -> String {
+    let lang = app.settings.tui_language;
+    if app.is_fetching_usage() {
+        return tr(lang, MessageKey::StatusSyncingUsage).to_string();
+    }
+    if app.is_codex_login_running() {
+        return tr(lang, MessageKey::StatusCodexLogin).to_string();
+    }
+
+    let inventory = usage_inventory(&app.subscription_usage);
+
+    if inventory.providers == 0 && app.usage_fetch_attempted {
+        if app.usage_fetch_diagnostics.is_empty() {
+            tr(lang, MessageKey::StatusNoData).to_string()
+        } else {
+            usage_issue_count_label(lang, app.usage_fetch_diagnostics.len())
+        }
+    } else if inventory.providers == 0 {
+        tr(lang, MessageKey::StatusNotLoaded).to_string()
+    } else {
+        let providers_str = match lang {
+            TuiLanguage::En => format!("{} providers", inventory.providers),
+            TuiLanguage::Fr => format!("{} fournisseurs", inventory.providers),
+            TuiLanguage::Ko => format!(
+                "{}개 {}",
+                inventory.providers,
+                tr(lang, MessageKey::HeadingProviders)
+            ),
+            TuiLanguage::Ja | TuiLanguage::ZhCn => {
+                format!(
+                    "{}{}",
+                    inventory.providers,
+                    tr(lang, MessageKey::HeadingProviders)
+                )
+            }
+        };
+        if app.usage_fetch_diagnostics.is_empty() {
+            format!(
+                "{} · {}",
+                providers_str,
+                identity_count_label(lang, inventory.saved, inventory.managed)
+            )
+        } else {
+            format!(
+                "{} · {} · {}",
+                providers_str,
+                identity_count_label(lang, inventory.saved, inventory.managed),
+                usage_issue_count_label(lang, app.usage_fetch_diagnostics.len())
+            )
+        }
+    }
+}
+
+fn usage_inventory(outputs: &[UsageOutput]) -> UsageInventory {
+    let providers = outputs
+        .iter()
+        .map(|output| output.provider.as_str())
+        .collect::<std::collections::BTreeSet<_>>()
+        .len();
+    let saved = outputs
+        .iter()
+        .filter(|output| output.account.is_some())
+        .count();
+    UsageInventory {
+        providers,
+        saved,
+        managed: outputs.len().saturating_sub(saved),
+    }
+}
+
+fn identity_count_label(lang: TuiLanguage, saved: usize, managed: usize) -> String {
+    let saved_label = if saved == 1 {
+        tr(lang, MessageKey::StatusSavedSingular)
+    } else {
+        tr(lang, MessageKey::StatusSavedPlural)
+    };
+    let managed_label = if managed == 1 {
+        tr(lang, MessageKey::StatusManagedSingular)
+    } else {
+        tr(lang, MessageKey::StatusManagedPlural)
+    };
+    let format_count = |n: usize, label: &str| -> String {
+        match lang {
+            TuiLanguage::Ko => format!("{}개 {}", n, label),
+            TuiLanguage::Ja | TuiLanguage::ZhCn => format!("{}{}", n, label),
+            TuiLanguage::En | TuiLanguage::Fr => format!("{} {}", n, label),
+        }
+    };
+    match (saved, managed) {
+        (0, 0) => format_count(0, saved_label),
+        (saved, 0) => format_count(saved, saved_label),
+        (0, managed) => format_count(managed, managed_label),
+        (saved, managed) => format!(
+            "{} · {}",
+            format_count(saved, saved_label),
+            format_count(managed, managed_label)
+        ),
+    }
+}
+
+/// `N <word>` in the language's own counter shape, for the `Capacity` row's
+/// ready/watch/critical/unknown tallies. Same per-language spacing rule as
+/// [`identity_count_label`]: Korean takes a `개` counter, Japanese and Chinese
+/// take none and no space, English and French take a space.
+/// `+N <word>` in the language's own counter shape, for the truncation markers
+/// (`+2 more issues`, `+1 more at risk`).
+///
+/// Per-language, not English `-s`: Japanese, Chinese and Korean take a counter
+/// and no space, English and French take a space and a genuinely different
+/// plural word. Passing both singular and plural keys keeps the choice in the
+/// catalog, where a language that does not inflect simply repeats itself.
+///
+/// **Catalog contract.** The keys this and [`plain_count_label`] read are
+/// *fragments that follow a number*, never standalone nouns. The ko, ja and zh
+/// values therefore begin with their own measure word — ko `건의 문제 더`, ja
+/// `枠`, zh `个问题` — because Korean, Japanese and Chinese count with a
+/// classifier bound to the digit, and `{n}{word}` is the only shape that reads
+/// naturally (`+2건의 문제 더`, `3枠`). A consequence: these keys must not be
+/// passed to `tr` and rendered on their own, and adding one means writing the
+/// measure word into the value for those three languages.
+fn more_count_label(
+    lang: TuiLanguage,
+    count: usize,
+    singular: MessageKey,
+    plural: MessageKey,
+) -> String {
+    let word = tr(lang, if count == 1 { singular } else { plural });
+    match lang {
+        // Korean joins its `개` counter to the digit, as `identity_count_label`
+        // already does; Japanese and Chinese take no space at all.
+        TuiLanguage::Ko | TuiLanguage::Ja | TuiLanguage::ZhCn => format!("+{count}{word}"),
+        TuiLanguage::En | TuiLanguage::Fr => format!("+{count} {word}"),
+    }
+}
+
+/// `N <word>` with no `+` prefix, for counters that read as a bare quantity
+/// (`2 credits`, `1 available`). Same per-language shape as
+/// [`more_count_label`], which is the prefixed variant — and the same catalog
+/// contract: the ko/ja/zh values carry their own measure word, so these keys are
+/// only ever rendered directly after a number.
+fn plain_count_label(
+    lang: TuiLanguage,
+    count: usize,
+    singular: MessageKey,
+    plural: MessageKey,
+) -> String {
+    let word = tr(lang, if count == 1 { singular } else { plural });
+    match lang {
+        TuiLanguage::Ko | TuiLanguage::Ja | TuiLanguage::ZhCn => format!("{count}{word}"),
+        TuiLanguage::En | TuiLanguage::Fr => format!("{count} {word}"),
+    }
+}
+
+fn capacity_count(lang: TuiLanguage, count: usize, word: MessageKey) -> String {
+    let word = tr(lang, word);
+    match lang {
+        TuiLanguage::Ko => format!("{count}개 {word}"),
+        TuiLanguage::Ja | TuiLanguage::ZhCn => format!("{count}{word}"),
+        TuiLanguage::En | TuiLanguage::Fr => format!("{count} {word}"),
+    }
+}
+
+fn usage_issue_count_label(lang: TuiLanguage, count: usize) -> String {
+    let issue_label = if count == 1 {
+        tr(lang, MessageKey::StatusIssueSingular)
+    } else {
+        tr(lang, MessageKey::StatusIssuePlural)
+    };
+    match lang {
+        TuiLanguage::Ko | TuiLanguage::Ja | TuiLanguage::ZhCn => {
+            format!("{}{}", count, issue_label)
+        }
+        TuiLanguage::En | TuiLanguage::Fr => format!("{} {}", count, issue_label),
+    }
+}
+
+/// How much of an action-bar button's label the layout is allowed to draw.
+///
+/// The compact bar's rungs, in the order the bar tries them. A button that does
+/// not fit is *dropped*, and the compact layout is the only way to reach some of
+/// those actions — the Reset button spends a reset credit and registers the
+/// click area that does it — so trading label text for a surviving button is
+/// always the right trade.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ActionLabelMode {
+    /// The full catalog label, `r Refresh`.
+    Full,
+    /// The full label where it fits, the bare key hint (`r`) where it does not.
+    HintFallback,
+    /// The bare key hint for every button.
+    HintOnly,
+}
+
+/// One laid-out action-bar button: the text to draw and the cells it occupies,
+/// so the click area registered for it is exactly what the user sees.
+struct PlacedButton {
+    text: String,
+    x: u16,
+    width: u16,
+}
+
+fn render_action_bar(frame: &mut Frame, app: &mut App, area: Rect) -> Rect {
+    if area.height == 0 {
+        return area;
+    }
+    let lang = app.settings.tui_language;
+    let compact = area.width < 48;
+    let show_prefix = area.width >= 36;
+
+    let buttons = action_bar_buttons(app, compact);
+    let labels: Vec<String> = buttons
+        .iter()
+        .map(|button| tr(lang, button.key).to_string())
+        .collect();
+
+    // How many buttons English fits here. The button set is chosen from app
+    // state alone, so this describes the same buttons in every language, and a
+    // translation that is wider than English must not cost the user an action:
+    // #1367's short labels silently dropped `x Reset` in ko/ja/zh/fr at widths
+    // where English still showed it.
+    let english_labels: Vec<String> = buttons
+        .iter()
+        .map(|button| tr(TuiLanguage::En, button.key).to_string())
+        .collect();
+    let target = place_action_buttons(
+        &english_labels,
+        area.x
+            .saturating_add(action_prefix_width(TuiLanguage::En, show_prefix)),
+        area.right(),
+        ActionLabelMode::Full,
+    )
+    .len();
+
+    // Drop the `Actions` prefix before dropping a button, and shorten labels
+    // before dropping one either way. `en` reaches `target` on the first rung by
+    // construction, so its bar is byte-identical to what it has always drawn.
+    let mut chosen: Option<(bool, Vec<PlacedButton>)> = None;
+    for (with_prefix, mode) in [
+        (show_prefix, ActionLabelMode::Full),
+        (false, ActionLabelMode::Full),
+        (false, ActionLabelMode::HintFallback),
+        (false, ActionLabelMode::HintOnly),
+    ] {
+        let placed = place_action_buttons(
+            &labels,
+            area.x
+                .saturating_add(action_prefix_width(lang, with_prefix)),
+            area.right(),
+            mode,
+        );
+        let reached = placed.len() >= target;
+        let longer = chosen
+            .as_ref()
+            .is_none_or(|(_, best): &(bool, Vec<PlacedButton>)| placed.len() > best.len());
+        if reached || longer {
+            chosen = Some((with_prefix, placed));
+        }
+        if reached {
+            break;
+        }
+    }
+    let (with_prefix, placed) = chosen.expect("the label-mode ladder always yields a rung");
+
+    let mut spans = Vec::new();
+    if with_prefix {
+        spans.push(Span::styled(
+            format!(" {} ", tr(lang, MessageKey::HeadingActions)),
+            app.theme.subtle_text_style(),
+        ));
+    }
+    let styles: Vec<Style> = buttons
+        .iter()
+        .map(|button| button_style(app, button.kind, false))
+        .collect();
+    for (index, place) in placed.iter().enumerate() {
+        if index > 0 {
+            spans.push(Span::raw(" "));
+        }
+        spans.push(Span::styled(place.text.clone(), styles[index]));
+        if place.x < area.right() {
+            app.add_click_area(
+                Rect::new(place.x, area.y, place.width.min(area.right() - place.x), 1),
+                buttons[index].action.clone(),
+            );
+        }
+    }
+
+    frame.render_widget(
+        Paragraph::new(Line::from(spans)),
+        Rect::new(area.x, area.y, area.width, 1),
+    );
+
+    if area.height > 1 {
+        Rect::new(area.x, area.y + 1, area.width, area.height - 1)
+    } else {
+        Rect::new(area.x, area.y, area.width, 0)
+    }
+}
+
+/// An action-bar button before it has a language: the catalog key, its style and
+/// what clicking it does.
+struct ActionBarButton {
+    key: MessageKey,
+    kind: ButtonKind,
+    action: ClickAction,
+}
+
+/// The action bar's button set, chosen from app state only.
+///
+/// Language-independent by construction, which is what lets `render_action_bar`
+/// measure the same buttons in English to decide how many a translation owes the
+/// user.
+fn action_bar_buttons(app: &App, compact: bool) -> Vec<ActionBarButton> {
+    let mut buttons = vec![
+        ActionBarButton {
+            key: if app.is_fetching_usage() {
+                if compact {
+                    MessageKey::ActionRefreshSyncingShort
+                } else {
+                    MessageKey::ActionRefreshSyncing
+                }
+            } else {
+                MessageKey::ActionRefresh
+            },
+            kind: if app.is_fetching_usage() {
+                ButtonKind::Disabled
+            } else {
+                ButtonKind::Primary
+            },
+            action: ClickAction::UsageRefresh,
+        },
+        ActionBarButton {
+            key: if app.is_codex_login_running() {
+                if compact {
+                    MessageKey::ActionAddingCodexShort
+                } else {
+                    MessageKey::ActionAddingCodex
+                }
+            } else if compact {
+                MessageKey::ActionAddCodexShort
+            } else {
+                MessageKey::ActionAddCodex
+            },
+            kind: if app.is_codex_login_running() {
+                ButtonKind::Disabled
+            } else {
+                ButtonKind::Secondary
+            },
+            action: ClickAction::CodexStartLogin,
+        },
+    ];
+    if !app.subscription_usage.is_empty() {
+        buttons.push(ActionBarButton {
+            key: match (app.hide_usage_emails, compact) {
+                (true, true) => MessageKey::ActionShowEmailsShort,
+                (true, false) => MessageKey::ActionShowEmails,
+                (false, true) => MessageKey::ActionHideEmailsShort,
+                (false, false) => MessageKey::ActionHideEmails,
+            },
+            kind: ButtonKind::Secondary,
+            action: ClickAction::UsageToggleEmailPrivacy,
+        });
+    }
+    if let Some(button) = selected_reset_action_button(app) {
+        buttons.push(button);
+    }
+    buttons
+}
+
+/// Cells the `Actions` prefix span occupies, or 0 when the bar is too narrow to
+/// show it. `format!(" {} ", label)` is the span, so it is the label plus its
+/// two surrounding spaces.
+fn action_prefix_width(lang: TuiLanguage, show_prefix: bool) -> u16 {
+    if show_prefix {
+        display_width(tr(lang, MessageKey::HeadingActions)).saturating_add(2) as u16
+    } else {
+        0
+    }
+}
+
+/// The bare key hint at the head of an action-bar label (`"r Refresh"` -> `"r"`).
+///
+/// Every action-bar label in every catalog starts with its key hint and a space,
+/// so this is the shortest form of the button that still tells the user which
+/// key presses it.
+fn action_key_hint(label: &str) -> &str {
+    label.split_whitespace().next().unwrap_or(label)
+}
+
+/// Greedy left-to-right placement: one leading space, one trailing space, one
+/// separating space between buttons, and a button that does not fit ends the
+/// bar. This is the layout the action bar has always drawn; `mode` only changes
+/// how much of a label is offered to it.
+fn place_action_buttons(
+    labels: &[String],
+    start_x: u16,
+    right_edge: u16,
+    mode: ActionLabelMode,
+) -> Vec<PlacedButton> {
+    let mut placed: Vec<PlacedButton> = Vec::new();
+    let mut x = start_x;
+    for label in labels {
+        let separator_width = u16::from(!placed.is_empty());
+        let full = if mode == ActionLabelMode::HintOnly {
+            action_key_hint(label)
+        } else {
+            label.as_str()
+        };
+        let mut text = button_label(full);
+        let mut width = Line::from(text.as_str()).width() as u16;
+        if x.saturating_add(separator_width).saturating_add(width) > right_edge {
+            let hint = action_key_hint(label);
+            if mode != ActionLabelMode::HintFallback || hint == full {
+                break;
+            }
+            text = button_label(hint);
+            width = Line::from(text.as_str()).width() as u16;
+            if x.saturating_add(separator_width).saturating_add(width) > right_edge {
+                break;
+            }
+        }
+        x = x.saturating_add(separator_width);
+        placed.push(PlacedButton { text, x, width });
+        x = x.saturating_add(width);
+    }
+    placed
+}
+
+fn selected_reset_action_button(app: &App) -> Option<ActionBarButton> {
+    let output = app.subscription_usage.get(app.selected_index)?;
+    if !has_available_reset_credit(output) {
+        return None;
+    }
+
+    let account_id = output.account.as_ref()?.id.clone();
+    Some(ActionBarButton {
+        // `ActionReset`, not `ButtonReset`: this one lives in the action bar and
+        // carries its `x` key hint, where the row buttons do not.
+        key: MessageKey::ActionReset,
+        kind: ButtonKind::Warning,
+        action: ClickAction::CodexResetAccount { account_id },
+    })
+}
+
+/// Place the row's action buttons, keeping every action clickable.
+///
+/// Full labels are tried first: when everything fits, the row is byte-for-byte
+/// the historical layout. A translation wider than English must not cost the
+/// user an action — there is no keyboard alternative for these — so compact
+/// labels come next, and as a last resort labels are truncated with the
+/// width-stable `⋯` marker at an equal share of the row. A button is never
+/// dropped for width.
+fn push_click_buttons(
+    spans: &mut Vec<Span<'static>>,
+    app: &mut App,
+    buttons: Vec<ButtonSpec>,
+    start_x: u16,
+    y: u16,
+    right_edge: u16,
+) {
+    let full: Vec<String> = buttons.iter().map(|b| b.label.clone()).collect();
+    let compact: Vec<String> = buttons
+        .iter()
+        .map(|b| b.short_label.clone().unwrap_or_else(|| b.label.clone()))
+        .collect();
+    let total_width = |labels: &[String]| {
+        labels
+            .iter()
+            .map(|label| display_width(label) as u16 + 2)
+            .sum::<u16>()
+            .saturating_add(labels.len().saturating_sub(1) as u16)
+    };
+    let available = right_edge.saturating_sub(start_x);
+    let labels = if total_width(&full) <= available {
+        full
+    } else if total_width(&compact) <= available {
+        compact
+    } else {
+        // Equal shares of what is left, so no button monopolizes the row
+        // while a later one is squeezed out of its click target.
+        let count = buttons.len().max(1) as u16;
+        let text_budget = available
+            .saturating_sub(buttons.len().saturating_sub(1) as u16)
+            .saturating_sub(2 * count);
+        let share = (text_budget / count).max(1) as usize;
+        compact
+            .into_iter()
+            .map(|label| truncate_string(&label, share))
+            .collect()
+    };
+
+    let mut x = start_x;
+    for (index, button) in buttons.into_iter().enumerate() {
+        let rendered = button_label(&labels[index]);
+        let width = Line::from(rendered.as_str()).width() as u16;
+        let separator_width = u16::from(index > 0);
+        if x.saturating_add(separator_width).saturating_add(width) > right_edge {
+            break;
+        }
+
+        if index > 0 {
+            spans.push(Span::raw(" "));
+            x = x.saturating_add(1);
+        }
+
+        spans.push(Span::styled(
+            rendered,
+            button_style(app, button.kind, false),
+        ));
+
+        if x < right_edge {
+            app.add_click_area(Rect::new(x, y, width.min(right_edge - x), 1), button.action);
+        }
+        x = x.saturating_add(width);
+    }
+}
+
+fn button_label(label: &str) -> String {
+    format!(" {label} ")
+}
+
+fn button_style(app: &App, kind: ButtonKind, selected: bool) -> Style {
+    if selected {
+        return Style::default()
+            .fg(Color::White)
+            .bg(Color::Blue)
+            .add_modifier(Modifier::BOLD);
+    }
+
+    match kind {
+        ButtonKind::Primary => Style::default()
+            .fg(app.theme.background)
+            .bg(app.theme.accent)
+            .add_modifier(Modifier::BOLD),
+        ButtonKind::Secondary => Style::default().fg(app.theme.accent).bg(app.theme.border),
+        ButtonKind::Warning => Style::default().fg(Color::Black).bg(Color::Yellow),
+        ButtonKind::Danger => Style::default().fg(Color::Red).bg(app.theme.border),
+        ButtonKind::Disabled => Style::default().fg(app.theme.muted).bg(app.theme.border),
+    }
+}
+
+fn render_codex_login_panel(frame: &mut Frame, app: &mut App, area: Rect) -> Rect {
+    if area.height == 0 || !app.should_show_codex_login_panel() {
+        return area;
+    }
+
+    let max_output_lines = 4usize;
+    let output_start = app.codex_login_lines.len().saturating_sub(max_output_lines);
+    let output_lines: Vec<String> = app.codex_login_lines[output_start..].to_vec();
+    let height = (2 + output_lines.len() as u16 + u16::from(app.codex_login_outcome.is_some()))
+        .min(area.height);
+    if height == 0 {
+        return area;
+    }
+
+    let lang = app.settings.tui_language;
+    let mut lines: Vec<Line> = Vec::new();
+    let status = tr(
+        lang,
+        match &app.codex_login_outcome {
+            Some(CodexLoginOutcome::Imported(_)) => MessageKey::CodexLoginImported,
+            Some(CodexLoginOutcome::Failed(_)) => MessageKey::CodexLoginFailed,
+            None if app.is_codex_login_running() => MessageKey::CodexLoginRunning,
+            None => MessageKey::CodexLoginIdle,
+        },
+    );
+
+    let title_style = Style::default()
+        .fg(app.theme.foreground)
+        .add_modifier(Modifier::BOLD);
+    let title = format!(" {} ", tr(lang, MessageKey::CodexLoginTitle));
+    let action_label =
+        (app.is_codex_login_running() || app.codex_login_outcome.is_some()).then(|| {
+            tr(
+                lang,
+                if app.is_codex_login_running() {
+                    MessageKey::CodexLoginCancel
+                } else {
+                    MessageKey::CodexLoginDismiss
+                },
+            )
+        });
+    let mut header_spans = Vec::new();
+    if let Some(action_label) = action_label {
+        // Display cells, not `chars`: `[取消]` is 4 chars but draws 8 cells, so
+        // counting chars mis-positioned the click area and the padding.
+        let action_width = unicode_width::UnicodeWidthStr::width(action_label);
+        let area_width = area.width as usize;
+        // Reserve the action first, with one separating cell, and fit the
+        // title and status into what is left. Otherwise a long translated
+        // status pushes the action past the edge while its click area stays at
+        // the edge, so the visible button and the clickable one disagree.
+        let budget = area_width.saturating_sub(action_width + 1);
+        let title = truncate_string(&title, budget);
+        let status = truncate_string(status, budget.saturating_sub(display_width(&title)));
+        header_spans.push(Span::styled(title, title_style));
+        header_spans.push(Span::styled(status, app.theme.subtle_text_style()));
+        let used_width = Line::from(header_spans.clone()).width();
+        let padding = area_width.saturating_sub(used_width + action_width);
+        header_spans.push(Span::raw(" ".repeat(padding)));
+        header_spans.push(Span::styled(
+            action_label,
+            Style::default().fg(app.theme.accent),
+        ));
+        let action_width = action_width as u16;
+        let x = area
+            .x
+            .saturating_add(area.width.saturating_sub(action_width));
+        app.add_click_area(
+            Rect::new(x, area.y, action_width.min(area.width), 1),
+            ClickAction::CodexDismissLogin,
+        );
+    } else {
+        header_spans.push(Span::styled(title, title_style));
+        header_spans.push(Span::styled(
+            status.to_string(),
+            app.theme.subtle_text_style(),
+        ));
+    }
+    lines.push(Line::from(header_spans));
+
+    if output_lines.is_empty() {
+        lines.push(Line::from(Span::styled(
+            format!("  {}", tr(lang, MessageKey::CodexLoginWaiting)),
+            Style::default().fg(app.theme.muted),
+        )));
+    } else {
+        for line in output_lines {
+            lines.push(Line::from(Span::styled(
+                format!(
+                    "  {}",
+                    truncate_string(&line, area.width.saturating_sub(4) as usize)
+                ),
+                Style::default().fg(app.theme.muted),
+            )));
+        }
+    }
+
+    if let Some(outcome) = &app.codex_login_outcome {
+        let (label, style) = match outcome {
+            CodexLoginOutcome::Imported(info) => (
+                format!(
+                    "  {} {}",
+                    tr(lang, MessageKey::CodexLoginImportedPrefix),
+                    info.label.as_deref().unwrap_or(info.id.as_str())
+                ),
+                Style::default().fg(app.theme.accent),
+            ),
+            CodexLoginOutcome::Failed(error) => {
+                (format!("  {error}"), Style::default().fg(Color::Red))
+            }
+        };
+        lines.push(Line::from(Span::styled(
+            truncate_string(&label, area.width as usize),
+            style,
+        )));
+    }
+
+    frame.render_widget(
+        Paragraph::new(lines),
+        Rect::new(area.x, area.y, area.width, height),
+    );
+
+    if area.height > height {
+        Rect::new(area.x, area.y + height, area.width, area.height - height)
+    } else {
+        Rect::new(area.x, area.y, area.width, 0)
+    }
+}
+
+fn render_fetching(frame: &mut Frame, app: &App, area: Rect) {
+    let center = centered_rect(area, 3);
+    let spin = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'][app.spinner_frame % 10];
+    let lang = app.settings.tui_language;
+    let message = if area.width < 40 {
+        format!("{spin} {}", tr(lang, MessageKey::UsageFetchingShort))
+    } else {
+        format!("{spin} {}", tr(lang, MessageKey::UsageFetchingLong))
+    };
+    let paragraph = Paragraph::new(message)
+        .style(Style::default().fg(app.theme.muted))
+        .alignment(Alignment::Center);
+    frame.render_widget(paragraph, center);
+}
+
+fn render_ready(frame: &mut Frame, app: &App, area: Rect) {
+    let lang = app.settings.tui_language;
+    let center = centered_rect(area, 4);
+    let lines = if area.width < 40 {
+        vec![Line::from(Span::styled(
+            tr(lang, MessageKey::UsageEmptyNoData),
+            Style::default()
+                .fg(app.theme.foreground)
+                .add_modifier(Modifier::BOLD),
+        ))]
+    } else {
+        vec![
+            Line::from(Span::styled(
+                tr(lang, MessageKey::UsageEmptyNotLoadedTitle),
+                Style::default()
+                    .fg(app.theme.foreground)
+                    .add_modifier(Modifier::BOLD),
+            )),
+            Line::from(Span::styled(
+                tr(lang, MessageKey::UsageEmptyNotLoadedHint),
+                Style::default().fg(app.theme.muted),
+            )),
+        ]
+    };
+    let paragraph = Paragraph::new(lines).alignment(Alignment::Center);
+    frame.render_widget(paragraph, center);
+}
+
+fn render_empty(frame: &mut Frame, app: &App, area: Rect) {
+    let lang = app.settings.tui_language;
+    let center = centered_rect(area, 4);
+    let lines = if let Some(diagnostic) = app.usage_fetch_diagnostics.first() {
+        if area.width < 40 {
+            vec![
+                Line::from(Span::styled(
+                    tr(lang, MessageKey::UsageFetchFailed),
+                    Style::default().fg(app.theme.muted),
+                )),
+                Line::from(Span::styled(
+                    truncate_string(&diagnostic.display_name(), area.width as usize),
+                    Style::default().fg(diagnostic_severity_color(diagnostic.severity)),
+                )),
+            ]
+        } else {
+            vec![
+                Line::from(Span::styled(
+                    tr(lang, MessageKey::UsageFetchFailed),
+                    Style::default()
+                        .fg(app.theme.foreground)
+                        .add_modifier(Modifier::BOLD),
+                )),
+                Line::from(Span::styled(
+                    truncate_string(&diagnostic.display_name(), area.width as usize),
+                    Style::default().fg(diagnostic_severity_color(diagnostic.severity)),
+                )),
+                Line::from(Span::styled(
+                    truncate_string(&diagnostic.message, area.width as usize),
+                    Style::default().fg(app.theme.muted),
+                )),
+            ]
+        }
+    } else if area.width < 40 {
+        vec![Line::from(Span::styled(
+            tr(lang, MessageKey::UsageEmptyNoData),
+            Style::default().fg(app.theme.muted),
+        ))]
+    } else {
+        vec![Line::from(Span::styled(
+            tr(lang, MessageKey::UsageEmptyNoSubscriptionData),
+            Style::default().fg(app.theme.muted),
+        ))]
+    };
+    let paragraph = Paragraph::new(lines).alignment(Alignment::Center);
+    frame.render_widget(paragraph, center);
+}
+
+fn centered_rect(area: Rect, height: u16) -> Rect {
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Percentage(40),
+            Constraint::Length(height.min(area.height)),
+            Constraint::Percentage(40),
+        ])
+        .split(area);
+    chunks[1]
+}
+
+fn render_loaded(frame: &mut Frame, app: &mut App, area: Rect, outputs: &[UsageOutput]) {
+    app.selected_index = app.selected_index.min(outputs.len().saturating_sub(1));
+
+    if area.width < 104 || area.height < 20 {
+        render_compact_loaded(frame, app, area, outputs);
+        return;
+    }
+
+    if area.width < 132 {
+        render_medium_loaded(frame, app, area, outputs);
+        return;
+    }
+
+    let top_height = if area.height >= 36 {
+        19
+    } else if area.height >= 31 {
+        17
+    } else {
+        (area.height / 2).clamp(9, 13)
+    };
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([Constraint::Length(top_height), Constraint::Min(0)])
+        .split(area);
+
+    let (summary_width, detail_width) = usage_top_column_percentages(area.width);
+    let top = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([
+            Constraint::Percentage(summary_width),
+            Constraint::Percentage(detail_width),
+        ])
+        .split(chunks[0]);
+
+    render_usage_status(frame, app, top[0], outputs);
+    let selected_index = app.selected_index;
+    render_selected_account(frame, app, top[1], &outputs[selected_index], outputs);
+    render_accounts_table(frame, app, chunks[1], outputs);
+}
+
+fn render_medium_loaded(frame: &mut Frame, app: &mut App, area: Rect, outputs: &[UsageOutput]) {
+    let selected_index = app.selected_index;
+    let selected = &outputs[selected_index];
+    let summary_height = if area.height >= 36 { 8 } else { 6 }.min(area.height);
+    let base_selected_height = if area.height >= 36 { 11 } else { 9 };
+    // Reserve enough rows for the accounts table's borders + header + a
+    // handful of account rows so the dynamic selected-panel height can only
+    // grow into space that is genuinely spare, never collapsing the table.
+    let accounts_table_min_height: u16 = 9;
+    let selected_height = if has_available_reset_credit(selected) {
+        let max_dynamic_height = area
+            .height
+            .saturating_sub(summary_height)
+            .saturating_sub(accounts_table_min_height)
+            .max(base_selected_height);
+        medium_selected_account_preferred_height(selected).min(max_dynamic_height)
+    } else {
+        base_selected_height
+    }
+    .min(area.height.saturating_sub(summary_height));
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(summary_height),
+            Constraint::Length(selected_height),
+            Constraint::Min(0),
+        ])
+        .split(area);
+
+    render_usage_status(frame, app, chunks[0], outputs);
+    render_selected_account(frame, app, chunks[1], &outputs[selected_index], outputs);
+    render_accounts_table(frame, app, chunks[2], outputs);
+}
+
+fn medium_selected_account_preferred_height(selected: &UsageOutput) -> u16 {
+    let status_rows = 3
+        + usize::from(credits_status_line(selected).is_some())
+        + reset_credit_detail_rows(selected);
+    let limit_rows = 2 + selected.metrics.len().min(4);
+    let action_rows = 3;
+    (status_rows + limit_rows + action_rows + 2).clamp(9, 22) as u16
+}
+
+fn usage_top_column_percentages(width: u16) -> (u16, u16) {
+    if width >= 128 {
+        (50, 50)
+    } else {
+        (48, 52)
+    }
+}
+
+fn render_compact_loaded(frame: &mut Frame, app: &mut App, area: Rect, outputs: &[UsageOutput]) {
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([Constraint::Min(0), Constraint::Length(7.min(area.height))])
+        .split(area);
+    render_accounts_table(frame, app, chunks[0], outputs);
+    if chunks.len() > 1 && chunks[1].height > 0 {
+        let selected_index = app.selected_index;
+        render_selected_account(frame, app, chunks[1], &outputs[selected_index], outputs);
+    }
+}
+
+fn render_usage_status(frame: &mut Frame, app: &mut App, area: Rect, outputs: &[UsageOutput]) {
+    let lang = app.settings.tui_language;
+    let block = Block::default()
+        .borders(Borders::ALL)
+        .border_set(AMBIENT_STABLE_BORDER_SET)
+        .border_style(Style::default().fg(app.theme.border))
+        .title(Span::styled(
+            tr(lang, MessageKey::TitleUsageSummary),
+            Style::default()
+                .fg(app.theme.accent)
+                .add_modifier(Modifier::BOLD),
+        ));
+    let inner = block.inner(area);
+    frame.render_widget(block, area);
+    if inner.width == 0 || inner.height == 0 {
+        return;
+    }
+
+    let diagnostic_reserve = diagnostic_line_reserve(app, inner.height as usize);
+    let summary_height = (inner.height as usize).saturating_sub(diagnostic_reserve);
+    let mut lines = usage_status_summary_lines(app, outputs, inner.width as usize, summary_height);
+    append_usage_diagnostic_lines(&mut lines, app, inner.width as usize, inner.height as usize);
+
+    push_section_spacing(&mut lines, inner.height as usize);
+    append_credit_bank_summary_lines(
+        &mut lines,
+        app,
+        outputs,
+        inner.width as usize,
+        inner.height as usize,
+    );
+
+    let attention_outputs = attention_outputs(outputs);
+    push_section_spacing(&mut lines, inner.height as usize);
+    if lines.len() + 1 < inner.height as usize {
+        lines.push(section_heading(
+            tr(app.settings.tui_language, MessageKey::HeadingAttention),
+            app,
+        ));
+        if attention_outputs.is_empty() {
+            lines.push(Line::from(Span::styled(
+                format!(
+                    "  {}",
+                    tr(
+                        app.settings.tui_language,
+                        MessageKey::UsageNoAttentionNeeded
+                    )
+                ),
+                app.theme.subtle_text_style(),
+            )));
+        } else {
+            let available = (inner.height as usize).saturating_sub(lines.len());
+            let mut visible_count = attention_outputs.len().min(available.min(2));
+            if attention_outputs.len() > visible_count && visible_count == available {
+                visible_count = visible_count.saturating_sub(1);
+            }
+
+            for (index, output) in attention_outputs.iter().take(visible_count).copied() {
+                let y = inner.y.saturating_add(lines.len() as u16);
+                app.add_click_area(
+                    Rect::new(inner.x, y, inner.width, 1),
+                    ClickAction::UsageSelect { index },
+                );
+                lines.push(attention_line(app, output, inner.width as usize));
+            }
+
+            let hidden_count = attention_outputs.len().saturating_sub(visible_count);
+            if hidden_count > 0 && lines.len() < inner.height as usize {
+                lines.push(attention_more_line(
+                    app.settings.tui_language,
+                    hidden_count,
+                    inner.width as usize,
+                ));
+            }
+        }
+    }
+
+    push_section_spacing(&mut lines, inner.height as usize);
+    append_provider_summary_lines(
+        &mut lines,
+        app,
+        outputs,
+        inner.width as usize,
+        inner.height as usize,
+    );
+
+    frame.render_widget(Paragraph::new(lines), inner);
+}
+
+fn usage_status_summary_lines(
+    app: &App,
+    outputs: &[UsageOutput],
+    width: usize,
+    height: usize,
+) -> Vec<Line<'static>> {
+    let lang = app.settings.tui_language;
+    let ready_count = outputs
+        .iter()
+        .filter(|output| readiness_status(output) == UsageReadiness::Ready)
+        .count();
+    let watch_count = outputs
+        .iter()
+        .filter(|output| readiness_status(output) == UsageReadiness::Watch)
+        .count();
+    let critical_count = outputs
+        .iter()
+        .filter(|output| readiness_status(output) == UsageReadiness::Critical)
+        .count();
+    let unknown_count = outputs
+        .iter()
+        .filter(|output| readiness_status(output) == UsageReadiness::Unknown)
+        .count();
+
+    let overall = overall_readiness(outputs);
+    let active = active_output(outputs)
+        .map(|output| account_name(app, output))
+        .unwrap_or_else(|| tr(lang, MessageKey::UsageNoActiveAccount).to_string());
+    let fallback = best_fallback_output(outputs)
+        .map(|output| {
+            let score = output_score(output);
+            if score > 0.0 {
+                format!(
+                    "{} · {:.0}{}",
+                    account_name(app, output),
+                    score,
+                    tr(lang, MessageKey::UsagePercentLeft)
+                )
+            } else {
+                account_name(app, output)
+            }
+        })
+        .unwrap_or_else(|| tr(lang, MessageKey::UsageNoReadyFallback).to_string());
+    let next_reset = next_reset_label(app, outputs)
+        .unwrap_or_else(|| tr(lang, MessageKey::UsageNoResetData).to_string());
+    let action = overall_action(app, outputs);
+    let capacity = format!(
+        "{} · {} · {}{}",
+        capacity_count(lang, ready_count, MessageKey::CapacityReady),
+        capacity_count(lang, watch_count, MessageKey::CapacityWatch),
+        capacity_count(lang, critical_count, MessageKey::CapacityCritical),
+        if unknown_count > 0 {
+            format!(
+                " · {}",
+                capacity_count(lang, unknown_count, MessageKey::CapacityUnknown)
+            )
+        } else {
+            String::new()
+        }
+    );
+
+    let mut lines = Vec::new();
+    let push_state = |lines: &mut Vec<Line<'static>>| {
+        push_kv_styled(
+            lines,
+            app,
+            tr(lang, MessageKey::LabelState),
+            overall_state_label(lang, outputs),
+            Style::default()
+                .fg(readiness_color(app, overall))
+                .add_modifier(Modifier::BOLD),
+            width,
+        );
+    };
+    let push_active = |lines: &mut Vec<Line<'static>>| {
+        push_kv_styled(
+            lines,
+            app,
+            tr(lang, MessageKey::LabelActiveAccount),
+            &active,
+            Style::default()
+                .fg(Color::Green)
+                .add_modifier(Modifier::BOLD),
+            width,
+        );
+    };
+    let push_capacity = |lines: &mut Vec<Line<'static>>| {
+        push_kv_styled(
+            lines,
+            app,
+            tr(lang, MessageKey::LabelCapacity),
+            &capacity,
+            app.theme.secondary_text_style(),
+            width,
+        );
+    };
+    let push_fallback = |lines: &mut Vec<Line<'static>>| {
+        push_kv_styled(
+            lines,
+            app,
+            tr(lang, MessageKey::LabelFallback),
+            &fallback,
+            app.theme.secondary_text_style(),
+            width,
+        );
+    };
+    let push_next_reset = |lines: &mut Vec<Line<'static>>| {
+        push_kv_styled(
+            lines,
+            app,
+            tr(lang, MessageKey::LabelNextReset),
+            &next_reset,
+            app.theme.secondary_text_style(),
+            width,
+        );
+    };
+    let push_action = |lines: &mut Vec<Line<'static>>| {
+        push_kv_styled(
+            lines,
+            app,
+            tr(lang, MessageKey::LabelAction),
+            &action,
+            Style::default()
+                .fg(readiness_color(app, overall))
+                .add_modifier(Modifier::BOLD),
+            width,
+        );
+    };
+
+    match height {
+        0 => {}
+        1 => push_state(&mut lines),
+        2 => {
+            push_state(&mut lines);
+            push_action(&mut lines);
+        }
+        3 => {
+            push_state(&mut lines);
+            push_active(&mut lines);
+            push_action(&mut lines);
+        }
+        4 => {
+            push_state(&mut lines);
+            push_active(&mut lines);
+            push_capacity(&mut lines);
+            push_action(&mut lines);
+        }
+        5 => {
+            push_state(&mut lines);
+            push_active(&mut lines);
+            push_capacity(&mut lines);
+            push_next_reset(&mut lines);
+            push_action(&mut lines);
+        }
+        _ => {
+            push_state(&mut lines);
+            push_active(&mut lines);
+            push_capacity(&mut lines);
+            push_fallback(&mut lines);
+            push_next_reset(&mut lines);
+            push_action(&mut lines);
+        }
+    }
+    lines
+}
+
+fn diagnostic_line_reserve(app: &App, max_lines: usize) -> usize {
+    if app.usage_fetch_diagnostics.is_empty() {
+        0
+    } else if max_lines >= 7 {
+        3
+    } else {
+        2.min(max_lines.saturating_sub(1))
+    }
+}
+
+fn append_usage_diagnostic_lines(
+    lines: &mut Vec<Line<'static>>,
+    app: &App,
+    width: usize,
+    max_lines: usize,
+) {
+    if app.usage_fetch_diagnostics.is_empty() || lines.len() >= max_lines {
+        return;
+    }
+
+    let remaining = max_lines.saturating_sub(lines.len());
+    if remaining < 2 {
+        return;
+    }
+    if !lines.is_empty() && remaining >= 3 {
+        lines.push(Line::from(""));
+    }
+    if max_lines.saturating_sub(lines.len()) < 2 {
+        return;
+    }
+
+    lines.push(section_heading(
+        tr(app.settings.tui_language, MessageKey::HeadingDiagnostics),
+        app,
+    ));
+    let available = max_lines.saturating_sub(lines.len());
+    if available == 0 {
+        return;
+    }
+
+    let visible_count = if app.usage_fetch_diagnostics.len() > available && available > 1 {
+        available - 1
+    } else {
+        app.usage_fetch_diagnostics.len().min(available)
+    };
+    for diagnostic in visible_usage_diagnostics(&app.usage_fetch_diagnostics, visible_count) {
+        lines.push(usage_diagnostic_line(diagnostic, width));
+    }
+
+    let hidden_count = app
+        .usage_fetch_diagnostics
+        .len()
+        .saturating_sub(visible_count);
+    if hidden_count > 0 && lines.len() < max_lines {
+        lines.push(Line::from(Span::styled(
+            truncate_string(
+                &format!(
+                    "  {}",
+                    more_count_label(
+                        app.settings.tui_language,
+                        hidden_count,
+                        MessageKey::UsageMoreIssues,
+                        MessageKey::UsageMoreIssuesPlural,
+                    )
+                ),
+                width,
+            ),
+            app.theme.subtle_text_style(),
+        )));
+    }
+}
+
+fn visible_usage_diagnostics(
+    diagnostics: &[UsageFetchDiagnostic],
+    visible_count: usize,
+) -> Vec<&UsageFetchDiagnostic> {
+    let visible_count = visible_count.min(diagnostics.len());
+    if visible_count >= diagnostics.len() {
+        return diagnostics.iter().collect();
+    }
+
+    let mut indexed: Vec<_> = diagnostics.iter().enumerate().collect();
+    indexed
+        .sort_by_key(|(index, diagnostic)| (diagnostic_severity_rank(diagnostic.severity), *index));
+    indexed.truncate(visible_count);
+    indexed
+        .into_iter()
+        .map(|(_, diagnostic)| diagnostic)
+        .collect()
+}
+
+fn diagnostic_severity_rank(severity: UsageFetchDiagnosticSeverity) -> u8 {
+    match severity {
+        UsageFetchDiagnosticSeverity::Error => 0,
+        UsageFetchDiagnosticSeverity::Warning => 1,
+        UsageFetchDiagnosticSeverity::Info => 2,
+    }
+}
+
+fn usage_diagnostic_line(diagnostic: &UsageFetchDiagnostic, width: usize) -> Line<'static> {
+    let label = diagnostic.display_name();
+    let text = format!("  {label}: {}", diagnostic.message);
+    Line::from(Span::styled(
+        truncate_string(&text, width),
+        Style::default().fg(diagnostic_severity_color(diagnostic.severity)),
+    ))
+}
+
+fn diagnostic_severity_color(severity: UsageFetchDiagnosticSeverity) -> Color {
+    match severity {
+        UsageFetchDiagnosticSeverity::Info => Color::Cyan,
+        UsageFetchDiagnosticSeverity::Warning => Color::Yellow,
+        UsageFetchDiagnosticSeverity::Error => Color::Red,
+    }
+}
+
+fn push_section_spacing(lines: &mut Vec<Line<'static>>, max_lines: usize) {
+    if !lines.is_empty() && lines.len().saturating_add(1) < max_lines {
+        lines.push(Line::from(""));
+    }
+}
+
+fn append_provider_summary_lines(
+    lines: &mut Vec<Line<'static>>,
+    app: &App,
+    outputs: &[UsageOutput],
+    width: usize,
+    max_lines: usize,
+) {
+    if lines.len().saturating_add(1) >= max_lines {
+        return;
+    }
+
+    lines.push(section_heading(
+        tr(app.settings.tui_language, MessageKey::HeadingProviders),
+        app,
+    ));
+
+    for group in group_outputs_by_provider(outputs) {
+        if lines.len() >= max_lines {
+            break;
+        }
+        lines.push(provider_summary_line(app, &group, width));
+    }
+}
+
+fn section_heading(label: &'static str, app: &App) -> Line<'static> {
+    Line::from(Span::styled(
+        format!("  {label}"),
+        section_heading_style(app),
+    ))
+}
+
+fn section_heading_style(app: &App) -> Style {
+    app.theme
+        .secondary_text_style()
+        .add_modifier(Modifier::BOLD)
+}
+
+/// Cells `push_kv_styled` reserves for a summary row's key, value column
+/// included. A label may occupy at most [`KV_GUTTER_CELLS`] - 1 of them, so the
+/// gutter always contains at least one space; see
+/// `summary_row_labels_fit_their_twelve_cell_gutter`.
+const KV_GUTTER_CELLS: usize = 12;
+
+fn push_kv_styled(
+    lines: &mut Vec<Line<'static>>,
+    app: &App,
+    key: &'static str,
+    value: &str,
+    value_style: Style,
+    width: usize,
+) {
+    let key_width = display_width(key);
+    // `.max(1)`: a label that fills or overruns the gutter would otherwise get
+    // zero padding and the value would be jammed straight onto it with no
+    // separating space. The catalogs are held to 11 cells by test, so this is
+    // the belt to that braces — and it is a no-op for every current label.
+    let padding = " ".repeat(KV_GUTTER_CELLS.saturating_sub(key_width).max(1));
+    let max_value = width.saturating_sub(16);
+    lines.push(Line::from(vec![
+        Span::styled(
+            format!("  {}{}", key, padding),
+            app.theme.subtle_text_style(),
+        ),
+        Span::styled(truncate_string(value, max_value), value_style),
+    ]));
+}
+
+fn attention_outputs(outputs: &[UsageOutput]) -> Vec<(usize, &UsageOutput)> {
+    let mut items: Vec<(usize, &UsageOutput)> = outputs
+        .iter()
+        .enumerate()
+        .filter(|(_, output)| readiness_status(output).is_at_risk())
+        .collect();
+
+    items.sort_by(|(left_index, left), (right_index, right)| {
+        attention_severity_rank(left)
+            .cmp(&attention_severity_rank(right))
+            .then_with(|| attention_action_rank(left).cmp(&attention_action_rank(right)))
+            .then_with(|| output_score(left).total_cmp(&output_score(right)))
+            .then_with(|| left_index.cmp(right_index))
+    });
+
+    items
+}
+
+fn attention_severity_rank(output: &UsageOutput) -> u8 {
+    match readiness_status(output) {
+        UsageReadiness::Critical => 0,
+        UsageReadiness::Watch => 1,
+        UsageReadiness::Ready => 2,
+        UsageReadiness::Unknown => 3,
+    }
+}
+
+fn attention_action_rank(output: &UsageOutput) -> u8 {
+    match &output.account {
+        Some(account) if account.is_active => 0,
+        Some(_) => 1,
+        None => 2,
+    }
+}
+
+fn attention_line(app: &App, output: &UsageOutput, width: usize) -> Line<'static> {
+    let status = readiness_status(output);
+    let metric = display_metric(output);
+    let detail = metric
+        .map(|metric| {
+            let reset = metric
+                .resets_at
+                .as_ref()
+                .map(|reset| format!(" · {}", helpers::format_reset_time(reset)))
+                .unwrap_or_default();
+            format!(
+                "{} {}{}",
+                compact_metric_label(&metric.label),
+                remaining_label(metric),
+                reset
+            )
+        })
+        .unwrap_or_else(|| {
+            tr(app.settings.tui_language, MessageKey::UsageNoQuotaMetrics).to_string()
+        });
+    let account_width: usize = if width >= 52 { 24 } else { 18 };
+    let readiness_width = 11usize;
+    let used = 2 + readiness_width + account_width;
+    // Cells, not code points. `{:<11}` padded `한도부족` (4 code points, 8
+    // cells) to 11 code points = 15 cells, so the account column started at a
+    // different place on every row of the Attention panel — and never at the
+    // `used` cell this line's own arithmetic assumes.
+    let readiness = truncate_string(
+        readiness_label(app.settings.tui_language, status),
+        readiness_width,
+    );
+    Line::from(vec![
+        Span::raw("  "),
+        Span::styled(
+            pad_to_width(&readiness, readiness_width),
+            Style::default().fg(readiness_color(app, status)),
+        ),
+        Span::styled(
+            pad_to_width(
+                &truncate_string(&account_name(app, output), account_width.saturating_sub(1)),
+                account_width,
+            ),
+            app.theme.secondary_text_style(),
+        ),
+        Span::styled(
+            truncate_string(&detail, width.saturating_sub(used + 1)),
+            metric
+                .map(|metric| Style::default().fg(metric_color(app, metric)))
+                .unwrap_or_else(|| app.theme.subtle_text_style()),
+        ),
+    ])
+}
+
+fn attention_more_line(lang: TuiLanguage, hidden_count: usize, width: usize) -> Line<'static> {
+    let label = more_count_label(
+        lang,
+        hidden_count,
+        MessageKey::UsageMoreAtRisk,
+        MessageKey::UsageMoreAtRiskPlural,
+    );
+    Line::from(Span::styled(
+        format!("  {}", truncate_string(&label, width.saturating_sub(2))),
+        Style::default()
+            .fg(Color::Yellow)
+            .add_modifier(Modifier::BOLD),
+    ))
+}
+
+fn provider_summary_line(
+    app: &App,
+    group: &UsageProviderGroup<'_>,
+    _width: usize,
+) -> Line<'static> {
+    let saved = group
+        .outputs
+        .iter()
+        .filter(|(_, output)| output.account.is_some())
+        .count();
+    let managed = group.outputs.len().saturating_sub(saved);
+    let count_label = identity_count_label(app.settings.tui_language, saved, managed);
+    let ready = group
+        .outputs
+        .iter()
+        .filter(|(_, output)| readiness_status(output) == UsageReadiness::Ready)
+        .count();
+    let risk = group
+        .outputs
+        .iter()
+        .filter(|(_, output)| readiness_status(output).is_at_risk())
+        .count();
+    let lang = app.settings.tui_language;
+    let summary = if risk > 0 {
+        format!(
+            "{count_label} · {} · {}",
+            capacity_count(lang, ready, MessageKey::CapacityReady),
+            capacity_count(lang, risk, MessageKey::UsageAtRisk)
+        )
+    } else {
+        format!(
+            "{count_label} · {}",
+            capacity_count(lang, ready, MessageKey::CapacityReady)
+        )
+    };
+    Line::from(vec![
+        Span::styled(
+            format!("  {}", truncate_string(group.provider, 18)),
+            Style::default()
+                .fg(app.theme.color(get_provider_shade(group.provider, 0)))
+                .add_modifier(Modifier::BOLD),
+        ),
+        Span::styled(format!("  {summary}"), app.theme.subtle_text_style()),
+    ])
+}
+
+fn render_selected_account(
+    frame: &mut Frame,
+    app: &mut App,
+    area: Rect,
+    selected: &UsageOutput,
+    outputs: &[UsageOutput],
+) {
+    let lang = app.settings.tui_language;
+    let title_prefix =
+        crate::tui::i18n::tr(lang, crate::tui::i18n::MessageKey::TitleSelectedAccount).trim();
+    let title = format!(" {}  {} ", title_prefix, output_display_name(app, selected));
+    let block = Block::default()
+        .borders(Borders::ALL)
+        .border_set(AMBIENT_STABLE_BORDER_SET)
+        .border_style(Style::default().fg(app.theme.border))
+        .title(Span::styled(
+            truncate_string(&title, area.width.saturating_sub(4) as usize),
+            Style::default()
+                .fg(app.theme.accent)
+                .add_modifier(Modifier::BOLD),
+        ));
+    let inner = block.inner(area);
+    frame.render_widget(block, area);
+    if inner.width == 0 || inner.height == 0 {
+        return;
+    }
+
+    let readiness = readiness_status(selected);
+    let max_lines = inner.height as usize;
+    let action_lines = max_lines.min(2);
+    let detail_limit = max_lines.saturating_sub(action_lines);
+    let mut lines = Vec::new();
+
+    let lang = app.settings.tui_language;
+    if lines.len() < detail_limit {
+        push_kv_styled(
+            &mut lines,
+            app,
+            tr(lang, MessageKey::LabelStatus),
+            &selected_status_line(lang, selected),
+            Style::default()
+                .fg(readiness_color(app, readiness))
+                .add_modifier(Modifier::BOLD),
+            inner.width as usize,
+        );
+    }
+    if lines.len() < detail_limit {
+        push_kv_styled(
+            &mut lines,
+            app,
+            tr(lang, MessageKey::LabelEmail),
+            &email_display(app, selected.email.as_deref()),
+            app.theme.secondary_text_style(),
+            inner.width as usize,
+        );
+    }
+    if lines.len() < detail_limit {
+        push_kv_styled(
+            &mut lines,
+            app,
+            tr(lang, MessageKey::LabelCredential),
+            &credential_detail(lang, selected),
+            app.theme.secondary_text_style(),
+            inner.width as usize,
+        );
+    }
+    if lines.len() < detail_limit {
+        if let Some(label) = credits_status_line(selected) {
+            push_kv_styled(
+                &mut lines,
+                app,
+                tr(lang, MessageKey::LabelCredits),
+                &label,
+                app.theme.secondary_text_style(),
+                inner.width as usize,
+            );
+        }
+    }
+    append_selected_reset_credit_lines(
+        &mut lines,
+        app,
+        selected,
+        inner.width as usize,
+        detail_limit,
+    );
+    push_section_spacing(&mut lines, detail_limit);
+    if lines.len() < detail_limit {
+        lines.push(section_heading(
+            tr(app.settings.tui_language, MessageKey::HeadingLimits),
+            app,
+        ));
+    }
+    let mut metric_index = 0usize;
+    while lines.len() < detail_limit {
+        if selected.metrics.is_empty() {
+            lines.push(Line::from(Span::styled(
+                format!("  {}", tr(lang, MessageKey::UsageNoQuotaMetricsReturned)),
+                app.theme.subtle_text_style(),
+            )));
+            break;
+        }
+        if let Some(metric) = selected.metrics.get(metric_index) {
+            lines.push(metric_detail_line(app, metric, inner.width as usize));
+            metric_index += 1;
+        } else {
+            break;
+        }
+    }
+    if lines.len() < detail_limit {
+        lines.push(snapshot_line(app, outputs, inner.width as usize));
+    }
+    push_section_spacing(&mut lines, max_lines);
+    if lines.len() + 1 < max_lines {
+        lines.push(section_heading(
+            tr(app.settings.tui_language, MessageKey::HeadingActions),
+            app,
+        ));
+    }
+    if lines.len() < max_lines {
+        let y = inner.y.saturating_add(lines.len() as u16);
+        lines.push(selected_account_actions_line(app, selected, inner, y));
+    }
+
+    frame.render_widget(Paragraph::new(lines), inner);
+}
+
+fn append_selected_reset_credit_lines(
+    lines: &mut Vec<Line<'static>>,
+    app: &App,
+    selected: &UsageOutput,
+    width: usize,
+    max_lines: usize,
+) {
+    if lines.len() >= max_lines {
+        return;
+    }
+
+    let Some(credits) = selected.reset_credits.as_ref() else {
+        return;
+    };
+
+    let count_label = reset_credit_count_label(app.settings.tui_language, credits.available_count);
+    let value_style = if has_available_reset_credit(selected) {
+        Style::default()
+            .fg(Color::Yellow)
+            .add_modifier(Modifier::BOLD)
+    } else {
+        app.theme.secondary_text_style()
+    };
+    push_kv_styled(
+        lines,
+        app,
+        tr(app.settings.tui_language, MessageKey::LabelResetBank),
+        &count_label,
+        value_style,
+        width,
+    );
+
+    if lines.len() >= max_lines {
+        return;
+    }
+
+    let buckets = reset_credit_buckets(credits);
+    if buckets.is_empty() {
+        if credits.available_count > 0 {
+            lines.push(selected_reset_schedule_line(
+                tr(app.settings.tui_language, MessageKey::CreditExpiryUnknown),
+                app.theme.subtle_text_style(),
+                width,
+            ));
+        }
+        return;
+    }
+
+    // Leave room for the sections rendered after the reset schedule (a blank
+    // spacer, the "Limits" heading, at least one metric row, and the
+    // snapshot line) so a long expiry list can't push them off screen, while
+    // still keeping a small floor for an expiry line plus "+N more".
+    let trailing_rows_reserved = 4usize;
+    let expiry_budget = max_lines
+        .saturating_sub(trailing_rows_reserved)
+        .max(lines.len() + 2);
+    let available = expiry_budget.saturating_sub(lines.len());
+    let visible_count = if buckets.len() > available {
+        available.saturating_sub(1)
+    } else {
+        buckets.len()
+    };
+
+    for bucket in buckets.iter().take(visible_count) {
+        lines.push(selected_reset_schedule_line(
+            &format_selected_reset_schedule_entry(app.settings.tui_language, bucket),
+            app.theme.secondary_text_style(),
+            width,
+        ));
+    }
+
+    let hidden = hidden_expiry_count(&buckets[visible_count..]);
+    if hidden > 0 && lines.len() < max_lines {
+        lines.push(selected_reset_schedule_line(
+            &more_count_label(
+                app.settings.tui_language,
+                hidden,
+                MessageKey::CreditMoreResetCredits,
+                MessageKey::CreditMoreResetCreditsPlural,
+            ),
+            app.theme.subtle_text_style(),
+            width,
+        ));
+    }
+}
+
+fn selected_reset_schedule_line(value: &str, value_style: Style, width: usize) -> Line<'static> {
+    let prefix_width = 14usize;
+    Line::from(vec![
+        Span::raw(" ".repeat(prefix_width)),
+        Span::styled(
+            truncate_string(value, width.saturating_sub(prefix_width + 2)),
+            value_style,
+        ),
+    ])
+}
+
+fn format_selected_reset_schedule_entry(lang: TuiLanguage, bucket: &(String, usize)) -> String {
+    let expires = tr(lang, MessageKey::CreditExpiresPrefix);
+    if bucket.1 > 1 {
+        format!("x{} {} {}", bucket.1, expires, bucket.0)
+    } else {
+        format!("{} {}", expires, bucket.0)
+    }
+}
+
+fn reset_credit_detail_rows(selected: &UsageOutput) -> usize {
+    let Some(credits) = selected.reset_credits.as_ref() else {
+        return 0;
+    };
+
+    if credits.available_count == 0 {
+        return 1;
+    }
+
+    let bucket_count = reset_credit_buckets(credits).len();
+    1 + bucket_count.max(1)
+}
+
+fn append_credit_bank_summary_lines(
+    lines: &mut Vec<Line<'static>>,
+    app: &App,
+    outputs: &[UsageOutput],
+    width: usize,
+    max_lines: usize,
+) {
+    if !outputs.iter().any(has_available_reset_credit) || lines.len() >= max_lines {
+        return;
+    }
+
+    lines.push(Line::from(vec![
+        Span::styled(
+            format!(
+                "  {}  ",
+                tr(app.settings.tui_language, MessageKey::HeadingCreditBank)
+            ),
+            section_heading_style(app),
+        ),
+        Span::styled(
+            truncate_string(
+                &reset_bank_summary(app.settings.tui_language, outputs),
+                width.saturating_sub(15),
+            ),
+            Style::default()
+                .fg(Color::Yellow)
+                .add_modifier(Modifier::BOLD),
+        ),
+    ]));
+
+    for output in outputs.iter().filter(|output| output.provider == "Codex") {
+        if lines.len() >= max_lines {
+            break;
+        }
+        let Some(credits) = output.reset_credits.as_ref() else {
+            continue;
+        };
+        if credits.available_count == 0 {
+            continue;
+        }
+        lines.push(reset_credit_account_line(
+            app,
+            output,
+            credits,
+            output
+                .account
+                .as_ref()
+                .is_some_and(|account| account.is_active),
+            width,
+        ));
+    }
+}
+
+fn reset_credit_account_line(
+    app: &App,
+    output: &UsageOutput,
+    credits: &crate::commands::usage::UsageResetCredits,
+    selected: bool,
+    width: usize,
+) -> Line<'static> {
+    let account = account_name(app, output);
+    let count = plain_count_label(
+        app.settings.tui_language,
+        credits.available_count as usize,
+        MessageKey::CreditCountSingular,
+        MessageKey::CreditCountPlural,
+    );
+    let label_width: usize = if width >= 72 { 28 } else { 18 };
+    let count_width: usize = if width >= 72 { 12 } else { 10 };
+    // Cells, not code points, in both the cut and the padding. `{:<12}` on
+    // `3개 초기화권` (7 code points, 12 cells) padded it to 17 cells, pushing the
+    // expiry text 5 cells right of where `used` says it starts — and off the
+    // panel, where ratatui clipped it with no marker while en/fr got an
+    // ellipsis. Measuring in cells is exactly `{:<width$}` for ASCII, so `en` is
+    // unchanged for every possible count.
+    let count_cell = pad_to_width(&truncate_string(&count, count_width), count_width);
+    let used = 2 + label_width + count_width + 2;
+    let expiry = credit_nearest_expiry_line(app.settings.tui_language, credits);
+    let marker = if selected { "> " } else { "  " };
+    Line::from(vec![
+        Span::raw(marker),
+        Span::styled(
+            pad_to_width(
+                &truncate_string(&account, label_width.saturating_sub(1)),
+                label_width,
+            ),
+            Style::default()
+                .fg(Color::Yellow)
+                .add_modifier(Modifier::BOLD),
+        ),
+        Span::styled(count_cell, app.theme.secondary_text_style()),
+        Span::styled(
+            truncate_string(&expiry, width.saturating_sub(used)),
+            app.theme.secondary_text_style(),
+        ),
+    ])
+}
+
+fn reset_credit_buckets(
+    credits: &crate::commands::usage::UsageResetCredits,
+) -> Vec<(String, usize)> {
+    credit_expiry_buckets(
+        credits
+            .credits
+            .iter()
+            .filter_map(|credit| credit.expires_at.as_deref()),
+    )
+}
+
+fn credit_nearest_expiry_line(
+    lang: TuiLanguage,
+    credits: &crate::commands::usage::UsageResetCredits,
+) -> String {
+    nearest_credit_expiry_label(lang, &reset_credit_buckets(credits))
+        .unwrap_or_else(|| tr(lang, MessageKey::CreditExpiryUnknown).to_string())
+}
+
+fn nearest_credit_expiry_label(lang: TuiLanguage, buckets: &[(String, usize)]) -> Option<String> {
+    buckets.first().map(|bucket| {
+        format!(
+            "{} {}",
+            tr(lang, MessageKey::CreditNearestExpires),
+            bucket.0
+        )
+    })
+}
+
+fn credit_expiry_buckets<'a>(expiries: impl Iterator<Item = &'a str>) -> Vec<(String, usize)> {
+    let mut values: Vec<String> = expiries.map(str::to_string).collect();
+    // Sort by the raw RFC3339 value so buckets stay in chronological order,
+    // then group by the formatted label below, since `format_reset_time` has
+    // only minute granularity and would otherwise render two entries whose
+    // raw timestamps differ only by seconds as separate identical lines.
+    values.sort();
+
+    let mut buckets: Vec<(String, usize)> = Vec::new();
+    for value in values {
+        let label = format_credit_expiry_label(&value);
+        if let Some(last) = buckets
+            .last_mut()
+            .filter(|(last_label, _)| *last_label == label)
+        {
+            last.1 += 1;
+            continue;
+        }
+        buckets.push((label, 1));
+    }
+
+    buckets
+}
+
+fn hidden_expiry_count(buckets: &[(String, usize)]) -> usize {
+    buckets.iter().map(|(_, count)| *count).sum()
+}
+
+fn format_credit_expiry_label(value: &str) -> String {
+    let label = format_expiry_time(value);
+    label
+        .strip_prefix("expires ")
+        .or_else(|| label.strip_prefix("resets "))
+        .unwrap_or(&label)
+        .to_string()
+}
+
+fn selected_status_line(lang: TuiLanguage, output: &UsageOutput) -> String {
+    let plan = output
+        .plan
+        .as_deref()
+        .unwrap_or_else(|| tr(lang, MessageKey::LabelUnknown));
+    format!(
+        "{} · {}",
+        plan,
+        account_readiness_label(lang, output, readiness_status(output))
+    )
+}
+
+/// Name of the external tool that owns the credential, when the credential did
+/// not come from the saved store. Both the `Credential` detail row and the
+/// account actions row derive their wording from this so a single credential is
+/// never described two different ways.
+fn external_credential_manager(output: &UsageOutput) -> Option<&'static str> {
+    match output.credential_source.as_deref() {
+        Some("opencode") => Some("OpenCode"),
+        _ => None,
+    }
+}
+
+fn credential_detail(lang: TuiLanguage, output: &UsageOutput) -> String {
+    match &output.account {
+        Some(account) if account.is_active => {
+            tr(lang, MessageKey::CredentialSavedActive).to_string()
+        }
+        Some(_) => tr(lang, MessageKey::CredentialSaved).to_string(),
+        None => match external_credential_manager(output) {
+            Some(manager) => {
+                format!(
+                    "{} {manager}",
+                    tr(lang, MessageKey::CredentialManagedByPrefix)
+                )
+            }
+            None => tr(lang, MessageKey::CredentialManagedExternally).to_string(),
+        },
+    }
+}
+
+fn selected_account_actions_line(
+    app: &mut App,
+    selected: &UsageOutput,
+    area: Rect,
+    y: u16,
+) -> Line<'static> {
+    let lang = app.settings.tui_language;
+    if let Some(account) = &selected.account {
+        let mut spans = Vec::new();
+        let mut buttons = Vec::new();
+        if has_available_reset_credit(selected) {
+            buttons.push(reset_account_button(lang, &account.id));
+        }
+        if account.is_active {
+            spans.push(Span::styled(
+                format!("  {}  ", tr(lang, MessageKey::UsageCurrentAccount)),
+                app.theme.subtle_text_style(),
+            ));
+            let x = area
+                .x
+                .saturating_add(Line::from(spans.clone()).width() as u16);
+            push_click_buttons(&mut spans, app, buttons, x, y, area.right());
+        } else {
+            spans.push(Span::raw("  "));
+            let x = area.x.saturating_add(2);
+            let mut all_buttons = vec![use_account_button(lang, &account.id)];
+            all_buttons.extend(buttons);
+            all_buttons.push(remove_account_button(lang, &account.id));
+            push_click_buttons(&mut spans, app, all_buttons, x, y, area.right());
+        }
+        return Line::from(spans);
+    }
+
+    let label = match external_credential_manager(selected) {
+        Some(manager) => format!("  {} {manager}", tr(lang, MessageKey::UsageManagedByPrefix)),
+        None => format!("  {}", tr(lang, MessageKey::UsageManagedExternally)),
+    };
+    Line::from(Span::styled(label, app.theme.subtle_text_style()))
+}
+
+fn account_plan_label(account: &str, plan: Option<&str>) -> String {
+    match plan.map(str::trim).filter(|plan| !plan.is_empty()) {
+        Some(plan) => format!("{account}  {plan}"),
+        None => account.to_string(),
+    }
+}
+
+fn account_readiness_label(
+    lang: TuiLanguage,
+    output: &UsageOutput,
+    readiness: UsageReadiness,
+) -> String {
+    let account_state = account_state_label(lang, output);
+    let readiness = readiness_label(lang, readiness);
+    if account_state.eq_ignore_ascii_case(readiness) {
+        readiness.to_string()
+    } else {
+        format!("{account_state} · {readiness}")
+    }
+}
+
+fn snapshot_line(app: &App, outputs: &[UsageOutput], width: usize) -> Line<'static> {
+    let ready = outputs
+        .iter()
+        .filter(|output| readiness_status(output) == UsageReadiness::Ready)
+        .count();
+    let at_risk = outputs
+        .iter()
+        .filter(|output| readiness_status(output).is_at_risk())
+        .count();
+    let inventory = usage_inventory(outputs);
+    let lang = app.settings.tui_language;
+    let summary = format!(
+        "  {}  {} · {} · {}{}",
+        tr(lang, MessageKey::UsageSnapshot),
+        capacity_count(lang, ready, MessageKey::CapacityReady),
+        capacity_count(lang, at_risk, MessageKey::UsageAtRisk),
+        identity_count_label(lang, inventory.saved, inventory.managed),
+        if app.hide_usage_emails {
+            format!(" · {}", tr(lang, MessageKey::UsageEmailsHidden))
+        } else {
+            String::new()
+        }
+    );
+    Line::from(Span::styled(
+        truncate_string(&summary, width),
+        app.theme.subtle_text_style(),
+    ))
+}
+
+fn metric_detail_line(app: &App, metric: &UsageMetric, width: usize) -> Line<'static> {
+    let remaining = remaining_label(metric);
+    let label_width = metric_label_width(width);
+    let target_reset_width = width.saturating_sub(label_width + 12).min(24);
+    let bar_width = width
+        .saturating_sub(label_width + target_reset_width + 14)
+        .clamp(10, 34);
+    let reset_width = width.saturating_sub(label_width + bar_width + 14);
+    let reset = metric
+        .resets_at
+        .as_ref()
+        .map(|r| helpers::format_reset_time(r))
+        .unwrap_or_default();
+    let color = metric_color(app, metric);
+    // Cells, not code points: the metric label is provider-supplied and can
+    // hold a full-width grapheme, and the bar that follows is positioned by
+    // `label_width`.
+    let mut spans = vec![Span::styled(
+        format!(
+            "  {}",
+            pad_to_width(
+                &truncate_string(
+                    &compact_metric_label(&metric.label),
+                    label_width.saturating_sub(1),
+                ),
+                label_width,
+            )
+        ),
+        app.theme.subtle_text_style(),
+    )];
+    spans.extend(quota_bar_spans(
+        metric.remaining_percent,
+        bar_width,
+        color,
+        app,
+    ));
+    spans.extend([
+        Span::raw(" "),
+        Span::styled(
+            pad_to_width(&truncate_string(&remaining, 11), 11),
+            Style::default().fg(color),
+        ),
+        Span::styled(
+            truncate_string(&reset, reset_width),
+            app.theme.subtle_text_style(),
+        ),
+    ]);
+    Line::from(spans)
+}
+
+fn metric_label_width(width: usize) -> usize {
+    if width >= 96 {
+        18
+    } else if width >= 78 {
+        14
+    } else {
+        10
+    }
+}
+
+fn render_accounts_table(frame: &mut Frame, app: &mut App, area: Rect, outputs: &[UsageOutput]) {
+    let lang = app.settings.tui_language;
+    let block = Block::default()
+        .borders(Borders::ALL)
+        .border_set(AMBIENT_STABLE_BORDER_SET)
+        .border_style(Style::default().fg(app.theme.border))
+        .title(Span::styled(
+            tr(lang, MessageKey::TitleAccounts),
+            Style::default()
+                .fg(app.theme.accent)
+                .add_modifier(Modifier::BOLD),
+        ));
+    let inner = block.inner(area);
+    frame.render_widget(block, area);
+    if inner.width == 0 || inner.height == 0 {
+        return;
+    }
+
+    if inner.width < 132 {
+        render_narrow_accounts_table(frame, app, inner, outputs);
+        return;
+    }
+
+    let max_rows = inner.height.saturating_sub(1) as usize;
+    app.set_max_visible_items(max_rows.max(1));
+    let start = app
+        .scroll_offset
+        .min(outputs.len().saturating_sub(max_rows));
+    let visible_rows = outputs
+        .iter()
+        .enumerate()
+        .skip(start)
+        .take(max_rows)
+        .collect::<Vec<_>>();
+
+    let rows = visible_rows
+        .iter()
+        .map(|(index, output)| account_table_row(app, output, *index))
+        .collect::<Vec<_>>();
+
+    let selected_visible = app
+        .selected_index
+        .checked_sub(start)
+        .filter(|index| *index < visible_rows.len());
+    let mut table_state = TableState::default().with_selected(selected_visible);
+    let table = Table::new(rows, account_table_widths(inner.width))
+        .header(account_table_header(app))
+        .column_spacing(1)
+        .highlight_spacing(HighlightSpacing::Never)
+        .row_highlight_style(Style::default().bg(app.theme.selection))
+        .flex(Flex::Start);
+    frame.render_stateful_widget(table, inner, &mut table_state);
+
+    for (visible_row, (index, _)) in visible_rows.into_iter().enumerate() {
+        let y = inner.y.saturating_add(1 + visible_row as u16);
+        app.add_click_area(
+            Rect::new(inner.x, y, inner.width, 1),
+            ClickAction::UsageSelect { index },
+        );
+    }
+}
+
+fn render_narrow_accounts_table(
+    frame: &mut Frame,
+    app: &mut App,
+    area: Rect,
+    outputs: &[UsageOutput],
+) {
+    let row_height = 2usize;
+    let max_items = (area.height.saturating_sub(1) as usize / row_height).max(1);
+    app.set_max_visible_items(max_items);
+    let start = app
+        .scroll_offset
+        .min(outputs.len().saturating_sub(max_items));
+    let visible_rows = outputs
+        .iter()
+        .enumerate()
+        .skip(start)
+        .take(max_items)
+        .collect::<Vec<_>>();
+
+    let rows = visible_rows
+        .iter()
+        .map(|(index, output)| narrow_table_row(app, output, *index, area))
+        .collect::<Vec<_>>();
+    let selected_visible = app
+        .selected_index
+        .checked_sub(start)
+        .filter(|index| *index < visible_rows.len());
+    let mut table_state = TableState::default().with_selected(selected_visible);
+    let table = Table::new(rows, [Constraint::Percentage(100)])
+        .header(Row::new([Cell::from(narrow_table_header(app, area.width))]))
+        .highlight_spacing(HighlightSpacing::Never)
+        .row_highlight_style(Style::default().bg(app.theme.selection))
+        .flex(Flex::Start);
+    frame.render_stateful_widget(table, area, &mut table_state);
+
+    for (visible_row, (index, _)) in visible_rows.into_iter().enumerate() {
+        let y = area
+            .y
+            .saturating_add(1)
+            .saturating_add((visible_row * row_height) as u16);
+        app.add_click_area(
+            Rect::new(
+                area.x,
+                y,
+                area.width,
+                row_height.min(area.bottom().saturating_sub(y) as usize) as u16,
+            ),
+            ClickAction::UsageSelect { index },
+        );
+    }
+}
+
+fn account_table_header(app: &App) -> Row<'static> {
+    let lang = app.settings.tui_language;
+    let style = app.theme.subtle_text_style();
+    Row::new([
+        table_right_cell("#", style),
+        table_text_cell(tr(lang, MessageKey::ColProvider), style),
+        table_text_cell(tr(lang, MessageKey::ColAccount), style),
+        table_text_cell(tr(lang, MessageKey::ColPlan), style),
+        table_text_cell(tr(lang, MessageKey::ColAuth), style),
+        table_text_cell(tr(lang, MessageKey::ColHealth), style),
+        table_text_cell(tr(lang, MessageKey::ColLimit), style),
+        table_text_cell(tr(lang, MessageKey::ColReset), style),
+    ])
+}
+
+fn narrow_table_header(app: &App, width: u16) -> Line<'static> {
+    let lang = app.settings.tui_language;
+    let label = format!(" #  {}", tr(lang, MessageKey::UsageAccountOrStatus));
+    Line::from(Span::styled(
+        truncate_string(&label, width as usize),
+        app.theme.subtle_text_style(),
+    ))
+}
+
+fn account_table_widths(width: u16) -> [Constraint; 8] {
+    if width >= 170 {
+        [
+            Constraint::Length(3),
+            Constraint::Length(10),
+            Constraint::Length(30),
+            Constraint::Length(10),
+            Constraint::Length(8),
+            Constraint::Length(10),
+            Constraint::Min(30),
+            Constraint::Length(24),
+        ]
+    } else {
+        [
+            Constraint::Length(3),
+            Constraint::Length(8),
+            Constraint::Length(24),
+            Constraint::Length(8),
+            Constraint::Length(7),
+            Constraint::Length(8),
+            Constraint::Min(24),
+            Constraint::Length(24),
+        ]
+    }
+}
+
+fn narrow_table_row(app: &mut App, output: &UsageOutput, index: usize, area: Rect) -> Row<'static> {
+    let selected = app.selected_index == index;
+    let width = area.width as usize;
+    let row = usage_row_view(app, output);
+    let lang = app.settings.tui_language;
+    let state = if width >= 70 {
+        account_readiness_label(lang, output, row.readiness)
+    } else {
+        readiness_label(lang, row.readiness).to_string()
+    };
+    let state_width = if width >= 52 {
+        14usize
+    } else if width >= 40 {
+        10usize
+    } else {
+        0usize
+    };
+    let state_right_padding = usize::from(state_width > 0) * 2;
+    let left_width = width.saturating_sub(4 + state_width + state_right_padding);
+    let left = format!("{} {}", output.provider, row.account_summary);
+    let mut first = vec![
+        styled(
+            format!(" {:<2} ", index + 1),
+            app.theme.secondary_text_style(),
+            selected,
+        ),
+        styled(
+            pad_to_width(
+                &truncate_string(&left, left_width.saturating_sub(1)),
+                left_width,
+            ),
+            app.theme.secondary_text_style(),
+            selected,
+        ),
+    ];
+    if state_width > 0 {
+        // Cells, not code points, in both the cut and the alignment.
+        // `활성 · 한도부족` is 9 code points and 15 cells, so a code-point
+        // budget of 14 left it untruncated, unellipsised and one cell over its
+        // column — and ratatui then clipped it at the panel edge with no
+        // marker, the same failure mode as the Korean `메시지` header.
+        first.push(styled(
+            pad_start_to_width(&truncate_string(&state, state_width), state_width),
+            Style::default().fg(readiness_color(app, row.readiness)),
+            selected,
+        ));
+        first.push(styled(
+            " ".repeat(state_right_padding),
+            Style::default(),
+            selected,
+        ));
+    }
+
+    let detail = if row.reset.is_empty() {
+        row.limit.clone()
+    } else {
+        format!("{} · {}", row.limit, row.reset)
+    };
+
+    let managed_label = if output.account.is_none() {
+        Some(tr(lang, MessageKey::AuthManaged))
+    } else {
+        None
+    };
+    // Display cells, not bytes: `str::len` counted `托管` as 6 and reserved
+    // twice the space it draws.
+    let action_width = managed_label
+        .map(unicode_width::UnicodeWidthStr::width)
+        .unwrap_or(0);
+    let available_detail_width = width
+        .saturating_sub(4 + action_width + usize::from(action_width > 0))
+        .max(8);
+    let detail_width = available_detail_width.min(if width >= 72 { 48 } else { 34 });
+    let detail_style = row
+        .metric
+        .map(|metric| Style::default().fg(metric_color(app, metric)))
+        .unwrap_or_else(|| app.theme.secondary_text_style());
+    let mut second = vec![
+        styled("    ", Style::default(), selected),
+        styled(
+            truncate_string(&detail, detail_width.saturating_sub(1)),
+            detail_style,
+            selected,
+        ),
+    ];
+    let used = Line::from(second.clone()).width();
+    if action_width > 0 && area.width as usize > used + action_width {
+        second.push(styled(" ", Style::default(), selected));
+    }
+    if let Some(label) = managed_label {
+        second.push(styled(label, app.theme.subtle_text_style(), selected));
+    }
+    pad_selected_row(&mut second, area.width as usize, selected);
+
+    Row::new([Cell::from(Text::from(vec![
+        Line::from(first),
+        Line::from(second),
+    ]))])
+    .style(account_table_row_style(app, index))
+    .height(2)
+}
+
+fn usage_row_view<'a>(app: &App, output: &'a UsageOutput) -> UsageRowView<'a> {
+    let account = account_name(app, output);
+    let metric = display_metric(output);
+    let plan = output
+        .plan
+        .as_deref()
+        .map(str::trim)
+        .filter(|plan| !plan.is_empty())
+        .unwrap_or_else(|| tr(app.settings.tui_language, MessageKey::LabelUnknown))
+        .to_string();
+    let limit = metric_summary(app.settings.tui_language, output);
+    let reset = metric.and_then(display_metric_reset).unwrap_or_default();
+    let account_summary = account_plan_label(&account, output.plan.as_deref());
+
+    UsageRowView {
+        account,
+        account_summary,
+        plan,
+        limit,
+        reset,
+        readiness: readiness_status(output),
+        metric,
+    }
+}
+
+fn metric_summary(lang: TuiLanguage, output: &UsageOutput) -> String {
+    if output.metrics.is_empty() {
+        return tr(lang, MessageKey::UsageNoLimits).to_string();
+    }
+
+    let parts = output
+        .metrics
+        .iter()
+        .map(|metric| {
+            let label = compact_metric_label(&metric.label);
+            let label = truncate_string(&label, 14);
+            format!("{label} {:.0}%", metric.remaining_percent)
+        })
+        .collect::<Vec<_>>();
+    parts.join(" · ")
+}
+
+fn compact_metric_label(label: &str) -> String {
+    let mut value = label.trim().to_string();
+    for prefix in [
+        "GPT-5.3-Codex-",
+        "GPT-5.3-",
+        "Codex-",
+        "codex-",
+        "gpt-5.3-codex-",
+        "gpt-5.3-",
+    ] {
+        if let Some(stripped) = value.strip_prefix(prefix) {
+            value = stripped.to_string();
+            break;
+        }
+    }
+
+    value = value
+        .replace("Codex Spark", "Spark")
+        .replace("Codex-Spark", "Spark")
+        .replace("codex-spark", "Spark");
+
+    if value.eq_ignore_ascii_case("session") {
+        return "5h".to_string();
+    }
+    if value.eq_ignore_ascii_case("spark") {
+        return "Spark".to_string();
+    }
+    if value.eq_ignore_ascii_case("spark week") {
+        return "Spark weekly".to_string();
+    }
+    value
+}
+
+fn display_metric_reset(metric: &UsageMetric) -> Option<String> {
+    metric
+        .resets_at
+        .as_ref()
+        .map(|reset| helpers::format_reset_time(reset))
+}
+
+fn account_table_row(app: &App, output: &UsageOutput, index: usize) -> Row<'static> {
+    let row = usage_row_view(app, output);
+
+    let auth = account_auth_label(app.settings.tui_language, output);
+    let health = readiness_label(app.settings.tui_language, row.readiness);
+    let auth_color = account_auth_color(output);
+    let health_color = readiness_color(app, row.readiness);
+    let metric_color = row.metric.map(|metric| metric_color(app, metric));
+
+    Row::new([
+        table_right_cell((index + 1).to_string(), app.theme.secondary_text_style()),
+        table_text_cell(
+            output.provider.clone(),
+            Style::default()
+                .fg(app.theme.color(get_provider_shade(&output.provider, 0)))
+                .add_modifier(Modifier::BOLD),
+        ),
+        table_text_cell(row.account, app.theme.secondary_text_style()),
+        table_text_cell(row.plan, app.theme.secondary_text_style()),
+        table_text_cell(auth, Style::default().fg(auth_color)),
+        table_text_cell(health, Style::default().fg(health_color)),
+        table_text_cell(
+            row.limit,
+            metric_color
+                .map(|color| Style::default().fg(color))
+                .unwrap_or_else(|| app.theme.secondary_text_style()),
+        ),
+        table_text_cell(row.reset, app.theme.subtle_text_style()),
+    ])
+    .style(account_table_row_style(app, index))
+    .height(1)
+}
+
+fn pad_selected_row(spans: &mut Vec<Span<'static>>, width: usize, selected: bool) {
+    let used = Line::from(spans.clone()).width();
+    if used < width {
+        spans.push(styled(" ".repeat(width - used), Style::default(), selected));
+    }
+}
+
+fn table_text_cell(text: impl Into<String>, style: Style) -> Cell<'static> {
+    Cell::from(Span::styled(text.into(), style))
+}
+
+fn table_right_cell(text: impl Into<String>, style: Style) -> Cell<'static> {
+    Cell::from(Line::from(Span::styled(text.into(), style)).right_aligned())
+}
+
+fn account_table_row_style(app: &App, index: usize) -> Style {
+    if index % 2 == 1 {
+        app.theme.striped_row_style()
+    } else {
+        Style::default()
+    }
+}
+
+fn use_account_button(lang: TuiLanguage, account_id: &str) -> ButtonSpec {
+    ButtonSpec {
+        label: tr(lang, MessageKey::ButtonUseAccount).to_string(),
+        short_label: Some(tr(lang, MessageKey::ButtonUseAccountShort).to_string()),
+        kind: ButtonKind::Primary,
+        action: ClickAction::CodexUseAccount {
+            account_id: account_id.to_string(),
+        },
+    }
+}
+
+fn remove_account_button(lang: TuiLanguage, account_id: &str) -> ButtonSpec {
+    ButtonSpec {
+        label: tr(lang, MessageKey::ButtonRemove).to_string(),
+        short_label: Some(tr(lang, MessageKey::ButtonRemoveShort).to_string()),
+        kind: ButtonKind::Danger,
+        action: ClickAction::CodexRemoveAccount {
+            account_id: account_id.to_string(),
+        },
+    }
+}
+
+fn reset_account_button(lang: TuiLanguage, account_id: &str) -> ButtonSpec {
+    ButtonSpec {
+        label: tr(lang, MessageKey::ButtonReset).to_string(),
+        short_label: Some(tr(lang, MessageKey::ButtonResetShort).to_string()),
+        kind: ButtonKind::Warning,
+        action: ClickAction::CodexResetAccount {
+            account_id: account_id.to_string(),
+        },
+    }
+}
+
+fn group_outputs_by_provider(outputs: &[UsageOutput]) -> Vec<UsageProviderGroup<'_>> {
+    let mut groups: Vec<UsageProviderGroup<'_>> = Vec::new();
+
+    for (index, output) in outputs.iter().enumerate() {
+        if let Some(group) = groups
+            .iter_mut()
+            .find(|group| group.provider == output.provider)
+        {
+            group.outputs.push((index, output));
+        } else {
+            groups.push(UsageProviderGroup {
+                provider: &output.provider,
+                outputs: vec![(index, output)],
+            });
+        }
+    }
+
+    groups
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum UsageReadiness {
+    Ready,
+    Watch,
+    Critical,
+    Unknown,
+}
+
+impl UsageReadiness {
+    fn is_at_risk(self) -> bool {
+        matches!(self, UsageReadiness::Watch | UsageReadiness::Critical)
+    }
+}
+
+fn readiness_status(output: &UsageOutput) -> UsageReadiness {
+    if output.metrics.is_empty() {
+        return UsageReadiness::Unknown;
+    }
+
+    let lowest = output_score(output);
+    if lowest < 10.0 {
+        UsageReadiness::Critical
+    } else if lowest < 25.0 {
+        UsageReadiness::Watch
+    } else {
+        UsageReadiness::Ready
+    }
+}
+
+fn overall_readiness(outputs: &[UsageOutput]) -> UsageReadiness {
+    if outputs.is_empty() {
+        return UsageReadiness::Unknown;
+    }
+
+    if let Some(active) = active_output(outputs) {
+        let active_status = readiness_status(active);
+        if active_status.is_at_risk() {
+            return active_status;
+        }
+    }
+
+    if outputs.iter().any(|output| {
+        matches!(
+            readiness_status(output),
+            UsageReadiness::Critical | UsageReadiness::Watch
+        )
+    }) {
+        UsageReadiness::Watch
+    } else if outputs
+        .iter()
+        .any(|output| readiness_status(output) == UsageReadiness::Ready)
+    {
+        UsageReadiness::Ready
+    } else {
+        UsageReadiness::Unknown
+    }
+}
+
+fn overall_state_label(lang: TuiLanguage, outputs: &[UsageOutput]) -> &'static str {
+    if let Some(active) = active_output(outputs) {
+        if readiness_status(active) == UsageReadiness::Critical
+            && best_fallback_output(outputs).is_some()
+        {
+            return tr(lang, MessageKey::StateSwitchRecommended);
+        }
+    }
+
+    tr(
+        lang,
+        match overall_readiness(outputs) {
+            UsageReadiness::Ready => MessageKey::StateReady,
+            UsageReadiness::Watch => MessageKey::StateReadyWithWarnings,
+            UsageReadiness::Critical => MessageKey::StateQuotaLow,
+            UsageReadiness::Unknown => MessageKey::StateUnknown,
+        },
+    )
+}
+
+/// The per-account readiness word. Also fills the accounts table's `Health`
+/// column, which is `Constraint::Length(8)` below 170 columns, so every
+/// translation is kept to 8 display cells or fewer. (English `Quota Low` is 9
+/// and has always been clipped there; changing it would change `en` output,
+/// which this follow-up deliberately does not do.)
+fn readiness_label(lang: TuiLanguage, status: UsageReadiness) -> &'static str {
+    tr(
+        lang,
+        match status {
+            UsageReadiness::Ready => MessageKey::HealthReady,
+            UsageReadiness::Watch => MessageKey::HealthWatch,
+            UsageReadiness::Critical => MessageKey::HealthQuotaLow,
+            UsageReadiness::Unknown => MessageKey::HealthUnknown,
+        },
+    )
+}
+
+fn readiness_color(app: &App, status: UsageReadiness) -> Color {
+    match status {
+        UsageReadiness::Ready => app.theme.accent,
+        UsageReadiness::Watch => Color::Yellow,
+        UsageReadiness::Critical => Color::Red,
+        UsageReadiness::Unknown => app.theme.muted,
+    }
+}
+
+fn active_output(outputs: &[UsageOutput]) -> Option<&UsageOutput> {
+    outputs.iter().find(|output| {
+        output
+            .account
+            .as_ref()
+            .is_some_and(|account| account.is_active)
+    })
+}
+
+fn best_fallback_output(outputs: &[UsageOutput]) -> Option<&UsageOutput> {
+    outputs
+        .iter()
+        .filter(|output| {
+            !output
+                .account
+                .as_ref()
+                .is_some_and(|account| account.is_active)
+                && readiness_status(output) == UsageReadiness::Ready
+        })
+        .max_by(|a, b| output_score(a).total_cmp(&output_score(b)))
+}
+
+fn output_score(output: &UsageOutput) -> f64 {
+    output
+        .metrics
+        .iter()
+        .map(|metric| metric.remaining_percent)
+        .min_by(|a, b| a.total_cmp(b))
+        .unwrap_or(0.0)
+}
+
+fn display_metric(output: &UsageOutput) -> Option<&UsageMetric> {
+    if output
+        .metrics
+        .iter()
+        .any(|metric| metric.remaining_percent < 25.0)
+    {
+        output
+            .metrics
+            .iter()
+            .min_by(|a, b| a.remaining_percent.total_cmp(&b.remaining_percent))
+    } else {
+        output.metrics.first()
+    }
+}
+
+fn next_reset_label(app: &App, outputs: &[UsageOutput]) -> Option<String> {
+    if let Some(active) = active_output(outputs) {
+        if let Some(label) = output_reset_label(app, active) {
+            return Some(label);
+        }
+    }
+
+    outputs
+        .iter()
+        .find_map(|output| output_reset_label(app, output))
+}
+
+fn output_reset_label(app: &App, output: &UsageOutput) -> Option<String> {
+    let metric = display_metric(output)?;
+    let reset = metric.resets_at.as_ref()?;
+    Some(format!(
+        "{} · {}",
+        truncate_string(&account_name(app, output), 22),
+        helpers::format_reset_time(reset)
+    ))
+}
+
+fn overall_action(app: &App, outputs: &[UsageOutput]) -> String {
+    let lang = app.settings.tui_language;
+    let Some(active) = active_output(outputs) else {
+        return tr(lang, MessageKey::ActionChooseActive).to_string();
+    };
+
+    match readiness_status(active) {
+        UsageReadiness::Ready => {
+            if outputs
+                .iter()
+                .any(|output| readiness_status(output) == UsageReadiness::Unknown)
+            {
+                tr(lang, MessageKey::ActionRefreshUnknownLimits).to_string()
+            } else {
+                tr(lang, MessageKey::ActionKeepCurrent).to_string()
+            }
+        }
+        UsageReadiness::Watch => tr(lang, MessageKey::ActionMonitorQuota).to_string(),
+        UsageReadiness::Critical => best_fallback_output(outputs)
+            .map(|fallback| {
+                format!(
+                    "{} {}",
+                    tr(lang, MessageKey::ActionUsePrefix),
+                    account_name(app, fallback)
+                )
+            })
+            .unwrap_or_else(|| tr(lang, MessageKey::ActionWaitForReset).to_string()),
+        UsageReadiness::Unknown => tr(lang, MessageKey::ActionRefreshActive).to_string(),
+    }
+}
+
+fn output_display_name(app: &App, output: &UsageOutput) -> String {
+    match &output.account {
+        Some(_) => format!("{} ({})", output.provider, account_name(app, output)),
+        None => {
+            if output.email.is_some() {
+                format!("{} ({})", output.provider, account_name(app, output))
+            } else {
+                output.provider.clone()
+            }
+        }
+    }
+}
+
+fn account_name(app: &App, output: &UsageOutput) -> String {
+    if app.hide_usage_emails {
+        if let Some(account) = &output.account {
+            if let Some(label) = account
+                .label_name()
+                .filter(|label| !looks_like_email(label))
+            {
+                return label.to_string();
+            }
+            // The `Account` column's own word plus the short id, so a masked
+            // row reads in the reader's language while the id stays verbatim.
+            return format!(
+                "{} {}",
+                tr(app.settings.tui_language, MessageKey::ColAccount),
+                account.short_id()
+            );
+        }
+
+        if output.email.as_deref().is_some_and(looks_like_email) {
+            return "[hidden email]".to_string();
+        }
+    }
+
+    output
+        .account_display_name()
+        .or_else(|| output.email.clone())
+        .map(|value| privacy_text(app, &value))
+        .unwrap_or_else(|| output.provider.clone())
+}
+
+fn email_display(app: &App, email: Option<&str>) -> String {
+    match email {
+        Some(email) => privacy_text(app, email),
+        None => tr(app.settings.tui_language, MessageKey::LabelUnknown).to_string(),
+    }
+}
+
+fn privacy_text(app: &App, value: &str) -> String {
+    if app.hide_usage_emails && looks_like_email(value) {
+        "[hidden email]".to_string()
+    } else {
+        value.to_string()
+    }
+}
+
+fn account_state_label(lang: TuiLanguage, output: &UsageOutput) -> String {
+    tr(
+        lang,
+        match &output.account {
+            Some(account) if account.is_active => MessageKey::AuthActive,
+            Some(_) => MessageKey::AuthSaved,
+            None if output.metrics.iter().any(|m| m.remaining_percent < 25.0) => {
+                MessageKey::StateQuotaLow
+            }
+            None => MessageKey::StateAuthenticated,
+        },
+    )
+    .to_string()
+}
+
+/// The `Auth` column's word, which is `Constraint::Length(7)` below 170
+/// columns, so every translation is kept to 7 display cells or fewer.
+fn account_auth_label(lang: TuiLanguage, output: &UsageOutput) -> &'static str {
+    tr(
+        lang,
+        match &output.account {
+            Some(account) if account.is_active => MessageKey::AuthActive,
+            Some(_) => MessageKey::AuthSaved,
+            None => MessageKey::AuthManaged,
+        },
+    )
+}
+
+fn account_auth_color(output: &UsageOutput) -> Color {
+    match &output.account {
+        Some(account) if account.is_active => Color::Green,
+        Some(_) => Color::Blue,
+        None => Color::Yellow,
+    }
+}
+
+fn remaining_label(metric: &UsageMetric) -> String {
+    metric
+        .remaining_label
+        .clone()
+        .unwrap_or_else(|| format!("{:.0}% left", metric.remaining_percent))
+}
+
+fn has_available_reset_credit(output: &UsageOutput) -> bool {
+    output.provider == "Codex"
+        && output
+            .reset_credits
+            .as_ref()
+            .is_some_and(|credits| credits.available_count > 0)
+}
+
+fn reset_credit_count_label(lang: TuiLanguage, count: u32) -> String {
+    plain_count_label(
+        lang,
+        count as usize,
+        MessageKey::CreditAvailableSingular,
+        MessageKey::CreditAvailablePlural,
+    )
+}
+
+fn reset_bank_summary(lang: TuiLanguage, outputs: &[UsageOutput]) -> String {
+    let available: u32 = outputs
+        .iter()
+        .filter(|output| output.provider == "Codex")
+        .filter_map(|output| output.reset_credits.as_ref())
+        .map(|credits| credits.available_count)
+        .sum();
+    if available == 0 {
+        return tr(lang, MessageKey::UsageNoResetCredits).to_string();
+    }
+
+    let expiries = credit_expiry_buckets(
+        outputs
+            .iter()
+            .filter_map(|output| output.reset_credits.as_ref())
+            .flat_map(|credits| credits.credits.iter())
+            .filter_map(|credit| credit.expires_at.as_deref()),
+    );
+
+    let count = if available == 1 {
+        reset_credit_count_label(lang, available)
+    } else {
+        plain_count_label(
+            lang,
+            available as usize,
+            MessageKey::CreditAvailableAcrossAccounts,
+            MessageKey::CreditAvailableAcrossAccounts,
+        )
+    };
+    match nearest_credit_expiry_label(lang, &expiries) {
+        Some(nearest) => format!("{count} · {nearest}"),
+        None => count,
+    }
+}
+
+fn credits_status_line(output: &UsageOutput) -> Option<String> {
+    let mut parts = Vec::new();
+    if let Some(credits) = &output.credit_status {
+        if let Some(balance) = credits.balance.as_deref() {
+            parts.push(format!("API credits {balance}"));
+        }
+        if credits.unlimited == Some(true) {
+            parts.push("unlimited".to_string());
+        }
+        if credits.has_credits == Some(false) {
+            parts.push("no API credits".to_string());
+        }
+        if credits.overage_limit_reached == Some(true) {
+            parts.push("API overage reached".to_string());
+        }
+    }
+    if let Some(control) = &output.spend_control {
+        if control.reached == Some(true) {
+            parts.push("spend limit reached".to_string());
+        } else if control.reached == Some(false) {
+            parts.push("spend OK".to_string());
+        }
+        if let Some(limit) = control.individual_limit.as_deref() {
+            parts.push(format!("spend limit {limit}"));
+        }
+    }
+    if parts.is_empty() {
+        None
+    } else {
+        Some(parts.join(" · "))
+    }
+}
+
+fn format_expiry_time(value: &str) -> String {
+    helpers::format_reset_time(value).replace("resets", "expires")
+}
+
+fn metric_color(app: &App, metric: &UsageMetric) -> Color {
+    if metric.remaining_percent < 10.0 {
+        Color::Red
+    } else if metric.remaining_percent < 25.0 {
+        Color::Yellow
+    } else {
+        app.theme.accent
+    }
+}
+
+fn quota_bar_spans(
+    remaining_percent: f64,
+    width: usize,
+    color: Color,
+    app: &App,
+) -> Vec<Span<'static>> {
+    light_ratio_bar_spans(
+        remaining_percent / 100.0,
+        width,
+        Style::default().fg(color),
+        app.theme.subtle_text_style(),
+    )
+}
+
+fn styled<T: Into<String>>(text: T, style: Style, selected: bool) -> Span<'static> {
+    let style = if selected {
+        style.bg(Color::Blue).fg(Color::White)
+    } else {
+        style
+    };
+    Span::styled(text.into(), style)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::commands::usage::{
+        UsageAccount, UsageCreditStatus, UsageFetchDiagnostic, UsageFetchDiagnosticKind,
+        UsageFetchDiagnosticSeverity, UsageResetCredit, UsageResetCredits, UsageSpendControl,
+    };
+    use crate::tui::app::{Tab, TuiConfig};
+    use crate::tui::data::UsageData;
+    use crate::tui::themes::{TerminalColorMode, Theme, ThemeName};
+    use chrono::{Duration, Utc};
+    use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+    use ratatui::{backend::TestBackend, Terminal};
+
+    fn output(provider: &str, account: Option<UsageAccount>) -> UsageOutput {
+        UsageOutput {
+            provider: provider.to_string(),
+            account,
+            credential_source: None,
+            plan: Some("Pro".to_string()),
+            email: Some("user@example.com".to_string()),
+            metrics: vec![UsageMetric {
+                label: "Session".to_string(),
+                used_percent: 10.0,
+                remaining_percent: 90.0,
+                remaining_label: Some("90% left".to_string()),
+                resets_at: None,
+            }],
+            reset_credits: None,
+            credit_status: None,
+            spend_control: None,
+        }
+    }
+
+    fn output_with_remaining(
+        provider: &str,
+        account: Option<UsageAccount>,
+        remaining_percent: f64,
+    ) -> UsageOutput {
+        let mut output = output(provider, account);
+        output.metrics[0].remaining_percent = remaining_percent;
+        output.metrics[0].remaining_label = Some(format!("{remaining_percent:.0}% left"));
+        output
+    }
+
+    /// An RFC3339 instant far enough ahead of "now" that
+    /// `helpers::format_reset_time` always takes the absolute-date branch
+    /// (`resets <month> <day> <time>`), independent of wall-clock date or
+    /// local timezone. Using a hardcoded date here previously caused
+    /// `usage_reset_button_renders_when_credit_available` to fail whenever
+    /// tests ran within 24h of, on/after, or under a timezone that shifted,
+    /// the hardcoded expiry — see #828.
+    fn far_future_reset_timestamp() -> String {
+        (Utc::now() + Duration::days(10)).to_rfc3339()
+    }
+
+    fn output_with_reset_credits(
+        provider: &str,
+        account: Option<UsageAccount>,
+        available_count: u32,
+        expires_at: &str,
+    ) -> UsageOutput {
+        let mut output = output(provider, account);
+        output.reset_credits = Some(UsageResetCredits {
+            available_count,
+            credits: vec![UsageResetCredit {
+                id: Some("credit_1".to_string()),
+                status: Some("available".to_string()),
+                reset_type: Some("codex_rate_limits".to_string()),
+                expires_at: Some(expires_at.to_string()),
+                title: Some("One free rate limit reset".to_string()),
+                description: None,
+            }],
+        });
+        output
+    }
+
+    fn output_with_reset_credit_expiries(
+        provider: &str,
+        account: Option<UsageAccount>,
+        expiries: &[&str],
+    ) -> UsageOutput {
+        let mut output = output(provider, account);
+        output.reset_credits = Some(UsageResetCredits {
+            available_count: expiries.len() as u32,
+            credits: expiries
+                .iter()
+                .enumerate()
+                .map(|(index, expiry)| UsageResetCredit {
+                    id: Some(format!("credit_{index}")),
+                    status: Some("available".to_string()),
+                    reset_type: Some("codex_rate_limits".to_string()),
+                    expires_at: Some((*expiry).to_string()),
+                    title: Some("One free rate limit reset".to_string()),
+                    description: None,
+                })
+                .collect(),
+        });
+        output
+    }
+
+    fn make_app() -> App {
+        let config = TuiConfig {
+            theme: "blue".to_string(),
+            refresh: 0,
+            sessions_path: None,
+            clients: None,
+            since: None,
+            until: None,
+            year: None,
+            initial_tab: None,
+            ..Default::default()
+        };
+        let mut app = App::new_with_cached_data(config, Some(UsageData::default())).unwrap();
+        app.settings.tui_language = crate::tui::i18n::TuiLanguage::En;
+        app.current_tab = Tab::Usage;
+        app
+    }
+
+    fn render_body(app: &mut App, width: u16, height: u16) -> String {
+        let backend = TestBackend::new(width, height);
+        let mut terminal = Terminal::new(backend).unwrap();
+        terminal
+            .draw(|frame| render(frame, app, Rect::new(0, 0, width, height)))
+            .unwrap();
+        terminal
+            .backend()
+            .buffer()
+            .content()
+            .chunks(width as usize)
+            .map(|row| {
+                row.iter()
+                    .map(|cell| cell.symbol().to_string())
+                    .collect::<String>()
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+
+    /// The fetching spinner screen on its own, so the test does not have to
+    /// stand up a live `usage_rx` to reach the branch `render` guards with
+    /// `is_fetching_usage()`.
+    fn render_fetching_frame(app: &App, width: u16, height: u16) -> String {
+        let backend = TestBackend::new(width, height);
+        let mut terminal = Terminal::new(backend).unwrap();
+        terminal
+            .draw(|frame| render_fetching(frame, app, Rect::new(0, 0, width, height)))
+            .unwrap();
+        terminal
+            .backend()
+            .buffer()
+            .content()
+            .chunks(width as usize)
+            .map(|row| {
+                row.iter()
+                    .map(|cell| cell.symbol().to_string())
+                    .collect::<String>()
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+
+    /// Renders the usage view and returns every distinct `Color::Rgb` present
+    /// in the frame's cell foregrounds/backgrounds.
+    fn render_rgb_colors(app: &mut App, width: u16, height: u16) -> Vec<Color> {
+        let backend = TestBackend::new(width, height);
+        let mut terminal = Terminal::new(backend).unwrap();
+        terminal
+            .draw(|frame| render(frame, app, Rect::new(0, 0, width, height)))
+            .unwrap();
+        let mut rgb: Vec<Color> = terminal
+            .backend()
+            .buffer()
+            .content()
+            .iter()
+            .flat_map(|cell| [cell.fg, cell.bg])
+            .filter(|color| matches!(color, Color::Rgb(..)))
+            .collect();
+        rgb.sort_by_key(|color| match color {
+            Color::Rgb(r, g, b) => (*r, *g, *b),
+            _ => (0, 0, 0),
+        });
+        rgb.dedup();
+        rgb
+    }
+
+    /// `render_body` with ratatui's wide-grapheme padding cells removed, so a
+    /// CJK string can be matched against the frame it was written into.
+    ///
+    /// A wide grapheme occupies two terminal cells; ratatui stores the grapheme
+    /// in the first and resets the second, whose default symbol is a space. A
+    /// frame read back cell-by-cell therefore reads `상 태`, not `상태`, and a
+    /// plain `contains("상태")` misses copy that rendered perfectly.
+    fn render_body_compacted(app: &mut App, width: u16, height: u16) -> String {
+        render_body(app, width, height)
+            .lines()
+            .map(crate::tui::ui::header_budget::strip_wide_continuation_cells)
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+
+    fn line_text(line: &Line<'_>) -> String {
+        line.spans
+            .iter()
+            .map(|span| span.content.as_ref())
+            .collect::<String>()
+    }
+
+    fn visual_col(line: &str, needle: &str) -> Option<usize> {
+        let byte = line.find(needle)?;
+        Some(Line::from(&line[..byte]).width())
+    }
+
+    #[test]
+    fn usage_render_handles_current_non_codex_providers() {
+        let providers = [
+            "Claude",
+            "Z.ai",
+            "Amp",
+            "Copilot",
+            "Grok Build",
+            "Kimi",
+            "MiniMax",
+            "Warp/Oz",
+        ];
+        let mut app = make_app();
+        app.subscription_usage = providers
+            .iter()
+            .map(|provider| output(provider, None))
+            .collect();
+
+        let groups = group_outputs_by_provider(&app.subscription_usage);
+        assert_eq!(
+            groups
+                .iter()
+                .map(|group| group.provider)
+                .collect::<Vec<_>>(),
+            providers
+        );
+
+        let body = render_body(&mut app, 140, 34);
+
+        assert!(body.contains("Usage Summary"), "{body}");
+        assert!(!body.contains("x Reset"), "{body}");
+    }
+
+    #[test]
+    fn usage_render_keeps_outputs_visible_when_metrics_are_empty() {
+        let mut app = make_app();
+        let mut output = output_with_reset_credits(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+            1,
+            &far_future_reset_timestamp(),
+        );
+        output.metrics.clear();
+        app.subscription_usage = vec![output];
+
+        let body = render_body(&mut app, 140, 34);
+
+        assert!(body.contains("Usage Summary"), "{body}");
+        assert!(body.contains("Accounts"), "{body}");
+        assert!(body.contains("No quota metrics returned"), "{body}");
+        assert!(!body.contains("No subscription data available"), "{body}");
+    }
+
+    #[test]
+    fn usage_quota_bar_uses_light_empty_track() {
+        let app = make_app();
+        let metric = UsageMetric {
+            label: "Session".to_string(),
+            used_percent: 50.0,
+            remaining_percent: 50.0,
+            remaining_label: Some("50% left".to_string()),
+            resets_at: None,
+        };
+
+        let line = metric_detail_line(&app, &metric, 72);
+        let text = line_text(&line);
+
+        assert!(text.contains("█"), "{text}");
+        assert!(text.contains("·"), "{text}");
+        assert!(!text.contains("░"), "{text}");
+    }
+
+    #[test]
+    fn usage_quota_bar_uses_trace_mark_for_sub_cell_remaining() {
+        let app = make_app();
+        let spans = quota_bar_spans(0.1, 20, Color::Red, &app);
+        let text = spans
+            .iter()
+            .map(|span| span.content.as_ref())
+            .collect::<String>();
+
+        assert!(text.contains("▏"), "{text}");
+        assert!(!text.contains("█"), "{text}");
+        assert_eq!(text.chars().count(), 20);
+    }
+
+    #[test]
+    fn usage_status_distinguishes_not_loaded_from_empty_results() {
+        let mut app = make_app();
+        assert_eq!(status_label(&app), "Not loaded");
+
+        app.usage_fetch_attempted = true;
+        assert_eq!(status_label(&app), "No data");
+    }
+
+    #[test]
+    fn usage_summary_lines_fit_available_height() {
+        let app = make_app();
+        let outputs = vec![output(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+        )];
+
+        let lines = usage_status_summary_lines(&app, &outputs, 80, 4);
+        let body = lines.iter().map(line_text).collect::<Vec<_>>().join("\n");
+
+        assert_eq!(lines.len(), 4);
+        assert!(body.contains("State"), "{body}");
+        assert!(body.contains("Active"), "{body}");
+        assert!(body.contains("Capacity"), "{body}");
+        assert!(body.contains("Action"), "{body}");
+        assert!(!body.contains("Fallback"), "{body}");
+        assert!(!body.contains("Next Reset"), "{body}");
+    }
+
+    #[test]
+    fn usage_credit_status_uses_user_facing_copy() {
+        let mut output = output("Codex", None);
+        output.credit_status = Some(UsageCreditStatus {
+            balance: Some("0".to_string()),
+            has_credits: Some(false),
+            unlimited: Some(false),
+            overage_limit_reached: Some(true),
+        });
+        output.spend_control = Some(UsageSpendControl {
+            individual_limit: Some("$10".to_string()),
+            reached: Some(false),
+        });
+
+        let label = credits_status_line(&output).expect("missing credit status");
+
+        assert!(label.contains("API credits 0"), "{label}");
+        assert!(label.contains("no API credits"), "{label}");
+        assert!(label.contains("API overage reached"), "{label}");
+        assert!(label.contains("spend OK"), "{label}");
+        assert!(label.contains("spend limit $10"), "{label}");
+        assert!(!label.contains("billing"), "{label}");
+    }
+
+    #[test]
+    fn groups_usage_outputs_by_provider_preserving_first_seen_order() {
+        let outputs = vec![
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_work".to_string(),
+                    label: Some("work".to_string()),
+                    is_active: true,
+                }),
+            ),
+            output("Claude", None),
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_personal".to_string(),
+                    label: Some("personal".to_string()),
+                    is_active: false,
+                }),
+            ),
+        ];
+
+        let groups = group_outputs_by_provider(&outputs);
+
+        assert_eq!(groups.len(), 2);
+        assert_eq!(groups[0].provider, "Codex");
+        assert_eq!(groups[0].outputs.len(), 2);
+        assert_eq!(groups[0].outputs[0].0, 0);
+        assert_eq!(groups[0].outputs[1].0, 2);
+        assert_eq!(groups[1].provider, "Claude");
+        assert_eq!(groups[1].outputs.len(), 1);
+    }
+
+    /// In `Compatible` mode the theme palette is collapsed to named colors so
+    /// terminals without truecolor support never receive 24-bit SGR. The
+    /// provider summary and the account table color provider labels from the
+    /// vendor shade ramps, which are RGB regardless of theme, so they have to
+    /// be routed through `Theme::color` too — otherwise those cells still emit
+    /// raw RGB and render as garbled blocks (#559, #1060).
+    #[test]
+    fn compatible_color_mode_emits_no_rgb_in_usage_view() {
+        let mut app = make_app();
+        app.theme =
+            Theme::from_name_with_color_mode(ThemeName::Blue, TerminalColorMode::Compatible);
+        app.selected_index = 0;
+        app.subscription_usage = vec![
+            output(
+                "Anthropic",
+                Some(UsageAccount {
+                    id: "acct_work".to_string(),
+                    label: Some("work".to_string()),
+                    is_active: true,
+                }),
+            ),
+            output(
+                "OpenAI",
+                Some(UsageAccount {
+                    id: "acct_personal".to_string(),
+                    label: Some("personal".to_string()),
+                    is_active: false,
+                }),
+            ),
+        ];
+
+        // Sanity: the provider summary and account table actually rendered.
+        let body = render_body(&mut app, 150, 32);
+        assert!(body.contains("Anthropic"), "{body}");
+        assert!(body.contains("OpenAI"), "{body}");
+        assert!(body.contains("Accounts"), "{body}");
+
+        let rgb = render_rgb_colors(&mut app, 150, 32);
+        assert!(
+            rgb.is_empty(),
+            "Compatible mode must not emit any Color::Rgb, found: {rgb:?}"
+        );
+
+        // The light variant must hold the same guarantee: a non-truecolor
+        // terminal never sees raw RGB, even with light mode toggled on.
+        app.theme =
+            Theme::from_name_with_color_mode_light(ThemeName::Blue, TerminalColorMode::Compatible);
+        let rgb = render_rgb_colors(&mut app, 150, 32);
+        assert!(
+            rgb.is_empty(),
+            "Compatible light mode must not emit any Color::Rgb, found: {rgb:?}"
+        );
+    }
+
+    #[test]
+    fn renders_usage_workspace_sections_and_codex_actions() {
+        let mut app = make_app();
+        app.selected_index = 1;
+        app.subscription_usage = vec![
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_work".to_string(),
+                    label: Some("work".to_string()),
+                    is_active: true,
+                }),
+            ),
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_personal".to_string(),
+                    label: Some("personal".to_string()),
+                    is_active: false,
+                }),
+            ),
+        ];
+
+        let body = render_body(&mut app, 150, 32);
+
+        assert!(body.contains("Usage Summary"), "{body}");
+        assert!(body.contains("Selected Account"), "{body}");
+        assert!(body.contains("Accounts"), "{body}");
+        assert!(body.contains("Attention"), "{body}");
+        assert!(body.contains("Account") && body.contains("Plan"), "{body}");
+        assert!(body.contains("Keep current account"), "{body}");
+        assert!(body.contains("work"), "{body}");
+        assert!(body.contains("personal"), "{body}");
+        assert!(body.contains(" Remove "), "{body}");
+        assert!(body.contains("Show Emails"), "{body}");
+    }
+
+    #[test]
+    fn usage_summary_reserves_space_for_diagnostics() {
+        let mut app = make_app();
+        app.usage_fetch_diagnostics = vec![UsageFetchDiagnostic::new(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_personal".to_string(),
+                label: Some("personal".to_string()),
+                is_active: false,
+            }),
+            "usage endpoint rejected credentials",
+        )];
+        let outputs = vec![output(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+        )];
+        let max_lines = 6;
+        let reserve = diagnostic_line_reserve(&app, max_lines);
+        let mut lines = usage_status_summary_lines(&app, &outputs, 80, max_lines - reserve);
+        append_usage_diagnostic_lines(&mut lines, &app, 80, max_lines);
+        let rendered = lines
+            .iter()
+            .map(|line| line.to_string())
+            .collect::<Vec<_>>()
+            .join("\n");
+
+        assert!(rendered.contains("Diagnostics"), "{rendered}");
+        assert!(rendered.contains("usage endpoint rejected"), "{rendered}");
+    }
+
+    #[test]
+    fn usage_summary_reserve_keeps_space_at_tiny_heights() {
+        let mut app = make_app();
+        app.usage_fetch_diagnostics = vec![UsageFetchDiagnostic::new(
+            "Codex",
+            None,
+            "usage endpoint failed",
+        )];
+
+        assert_eq!(diagnostic_line_reserve(&app, 0), 0);
+        assert_eq!(diagnostic_line_reserve(&app, 1), 0);
+        assert_eq!(diagnostic_line_reserve(&app, 2), 1);
+        assert_eq!(diagnostic_line_reserve(&app, 6), 2);
+    }
+
+    #[test]
+    fn usage_summary_compacts_hidden_diagnostics() {
+        let mut app = make_app();
+        app.usage_fetch_diagnostics = vec![
+            UsageFetchDiagnostic::new("Codex", None, "first issue"),
+            UsageFetchDiagnostic::new("Claude", None, "second issue"),
+            UsageFetchDiagnostic::new("Amp", None, "third issue"),
+        ];
+        let mut lines = Vec::new();
+
+        append_usage_diagnostic_lines(&mut lines, &app, 80, 3);
+        let rendered = lines
+            .iter()
+            .map(|line| line.to_string())
+            .collect::<Vec<_>>()
+            .join("\n");
+
+        assert!(rendered.contains("Diagnostics"), "{rendered}");
+        assert!(rendered.contains("first issue"), "{rendered}");
+        assert!(rendered.contains("+2 more issues"), "{rendered}");
+        assert!(!rendered.contains("second issue"), "{rendered}");
+    }
+
+    #[test]
+    fn usage_summary_prioritizes_error_diagnostics_when_compacted() {
+        let mut app = make_app();
+        app.usage_fetch_diagnostics = vec![
+            UsageFetchDiagnostic::with_kind(
+                "Claude",
+                None,
+                UsageFetchDiagnosticKind::FetchFailed,
+                UsageFetchDiagnosticSeverity::Info,
+                "low priority issue",
+            ),
+            UsageFetchDiagnostic::with_kind(
+                "Amp",
+                None,
+                UsageFetchDiagnosticKind::FetchFailed,
+                UsageFetchDiagnosticSeverity::Warning,
+                "medium priority issue",
+            ),
+            UsageFetchDiagnostic::with_kind(
+                "Codex",
+                None,
+                UsageFetchDiagnosticKind::FetchFailed,
+                UsageFetchDiagnosticSeverity::Error,
+                "high priority issue",
+            ),
+        ];
+        let mut lines = Vec::new();
+
+        append_usage_diagnostic_lines(&mut lines, &app, 80, 3);
+        let rendered = lines
+            .iter()
+            .map(|line| line.to_string())
+            .collect::<Vec<_>>()
+            .join("\n");
+
+        assert!(rendered.contains("Diagnostics"), "{rendered}");
+        assert!(rendered.contains("high priority issue"), "{rendered}");
+        assert!(rendered.contains("+2 more issues"), "{rendered}");
+        assert!(!rendered.contains("low priority issue"), "{rendered}");
+        assert!(!rendered.contains("medium priority issue"), "{rendered}");
+    }
+
+    #[test]
+    fn selected_account_panel_follows_selected_index() {
+        let mut app = make_app();
+        app.selected_index = 1;
+        app.subscription_usage = vec![
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_work".to_string(),
+                    label: Some("work".to_string()),
+                    is_active: true,
+                }),
+            ),
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_personal".to_string(),
+                    label: Some("personal".to_string()),
+                    is_active: false,
+                }),
+            ),
+        ];
+
+        let body = render_body(&mut app, 150, 28);
+
+        assert!(body.contains("Codex (personal)"), "{body}");
+        assert!(body.contains("Use Account"), "{body}");
+        assert!(body.contains("saved store"), "{body}");
+    }
+
+    #[test]
+    fn selected_opencode_fallback_names_its_external_credential_manager() {
+        let mut app = make_app();
+        let mut managed = output("Codex", None);
+        managed.credential_source = Some("opencode".to_string());
+        app.subscription_usage = vec![managed];
+
+        let body = render_body(&mut app, 150, 28);
+
+        assert!(body.contains("managed by OpenCode"), "{body}");
+        assert!(body.contains("Managed by OpenCode"), "{body}");
+        assert!(!body.contains("Managed externally"), "{body}");
+    }
+
+    #[test]
+    fn selected_account_actions_appear_only_for_saved_accounts() {
+        let mut app = make_app();
+        app.subscription_usage = vec![output(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_personal".to_string(),
+                label: Some("personal".to_string()),
+                is_active: false,
+            }),
+        )];
+
+        let saved = render_body(&mut app, 150, 28);
+
+        assert!(saved.contains("Use Account"), "{saved}");
+        assert!(saved.contains("Remove"), "{saved}");
+
+        let mut managed = output("Codex", None);
+        managed.credential_source = Some("opencode".to_string());
+        app.subscription_usage = vec![managed];
+
+        let external = render_body(&mut app, 150, 28);
+
+        assert!(!external.contains("Use Account"), "{external}");
+        assert!(!external.contains("Remove"), "{external}");
+    }
+
+    #[test]
+    fn usage_header_counts_saved_and_managed_identities() {
+        let mut app = make_app();
+        app.subscription_usage = vec![
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_work".to_string(),
+                    label: Some("work".to_string()),
+                    is_active: true,
+                }),
+            ),
+            output("Copilot", None),
+        ];
+
+        let body = render_body(&mut app, 160, 28);
+
+        assert!(body.contains("2 providers · 1 saved · 1 managed"), "{body}");
+        assert!(
+            body.contains("Snapshot  2 ready · 0 at risk · 1 saved · 1 managed"),
+            "{body}"
+        );
+    }
+
+    #[test]
+    fn usage_header_counts_korean_formatting() {
+        let mut app = make_app();
+        app.settings.tui_language = TuiLanguage::Ko;
+        app.subscription_usage = vec![
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_work".to_string(),
+                    label: Some("work".to_string()),
+                    is_active: true,
+                }),
+            ),
+            output("Copilot", None),
+        ];
+
+        assert_eq!(status_label(&app), "2개 공급자 · 1개 저장됨 · 1개 관리됨");
+        assert_eq!(
+            identity_count_label(TuiLanguage::Ko, 1, 1),
+            "1개 저장됨 · 1개 관리됨"
+        );
+        assert_eq!(identity_count_label(TuiLanguage::Ko, 1, 0), "1개 저장됨");
+        assert_eq!(identity_count_label(TuiLanguage::Ko, 0, 2), "2개 관리됨");
+    }
+
+    #[test]
+    fn usage_top_columns_balance_wide_and_medium_screens() {
+        assert_eq!(usage_top_column_percentages(160), (50, 50));
+        assert_eq!(usage_top_column_percentages(128), (50, 50));
+        assert_eq!(usage_top_column_percentages(127), (48, 52));
+        assert_eq!(usage_top_column_percentages(104), (48, 52));
+    }
+
+    #[test]
+    fn usage_account_actions_render_in_selected_account_panel() {
+        let mut app = make_app();
+        app.selected_index = 1;
+        app.subscription_usage = vec![
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_work".to_string(),
+                    label: Some("work".to_string()),
+                    is_active: true,
+                }),
+            ),
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_personal".to_string(),
+                    label: Some("personal".to_string()),
+                    is_active: false,
+                }),
+            ),
+        ];
+
+        let body = render_body(&mut app, 210, 30);
+        let saved_row = body
+            .lines()
+            .find(|line| line.contains("personal") && line.contains("5h"))
+            .expect("missing saved account table row");
+        let actions_line = body
+            .lines()
+            .find(|line| line.contains("Use Account") && line.contains("Remove"))
+            .expect("missing selected account action buttons");
+
+        assert!(!saved_row.contains("Use Account"), "{saved_row}");
+        assert!(!saved_row.contains("Remove"), "{saved_row}");
+        assert!(
+            visual_col(actions_line, "Use Account").is_some(),
+            "{actions_line}"
+        );
+    }
+
+    #[test]
+    fn usage_reset_button_renders_when_credit_available() {
+        let mut app = make_app();
+        let expires_at = far_future_reset_timestamp();
+        app.subscription_usage = vec![output_with_reset_credits(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+            2,
+            &expires_at,
+        )];
+
+        let body = render_body(&mut app, 180, 32);
+        let expected_expiry = helpers::format_reset_time(&expires_at).replace("resets", "expires");
+
+        assert!(body.contains("Reset Bank"), "{body}");
+        assert!(body.contains("2 available"), "{body}");
+        assert!(body.contains("x Reset"), "{body}");
+        assert!(body.contains(" Reset "), "{body}");
+        assert!(body.contains("Credit Bank"), "{body}");
+        assert!(body.contains("2 credits"), "{body}");
+        assert!(body.contains(&expected_expiry), "{body}");
+        let state_line = body
+            .lines()
+            .find(|line| line.contains("State"))
+            .expect("missing state line");
+        let credit_heading = body
+            .lines()
+            .find(|line| line.contains("Credit Bank"))
+            .expect("missing credit bank heading");
+        let credit_account = body
+            .lines()
+            .find(|line| line.contains("2 credits"))
+            .expect("missing selected credit account");
+        assert_eq!(
+            visual_col(state_line, "State"),
+            visual_col(credit_heading, "Credit Bank"),
+            "{state_line}\n{credit_heading}"
+        );
+        assert_eq!(
+            visual_col(credit_heading, "Credit Bank"),
+            visual_col(credit_account, "work"),
+            "{credit_heading}\n{credit_account}"
+        );
+        assert!(!body.contains("Active:"), "{body}");
+        assert!(!body.contains("Quota Recovery"), "{body}");
+        assert!(app.click_areas.iter().any(|area| matches!(
+            &area.action,
+            ClickAction::CodexResetAccount { account_id } if account_id == "acct_work"
+        )));
+    }
+
+    #[test]
+    fn usage_reset_bank_summarizes_nearest_and_expands_selected_expiries() {
+        let mut app = make_app();
+        app.subscription_usage = vec![output_with_reset_credit_expiries(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+            &["reset-a", "reset-b", "reset-c", "reset-d"],
+        )];
+
+        let body = render_body(&mut app, 180, 32);
+        let credit_account = body
+            .lines()
+            .find(|line| line.contains("4 credits"))
+            .expect("missing credit account row");
+
+        assert!(body.contains("4 available"), "{body}");
+        assert!(
+            credit_account.contains("nearest expires reset-a"),
+            "{credit_account}"
+        );
+        assert!(!credit_account.contains("reset-b"), "{credit_account}");
+        assert!(body.contains("expires reset-a"), "{body}");
+        assert!(!body.contains("scheduled resets"), "{body}");
+        assert!(!body.contains("Schedule"), "{body}");
+        // This panel is short enough that the reset schedule must budget room
+        // for the Limits/metrics sections rendered after it, so the rest of
+        // the expiry list collapses into "+N more" instead of evicting them.
+        assert!(body.contains("more reset credits"), "{body}");
+        assert!(!body.contains("expires reset-d"), "{body}");
+        assert!(body.contains("Limits"), "{body}");
+    }
+
+    #[test]
+    fn wide_usage_reset_schedule_budgets_room_for_metrics_and_snapshot() {
+        let mut app = make_app();
+        let expiries: Vec<String> = (0..9).map(|index| format!("reset-{index}")).collect();
+        let expiries: Vec<&str> = expiries.iter().map(String::as_str).collect();
+        app.subscription_usage = vec![output_with_reset_credit_expiries(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+            &expiries,
+        )];
+
+        let body = render_body(&mut app, 180, 42);
+
+        assert!(body.contains("9 available"), "{body}");
+        assert!(body.contains("more reset credits"), "{body}");
+        assert!(body.contains("Limits"), "{body}");
+        assert!(body.contains("90% left"), "{body}");
+        assert!(body.contains("Snapshot"), "{body}");
+    }
+
+    #[test]
+    fn medium_usage_reset_bank_keeps_selected_expiries_visible() {
+        let mut app = make_app();
+        app.subscription_usage = vec![output_with_reset_credit_expiries(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+            &["reset-a", "reset-b", "reset-c", "reset-d"],
+        )];
+
+        let body = render_body(&mut app, 120, 36);
+
+        assert!(body.contains("Reset Bank"), "{body}");
+        assert!(body.contains("4 available"), "{body}");
+        assert!(body.contains("expires reset-a"), "{body}");
+        assert!(body.contains("expires reset-d"), "{body}");
+        assert!(!body.contains("scheduled resets"), "{body}");
+        assert!(!body.contains("Schedule"), "{body}");
+        assert!(!body.contains("+2"), "{body}");
+    }
+
+    #[test]
+    fn medium_usage_short_height_keeps_accounts_table_visible() {
+        let mut app = make_app();
+        app.subscription_usage = vec![
+            output_with_reset_credits(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_work".to_string(),
+                    label: Some("work".to_string()),
+                    is_active: true,
+                }),
+                1,
+                &far_future_reset_timestamp(),
+            ),
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_beta".to_string(),
+                    label: Some("acct-beta".to_string()),
+                    is_active: false,
+                }),
+            ),
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_gamma".to_string(),
+                    label: Some("acct-gamma".to_string()),
+                    is_active: false,
+                }),
+            ),
+        ];
+
+        let body = render_body(&mut app, 120, 28);
+
+        assert!(body.contains("Accounts"), "{body}");
+        assert!(
+            body.contains("acct-beta"),
+            "non-selected account should stay visible in the accounts table: {body}"
+        );
+        assert!(
+            body.contains("acct-gamma"),
+            "non-selected account should stay visible in the accounts table: {body}"
+        );
+    }
+
+    #[test]
+    fn medium_usage_120x24_accounts_table_is_not_collapsed() {
+        let mut app = make_app();
+        app.subscription_usage = vec![output_with_reset_credits(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+            1,
+            &far_future_reset_timestamp(),
+        )];
+
+        let body = render_body(&mut app, 120, 24);
+
+        assert!(
+            body.contains("Account / Status"),
+            "accounts table header should still render at a short height: {body}"
+        );
+    }
+
+    #[test]
+    fn reset_credit_account_line_uses_nearest_expiry_only() {
+        let app = make_app();
+        let output = output_with_reset_credit_expiries(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+            &["reset-a", "reset-b", "reset-c", "reset-d"],
+        );
+        let credits = output.reset_credits.as_ref().unwrap();
+
+        let line = line_text(&reset_credit_account_line(&app, &output, credits, true, 80));
+
+        assert!(line.contains("4 credits"), "{line}");
+        assert!(line.contains("nearest expires reset-a"), "{line}");
+        assert!(!line.contains("reset-b"), "{line}");
+    }
+
+    #[test]
+    fn selected_reset_schedule_groups_duplicate_expiries() {
+        let output =
+            output_with_reset_credit_expiries("Codex", None, &["reset-a", "reset-a", "reset-b"]);
+        let credits = output.reset_credits.as_ref().unwrap();
+
+        let buckets = reset_credit_buckets(credits);
+
+        assert_eq!(
+            format_selected_reset_schedule_entry(TuiLanguage::En, &buckets[0]),
+            "x2 expires reset-a"
+        );
+        assert_eq!(
+            format_selected_reset_schedule_entry(TuiLanguage::En, &buckets[1]),
+            "expires reset-b"
+        );
+    }
+
+    #[test]
+    fn reset_credit_buckets_sort_raw_expiry_values_before_formatting() {
+        let buckets = credit_expiry_buckets(["reset-b", "reset-a", "reset-a"].into_iter());
+
+        assert_eq!(buckets[0], ("reset-a".to_string(), 2));
+        assert_eq!(buckets[1], ("reset-b".to_string(), 1));
+    }
+
+    #[test]
+    fn credit_expiry_buckets_group_same_minute_different_seconds() {
+        let buckets = credit_expiry_buckets(
+            [
+                "2030-06-15T09:20:00Z",
+                "2030-06-15T09:15:20Z",
+                "2030-06-15T09:15:00Z",
+            ]
+            .into_iter(),
+        );
+
+        assert_eq!(buckets.len(), 2, "{buckets:?}");
+        assert_eq!(
+            buckets[0],
+            (format_credit_expiry_label("2030-06-15T09:15:00Z"), 2)
+        );
+        assert_eq!(
+            buckets[1],
+            (format_credit_expiry_label("2030-06-15T09:20:00Z"), 1)
+        );
+    }
+
+    #[test]
+    fn selected_account_panel_aligns_detail_sections() {
+        let mut app = make_app();
+        app.subscription_usage = vec![output(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+        )];
+
+        let body = render_body(&mut app, 180, 32);
+        assert!(body.contains("current Codex login"), "{body}");
+        let status_line = body
+            .lines()
+            .find(|line| line.contains("Status") && line.contains("Ready"))
+            .expect("missing selected account status line");
+        let limits_line = body
+            .lines()
+            .find(|line| line.contains("Limits") && !line.contains("Limits / Reset"))
+            .expect("missing selected account limits heading");
+        let metric_line = body
+            .lines()
+            .find(|line| {
+                line.contains("5h") && line.contains("90% left") && !line.contains("Codex")
+            })
+            .expect("missing selected account metric row");
+        let actions_line = body
+            .lines()
+            .find(|line| line.contains("Actions") && !line.contains("Add Codex"))
+            .expect("missing selected account actions heading");
+        let current_line = body
+            .lines()
+            .find(|line| line.contains("Current account"))
+            .expect("missing selected account action row");
+        let selected_col = visual_col(status_line, "Status");
+        assert_eq!(selected_col, visual_col(limits_line, "Limits"));
+        assert_eq!(selected_col, visual_col(metric_line, "5h"));
+        assert_eq!(selected_col, visual_col(actions_line, "Actions"));
+        assert_eq!(selected_col, visual_col(current_line, "Current account"));
+        assert!(!current_line.contains("Remove"), "{current_line}");
+    }
+
+    #[test]
+    fn usage_account_table_header_aligns_with_wide_columns() {
+        let mut app = make_app();
+        app.subscription_usage = vec![
+            {
+                let mut output = output(
+                    "Codex",
+                    Some(UsageAccount {
+                        id: "acct_work".to_string(),
+                        label: Some("work".to_string()),
+                        is_active: true,
+                    }),
+                );
+                output.metrics[0].resets_at = Some("resets soon".to_string());
+                output
+            },
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_personal".to_string(),
+                    label: Some("personal".to_string()),
+                    is_active: false,
+                }),
+            ),
+        ];
+
+        let body = render_body(&mut app, 180, 24);
+        let header = body
+            .lines()
+            .find(|line| line.contains("Provider") && line.contains("Reset"))
+            .expect("missing account table header");
+        let active_row = body
+            .lines()
+            .find(|line| line.contains("Codex") && line.contains("work") && line.contains("5h"))
+            .expect("missing active account table row");
+
+        assert_eq!(
+            visual_col(header, "Provider"),
+            visual_col(active_row, "Codex"),
+            "{header}\n{active_row}"
+        );
+        assert_eq!(
+            visual_col(header, "Account"),
+            visual_col(active_row, "work"),
+            "{header}\n{active_row}"
+        );
+        assert_eq!(
+            visual_col(header, "Plan"),
+            visual_col(active_row, "Pro"),
+            "{header}\n{active_row}"
+        );
+        assert_eq!(
+            visual_col(header, "Auth"),
+            visual_col(active_row, "Active"),
+            "{header}\n{active_row}"
+        );
+        assert_eq!(
+            visual_col(header, "Health"),
+            visual_col(active_row, "Ready"),
+            "{header}\n{active_row}"
+        );
+        assert_eq!(
+            visual_col(header, "Limit"),
+            visual_col(active_row, "5h"),
+            "{header}\n{active_row}"
+        );
+        assert_eq!(
+            visual_col(header, "Reset"),
+            visual_col(active_row, "resets soon"),
+            "{header}\n{active_row}"
+        );
+        assert!(!header.contains("Use"), "{header}");
+        assert!(!header.contains("Remove"), "{header}");
+        assert!(!active_row.contains("Remove"), "{active_row}");
+    }
+
+    #[test]
+    fn usage_account_table_allocates_space_to_long_limit_summaries() {
+        let mut app = make_app();
+        let mut output = output(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+        );
+        output.metrics = vec![
+            UsageMetric {
+                label: "5h".to_string(),
+                used_percent: 8.0,
+                remaining_percent: 92.0,
+                remaining_label: Some("92% left".to_string()),
+                resets_at: Some("resets in 4h 24m".to_string()),
+            },
+            UsageMetric {
+                label: "Weekly".to_string(),
+                used_percent: 49.0,
+                remaining_percent: 51.0,
+                remaining_label: Some("51% left".to_string()),
+                resets_at: None,
+            },
+            UsageMetric {
+                label: "Spark 5h".to_string(),
+                used_percent: 0.0,
+                remaining_percent: 100.0,
+                remaining_label: Some("100% left".to_string()),
+                resets_at: None,
+            },
+            UsageMetric {
+                label: "Spark weekly".to_string(),
+                used_percent: 12.0,
+                remaining_percent: 88.0,
+                remaining_label: Some("88% left".to_string()),
+                resets_at: None,
+            },
+        ];
+        app.subscription_usage = vec![output];
+
+        let body = render_body(&mut app, 180, 24);
+        let row = body
+            .lines()
+            .find(|line| line.contains("Codex") && line.contains("5h 92%"))
+            .expect("missing account table row");
+
+        assert!(row.contains("Weekly 51%"), "{row}");
+        assert!(row.contains("Spark 5h 100%"), "{row}");
+        assert!(row.contains("Spark weekly 88%"), "{row}");
+        assert!(row.contains("resets in 4h 24m"), "{row}");
+    }
+
+    #[test]
+    fn usage_account_table_reset_follows_display_metric() {
+        let mut app = make_app();
+        let mut output = output(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+        );
+        output.metrics = vec![
+            UsageMetric {
+                label: "Weekly".to_string(),
+                used_percent: 8.0,
+                remaining_percent: 92.0,
+                remaining_label: Some("92% left".to_string()),
+                resets_at: Some("resets next week".to_string()),
+            },
+            UsageMetric {
+                label: "Session".to_string(),
+                used_percent: 96.0,
+                remaining_percent: 4.0,
+                remaining_label: Some("4% left".to_string()),
+                resets_at: Some("resets soon".to_string()),
+            },
+        ];
+        app.subscription_usage = vec![output];
+
+        let body = render_body(&mut app, 180, 24);
+        let row = body
+            .lines()
+            .find(|line| line.contains("Codex") && line.contains("Weekly 92%"))
+            .expect("missing account table row");
+
+        assert!(row.contains("resets soon"), "{row}");
+        assert!(!row.contains("resets next week"), "{row}");
+    }
+
+    #[test]
+    fn narrow_usage_keeps_account_actions_visible() {
+        let mut app = make_app();
+        app.selected_index = 1;
+        app.subscription_usage = vec![
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_work".to_string(),
+                    label: Some("work".to_string()),
+                    is_active: true,
+                }),
+            ),
+            output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_personal".to_string(),
+                    label: Some("personal".to_string()),
+                    is_active: false,
+                }),
+            ),
+        ];
+
+        let body = render_body(&mut app, 90, 28);
+
+        assert!(body.contains("work"), "{body}");
+        assert!(body.contains("personal"), "{body}");
+        assert!(body.contains(" Remove "), "{body}");
+    }
+
+    #[test]
+    fn narrow_usage_account_status_keeps_right_padding() {
+        let mut app = make_app();
+        app.subscription_usage = vec![output(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_work".to_string(),
+                label: Some("work".to_string()),
+                is_active: true,
+            }),
+        )];
+
+        let body = render_body(&mut app, 90, 24);
+        let row = body
+            .lines()
+            .find(|line| {
+                line.contains("Codex") && line.contains("Active") && line.contains("Ready")
+            })
+            .expect("missing active narrow account row");
+        let ready_end = row.rfind("Ready").expect(row) + "Ready".len();
+
+        assert!(
+            row[ready_end..].starts_with("  "),
+            "expected right padding after Ready: {row:?}"
+        );
+    }
+
+    #[test]
+    fn very_narrow_ready_usage_uses_compact_actions_and_message() {
+        let mut app = make_app();
+        let body = render_body(&mut app, 28, 20);
+
+        assert!(body.contains("r Refresh"), "{body}");
+        assert!(body.contains("a Add"), "{body}");
+        assert!(body.contains("No usage data"), "{body}");
+        assert!(!body.contains("Add Codex"), "{body}");
+        assert!(!body.contains("No subscription data load"), "{body}");
+    }
+
+    #[test]
+    fn empty_usage_hides_email_privacy_action() {
+        let mut app = make_app();
+        let body = render_body(&mut app, 150, 20);
+
+        assert!(body.contains("r Refresh"), "{body}");
+        assert!(body.contains("a Add Codex"), "{body}");
+        assert!(!body.contains("Show Emails"), "{body}");
+        assert!(!body.contains("Hide Emails"), "{body}");
+    }
+
+    #[test]
+    fn usage_navigation_scrolls_by_rendered_capacity() {
+        let mut app = make_app();
+        app.subscription_usage = (0..30)
+            .map(|index| {
+                output(
+                    "Codex",
+                    Some(UsageAccount {
+                        id: format!("acct_{index:02}"),
+                        label: Some(format!("acct-{index:02}")),
+                        is_active: index == 0,
+                    }),
+                )
+            })
+            .collect();
+
+        let _ = render_body(&mut app, 170, 32);
+        let visible = app.max_visible_items;
+        for _ in 0..visible {
+            app.handle_key_event(KeyEvent::new(KeyCode::Down, KeyModifiers::NONE));
+        }
+
+        assert!(app.scroll_offset > 0);
+        assert!(app.selected_index >= visible);
+    }
+
+    #[test]
+    fn attention_outputs_prioritize_actionable_accounts() {
+        let outputs = vec![
+            output_with_remaining("Copilot", None, 0.0),
+            output_with_remaining(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_saved".to_string(),
+                    label: Some("saved".to_string()),
+                    is_active: false,
+                }),
+                0.0,
+            ),
+            output_with_remaining(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_active".to_string(),
+                    label: Some("active".to_string()),
+                    is_active: true,
+                }),
+                0.0,
+            ),
+        ];
+
+        let ordered_indices = attention_outputs(&outputs)
+            .into_iter()
+            .map(|(index, _)| index)
+            .collect::<Vec<_>>();
+
+        assert_eq!(ordered_indices, vec![2, 1, 0]);
+    }
+
+    #[test]
+    fn usage_attention_shows_more_when_clipped() {
+        let mut app = make_app();
+        app.subscription_usage = vec![
+            output_with_remaining(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_active".to_string(),
+                    label: Some("active".to_string()),
+                    is_active: true,
+                }),
+                0.0,
+            ),
+            output_with_remaining(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_saved".to_string(),
+                    label: Some("saved".to_string()),
+                    is_active: false,
+                }),
+                0.0,
+            ),
+            output_with_remaining("Copilot", None, 0.0),
+        ];
+
+        let body = render_body(&mut app, 210, 34);
+
+        assert!(body.contains("3 critical"), "{body}");
+        assert!(body.contains("Attention"), "{body}");
+        assert!(body.contains("active"), "{body}");
+        assert!(body.contains("saved"), "{body}");
+        assert!(body.contains("+1 more at risk"), "{body}");
+    }
+
+    #[test]
+    fn usage_email_privacy_hides_email_addresses() {
+        let mut app = make_app();
+        app.hide_usage_emails = true;
+        app.subscription_usage = vec![UsageOutput {
+            provider: "Codex".to_string(),
+            account: Some(UsageAccount {
+                id: "acct_secret_123456789".to_string(),
+                label: None,
+                is_active: true,
+            }),
+            credential_source: None,
+            plan: Some("Pro".to_string()),
+            email: Some("secret@example.com".to_string()),
+            metrics: vec![UsageMetric {
+                label: "Session".to_string(),
+                used_percent: 5.0,
+                remaining_percent: 95.0,
+                remaining_label: Some("95% left".to_string()),
+                resets_at: None,
+            }],
+            reset_credits: None,
+            credit_status: None,
+            spend_control: None,
+        }];
+
+        let body = render_body(&mut app, 170, 28);
+
+        assert!(!body.contains("secret@example.com"), "{body}");
+        assert!(body.contains("[hidden email]"), "{body}");
+        assert!(body.contains("Account acct_s...6789"), "{body}");
+    }
+
+    /// The login header's action button stays fully drawn exactly where its
+    /// click area is, in every language and at narrow widths: the title and
+    /// status give way first. A long translated status used to push the
+    /// button past the edge while the click area stayed at the edge.
+    #[test]
+    fn login_header_action_is_drawn_where_it_is_clickable_in_every_language() {
+        for lang in TuiLanguage::ALL {
+            for width in 16u16..=90 {
+                let mut app = make_app();
+                app.settings.tui_language = lang;
+                app.codex_login_lines = vec!["open browser".to_string()];
+                app.codex_login_outcome = Some(CodexLoginOutcome::Failed("expired".to_string()));
+                let backend = TestBackend::new(width, 14);
+                let mut terminal = Terminal::new(backend).unwrap();
+                terminal
+                    .draw(|frame| render(frame, &mut app, Rect::new(0, 0, width, 14)))
+                    .unwrap();
+                let label = tr(lang, MessageKey::CodexLoginDismiss);
+                let area = app
+                    .click_areas
+                    .iter()
+                    .find(|area| matches!(area.action, ClickAction::CodexDismissLogin))
+                    .unwrap_or_else(|| panic!("{} at {width}: no dismiss click area", lang.code()))
+                    .rect;
+                if display_width(label) > width as usize {
+                    continue;
+                }
+                assert_eq!(
+                    area.width as usize,
+                    display_width(label),
+                    "{} at {width}: click area width",
+                    lang.code()
+                );
+                let buffer = terminal.backend().buffer();
+                let drawn: String = (area.x..area.x + area.width)
+                    .map(|x| buffer[(x, area.y)].symbol().to_string())
+                    .collect::<String>()
+                    .replace(' ', "");
+                assert_eq!(
+                    drawn,
+                    label.replace(' ', ""),
+                    "{} at {width}: the clickable cells do not show the action",
+                    lang.code()
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn login_panel_renders_recent_output_and_dismiss() {
+        let mut app = make_app();
+        app.codex_login_lines = vec!["open browser".to_string()];
+        app.codex_login_outcome = Some(CodexLoginOutcome::Failed("expired".to_string()));
+
+        let body = render_body(&mut app, 90, 14);
+
+        assert!(body.contains("Codex Login"), "{body}");
+        assert!(body.contains("open browser"), "{body}");
+        assert!(body.contains("[Dismiss]"), "{body}");
+    }
+    /// The Usage tab's empty state is fully localized, with no English chrome
+    /// left behind.
+    ///
+    /// #1367's own review found this screen rendering a Korean frame around
+    /// English body text ("No subscription data loaded" inside a `로드되지
+    /// 않음` block). The negative assertions are the point: a key that is
+    /// added to the catalogs but never wired into `render_ready` would pass a
+    /// presence-only test through the `en` fallback.
+    #[test]
+    fn the_ready_empty_state_is_localized_in_every_language() {
+        for (lang, title, hint) in [
+            (
+                TuiLanguage::Ko,
+                "구독 데이터가 로드되지 않음",
+                "새로고침으로",
+            ),
+            (
+                TuiLanguage::Ja,
+                "サブスクリプションデータ未ロード",
+                "更新でプロバイダー",
+            ),
+            (TuiLanguage::ZhCn, "尚未加载订阅数据", "同步提供商用量"),
+            (
+                TuiLanguage::Fr,
+                "Aucune donnée d'abonnement chargée",
+                "Utilisez Actualiser",
+            ),
+        ] {
+            let mut app = make_app();
+            app.settings.tui_language = lang;
+            let body = render_body_compacted(&mut app, 130, 24);
+            assert!(
+                body.contains(title),
+                "{} is missing the localized title {title:?}\n{body}",
+                lang.code()
+            );
+            assert!(
+                body.contains(hint),
+                "{} is missing the localized hint {hint:?}\n{body}",
+                lang.code()
+            );
+            for english in [
+                "No subscription data loaded",
+                "Use Refresh to sync provider usage",
+            ] {
+                assert!(
+                    !body.contains(english),
+                    "{} still renders the English literal {english:?}\n{body}",
+                    lang.code()
+                );
+            }
+        }
+    }
+
+    /// English is unchanged, byte for byte. Every other test in this module
+    /// pins `TuiLanguage::En` implicitly through `make_app`; this one says so.
+    #[test]
+    fn the_ready_empty_state_is_byte_identical_in_english() {
+        let mut app = make_app();
+        let body = render_body(&mut app, 130, 24);
+        assert!(body.contains("No subscription data loaded"), "{body}");
+        assert!(
+            body.contains(
+                "Use Refresh to sync provider usage, or Add Codex to save another account."
+            ),
+            "{body}"
+        );
+    }
+
+    /// The loaded Usage screen's readiness vocabulary, K/V labels and
+    /// recommended action are localized too — the parts that used to leave a
+    /// Korean chrome wrapped around English body text.
+    #[test]
+    fn the_loaded_summary_is_localized() {
+        for (lang, expected, absent) in [
+            (
+                TuiLanguage::Ko,
+                vec!["상태", "활성 계정", "잔여 용량", "정상", "현재 계정 유지"],
+                vec!["State", "Capacity", "Keep current account"],
+            ),
+            (
+                TuiLanguage::Ja,
+                vec!["状態", "使用中", "残量", "正常", "現在のアカウントを継続"],
+                vec!["State", "Capacity", "Keep current account"],
+            ),
+            (
+                TuiLanguage::Fr,
+                vec!["Statut", "Capacité", "Prêt", "Conserver le compte actuel"],
+                vec!["State", "Capacity", "Keep current account"],
+            ),
+        ] {
+            let mut app = make_app();
+            app.settings.tui_language = lang;
+            app.subscription_usage = vec![output(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acc_1".to_string(),
+                    label: Some("work".to_string()),
+                    is_active: true,
+                }),
+            )];
+            let body = render_body_compacted(&mut app, 150, 40);
+            for needle in expected {
+                assert!(
+                    body.contains(needle),
+                    "{} is missing {needle:?}\n{body}",
+                    lang.code()
+                );
+            }
+            for english in absent {
+                assert!(
+                    !body.contains(english),
+                    "{} still renders the English literal {english:?}\n{body}",
+                    lang.code()
+                );
+            }
+        }
+    }
+
+    /// The truncation counters pluralize per language instead of suffixing an
+    /// English `-s`. One and two of each, in all five languages, because the
+    /// bug this replaces was literally `if n == 1 { "" } else { "s" }`.
+    /// The credit-bank counters replaced English `-s` suffixing with catalog
+    /// words, so each language reads as a natural quantity at n=1 and n=2.
+    #[test]
+    fn credit_counters_read_naturally_per_language() {
+        let cases = [
+            (
+                TuiLanguage::En,
+                ["1 credit", "2 credits", "1 available", "2 available"],
+                ["+1 more reset credit", "+2 more reset credits"],
+            ),
+            (
+                TuiLanguage::Ko,
+                [
+                    "1개 초기화권",
+                    "2개 초기화권",
+                    "1개 사용 가능",
+                    "2개 사용 가능",
+                ],
+                ["+1개 초기화권 더", "+2개 초기화권 더"],
+            ),
+            (
+                TuiLanguage::Ja,
+                ["1枠", "2枠", "1件利用可能", "2件利用可能"],
+                ["+1件のリセット枠", "+2件のリセット枠"],
+            ),
+            (
+                TuiLanguage::ZhCn,
+                ["1个额度", "2个额度", "1个可用", "2个可用"],
+                ["+1个重置额度", "+2个重置额度"],
+            ),
+            (
+                TuiLanguage::Fr,
+                ["1 crédit", "2 crédits", "1 disponible", "2 disponibles"],
+                ["+1 autre crédit de réinit.", "+2 autres crédits de réinit."],
+            ),
+        ];
+        for (lang, plain, more) in cases {
+            let credits = |n| {
+                plain_count_label(
+                    lang,
+                    n,
+                    MessageKey::CreditCountSingular,
+                    MessageKey::CreditCountPlural,
+                )
+            };
+            let available = |n| {
+                plain_count_label(
+                    lang,
+                    n,
+                    MessageKey::CreditAvailableSingular,
+                    MessageKey::CreditAvailablePlural,
+                )
+            };
+            let more_credits = |n| {
+                more_count_label(
+                    lang,
+                    n,
+                    MessageKey::CreditMoreResetCredits,
+                    MessageKey::CreditMoreResetCreditsPlural,
+                )
+            };
+            assert_eq!(
+                [credits(1), credits(2), available(1), available(2)],
+                plain,
+                "{}",
+                lang.code()
+            );
+            assert_eq!([more_credits(1), more_credits(2)], more, "{}", lang.code());
+        }
+    }
+
+    #[test]
+    fn more_counters_pluralize_per_language() {
+        let cases = [
+            (TuiLanguage::En, "+1 more issue", "+2 more issues"),
+            (TuiLanguage::Ko, "+1건의 문제 더", "+2건의 문제 더"),
+            (TuiLanguage::Ja, "+1件の問題", "+2件の問題"),
+            (TuiLanguage::ZhCn, "+1个问题", "+2个问题"),
+            (TuiLanguage::Fr, "+1 autre problème", "+2 autres problèmes"),
+        ];
+        for (lang, one, two) in cases {
+            assert_eq!(
+                more_count_label(
+                    lang,
+                    1,
+                    MessageKey::UsageMoreIssues,
+                    MessageKey::UsageMoreIssuesPlural
+                ),
+                one,
+                "{}",
+                lang.code()
+            );
+            assert_eq!(
+                more_count_label(
+                    lang,
+                    2,
+                    MessageKey::UsageMoreIssues,
+                    MessageKey::UsageMoreIssuesPlural
+                ),
+                two,
+                "{}",
+                lang.code()
+            );
+        }
+        // No language ever grows an English `-s` it did not ask for.
+        for lang in [TuiLanguage::Ko, TuiLanguage::Ja, TuiLanguage::ZhCn] {
+            let two = more_count_label(
+                lang,
+                2,
+                MessageKey::UsageMoreAtRisk,
+                MessageKey::UsageMoreAtRiskPlural,
+            );
+            assert!(
+                !two.ends_with('s'),
+                "{} pluralized with an English suffix: {two:?}",
+                lang.code()
+            );
+        }
+    }
+
+    /// The `Health` and `Auth` columns are `Constraint::Length(8)` and `(7)`
+    /// below 170 columns, so a translation longer than that is clipped with no
+    /// ellipsis — the same failure mode as the Korean `메시지` header. English
+    /// `Quota Low` is 9 cells and has always been clipped there; that is
+    /// pre-existing and deliberately unchanged, so it is the one exemption.
+    #[test]
+    fn readiness_and_auth_words_fit_their_columns() {
+        use unicode_width::UnicodeWidthStr;
+        for lang in TuiLanguage::ALL {
+            for status in [
+                UsageReadiness::Ready,
+                UsageReadiness::Watch,
+                UsageReadiness::Critical,
+                UsageReadiness::Unknown,
+            ] {
+                let label = readiness_label(lang, status);
+                if lang == TuiLanguage::En && status == UsageReadiness::Critical {
+                    continue; // pre-existing `Quota Low`
+                }
+                assert!(
+                    UnicodeWidthStr::width(label) <= 8,
+                    "Health {label:?} is {} cells in {}, over the 8-cell column",
+                    UnicodeWidthStr::width(label),
+                    lang.code()
+                );
+            }
+            for key in [
+                MessageKey::AuthActive,
+                MessageKey::AuthSaved,
+                MessageKey::AuthManaged,
+            ] {
+                let label = tr(lang, key);
+                assert!(
+                    UnicodeWidthStr::width(label) <= 7,
+                    "Auth {label:?} is {} cells in {}, over the 7-cell column",
+                    UnicodeWidthStr::width(label),
+                    lang.code()
+                );
+            }
+        }
+    }
+
+    /// `push_kv_styled` pads its key to 12 cells, so a longer label eats into
+    /// the value's space and the rows stop aligning.
+    ///
+    /// The bound is 11, not 12. At exactly 12 the padding
+    /// `" ".repeat(12 - key_width)` comes out empty and the value is drawn
+    /// straight onto the label with no separating space — `Compte
+    /// actifcritical`, `次回リセットリセット情報なし`. A `<= 12` assertion passed
+    /// both of those, so it encoded the arithmetic instead of the property the
+    /// gutter exists for.
+    #[test]
+    fn summary_row_labels_fit_their_twelve_cell_gutter() {
+        use unicode_width::UnicodeWidthStr;
+        for lang in TuiLanguage::ALL {
+            for key in [
+                MessageKey::LabelState,
+                MessageKey::LabelActiveAccount,
+                MessageKey::LabelCapacity,
+                MessageKey::LabelFallback,
+                MessageKey::LabelNextReset,
+                MessageKey::LabelAction,
+                MessageKey::LabelStatus,
+                MessageKey::LabelEmail,
+                MessageKey::LabelCredential,
+                MessageKey::LabelCredits,
+                MessageKey::LabelResetBank,
+            ] {
+                let label = tr(lang, key);
+                assert!(
+                    UnicodeWidthStr::width(label) < KV_GUTTER_CELLS,
+                    "{key:?} {label:?} is {} cells in {}; the {KV_GUTTER_CELLS}-cell \
+                     gutter needs at least one space left over, so the bound is {}",
+                    UnicodeWidthStr::width(label),
+                    lang.code(),
+                    KV_GUTTER_CELLS - 1,
+                );
+            }
+        }
+    }
+
+    /// A rendered frame's rows, wide-grapheme padding cells removed, so a
+    /// per-language column position can be measured in the cells the terminal
+    /// actually uses.
+    fn rendered_rows(app: &mut App, width: u16, height: u16) -> Vec<String> {
+        render_body(app, width, height)
+            .lines()
+            .map(crate::tui::ui::header_budget::strip_wide_continuation_cells)
+            .collect()
+    }
+
+    /// Two accounts, one critical and one watch, so the Attention panel and the
+    /// accounts table both have a wide and a narrow readiness word to draw.
+    fn two_risk_accounts() -> Vec<UsageOutput> {
+        vec![
+            output_with_remaining(
+                "Codex",
+                Some(UsageAccount {
+                    id: "acct_critical".to_string(),
+                    label: Some("critical".to_string()),
+                    is_active: true,
+                }),
+                2.0,
+            ),
+            output_with_remaining(
+                "Copilot",
+                Some(UsageAccount {
+                    id: "acct_watch".to_string(),
+                    label: Some("watchacct".to_string()),
+                    is_active: false,
+                }),
+                20.0,
+            ),
+        ]
+    }
+
+    fn one_credit_account(count: u32) -> Vec<UsageOutput> {
+        vec![output_with_reset_credits(
+            "Codex",
+            Some(UsageAccount {
+                id: "acct_alpha".to_string(),
+                label: Some("alpha".to_string()),
+                is_active: true,
+            }),
+            count,
+            "2031-01-01T09:00:00Z",
+        )]
+    }
+
+    /// The Attention panel pads its readiness word to 11 cells, and positions
+    /// the account column after it by arithmetic. `{:<11}` counts code points,
+    /// so `한도부족` (4 code points, 8 cells) came out 15 cells wide and `주의`
+    /// 13 — the account column started somewhere different on every row, in
+    /// every CJK language.
+    ///
+    /// A body-row assertion, because that is where every one of these defects
+    /// lives: the tests added with the localization only ever looked at header
+    /// rows.
+    #[test]
+    fn attention_rows_start_their_account_column_at_one_cell_per_language() {
+        for lang in TuiLanguage::ALL {
+            let mut app = make_app();
+            app.settings.tui_language = lang;
+            app.subscription_usage = two_risk_accounts();
+            let rows = rendered_rows(&mut app, 150, 34);
+
+            let starts: Vec<usize> = ["critical", "watchacct"]
+                .iter()
+                .map(|account| {
+                    let row = rows
+                        .iter()
+                        .find(|row| {
+                            row.contains(account) && row.contains("left") && !row.contains("Pro")
+                        })
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "{}: no Attention row for {account}\n{}",
+                                lang.code(),
+                                rows.join("\n")
+                            )
+                        });
+                    visual_col(row, account)
+                        .expect("the account name is in the row it was found in")
+                })
+                .collect();
+
+            assert_eq!(
+                starts[0],
+                starts[1],
+                "{}: Attention rows start their account column at different cells ({starts:?}); \
+                 the readiness word is padded by code points, not display cells\n{}",
+                lang.code(),
+                rows.join("\n")
+            );
+            // The same cell English uses, since the column is positioned by a
+            // literal `2 + 11 + account_width`.
+            assert_eq!(
+                starts[0],
+                15,
+                "{}: the Attention account column moved off its 15th cell\n{}",
+                lang.code(),
+                rows.join("\n")
+            );
+        }
+    }
+
+    /// The narrow account row's state column is 14 cells and right-aligned.
+    /// `truncate_ellipsis` budgeted code points, so `활성 · 한도부족` (9 code
+    /// points, 15 cells) was neither truncated nor marked, overran its column
+    /// and was clipped at the panel edge — the same failure mode as the Korean
+    /// `메시지` header, reintroduced in a body row.
+    #[test]
+    fn narrow_account_rows_fit_their_state_column_in_every_language() {
+        for lang in TuiLanguage::ALL {
+            for frame_width in [44u16, 52, 60, 70, 75, 80, 90, 103] {
+                let mut app = make_app();
+                app.settings.tui_language = lang;
+                app.subscription_usage = two_risk_accounts();
+                let rows = rendered_rows(&mut app, frame_width, 18);
+
+                // The narrow table sits inside the Usage block and its own
+                // block, so it is handed the frame minus two borders each side.
+                // `narrow_table_row` reads its widths off that rect.
+                let area_width = frame_width as usize - 4;
+                for output in &app.subscription_usage {
+                    let readiness = readiness_status(output);
+                    let state = if area_width >= 70 {
+                        account_readiness_label(lang, output, readiness)
+                    } else {
+                        readiness_label(lang, readiness).to_string()
+                    };
+                    let state_width = if area_width >= 52 {
+                        14usize
+                    } else if area_width >= 40 {
+                        10
+                    } else {
+                        continue; // no state column at this width
+                    };
+
+                    let fitted = truncate_string(&state, state_width);
+                    assert!(
+                        display_width(&fitted) <= state_width,
+                        "{} at {frame_width}: state {state:?} still needs {} cells in a \
+                         {state_width}-cell column",
+                        lang.code(),
+                        display_width(&fitted),
+                    );
+                    if display_width(&state) > state_width {
+                        assert!(
+                            fitted.ends_with(crate::tui::ui::widgets::MIDDLE_ELLIPSIS),
+                            "{} at {frame_width}: state {state:?} was cut to {fitted:?} \
+                             with no marker",
+                            lang.code(),
+                        );
+                    }
+
+                    // And it survives the render: the fitted text is on the
+                    // frame, not clipped off the panel edge by ratatui.
+                    assert!(
+                        rows.iter().any(|row| row.contains(&fitted)),
+                        "{} at {frame_width}: the fitted state {fitted:?} is not on the \
+                         frame\n{}",
+                        lang.code(),
+                        rows.join("\n")
+                    );
+                }
+            }
+        }
+    }
+
+    /// `push_kv_styled` pads its key into a 12-cell gutter. fr `Compte actif`
+    /// and ja `次回リセット` were exactly 12 cells, so the padding came out empty
+    /// and the value was drawn straight onto the label — `Compte actifcritical`.
+    /// Rendered, per language, because the arithmetic test that was supposed to
+    /// catch this asserted `<= 12` and passed both.
+    #[test]
+    fn summary_rows_keep_a_space_between_key_and_value_in_every_language() {
+        for lang in TuiLanguage::ALL {
+            let mut app = make_app();
+            app.settings.tui_language = lang;
+            app.subscription_usage = one_credit_account(3);
+            let rows = rendered_rows(&mut app, 150, 40);
+
+            for key in [
+                MessageKey::LabelState,
+                MessageKey::LabelActiveAccount,
+                MessageKey::LabelCapacity,
+                MessageKey::LabelNextReset,
+                MessageKey::LabelStatus,
+                MessageKey::LabelCredential,
+                MessageKey::LabelResetBank,
+            ] {
+                let label = tr(lang, key);
+                let Some(row) = rows.iter().find(|row| row.contains(label)) else {
+                    continue; // this row is not on this screen
+                };
+                let after = &row[row.find(label).expect("found above") + label.len()..];
+                assert!(
+                    after.starts_with(' '),
+                    "{}: {key:?} {label:?} ({} cells) is jammed against its value; \
+                     the gutter needs at least one space\n{row}",
+                    lang.code(),
+                    display_width(label),
+                );
+            }
+        }
+    }
+
+    /// The credit-bank row's count column is 12 cells and the expiry text starts
+    /// after it. `{:<12}` counts code points, so ko `3개 초기화권` (7 code points,
+    /// 12 cells) was padded to 17 cells and the expiry text ran off the 72-cell
+    /// panel, where ratatui cut it mid-date with no marker while en/fr got an
+    /// ellipsis.
+    #[test]
+    fn credit_bank_rows_align_their_expiry_column_in_every_language() {
+        for lang in TuiLanguage::ALL {
+            let expiry = tr(lang, MessageKey::CreditNearestExpires);
+            let mut starts = Vec::new();
+            // Several counts, because the count's own width is what used to
+            // move the column.
+            for count in [1u32, 3, 12, 300] {
+                let mut app = make_app();
+                app.settings.tui_language = lang;
+                app.subscription_usage = one_credit_account(count);
+                let rows = rendered_rows(&mut app, 150, 40);
+                let row = rows
+                    .iter()
+                    .find(|row| row.contains("> alpha") && row.contains(expiry))
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "{} count={count}: no credit-bank row\n{}",
+                            lang.code(),
+                            rows.join("\n")
+                        )
+                    })
+                    .clone();
+                starts.push((
+                    count,
+                    visual_col(&row, expiry).expect("the prefix is in the row it was found in"),
+                ));
+
+                // The expiry text is cut with a marker, never clipped mid-cell
+                // by the panel edge. The panel's right border immediately
+                // follows the row, so an unmarked cut shows as a full-width
+                // fragment running straight into it.
+                let line = reset_credit_account_line(
+                    &app,
+                    &app.subscription_usage[0],
+                    app.subscription_usage[0]
+                        .reset_credits
+                        .as_ref()
+                        .expect("fixture has credits"),
+                    true,
+                    72,
+                );
+                let text = line_text(&line);
+                assert!(
+                    Line::from(text.as_str()).width() <= 72,
+                    "{} count={count}: the credit row is {} cells wide in a 72-cell panel: {text:?}",
+                    lang.code(),
+                    Line::from(text.as_str()).width(),
+                );
+                let full = credit_nearest_expiry_line(
+                    lang,
+                    app.subscription_usage[0].reset_credits.as_ref().unwrap(),
+                );
+                if !text.contains(&full) {
+                    assert!(
+                        text.ends_with(crate::tui::ui::widgets::MIDDLE_ELLIPSIS),
+                        "{} count={count}: the expiry text was cut with no marker: {text:?}",
+                        lang.code(),
+                    );
+                }
+            }
+
+            let first = starts[0].1;
+            assert!(
+                starts.iter().all(|(_, start)| *start == first),
+                "{}: the credit-bank expiry column moves with the count width: {starts:?}",
+                lang.code(),
+            );
+        }
+    }
+
+    /// `render_fetching` takes its long message from width 40, and draws
+    /// `{spinner} {message}` — so a message wider than `width - 2` is clipped
+    /// with no marker. fr `Récupération des données d'abonnement...` was 40
+    /// cells and needed 42, so it was silently cut at exactly the widths the
+    /// short-message branch exists to protect.
+    #[test]
+    fn the_fetching_message_fits_the_width_it_is_drawn_at() {
+        for lang in TuiLanguage::ALL {
+            for width in 28..=64u16 {
+                let key = if width < 40 {
+                    MessageKey::UsageFetchingShort
+                } else {
+                    MessageKey::UsageFetchingLong
+                };
+                let message = tr(lang, key);
+                // One spinner cell plus one space.
+                let budget = width.saturating_sub(2) as usize;
+                assert!(
+                    display_width(message) <= budget,
+                    "{} at width {width}: {key:?} {message:?} is {} cells but the \
+                     spinner line has room for {budget}",
+                    lang.code(),
+                    display_width(message),
+                );
+
+                let mut app = make_app();
+                app.settings.tui_language = lang;
+                let frame = render_fetching_frame(&app, width, 6);
+                let compacted = frame
+                    .lines()
+                    .map(crate::tui::ui::header_budget::strip_wide_continuation_cells)
+                    .collect::<Vec<_>>()
+                    .join("\n");
+                assert!(
+                    compacted.contains(message),
+                    "{} at width {width}: {message:?} did not survive the render\n{compacted}",
+                    lang.code(),
+                );
+            }
+        }
+    }
+
+    /// A translation must never cost the user a button.
+    ///
+    /// The compact action bar drops any button that does not fit, and #1367's
+    /// short labels were *wider* than the English ones they replaced: `x Reset`
+    /// vanished in ko at 48, ja at 39, zh at 36/42 and fr at 34/42/43, even
+    /// though English still drew it there. That is behavioral, not cosmetic —
+    /// Reset is the only way to spend a reset credit from the compact layout,
+    /// and the button is what registers the click area that does it.
+    ///
+    /// The policy the bar now follows: drop the `Actions` prefix before dropping
+    /// a button, then fall back to key-hint-only labels, and only then give up.
+    /// So every language shows at least as many buttons as English at every
+    /// width — and English, which fits on the first rung by construction, is
+    /// unchanged.
+    #[test]
+    fn the_compact_action_bar_never_shows_fewer_buttons_than_english() {
+        let action_kinds = |app: &App| -> Vec<String> {
+            app.click_areas
+                .iter()
+                .filter(|area| area.rect.y == 1)
+                .map(|area| format!("{:?}", area.action))
+                .collect()
+        };
+
+        for width in 28..=70u16 {
+            let mut english = make_app();
+            english.subscription_usage = one_credit_account(3);
+            let english_bar = rendered_rows(&mut english, width, 24)[1].clone();
+            let expected = action_kinds(&english);
+
+            for lang in TuiLanguage::ALL {
+                let mut app = make_app();
+                app.settings.tui_language = lang;
+                app.subscription_usage = one_credit_account(3);
+                let bar = rendered_rows(&mut app, width, 24)[1].clone();
+                let actual = action_kinds(&app);
+
+                assert!(
+                    actual.len() >= expected.len(),
+                    "{} at width {width} shows {} action buttons where en shows {}: \
+                     a translation must not cost the user an action.\nen: |{english_bar}|\n{}: |{bar}|",
+                    lang.code(),
+                    actual.len(),
+                    expected.len(),
+                    lang.code(),
+                );
+                // Same actions, in the same order, for the ones English fits.
+                assert_eq!(
+                    &actual[..expected.len()],
+                    &expected[..],
+                    "{} at width {width} reordered or replaced the action buttons\n\
+                     en: |{english_bar}|\n{}: |{bar}|",
+                    lang.code(),
+                    lang.code(),
+                );
+                if lang == TuiLanguage::En {
+                    continue;
+                }
+                // Every drawn button still sits inside the bar.
+                for area in app.click_areas.iter().filter(|area| area.rect.y == 1) {
+                    assert!(
+                        area.rect.x + area.rect.width <= width,
+                        "{} at width {width}: a click area runs past the bar: \
+                         x={} w={}",
+                        lang.code(),
+                        area.rect.x,
+                        area.rect.width,
+                    );
+                }
+            }
+        }
+    }
+
+    /// #1371 review follow-up: the selected-account row's Use/Reset/Remove
+    /// buttons are the only way to manage saved accounts — no keyboard
+    /// bindings exist for them — so a translation wider than English must not
+    /// cost the user an action there either. Before the compact-label ladder,
+    /// ja lost Remove at 40 columns and fr lost Reset/Remove at 40 (Remove
+    /// still gone at 48).
+    #[test]
+    fn selected_account_actions_never_show_fewer_buttons_than_english() {
+        // Scope to the selected-account panel: the top action bar also owns a
+        // Reset button (hint-only at narrow widths in some languages), which
+        // follows its own >= policy (`the_compact_action_bar_never_shows_...`).
+        let account_actions = |app: &App| -> Vec<String> {
+            app.click_areas
+                .iter()
+                .filter(|area| {
+                    area.rect.y > 1
+                        && matches!(
+                            area.action,
+                            ClickAction::CodexUseAccount { .. }
+                                | ClickAction::CodexResetAccount { .. }
+                                | ClickAction::CodexRemoveAccount { .. }
+                        )
+                })
+                .map(|area| format!("{:?}", area.action))
+                .collect()
+        };
+        let saved_inactive = || UsageAccount {
+            id: "acct_saved".to_string(),
+            label: Some("saved".to_string()),
+            is_active: false,
+        };
+        let usage = |with_reset_credit: bool| {
+            vec![if with_reset_credit {
+                output_with_reset_credits(
+                    "Codex",
+                    Some(saved_inactive()),
+                    1,
+                    &far_future_reset_timestamp(),
+                )
+            } else {
+                output("Codex", Some(saved_inactive()))
+            }]
+        };
+
+        for width in 32..=72u16 {
+            for with_reset_credit in [true, false] {
+                let mut english = make_app();
+                english.subscription_usage = usage(with_reset_credit);
+                let english_rows = rendered_rows(&mut english, width, 24);
+                let expected = account_actions(&english);
+                assert_eq!(
+                    expected.len(),
+                    if with_reset_credit { 3 } else { 2 },
+                    "en at width {width} must place Use/Remove plus Reset when a credit exists"
+                );
+
+                for lang in TuiLanguage::ALL {
+                    let mut app = make_app();
+                    app.settings.tui_language = lang;
+                    app.subscription_usage = usage(with_reset_credit);
+                    let rows = rendered_rows(&mut app, width, 24);
+                    let actual = account_actions(&app);
+                    assert_eq!(
+                        actual, expected,
+                        "{} at width {width} (reset credit: {with_reset_credit}) lost or                          reordered selected-account actions; there is no keyboard                          alternative.\nen: |{english_rows:?}|\n{}: |{rows:?}|",
+                        lang.code(),
+                        lang.code(),
+                    );
+                    for area in app.click_areas.iter().filter(|area| {
+                        area.rect.y > 1
+                            && matches!(
+                                area.action,
+                                ClickAction::CodexUseAccount { .. }
+                                    | ClickAction::CodexResetAccount { .. }
+                                    | ClickAction::CodexRemoveAccount { .. }
+                            )
+                    }) {
+                        assert!(
+                            area.rect.x + area.rect.width <= width,
+                            "{} at width {width}: an account click area runs past the row:                              x={} w={}",
+                            lang.code(),
+                            area.rect.x,
+                            area.rect.width,
+                        );
+                    }
+                }
+            }
+        }
+    }
+}

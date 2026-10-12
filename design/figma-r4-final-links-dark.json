@@ -1,0 +1,555 @@
+{
+  "status": "Dark 最终评审目录与局部连线完成",
+  "review": "53:1121194",
+  "originalReview": "1:4088",
+  "systemReview": "53:1121238",
+  "entries": [
+    {
+      "label": "从无账号开始",
+      "destination": "53:231434",
+      "navigation": "NAVIGATE"
+    },
+    {
+      "label": "多账号 · 刷新、重连与断开",
+      "destination": "1:4124",
+      "navigation": "NAVIGATE"
+    },
+    {
+      "label": "网络检查 · 49、50、51 与失败",
+      "destination": "46:138573",
+      "navigation": "NAVIGATE"
+    },
+    {
+      "label": "新增前检查失败 · 保留现有账号",
+      "destination": "53:1122077",
+      "navigation": "NAVIGATE"
+    },
+    {
+      "label": "新增后 · 首次查询失败",
+      "destination": "53:1121617",
+      "navigation": "NAVIGATE"
+    },
+    {
+      "label": "小组件 · 配置、点击与回退",
+      "destination": "46:150995",
+      "navigation": "NAVIGATE"
+    },
+    {
+      "label": "后台更新 · 超时后重试",
+      "destination": "53:302679",
+      "navigation": "NAVIGATE"
+    },
+    {
+      "label": "小组件更新 · 网站不可用",
+      "destination": "53:303980",
+      "navigation": "NAVIGATE"
+    },
+    {
+      "label": "小组件更新 · 系统再次查询",
+      "destination": "53:304075",
+      "navigation": "NAVIGATE"
+    },
+    {
+      "label": "通知权限、教程与返回路径",
+      "destination": "53:1121238",
+      "navigation": "NAVIGATE"
+    },
+    {
+      "label": "点击通知 · 查询 Claude 账号",
+      "destination": "14:42922",
+      "navigation": "NAVIGATE"
+    },
+    {
+      "label": "通知目标已断开",
+      "destination": "53:1121579",
+      "navigation": "OVERLAY"
+    },
+    {
+      "label": "查看浅色评审目录",
+      "destination": "1:500",
+      "navigation": "NAVIGATE"
+    }
+  ],
+  "queryRetry": {
+    "source": "46:140323",
+    "destination": "53:487936",
+    "account": "work.codex@example.com"
+  },
+  "widgetTargets": [
+    {
+      "widget": "53:304052",
+      "account": "alin.claude@example.com",
+      "state": "Failed",
+      "destination": "46:151041",
+      "updated": "09:41"
+    },
+    {
+      "widget": "53:304147",
+      "account": "alin.claude@example.com",
+      "state": "CheckA",
+      "destination": "46:151041",
+      "updated": "09:41"
+    },
+    {
+      "widget": "53:304246",
+      "account": "alin.claude@example.com",
+      "state": "CheckB",
+      "destination": "46:151041",
+      "updated": "09:41"
+    },
+    {
+      "widget": "53:304345",
+      "account": "alin.claude@example.com",
+      "state": "Passed",
+      "destination": "46:151041",
+      "updated": "09:41"
+    },
+    {
+      "widget": "53:304440",
+      "account": "alin.claude@example.com",
+      "state": "Querying",
+      "destination": "46:151041",
+      "updated": "09:41"
+    },
+    {
+      "widget": "53:304539",
+      "account": "alin.claude@example.com",
+      "state": "Success",
+      "destination": "53:1121282",
+      "updated": "09:45"
+    }
+  ],
+  "notification": {
+    "source": "14:42922",
+    "card": "14:48678",
+    "launch": "53:1121368",
+    "check": "53:486986",
+    "account": "alin.claude@example.com",
+    "removedTarget": "53:1121579"
+  },
+  "firstQueryFailure": {
+    "source": "53:544205",
+    "launch": "53:1121617",
+    "account": "new.codex@example.com",
+    "check": "53:1121953",
+    "querying": "53:1121872",
+    "failed": "53:1121913",
+    "retry": "53:544678",
+    "success": "53:281796"
+  },
+  "beforeAddFailure": {
+    "source": "1:4124",
+    "launch": "53:1122077",
+    "check": "53:1122288",
+    "failed": "53:1122372",
+    "score": 49,
+    "sourceAccounts": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "nextAfterPassingRetry": "53:545098"
+  },
+  "newScreens": [
+    {
+      "name": "R4/Dark/Review",
+      "id": "53:1121194"
+    },
+    {
+      "name": "R4/Dark/Review/System",
+      "id": "53:1121238"
+    },
+    {
+      "name": "R4/Dark/Background/Widget/Detail-0945",
+      "id": "53:1121282"
+    },
+    {
+      "name": "R4/Dark/Notifications/Launch-ClaudeA",
+      "id": "53:1121368"
+    },
+    {
+      "name": "R4/Dark/Notifications/TargetRemoved",
+      "id": "53:1121579"
+    },
+    {
+      "name": "R4/Dark/Review/FirstQueryLaunch",
+      "id": "53:1121617"
+    },
+    {
+      "name": "R4/Dark/Review/FirstQuery/Querying",
+      "id": "53:1121872"
+    },
+    {
+      "name": "R4/Dark/Review/FirstQuery/Failed",
+      "id": "53:1121913"
+    },
+    {
+      "name": "R4/Dark/Dark · R4 NET · Review first query failure · 检查中 A",
+      "id": "53:1121953"
+    },
+    {
+      "name": "R4/Dark/Dark · R4 NET · Review first query failure · 检查中 B",
+      "id": "53:1121991"
+    },
+    {
+      "name": "R4/Dark/Dark · R4 NET · Review first query failure · 评分 51 · 检查通过",
+      "id": "53:1122037"
+    },
+    {
+      "name": "R4/Dark/Review/BeforeAddFailedLaunch",
+      "id": "53:1122077"
+    },
+    {
+      "name": "R4/Dark/Dark · R4 NET · Review before add preserve accounts · 检查中 A",
+      "id": "53:1122288"
+    },
+    {
+      "name": "R4/Dark/Dark · R4 NET · Review before add preserve accounts · 检查中 B",
+      "id": "53:1122326"
+    },
+    {
+      "name": "R4/Dark/Dark · R4 NET · Review before add preserve accounts · 有效评分 49 · 已阻止",
+      "id": "53:1122372"
+    },
+    {
+      "name": "R4/Dark/Dark · R4 NET · Review before add preserve accounts · 重试 · 检查中 A",
+      "id": "53:1122416"
+    },
+    {
+      "name": "R4/Dark/Dark · R4 NET · Review before add preserve accounts · 重试 · 检查中 B",
+      "id": "53:1122454"
+    },
+    {
+      "name": "R4/Dark/Dark · R4 NET · Review before add preserve accounts · 重试 · 评分 51 · 检查通过",
+      "id": "53:1122500"
+    }
+  ],
+  "changedLinks": [
+    {
+      "source": "46:140323",
+      "destination": "53:487936",
+      "navigation": "SWAP",
+      "timeout": null
+    },
+    {
+      "source": "53:304052",
+      "destination": "46:151041",
+      "navigation": "OVERLAY",
+      "timeout": null
+    },
+    {
+      "source": "53:303984",
+      "destination": "53:1121194",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:304147",
+      "destination": "46:151041",
+      "navigation": "OVERLAY",
+      "timeout": null
+    },
+    {
+      "source": "53:304079",
+      "destination": "53:1121194",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:304246",
+      "destination": "46:151041",
+      "navigation": "OVERLAY",
+      "timeout": null
+    },
+    {
+      "source": "53:304178",
+      "destination": "53:1121194",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:304345",
+      "destination": "46:151041",
+      "navigation": "OVERLAY",
+      "timeout": null
+    },
+    {
+      "source": "53:304277",
+      "destination": "53:1121194",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:304440",
+      "destination": "46:151041",
+      "navigation": "OVERLAY",
+      "timeout": null
+    },
+    {
+      "source": "53:304372",
+      "destination": "53:1121194",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:304539",
+      "destination": "53:1121282",
+      "navigation": "OVERLAY",
+      "timeout": null
+    },
+    {
+      "source": "53:304471",
+      "destination": "53:1121194",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1121368",
+      "destination": "53:486986",
+      "navigation": "OVERLAY",
+      "timeout": 0.15
+    },
+    {
+      "source": "14:48678",
+      "destination": "53:1121368",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "14:48667",
+      "destination": "53:1121194",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1121872",
+      "destination": "53:1121913",
+      "navigation": "SWAP",
+      "timeout": 1
+    },
+    {
+      "source": "53:1121617",
+      "destination": "53:1121953",
+      "navigation": "OVERLAY",
+      "timeout": 0.15
+    },
+    {
+      "source": "53:1121949",
+      "destination": "53:544678",
+      "navigation": "SWAP",
+      "timeout": null
+    },
+    {
+      "source": "53:1122077",
+      "destination": "53:1122288",
+      "navigation": "OVERLAY",
+      "timeout": 0.15
+    },
+    {
+      "source": "53:1122542",
+      "destination": "1:5757",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122544",
+      "destination": "53:894279",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122546",
+      "destination": "53:894654",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122548",
+      "destination": "53:895028",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122550",
+      "destination": "14:42529",
+      "navigation": "OVERLAY",
+      "timeout": null
+    },
+    {
+      "source": "53:1122552",
+      "destination": "53:1121194",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122556",
+      "destination": "53:231434",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122558",
+      "destination": "1:4124",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122560",
+      "destination": "46:138573",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122562",
+      "destination": "53:1122077",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122564",
+      "destination": "53:1121617",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122566",
+      "destination": "46:150995",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122568",
+      "destination": "53:302679",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122570",
+      "destination": "53:303980",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122572",
+      "destination": "53:304075",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122574",
+      "destination": "53:1121238",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122576",
+      "destination": "14:42922",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122578",
+      "destination": "53:1121579",
+      "navigation": "OVERLAY",
+      "timeout": null
+    },
+    {
+      "source": "53:1122580",
+      "destination": "1:500",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122584",
+      "destination": "53:231434",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122586",
+      "destination": "1:4124",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122588",
+      "destination": "46:138573",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122590",
+      "destination": "53:1122077",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122592",
+      "destination": "53:1121617",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122594",
+      "destination": "46:150995",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122596",
+      "destination": "53:302679",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122598",
+      "destination": "53:303980",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122600",
+      "destination": "53:304075",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122602",
+      "destination": "53:1121238",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122604",
+      "destination": "14:42922",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "53:1122606",
+      "destination": "53:1121579",
+      "navigation": "OVERLAY",
+      "timeout": null
+    },
+    {
+      "source": "53:1122608",
+      "destination": "1:500",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "46:140455",
+      "destination": "53:1121194",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    },
+    {
+      "source": "46:158066",
+      "destination": "53:1121194",
+      "navigation": "NAVIGATE",
+      "timeout": null
+    }
+  ],
+  "scope": "Review contents; Network/Login cancel appearance and close; Network/QueryFailed retry; six background widget click targets/back controls; original LockNotification card/back. No permission-toggle, account-menu, shared-component, or core mutations."
+}

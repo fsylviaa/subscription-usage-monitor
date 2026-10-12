@@ -1,0 +1,15 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+*.p12
+*.p8
+*.mobileprovision
+.build/
+DerivedData/
+build/
+xcuserdata/
+*.xcuserstate
+
+# Personal Xcode development team (optional local configuration)
+/Config/Signing.local.xcconfig

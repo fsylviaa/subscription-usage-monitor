@@ -1,0 +1,1491 @@
+{
+  "status": "评审范围已读取，未修改画布",
+  "sections": [
+    {
+      "id": "1:43251",
+      "name": "浅色 · 修订界面与评审入口",
+      "x": 100,
+      "y": 100,
+      "w": 3063,
+      "h": 6428,
+      "frames": [
+        {
+          "id": "1:500",
+          "name": "Light/Review",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:41953",
+          "name": "R2/Light|Dashboard|0|R|0|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:536",
+          "name": "Light/Dashboard",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:55373",
+          "name": "R2/Light|Dashboard|7|U|0|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42234",
+          "name": "R2/Light|Dashboard|7|R|0|old|Claude|||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:2169",
+          "name": "Light/Settings",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:49091",
+          "name": "R2/Light|Settings|7|U|0|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:49110",
+          "name": "R2/Light|Settings|7|R|1|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42459",
+          "name": "R2/Light|Settings|7|R|2|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:939",
+          "name": "Light/Connect",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:2249",
+          "name": "Light/Display",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42235",
+          "name": "R2/Light|Menu|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:43670",
+          "name": "R2/Light|Login|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:43879",
+          "name": "R2/Light|Login|7|R|0|old||Codex||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:44088",
+          "name": "R2/Light|Login|7|R|0|old||Cursor||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:49365",
+          "name": "R2/Light|Connecting|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42457",
+          "name": "R2/Light|Failed|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:43671",
+          "name": "R2/Light|Disconnect|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:2503",
+          "name": "Light/Permission",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:45732",
+          "name": "R2/Light|System|7|R|2|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42067",
+          "name": "Light/Tutorial1",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:3510",
+          "name": "Light/Tutorial1b",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:43112",
+          "name": "Light/Tutorial2",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:3584",
+          "name": "Light/Tutorial2b",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:41954",
+          "name": "R2/Light|WidgetReview|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42297",
+          "name": "R2/Light|WidgetReview|7|R|0|old||Claude||medium",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42300",
+          "name": "R2/Light|WidgetReview|7|U|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42299",
+          "name": "R2/Light|WidgetConfig|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42298",
+          "name": "R2/Light|SystemHome|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:44147",
+          "name": "R2/Light|SystemHome|7|R|0|old||Claude||medium",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42461",
+          "name": "R2/Light|WidgetState|7|R|0|old||Codex||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42460",
+          "name": "R2/Light|LockNotification|7|R|1|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:3676",
+          "name": "Light/StateReview",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42449",
+          "name": "R2/Light|Dashboard|0|R|0|old|||initial|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42233",
+          "name": "R2/Light|Dashboard|7|R|0|old|||refresh|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42451",
+          "name": "R2/Light|Dashboard|7|R|0|old|||stale|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42450",
+          "name": "R2/Light|Dashboard|7|R|0|old|||nodata|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42452",
+          "name": "R2/Light|Dashboard|7|R|0|old|||expired|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42453",
+          "name": "R2/Light|Dashboard|7|R|0|old|||unavailable|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42454",
+          "name": "R2/Light|Dashboard|7|R|0|old|||unknown|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42455",
+          "name": "R2/Light|Dashboard|7|R|0|old|||unlimited|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42456",
+          "name": "R2/Light|Dashboard|7|R|0|old|||noreset|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42458",
+          "name": "R2/Light|Dashboard|7|R|0|old|||due|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:50564",
+          "name": "R2/Light|Dashboard|7|R|0|new||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:2311",
+          "name": "Light/Help",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:2347",
+          "name": "Light/Privacy",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:43072",
+          "name": "Light/Licenses",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:48956",
+          "name": "Light/License",
+          "w": 393,
+          "h": 852
+        }
+      ]
+    },
+    {
+      "id": "1:43253",
+      "name": "深色 · 修订界面与评审入口",
+      "x": 3500,
+      "y": 100,
+      "w": 3063,
+      "h": 6428,
+      "frames": [
+        {
+          "id": "1:4088",
+          "name": "Dark/Review",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:41998",
+          "name": "R2/Dark|Dashboard|0|R|0|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:4124",
+          "name": "Dark/Dashboard",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:60002",
+          "name": "R2/Dark|Dashboard|7|U|0|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42696",
+          "name": "R2/Dark|Dashboard|7|R|0|old|Claude|||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:5757",
+          "name": "Dark/Settings",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:52105",
+          "name": "R2/Dark|Settings|7|U|0|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:52174",
+          "name": "R2/Dark|Settings|7|R|1|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42921",
+          "name": "R2/Dark|Settings|7|R|2|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:4527",
+          "name": "Dark/Connect",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:5837",
+          "name": "Dark/Display",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42697",
+          "name": "R2/Dark|Menu|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:46590",
+          "name": "R2/Dark|Login|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:46799",
+          "name": "R2/Dark|Login|7|R|0|old||Codex||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:47008",
+          "name": "R2/Dark|Login|7|R|0|old||Cursor||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:52367",
+          "name": "R2/Dark|Connecting|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42919",
+          "name": "R2/Dark|Failed|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:46591",
+          "name": "R2/Dark|Disconnect|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:6091",
+          "name": "Dark/Permission",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:48652",
+          "name": "R2/Dark|System|7|R|2|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42529",
+          "name": "Dark/Tutorial1",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:7098",
+          "name": "Dark/Tutorial1b",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:46032",
+          "name": "Dark/Tutorial2",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:7172",
+          "name": "Dark/Tutorial2b",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:41999",
+          "name": "R2/Dark|WidgetReview|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42759",
+          "name": "R2/Dark|WidgetReview|7|R|0|old||Claude||medium",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42762",
+          "name": "R2/Dark|WidgetReview|7|U|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42761",
+          "name": "R2/Dark|WidgetConfig|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42760",
+          "name": "R2/Dark|SystemHome|7|R|0|old||Claude||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:47067",
+          "name": "R2/Dark|SystemHome|7|R|0|old||Claude||medium",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42923",
+          "name": "R2/Dark|WidgetState|7|R|0|old||Codex||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42922",
+          "name": "R2/Dark|LockNotification|7|R|1|old||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:7264",
+          "name": "Dark/StateReview",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42911",
+          "name": "R2/Dark|Dashboard|0|R|0|old|||initial|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42695",
+          "name": "R2/Dark|Dashboard|7|R|0|old|||refresh|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42913",
+          "name": "R2/Dark|Dashboard|7|R|0|old|||stale|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42912",
+          "name": "R2/Dark|Dashboard|7|R|0|old|||nodata|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42914",
+          "name": "R2/Dark|Dashboard|7|R|0|old|||expired|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42915",
+          "name": "R2/Dark|Dashboard|7|R|0|old|||unavailable|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42916",
+          "name": "R2/Dark|Dashboard|7|R|0|old|||unknown|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42917",
+          "name": "R2/Dark|Dashboard|7|R|0|old|||unlimited|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42918",
+          "name": "R2/Dark|Dashboard|7|R|0|old|||noreset|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:42920",
+          "name": "R2/Dark|Dashboard|7|R|0|old|||due|small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:53566",
+          "name": "R2/Dark|Dashboard|7|R|0|new||||small",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:5899",
+          "name": "Dark/Help",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "1:5935",
+          "name": "Dark/Privacy",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:45964",
+          "name": "Dark/Licenses",
+          "w": 393,
+          "h": 852
+        },
+        {
+          "id": "14:51970",
+          "name": "Dark/License",
+          "w": 393,
+          "h": 852
+        }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "id": "1:160",
+      "name": "Theme=Light, Platform=Claude, View=Remaining"
+    },
+    {
+      "id": "1:185",
+      "name": "Theme=Light, Platform=Claude, View=Used"
+    },
+    {
+      "id": "1:210",
+      "name": "Theme=Light, Platform=Codex, View=Remaining"
+    },
+    {
+      "id": "1:235",
+      "name": "Theme=Light, Platform=Codex, View=Used"
+    },
+    {
+      "id": "1:260",
+      "name": "Theme=Light, Platform=Cursor, View=Remaining"
+    },
+    {
+      "id": "1:277",
+      "name": "Theme=Light, Platform=Cursor, View=Used"
+    },
+    {
+      "id": "1:294",
+      "name": "Theme=Dark, Platform=Claude, View=Remaining"
+    },
+    {
+      "id": "1:319",
+      "name": "Theme=Dark, Platform=Claude, View=Used"
+    },
+    {
+      "id": "1:344",
+      "name": "Theme=Dark, Platform=Codex, View=Remaining"
+    },
+    {
+      "id": "1:369",
+      "name": "Theme=Dark, Platform=Codex, View=Used"
+    },
+    {
+      "id": "1:394",
+      "name": "Theme=Dark, Platform=Cursor, View=Remaining"
+    },
+    {
+      "id": "1:411",
+      "name": "Theme=Dark, Platform=Cursor, View=Used"
+    },
+    {
+      "id": "14:15101",
+      "name": "R2/StatusBar/Light"
+    },
+    {
+      "id": "14:15351",
+      "name": "R2/Widget/Light/Claude/Remaining/small"
+    },
+    {
+      "id": "14:15372",
+      "name": "R2/Widget/Light/Claude/Remaining/medium"
+    },
+    {
+      "id": "14:15393",
+      "name": "R2/Widget/Light/Codex/Remaining/small"
+    },
+    {
+      "id": "14:15414",
+      "name": "R2/Widget/Light/Codex/Remaining/medium"
+    },
+    {
+      "id": "14:15435",
+      "name": "R2/Widget/Light/Cursor/Remaining/small"
+    },
+    {
+      "id": "14:15451",
+      "name": "R2/Widget/Light/Cursor/Remaining/medium"
+    },
+    {
+      "id": "14:15467",
+      "name": "R2/Widget/Light/Claude/Used/small"
+    },
+    {
+      "id": "14:15488",
+      "name": "R2/Widget/Light/Claude/Used/medium"
+    },
+    {
+      "id": "14:15509",
+      "name": "R2/Widget/Light/Codex/Used/small"
+    },
+    {
+      "id": "14:15530",
+      "name": "R2/Widget/Light/Codex/Used/medium"
+    },
+    {
+      "id": "14:15551",
+      "name": "R2/Widget/Light/Cursor/Used/small"
+    },
+    {
+      "id": "14:15567",
+      "name": "R2/Widget/Light/Cursor/Used/medium"
+    },
+    {
+      "id": "14:15583",
+      "name": "R2/SettingsRow/Light"
+    },
+    {
+      "id": "14:15655",
+      "name": "R2/StatusBar/Dark"
+    },
+    {
+      "id": "14:15905",
+      "name": "R2/Widget/Dark/Claude/Remaining/small"
+    },
+    {
+      "id": "14:15926",
+      "name": "R2/Widget/Dark/Claude/Remaining/medium"
+    },
+    {
+      "id": "14:15947",
+      "name": "R2/Widget/Dark/Codex/Remaining/small"
+    },
+    {
+      "id": "14:15968",
+      "name": "R2/Widget/Dark/Codex/Remaining/medium"
+    },
+    {
+      "id": "14:15989",
+      "name": "R2/Widget/Dark/Cursor/Remaining/small"
+    },
+    {
+      "id": "14:16005",
+      "name": "R2/Widget/Dark/Cursor/Remaining/medium"
+    },
+    {
+      "id": "14:16021",
+      "name": "R2/Widget/Dark/Claude/Used/small"
+    },
+    {
+      "id": "14:16042",
+      "name": "R2/Widget/Dark/Claude/Used/medium"
+    },
+    {
+      "id": "14:16063",
+      "name": "R2/Widget/Dark/Codex/Used/small"
+    },
+    {
+      "id": "14:16084",
+      "name": "R2/Widget/Dark/Codex/Used/medium"
+    },
+    {
+      "id": "14:16105",
+      "name": "R2/Widget/Dark/Cursor/Used/small"
+    },
+    {
+      "id": "14:16121",
+      "name": "R2/Widget/Dark/Cursor/Used/medium"
+    },
+    {
+      "id": "14:16137",
+      "name": "R2/SettingsRow/Dark"
+    }
+  ],
+  "styles": [
+    {
+      "id": "S:a8347557ea438828b4e623085b657bd66f436e46,",
+      "name": "Light/bg",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9607843160629272,
+            "g": 0.9607843160629272,
+            "b": 0.9607843160629272
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:f13d233ca30deec6108674b009ada40c7feff63f,",
+      "name": "Light/card",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 1,
+            "g": 1,
+            "b": 1
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:04890c5e2933a8cf7a55231d8e914c9bb07f398c,",
+      "name": "Light/elevated",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9215686321258545,
+            "g": 0.9215686321258545,
+            "b": 0.9215686321258545
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:d193d9f4367c66602f5084f8070695cf601cd45e,",
+      "name": "Light/text",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.0784313753247261,
+            "g": 0.0784313753247261,
+            "b": 0.0784313753247261
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:25c3481bbb53753d70eacb228c36280915866317,",
+      "name": "Light/secondary",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.32156863808631897,
+            "g": 0.32156863808631897,
+            "b": 0.32156863808631897
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:87d748f2f4fbdbfe8f6a0b16753ce74366a00de1,",
+      "name": "Light/muted",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.41960784792900085,
+            "g": 0.41960784792900085,
+            "b": 0.41960784792900085
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:c91da17881933b7a71e9c60154a58c7d57dce441,",
+      "name": "Light/accent",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.09019608050584793,
+            "g": 0.09019608050584793,
+            "b": 0.09019608050584793
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:f8b6685863320f6bcc0a2dbab6de7adf4f05606d,",
+      "name": "Light/accentText",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 1,
+            "g": 1,
+            "b": 1
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:1b93eef8c257102c93a46cd068a90cdc9ae02afc,",
+      "name": "Light/tint",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9098039269447327,
+            "g": 0.9098039269447327,
+            "b": 0.9098039269447327
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:2998a44efceb9f02b1aff893e5d351f13e2a9f4f,",
+      "name": "Light/track",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.8705882430076599,
+            "g": 0.8705882430076599,
+            "b": 0.8705882430076599
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:2afc683adaeb1f707b84554961ffed2bf80dd160,",
+      "name": "Light/line",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.8235294222831726,
+            "g": 0.8235294222831726,
+            "b": 0.8235294222831726
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:782d3458980d6eba41e32cf30566a9519ab5eead,",
+      "name": "Light/warning",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.2078431397676468,
+            "g": 0.2078431397676468,
+            "b": 0.2078431397676468
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:81cb76d0621d906cd3e4e0d9cf5d487e4c9b93c4,",
+      "name": "Light/warningBg",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.929411768913269,
+            "g": 0.929411768913269,
+            "b": 0.929411768913269
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:fea055a4d1c7e2f3fb2e83025b8951ed2cc3a417,",
+      "name": "Light/danger",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.06666667014360428,
+            "g": 0.06666667014360428,
+            "b": 0.06666667014360428
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:949e3da4aa53e75598a53c74aba9d27b3ad8e662,",
+      "name": "Light/dangerBg",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9058823585510254,
+            "g": 0.9058823585510254,
+            "b": 0.9058823585510254
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:30fdf1e1fe1da235a6a280481f912c63614658b4,",
+      "name": "Light/claude",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.1411764770746231,
+            "g": 0.1411764770746231,
+            "b": 0.1411764770746231
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:f7a09bc91bf764c931d2ee8de9c66b994988fd3a,",
+      "name": "Light/claudeBg",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9188234806060791,
+            "g": 0.9188234806060791,
+            "b": 0.9188234806060791
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:6cfb549c1cdd3e07670c20e23da030ececa341b6,",
+      "name": "Light/cursor",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.2549019753932953,
+            "g": 0.2549019753932953,
+            "b": 0.2549019753932953
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:92a29af7b037e838a8676ab351cfd033a19abab6,",
+      "name": "Light/cursorBg",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9372549057006836,
+            "g": 0.9372549057006836,
+            "b": 0.9372549057006836
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:1e34f6c35fcee83d58c35f5c410d9e2ca0171f96,",
+      "name": "Light/shadow",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:91fffcd200e403922707900d9aa071dde950d94e,",
+      "name": "Dark/bg",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.03921568766236305,
+            "g": 0.03921568766236305,
+            "b": 0.03921568766236305
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:8d8e36d3f0abd50668a2df3db4e01c57a179640b,",
+      "name": "Dark/card",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.0941176488995552,
+            "g": 0.0941176488995552,
+            "b": 0.0941176488995552
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:45c9d801b94392cbb96bcd0b026920ef1c8331bf,",
+      "name": "Dark/elevated",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.14509804546833038,
+            "g": 0.14509804546833038,
+            "b": 0.14509804546833038
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:f370799c7d1a552b53d5fb9eba36d283f368a536,",
+      "name": "Dark/text",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9803921580314636,
+            "g": 0.9803921580314636,
+            "b": 0.9803921580314636
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:ed204ce3dca94a3927cbdcad3fefa0c58152d06f,",
+      "name": "Dark/secondary",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.7803921699523926,
+            "g": 0.7803921699523926,
+            "b": 0.7803921699523926
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:53205f05f5722b290792c4b769484a758a4383f6,",
+      "name": "Dark/muted",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.658823549747467,
+            "g": 0.658823549747467,
+            "b": 0.658823549747467
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:c9b4d823ad733e97ceeb4312d99f354d4f632e23,",
+      "name": "Dark/accent",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9607843160629272,
+            "g": 0.9607843160629272,
+            "b": 0.9607843160629272
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:ec5a6af3c5325a2240a814a59fdbc8ce3bd023e1,",
+      "name": "Dark/accentText",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.06666667014360428,
+            "g": 0.06666667014360428,
+            "b": 0.06666667014360428
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:47ae63d384945e34e899d8f0c0b7fe620811bc93,",
+      "name": "Dark/tint",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.1882352977991104,
+            "g": 0.1882352977991104,
+            "b": 0.1882352977991104
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:b5f95a1200754af8ae29ebecd85b2afb625d433d,",
+      "name": "Dark/track",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.250980406999588,
+            "g": 0.250980406999588,
+            "b": 0.250980406999588
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:c41e15385bd0c8c48e3f68f5116904cd5bec3624,",
+      "name": "Dark/line",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.29019609093666077,
+            "g": 0.29019609093666077,
+            "b": 0.29019609093666077
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:76c3641cd0ed136436853131e9feae062849ca30,",
+      "name": "Dark/warning",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.8784313797950745,
+            "g": 0.8784313797950745,
+            "b": 0.8784313797950745
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:b3c5ff59906cc34f66d7b68dd65f6d63412b4986,",
+      "name": "Dark/warningBg",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.16470588743686676,
+            "g": 0.16470588743686676,
+            "b": 0.16470588743686676
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:cafcfd32329b9fb3e8cbd9111656c06a8b0c5a44,",
+      "name": "Dark/danger",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9803921580314636,
+            "g": 0.9803921580314636,
+            "b": 0.9803921580314636
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:ed63a7924dfe4c3a8b234854d49eeb05f7530350,",
+      "name": "Dark/dangerBg",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.20392157137393951,
+            "g": 0.20392157137393951,
+            "b": 0.20392157137393951
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:8e7775aa1d8a90fd13293548456a2015466459d3,",
+      "name": "Dark/claude",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.9411764740943909,
+            "g": 0.9411764740943909,
+            "b": 0.9411764740943909
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:2292b2fa016a4da1a8083133149a745677c2a899,",
+      "name": "Dark/claudeBg",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.1882352977991104,
+            "g": 0.1882352977991104,
+            "b": 0.1882352977991104
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:5978ade2de0e681cab8a6f168bae516d8fb3345e,",
+      "name": "Dark/cursor",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.8549019694328308,
+            "g": 0.8549019694328308,
+            "b": 0.8549019694328308
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:baed7ef77e1c444c2ea237848c54b0728ff7906e,",
+      "name": "Dark/cursorBg",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.16862745583057404,
+            "g": 0.16862745583057404,
+            "b": 0.16862745583057404
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "S:9e24d07395b694f322375f736efff8fe8b443df2,",
+      "name": "Dark/shadow",
+      "paints": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0
+          },
+          "boundVariables": {}
+        }
+      ]
+    }
+  ],
+  "fonts": [
+    "{\"family\":\"Inter\",\"style\":\"Semi Bold\",\"variationSettings\":{\"slnt\":0,\"wght\":600}}",
+    "{\"family\":\"PingFang SC\",\"style\":\"Semibold\"}",
+    "{\"family\":\"PingFang SC\",\"style\":\"Regular\"}",
+    "{\"family\":\"PingFang SC\",\"style\":\"Medium\"}"
+  ]
+}

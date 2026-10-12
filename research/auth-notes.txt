@@ -1,0 +1,97 @@
+CodexBar 登录认证研究笔记（只读源码审查，2026-10-10）
+
+范围与边界
+- 阅读项目 AGENTS.md，未读取用户真实凭据，未执行登录/真实账户/浏览器导入/Keychain probe。
+- 本文源码依据均来自 /Users/iceflying/codex/订阅用量监控/reference/CodexBar；macOS 此目录在用户描述中为 Reference/CodexBar，实际 pwd 为 reference/CodexBar。
+- 是“本地版本怎么做”的结论，不代表平台当前授予第三方移动应用什么权限；是否允许公开发行、客户端注册、权限范围另需官方资料。
+
+最重要的直白解释
+1. 它主要是一位“借通行证查账的人”，不是统一账户登录平台。用户先在服务商的官方网页/官方电脑工具完成登录；CodexBar 再读取登录后留下的通行证（access token、cookie、API key）查额度。
+2. Apple ID、邮箱密码、Google 登录等区别通常由官方登录页处理；CodexBar 对 Codex 未实现 Apple 专用登录分支，也不接收其密码。不能从源码推断这些登录方式今日一定受支持，需以官方登录页为准。
+3. “网页登录成功”不等于“你的 App 得到读取额度权限”；“获取一个普通 API key”也不等于能读订阅剩余额度。不同平台、不同账号类型、不同 endpoint 权限是分开的。
+4. 程序多数走“已有会话再利用”，这正是从 Mac 搬到 iPhone 的主要障碍：手机应用通常无法读取另一个应用或 Safari 的私人文件/钥匙串，也没有电脑 CLI。网络请求和解析可以迁，取得通行证的路要重新设计。
+
+Codex 首次登录、读取、刷新、隔离
+- Sources/CodexBar/CodexLoginRunner.swift:12–23 设置 PATH、CODEX_HOME，调用通用 CLILoginRunner。
+- Sources/CodexBar/CLILoginRunner.swift:31–34 真正执行 /usr/bin/env <codex binary> login。官方 CLI 负责浏览器授权；CodexBar 等退出结果/超时/取消。没有在本地源码找到 code_challenge / code_verifier / 1455 / oauth/authorize 的首次登录实现；因此不能将 PKCE/device-flow/回调端口说成 CodexBar 自建。
+- Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexOAuthCredentials.swift:21–29 凭据结构：accessToken、refreshToken、idToken、accountId、lastRefresh、expiresAt、source、isAPIKey。
+- 同文件:97–112 默认 ~/.codex/auth.json，也遵从 CODEX_HOME；:150–181 外部来源需要 allowExternalSources，默认不读别的应用；:269–300 解析 tokens 中 access/refresh/id/account ID 和 JWT expiry。
+- 外部回退为 legacy ~/.config/codex/auth.json 和 OpenCode auth.json（同文件:150–181；docs/codex.md:81–82），显式指定 home 保持隔离；外部来源只读。
+- Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexOAuthUsageFetcher.swift:379–415 默认 https://chatgpt.com/backend-api/wham/usage，带 Authorization: Bearer 与 ChatGPT-Account-Id；附加 reset credits、workspace balance、monthly spend limits 也按 scope 拉取。
+- Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift:465–474 当前 usage 路径“故意不刷新”共享 refresh token；过期 native 要官方 CLI 处理，外部只读来源失败。注释解释独自兑换共享 refresh token 会让拥有者持有过期旧 token。
+- 同文件:339–371 允许 OAuth→CLI 恢复，但选中 managed workspace 时 CLI 不支持传该 header，所以禁用此回退；:150–170 当前 Auto 实际 PAT→OAuth→CLI，显式workspace时 PAT→OAuth。
+- Sources/CodexBarCore/Providers/Codex/CodexOAuth/CodexTokenRefresher.swift:6–8,52–57 虽有 token refresh helper，endpoint auth.openai.com/oauth/token、硬编码 app_EMoamEEZ73f0CkXaXp7hrann、scope openid profile email；本地调用检索未发现生产路径调用其 refresh，不应把这个 helper 当当前刷新流程或完整首次登录实现。
+- Sources/CodexBar/ManagedCodexAccountService.swift:43–75 生成 ~/Library/Application Support/CodexBar/managed-codex-homes/<UUID>；:221–315 在新home中登录，验证邮箱、选workspace、持锁写新metadata后清理旧home，失败清理临时home。
+- Sources/CodexBarCore/ManagedCodexAccountStore.swift:132–141 metadata在 Application Support/CodexBar/managed-codex-accounts.json。
+- Sources/CodexBarCore/CodexManagedAccounts.swift:4–14 一个managed账号含 id/email/providerAccountID/workspaceLabel/workspaceAccountID/authFingerprint/managedHomePath/时间。
+- CookieHeaderCache.swift:63–83 cookie缓存按 managedAccount(UUID)、profileHome、providerVariant 等分隔。
+- OpenAI dashboard extras另外读取chatgpt.com/openai.com浏览器Cookie，要求和Codex账号匹配；OpenAIDashboardBrowserCookieImporter.swift:106–145。不是“有Codex token自然有全部网页账单数据”。
+
+Codex PAT（个人访问凭据）补充
+- CodexOAuthCredentials.swift:221–229 从auth.json的personal_access_token / personalAccessToken读取；不是把普通OPENAI_API_KEY当订阅额度凭据。
+- CodexPAT/CodexPATUsageFetcher.swift:18–52 先 GET https://auth.openai.com/api/accounts/v1/user-auth-credential/whoami，拿email、chatgpt_account_id、plan；再向同一wham/usage请求。:101–107 Bearer、User-Agent、originator。
+- CodexPAT/CodexPATFetchStrategy.swift:45–80 PAT 与managed OAuth账户有不同scope规则：managed home/fail-closed home刻意回ambient ~/.codex；普通profile本地有PAT用本地、否则也回ambient。PAT请求必须用whoami返回账号，不能套选中的managed workspace。
+- 本地没有实现PAT首次创建/授权，也没有证明此PAT创建机制或额度权限可开放给新iOS App；应单独验证。
+
+Claude
+- Sources/CodexBar/ClaudeLoginRunner.swift:5–7 执行 claude auth login --claudeai；:76–97 通过伪终端自动按回车等CLI浏览器流程完成。不是自建密码表单。
+- ClaudeOAuth/ClaudeOAuthCredentials.swift:15 Claude Code-credentials Keychain service；:2929–2933 旧默认 ~/.claude/.credentials.json；兼容profile与Claude配置目录。还可用显式环境/手动 token。
+- ClaudeCredentialRouting.swift:42–91 区分 sk-ant-admin（管理API）、sk-ant-oat（OAuth access token）、sessionKey/Cookie；这几种权限与额度来源不同。
+- ClaudeOAuthUsageFetcher.swift:60–98 使用 api.anthropic.com/api/oauth/usage 与 /api/oauth/profile，需beta头 oauth-2025-04-20；401认证失败，429退避。
+- ClaudeOAuthCredentials.swift:1519–1603 记录凭据owner；CLI持有的过期凭据交CLI刷新；环境token不能自动刷新；仅CodexBar拥有的链可走自己的refresh。不能“谁读到了refresh token谁就随手续期”。
+- ClaudeOAuthDelegatedRefreshCoordinator.swift:45–50 有5分钟默认cooldown和20秒short cooldown；:139–156 按profile排队，避免不同账号串线、多线程重复刷新。
+- OAuth外还有浏览器Cookie Web与CLI /usage兜底；CLI文本仅百分比应标低于精确量。docs/claude.md:159提醒 setup-token 是模型调用用途，不是usage权限修复方案。
+- Keychain直接读取和后台修复受明确权限、预告、失败冷却控制；README:219–225；不要把用户点过一次“登录”视作无限制读取所有浏览器凭据。
+
+Copilot
+- CopilotDeviceFlow.swift:9–10 硬编码 VS Code Client ID Iv1.b507a08c87ecfe98，scope read:user。
+- :84–107 POST github.com/login/device/code拿用户码/验证网址；:110–150 POST /login/oauth/access_token轮询device_code，pending继续、slow_down延迟、expired失败。
+- Sources/CodexBar/Providers/Copilot/CopilotLoginFlow.swift:14–34 复制验证码、打开官方网页；:71–105 得到token后查GitHub身份；:120–155 依据稳定身份更新/新增token account。
+- 不是让用户在CodexBar填GitHub密码。登录方式（密码、Passkey、SSO等）交给GitHub。
+- Enterprise host独立，账号匹配使用host和数值ID，不能只按昵称/邮箱合并（docs/copilot.md:20–30）。
+- tokens当前经SettingsStore tokenAccounts写统一配置（SettingsStore+TokenAccounts.swift:6–12,86–87）；老KeychainCopilotTokenStore类存在不代表现在所有token都放Keychain。
+- 不能在发行iOS App时盲目沿用VS Code应用身份。自己的OAuth应用有无Copilot内部额度endpoint权限需验证；完成device flow本身不等于有额度权限。
+
+Gemini
+- GeminiLoginRunner.swift:6–15,48–72 删除 ~/.gemini/oauth_creds.json/google_accounts.json 后用Terminal启动gemini做官方登录；会影响电脑Gemini CLI当前登录，不是纯读取无副作用。
+- GeminiStatusProbe.swift:192–194 已有oauth_creds.json、settings.json与Google refresh endpoint。
+- :222–248 读取auth type，支持Google OAuth，API key/Vertex auth不能当同一种订阅quota读法。
+- :779–803 解析已安装Gemini CLI oauth2.js/bundle里的OAUTH_CLIENT_ID/OAUTH_CLIENT_SECRET；:1088起先看显式env override再找已安装CLI。
+- :806–886 POST oauth2.googleapis.com/token刷新、写回凭据文件的access/id/expiry。
+- 不是从浏览器Cookie取数据。必须区分Gemini CLI/Code Assist quota与Gemini所有消费产品订阅额度。
+- 当前版本还包含consumer-tier shutdown/migration状态，GeminiLoginRunner.swift:24–37只在observed状态禁用会删凭据的登录；不要把源码存在Gemini支持说成每一种个人套餐今日实测可用。
+
+Cursor / Factory /一般网页类
+- CursorLoginRunner.swift:23描述：打开具体浏览器，并等该浏览器cookie store出现session。不是自己收密码，也不是开浏览器就自动取得授权回调。
+- CursorAppAuth.swift:217–220 默认读 Cursor/User/globalStorage/state.vscdb；:263–306 从SQLite ItemTable读cursorAuth/accessToken；:146–147转换成WorkosCursorSessionToken=userID::token。存在macOS/Linux平台条件。
+- 用户网页登录入口、浏览器身份选择、缓存commit都分开；CursorLoginRunner.swift:344明确切换需确认因为浏览器profile可能陈旧。
+- BrowserCookieImportSupport.swift:2–25,49–66 使用macOS SweetCookieKit读取限定域名的浏览器cookie、多profile转换。iOS当前源码无此实现。
+- Chromium需要系统钥匙串Safe Storage解密；Safari可能要Full Disk Access；README:218–225。不是每个平台都有干净的官方开发者API。
+- Factory除cookie还有WorkOS refresh token来源；FactoryStatusProbe.swift:820–839 从FactoryLocalStorageImporter读浏览器localStorage；该importer还读Chrome LevelDB与Safari WebKit SQLite位置。手机不能照搬这些电脑磁盘路径。
+- 一般网页会话过期需回官网登录/再导入；不保证长期refresh token，更不保证后台一直不失效。
+
+StepFun真实例外：存密码
+- README.md:26、212、228宣称“不保存密码”，但README:146又写username/password。
+- Sources/CodexBar/Providers/StepFun/StepFunSettingsStore.swift:5–26 实际把用户名放apiKey、密码放cookieHeader字段；:30–36 token放region字段。是复用字段而非独立密码模型。
+- StepFunProviderDescriptor.swift:158–203 优先manual token→缓存→设置用户名密码登录→环境token→环境用户名密码。
+- StepFunUsageFetcher.swift:435–445 获取 ingress cookie→RegisterDevice→SignInByPassword；:523–539 JSON明文语义password字段通过HTTPS发官方server；登录拿Oasis-Token。:565起续期，descriptor:209起自动恢复/重新登录。
+- CodexBarConfigStore.swift:59–75 把配置编码JSON经CredentialFileWriter保存；CredentialFileWriter.swift:10–21,43–56给目录0700、文件0600和原子替换。这里“secure storage”指严格文件权限；不是代码里把密码加密后只存到Keychain。
+- 建议最终明确“绝大多数平台不存密码，StepFun是本地版本中的例外”，不复述绝对隐私口号。
+
+凭据保存/账户数据结构可借鉴点
+- 普通ProviderTokenAccount（TokenAccounts.swift:3–23）为 id、label、token、addedAt、lastUsed、externalIdentifier、usageScope、organizationID、workspaceID、seatCreditEntitlement；不是仅一个“平台名字→token”。
+- 统一配置默认 ~/.config/codexbar/config.json（CodexBarConfigStore.swift:120–159，兼容~/.codexbar），其tokenAccounts也包含原始secret字符串；权限0600减小本地其他用户读到的风险，不等于iOS应用设计最佳实践。
+- 自动cookie/OAuth缓存常走KeychainCacheStore，service com.steipete.codexbar.cache（:43–45）；CookieHeaderCache按平台/账户/profile隔离(:63–83)。不能笼统声称“所有凭据都明文”或“所有凭据都Keychain”。
+- iOS应考虑模型拆成公开元数据和凭据引用；Keychain存access/refresh/cookie/API key，普通数据库只存provider+accountID+workspace+来源+更新时间+lastError。此为建议，不是现有结构。
+
+迁移与复用最容易踩坑（推断/建议）
+1. 最先做“手机首次授权→查真实额度→过期续期→退出清理”小验证，再承诺几十个平台。UI不是主要难点。
+2. 开源项目许可证允许借代码，与服务商授权你读其账户/使用其client ID是两套问题。源码中硬编码官方应用ID、内部endpoint、浏览器cookie都要分别核查。
+3. 不把Mac读取CLI文件/Keychain/浏览器cookie逻辑直接搬手机；可迁网络解析/统一数据/策略调度，登录获取需另建。
+4. OAuth登录本身只说明用户是谁、给了什么票据；额度权限scope、后端endpoint开放情况须单独确认。
+5. Apple隐藏邮箱或多workspace情况下不要只靠显示邮箱匹配；优先稳定provider用户ID＋workspace/org ID，显示邮箱仅标签。现有项目为此有大量身份核对和取消后不提交逻辑。
+6. refresh token常会轮换；多个客户端/设备抢用同一张refresh票据容易使其他端失效。不能简单把桌面auth.json复制到手机后各刷各的。
+7. 失败要明确“不知道/数据旧了/要重登/权限不够/网络不通”，不能显示0剩余，也不能出错后偷偷切到别人的浏览器账号。
+8. Cookie和access token虽然不是密码，依然可代表用户做事；日志、导出、分析服务、崩溃报告不能收这些内容。当前已有sanitizedForDump token遮罩（TokenAccounts.swift:87–98），值得借用思想。
+9. 手机系统网页登录组件可以返回正式授权回调，不应预期能直接导出Safari第三方会话Cookie；即使自有WebView拿到Cookie，也仍需核查登录方式兼容、平台条款、过期和验证码行为。
+10. 如果纯iOS拿不到某些平台合法可持续凭据，产品需缩小平台范围或采用用户电脑代理只同步额度结果。不能默认服务器能解决登录权限；集中存用户会话反而增加风险和维护负担。

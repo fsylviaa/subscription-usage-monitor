@@ -1,0 +1,69 @@
+{
+  "status": "浅深进入 App 自动更新的设计评审入口已补齐",
+  "createdRootCount": 0,
+  "createdReviewButtonCount": 4,
+  "entries": [
+    {
+      "theme": "Light",
+      "directory": "53:1119634",
+      "button": "89:2444766",
+      "label": "进入 App · 自动更新",
+      "target": "46:158486",
+      "targetName": "R4/Light/Background/App/CheckA",
+      "navigation": "NAVIGATE",
+      "retainedTimeoutButton": "53:1121008",
+      "retainedTimeoutTarget": "46:158267",
+      "passed": "46:158922",
+      "querying": "46:159136",
+      "success": "46:159354",
+      "created": true
+    },
+    {
+      "theme": "Light",
+      "directory": "1:500",
+      "button": "89:2444768",
+      "label": "进入 App · 自动更新",
+      "target": "46:158486",
+      "targetName": "R4/Light/Background/App/CheckA",
+      "navigation": "NAVIGATE",
+      "retainedTimeoutButton": "53:1121036",
+      "retainedTimeoutTarget": "46:158267",
+      "passed": "46:158922",
+      "querying": "46:159136",
+      "success": "46:159354",
+      "created": true
+    },
+    {
+      "theme": "Dark",
+      "directory": "53:1121194",
+      "button": "89:2444770",
+      "label": "进入 App · 自动更新",
+      "target": "53:302898",
+      "targetName": "R4/Dark/Background/App/CheckA",
+      "navigation": "NAVIGATE",
+      "retainedTimeoutButton": "53:1122568",
+      "retainedTimeoutTarget": "53:302679",
+      "passed": "53:303334",
+      "querying": "53:303548",
+      "success": "53:303766",
+      "created": true
+    },
+    {
+      "theme": "Dark",
+      "directory": "1:4088",
+      "button": "89:2444772",
+      "label": "进入 App · 自动更新",
+      "target": "53:302898",
+      "targetName": "R4/Dark/Background/App/CheckA",
+      "navigation": "NAVIGATE",
+      "retainedTimeoutButton": "53:1122596",
+      "retainedTimeoutTarget": "53:302679",
+      "passed": "53:303334",
+      "querying": "53:303548",
+      "success": "53:303766",
+      "created": true
+    }
+  ],
+  "scope": "Only a new review button in each existing original/R4 directory. Existing CheckA → CheckB → Passed → Querying → Success chain and timeout/retry entry are unchanged.",
+  "actualClickValidation": "pending; this native write receipt does not establish an observed prototype run"
+}

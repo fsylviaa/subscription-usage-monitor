@@ -1,0 +1,2262 @@
+{
+  "status": "只读分批审计汇总；不代表实际点击验证",
+  "schemaVersion": 1,
+  "runId": "r4compact-1791504787585",
+  "started": "2026-10-09T00:13:07.585Z",
+  "counts": {
+    "Light": {
+      "roots": 14485,
+      "primaryRoots": 14483,
+      "legacyRoots": 2,
+      "visibleRoots": 14483,
+      "nodes": 915107,
+      "visibleNodes": 726851,
+      "texts": 204193,
+      "visibleTexts": 151705,
+      "reactionLayers": 88797,
+      "visibleReactionLayers": 88695,
+      "reactions": 88797,
+      "nodeActions": 58661,
+      "visibleNodeActions": 58559,
+      "closeBackActions": 30136
+    },
+    "Dark": {
+      "roots": 14485,
+      "primaryRoots": 14483,
+      "legacyRoots": 2,
+      "visibleRoots": 14483,
+      "nodes": 915107,
+      "visibleNodes": 726851,
+      "texts": 204193,
+      "visibleTexts": 151705,
+      "reactionLayers": 88796,
+      "visibleReactionLayers": 88695,
+      "reactions": 88796,
+      "nodeActions": 58660,
+      "visibleNodeActions": 58559,
+      "closeBackActions": 30136
+    }
+  },
+  "queues": {
+    "Light": {
+      "processed": 14485,
+      "queued": 14485,
+      "remaining": 0
+    },
+    "Dark": {
+      "processed": 14485,
+      "queued": 14485,
+      "remaining": 0
+    }
+  },
+  "issueCounts": {
+    "hiddenTargets": 53,
+    "legacyTargets": 52,
+    "themeReactionMismatch": 1
+  },
+  "incompleteRoots": 0,
+  "legacyUnscanned": 0,
+  "finished": "2026-10-09T00:27:11.703Z",
+  "sections": [
+    {
+      "id": "1:43251",
+      "theme": "Light",
+      "role": "review",
+      "name": "浅色 · R4 画面评审 · 保留 44 页",
+      "childCount": 49,
+      "frameCount": 49,
+      "visibleFrameCount": 44,
+      "primaryRootCount": 44,
+      "directoryHash": "bb5727df:79873673:2622"
+    },
+    {
+      "id": "1:43252",
+      "theme": "Light",
+      "role": "interaction",
+      "name": "浅色 · R4 交互状态与返回路径 · 关键评审置顶",
+      "childCount": 16189,
+      "frameCount": 16189,
+      "visibleFrameCount": 14439,
+      "primaryRootCount": 14439,
+      "directoryHash": "192ae7f4:4f2d8114:1181677"
+    },
+    {
+      "id": "1:43253",
+      "theme": "Dark",
+      "role": "review",
+      "name": "深色 · R4 画面评审 · 保留 44 页",
+      "childCount": 49,
+      "frameCount": 49,
+      "visibleFrameCount": 44,
+      "primaryRootCount": 44,
+      "directoryHash": "3beebb9b:7581ad65:2577"
+    },
+    {
+      "id": "1:43254",
+      "theme": "Dark",
+      "role": "interaction",
+      "name": "深色 · R4 交互状态与返回路径 · 关键评审置顶",
+      "childCount": 16189,
+      "frameCount": 16189,
+      "visibleFrameCount": 14439,
+      "primaryRootCount": 14439,
+      "directoryHash": "668f0066:3d40452a:1165146"
+    }
+  ],
+  "comparison": {
+    "pairedRoots": 14483,
+    "primaryCanonicalNames": 14483,
+    "normalization": "Theme-normalized root/path/text; NODE destination canonical root/path; full sorted trigger/action/transition values; dual incremental 32-bit hashes plus length/counts. No per-text geometry dump."
+  },
+  "graph": {
+    "configuredDeclaredCount": 2,
+    "configuredEntryCount": 2,
+    "reviewAndConfiguredEntryCount": 94,
+    "reachableRoots": 28642,
+    "inspectedReachableRoots": 28642,
+    "rootsWithKnownEscape": 28966
+  },
+  "issues": {
+    "hiddenTargets": {
+      "count": 53,
+      "samples": [
+        {
+          "rootId": "46:140983",
+          "root": "R4/Light/Widgets/Detail/B",
+          "nodeId": "46:147874",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42236",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:140983",
+          "root": "R4/Light/Widgets/Detail/B",
+          "nodeId": "46:147882",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:141286",
+          "root": "R4/Light/Widgets/Detail/C",
+          "nodeId": "46:147966",
+          "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42236",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:141286",
+          "root": "R4/Light/Widgets/Detail/C",
+          "nodeId": "46:147974",
+          "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:141589",
+          "root": "R4/Light/Widgets/Detail/D",
+          "nodeId": "46:148048",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42238",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Cursor|||small"
+        },
+        {
+          "rootId": "46:141589",
+          "root": "R4/Light/Widgets/Detail/D",
+          "nodeId": "46:148056",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:144327",
+          "root": "R4/Light/Widgets/Accounts/ABCD",
+          "nodeId": "46:149137",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:144327",
+          "root": "R4/Light/Widgets/Accounts/ABCD",
+          "nodeId": "46:149303",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:144914",
+          "root": "R4/Light/Widgets/Accounts/ABD",
+          "nodeId": "46:149558",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:145413",
+          "root": "R4/Light/Widgets/Accounts/AD",
+          "nodeId": "46:149725",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:146479",
+          "root": "R4/Light/Widgets/Accounts/ABCDE",
+          "nodeId": "46:150169",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:146479",
+          "root": "R4/Light/Widgets/Accounts/ABCDE",
+          "nodeId": "46:150335",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:146479",
+          "root": "R4/Light/Widgets/Accounts/ABCDE",
+          "nodeId": "46:150405",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42236",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:146479",
+          "root": "R4/Light/Widgets/Accounts/ABCDE",
+          "nodeId": "46:150413",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:147154",
+          "root": "R4/Light/Widgets/Accounts/ABDE",
+          "nodeId": "46:150600",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:147154",
+          "root": "R4/Light/Widgets/Accounts/ABDE",
+          "nodeId": "46:150678",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:147154",
+          "root": "R4/Light/Widgets/Accounts/ABDE",
+          "nodeId": "46:150748",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42236",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:147154",
+          "root": "R4/Light/Widgets/Accounts/ABDE",
+          "nodeId": "46:150756",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "53:893425",
+          "root": "R4/Light/AccountSystem/Set-15/Settings-denied",
+          "nodeId": "53:893478",
+          "path": "$/Scroll viewport/Content/Group/通用/Row/额度显示",
+          "sourceVisible": false,
+          "destinationId": "1:2249",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "Light/Display"
+        },
+        {
+          "rootId": "14:42236",
+          "root": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "14:43706",
+          "path": "$/Scroll viewport/Content/Refresh status/Action/refresh",
+          "sourceVisible": false,
+          "destinationId": "14:43839",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Codex||refresh|small"
+        },
+        {
+          "rootId": "14:42236",
+          "root": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "I14:43754;14:15212",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "14:42236",
+          "root": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "I14:43800;14:15286",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+          "sourceVisible": false,
+          "destinationId": "14:42238",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Cursor|||small"
+        },
+        {
+          "rootId": "14:42236",
+          "root": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "I14:43800;14:15298",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "14:42238",
+          "root": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "14:43915",
+          "path": "$/Scroll viewport/Content/Refresh status/Action/refresh",
+          "sourceVisible": false,
+          "destinationId": "14:44048",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Cursor||refresh|small"
+        },
+        {
+          "rootId": "14:42238",
+          "root": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "I14:43963;14:15200",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+          "sourceVisible": false,
+          "destinationId": "14:42236",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "14:42238",
+          "root": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "I14:43963;14:15212",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "14:42238",
+          "root": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "I14:44007;14:15298",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:151344",
+          "root": "R4/Dark/Widgets/Detail/B",
+          "nodeId": "46:151601",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42698",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:151344",
+          "root": "R4/Dark/Widgets/Detail/B",
+          "nodeId": "46:151609",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:151647",
+          "root": "R4/Dark/Widgets/Detail/C",
+          "nodeId": "46:151904",
+          "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42698",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:151647",
+          "root": "R4/Dark/Widgets/Detail/C",
+          "nodeId": "46:151912",
+          "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:151950",
+          "root": "R4/Dark/Widgets/Detail/D",
+          "nodeId": "46:152197",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42700",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small"
+        },
+        {
+          "rootId": "46:151950",
+          "root": "R4/Dark/Widgets/Detail/D",
+          "nodeId": "46:152205",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:154688",
+          "root": "R4/Dark/Widgets/Accounts/ABCD",
+          "nodeId": "46:155045",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:154688",
+          "root": "R4/Dark/Widgets/Accounts/ABCD",
+          "nodeId": "46:155211",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:155275",
+          "root": "R4/Dark/Widgets/Accounts/ABD",
+          "nodeId": "46:155710",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:155774",
+          "root": "R4/Dark/Widgets/Accounts/AD",
+          "nodeId": "46:156121",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:156840",
+          "root": "R4/Dark/Widgets/Accounts/ABCDE",
+          "nodeId": "46:157197",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:156840",
+          "root": "R4/Dark/Widgets/Accounts/ABCDE",
+          "nodeId": "46:157363",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:156840",
+          "root": "R4/Dark/Widgets/Accounts/ABCDE",
+          "nodeId": "46:157433",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42698",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:156840",
+          "root": "R4/Dark/Widgets/Accounts/ABCDE",
+          "nodeId": "46:157441",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:157515",
+          "root": "R4/Dark/Widgets/Accounts/ABDE",
+          "nodeId": "46:157872",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:157515",
+          "root": "R4/Dark/Widgets/Accounts/ABDE",
+          "nodeId": "46:157950",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:157515",
+          "root": "R4/Dark/Widgets/Accounts/ABDE",
+          "nodeId": "46:158020",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42698",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:157515",
+          "root": "R4/Dark/Widgets/Accounts/ABDE",
+          "nodeId": "46:158028",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "14:42698",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "14:46626",
+          "path": "$/Scroll viewport/Content/Refresh status/Action/refresh",
+          "sourceVisible": false,
+          "destinationId": "14:46759",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Codex||refresh|small"
+        },
+        {
+          "rootId": "14:42698",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "I14:46674;14:15766",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "14:42698",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "I14:46720;14:15840",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+          "sourceVisible": false,
+          "destinationId": "14:42700",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small"
+        },
+        {
+          "rootId": "14:42698",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "I14:46720;14:15852",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "14:42700",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "14:46835",
+          "path": "$/Scroll viewport/Content/Refresh status/Action/refresh",
+          "sourceVisible": false,
+          "destinationId": "14:46968",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Cursor||refresh|small"
+        },
+        {
+          "rootId": "14:42700",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "I14:46883;14:15754",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+          "sourceVisible": false,
+          "destinationId": "14:42698",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "14:42700",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "I14:46883;14:15766",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "14:42700",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "I14:46927;14:15852",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        }
+      ],
+      "omitted": 0
+    },
+    "legacyTargets": {
+      "count": 52,
+      "samples": [
+        {
+          "rootId": "46:140983",
+          "root": "R4/Light/Widgets/Detail/B",
+          "nodeId": "46:147874",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42236",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:140983",
+          "root": "R4/Light/Widgets/Detail/B",
+          "nodeId": "46:147882",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:141286",
+          "root": "R4/Light/Widgets/Detail/C",
+          "nodeId": "46:147966",
+          "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42236",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:141286",
+          "root": "R4/Light/Widgets/Detail/C",
+          "nodeId": "46:147974",
+          "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:141589",
+          "root": "R4/Light/Widgets/Detail/D",
+          "nodeId": "46:148048",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42238",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Cursor|||small"
+        },
+        {
+          "rootId": "46:141589",
+          "root": "R4/Light/Widgets/Detail/D",
+          "nodeId": "46:148056",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:144327",
+          "root": "R4/Light/Widgets/Accounts/ABCD",
+          "nodeId": "46:149137",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:144327",
+          "root": "R4/Light/Widgets/Accounts/ABCD",
+          "nodeId": "46:149303",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:144914",
+          "root": "R4/Light/Widgets/Accounts/ABD",
+          "nodeId": "46:149558",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:145413",
+          "root": "R4/Light/Widgets/Accounts/AD",
+          "nodeId": "46:149725",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:146479",
+          "root": "R4/Light/Widgets/Accounts/ABCDE",
+          "nodeId": "46:150169",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:146479",
+          "root": "R4/Light/Widgets/Accounts/ABCDE",
+          "nodeId": "46:150335",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:146479",
+          "root": "R4/Light/Widgets/Accounts/ABCDE",
+          "nodeId": "46:150405",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42236",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:146479",
+          "root": "R4/Light/Widgets/Accounts/ABCDE",
+          "nodeId": "46:150413",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:147154",
+          "root": "R4/Light/Widgets/Accounts/ABDE",
+          "nodeId": "46:150600",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:147154",
+          "root": "R4/Light/Widgets/Accounts/ABDE",
+          "nodeId": "46:150678",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:147154",
+          "root": "R4/Light/Widgets/Accounts/ABDE",
+          "nodeId": "46:150748",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42236",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:147154",
+          "root": "R4/Light/Widgets/Accounts/ABDE",
+          "nodeId": "46:150756",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "14:42236",
+          "root": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "14:43706",
+          "path": "$/Scroll viewport/Content/Refresh status/Action/refresh",
+          "sourceVisible": false,
+          "destinationId": "14:43839",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Codex||refresh|small"
+        },
+        {
+          "rootId": "14:42236",
+          "root": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "I14:43754;14:15212",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "14:42236",
+          "root": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "I14:43800;14:15286",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+          "sourceVisible": false,
+          "destinationId": "14:42238",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Cursor|||small"
+        },
+        {
+          "rootId": "14:42236",
+          "root": "R2/Light|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "I14:43800;14:15298",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "14:42238",
+          "root": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "14:43915",
+          "path": "$/Scroll viewport/Content/Refresh status/Action/refresh",
+          "sourceVisible": false,
+          "destinationId": "14:44048",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Cursor||refresh|small"
+        },
+        {
+          "rootId": "14:42238",
+          "root": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "I14:43963;14:15200",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+          "sourceVisible": false,
+          "destinationId": "14:42236",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Light|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "14:42238",
+          "root": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "I14:43963;14:15212",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42237",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "14:42238",
+          "root": "R2/Light|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "I14:44007;14:15298",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42239",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Light|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:151344",
+          "root": "R4/Dark/Widgets/Detail/B",
+          "nodeId": "46:151601",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42698",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:151344",
+          "root": "R4/Dark/Widgets/Detail/B",
+          "nodeId": "46:151609",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:151647",
+          "root": "R4/Dark/Widgets/Detail/C",
+          "nodeId": "46:151904",
+          "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42698",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:151647",
+          "root": "R4/Dark/Widgets/Detail/C",
+          "nodeId": "46:151912",
+          "path": "$/Scroll viewport/Content/Quota/Codex · work/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:151950",
+          "root": "R4/Dark/Widgets/Detail/D",
+          "nodeId": "46:152197",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42700",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small"
+        },
+        {
+          "rootId": "46:151950",
+          "root": "R4/Dark/Widgets/Detail/D",
+          "nodeId": "46:152205",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:154688",
+          "root": "R4/Dark/Widgets/Accounts/ABCD",
+          "nodeId": "46:155045",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:154688",
+          "root": "R4/Dark/Widgets/Accounts/ABCD",
+          "nodeId": "46:155211",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:155275",
+          "root": "R4/Dark/Widgets/Accounts/ABD",
+          "nodeId": "46:155710",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:155774",
+          "root": "R4/Dark/Widgets/Accounts/AD",
+          "nodeId": "46:156121",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:156840",
+          "root": "R4/Dark/Widgets/Accounts/ABCDE",
+          "nodeId": "46:157197",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:156840",
+          "root": "R4/Dark/Widgets/Accounts/ABCDE",
+          "nodeId": "46:157363",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:156840",
+          "root": "R4/Dark/Widgets/Accounts/ABCDE",
+          "nodeId": "46:157433",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42698",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:156840",
+          "root": "R4/Dark/Widgets/Accounts/ABCDE",
+          "nodeId": "46:157441",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:157515",
+          "root": "R4/Dark/Widgets/Accounts/ABDE",
+          "nodeId": "46:157872",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "46:157515",
+          "root": "R4/Dark/Widgets/Accounts/ABDE",
+          "nodeId": "46:157950",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "46:157515",
+          "root": "R4/Dark/Widgets/Accounts/ABDE",
+          "nodeId": "46:158020",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Expand account",
+          "sourceVisible": true,
+          "destinationId": "14:42698",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "46:157515",
+          "root": "R4/Dark/Widgets/Accounts/ABDE",
+          "nodeId": "46:158028",
+          "path": "$/Scroll viewport/Content/Quota/Codex · backup/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "14:42698",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "14:46626",
+          "path": "$/Scroll viewport/Content/Refresh status/Action/refresh",
+          "sourceVisible": false,
+          "destinationId": "14:46759",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Codex||refresh|small"
+        },
+        {
+          "rootId": "14:42698",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "I14:46674;14:15766",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "14:42698",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "I14:46720;14:15840",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Expand account",
+          "sourceVisible": false,
+          "destinationId": "14:42700",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small"
+        },
+        {
+          "rootId": "14:42698",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Codex|||small",
+          "nodeId": "I14:46720;14:15852",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        },
+        {
+          "rootId": "14:42700",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "14:46835",
+          "path": "$/Scroll viewport/Content/Refresh status/Action/refresh",
+          "sourceVisible": false,
+          "destinationId": "14:46968",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Cursor||refresh|small"
+        },
+        {
+          "rootId": "14:42700",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "I14:46883;14:15754",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Expand account",
+          "sourceVisible": false,
+          "destinationId": "14:42698",
+          "navigation": "NAVIGATE",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.28,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "SMART_ANIMATE"
+          },
+          "target": "R2/Dark|Dashboard|7|R|0|old|Codex|||small"
+        },
+        {
+          "rootId": "14:42700",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "I14:46883;14:15766",
+          "path": "$/Scroll viewport/Content/Quota/Codex/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42699",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Codex||small"
+        },
+        {
+          "rootId": "14:42700",
+          "root": "R2/Dark|Dashboard|7|R|0|old|Cursor|||small",
+          "nodeId": "I14:46927;14:15852",
+          "path": "$/Scroll viewport/Content/Quota/Cursor/Card header/Action/more",
+          "sourceVisible": false,
+          "destinationId": "14:42701",
+          "navigation": "OVERLAY",
+          "trigger": {
+            "type": "ON_CLICK"
+          },
+          "transition": {
+            "duration": 0.18,
+            "easing": {
+              "type": "EASE_OUT"
+            },
+            "type": "DISSOLVE"
+          },
+          "target": "R2/Dark|Menu|7|R|0|old||Cursor||small"
+        }
+      ],
+      "omitted": 0
+    },
+    "themeReactionMismatch": {
+      "count": 1,
+      "samples": [
+        {
+          "key": "interaction/R4/{theme}/AccountSystem/Set-15/Settings-denied",
+          "lightId": "53:893425",
+          "darkId": "53:895028",
+          "light": "cc4291d4:3fd690dc:6374",
+          "dark": "c23f336b:d13c4805:6051"
+        }
+      ],
+      "omitted": 0
+    }
+  },
+  "truncation": {
+    "sampleCapPerCategory": 80,
+    "sampleBudgetBytes": 1200000,
+    "sampleBytesRetained": 41467,
+    "issueCountTotalsAreUntruncated": true,
+    "outputBytes": 45427,
+    "outputCapBytes": 1800000
+  },
+  "limitations": [
+    "Freeze authoring during all batches. Directory changes are detected; in-place content changes between batches are not versioned by this read-only audit.",
+    "Only R4 roots and visible R3 review frames are primary; visible edges may add up to the declared legacy-root budget. Unscanned legacy targets are counted.",
+    "Theme equality uses dual hashes plus lengths/counts rather than retaining every normalized text/reaction object. Hash equality is practical evidence, not a mathematical collision proof.",
+    "Visible means inherited visible flags. Zero opacity does not disable a clickable hotspot. Background/overlay runtime stack behavior needs actual click validation.",
+    "Geometry flags focus on text/click targets clipped or outside root/button bounds; legitimate scroll axes are excluded. Occlusion, font rendering and semantic TXT synonyms need screenshots.",
+    "No-exit candidates are conservative: CLOSE/BACK/URL/external actions and paths to them count as escape. Conditional branches are treated as possible."
+  ]
+}

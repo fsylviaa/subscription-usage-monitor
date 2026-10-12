@@ -1,0 +1,116 @@
+{
+  "status": "paused_by_user",
+  "savedAt": "2026-10-09T00:29:23.640100+00:00",
+  "reason": "用户要求记录保存当前检查结果后暂停，等待明确继续指令。",
+  "figmaFileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+  "currentDesignBackup": {
+    "path": "design/订阅额度 iPhone 原型-R4-检查暂停点-2026-10-09.fig",
+    "bytes": 10293242,
+    "sha256": "f795c2d9c5a842126ee60ccd7a836c1120a5916dc00d5612b73198dd48cf9359",
+    "nativeZipVerified": true,
+    "finalDelivery": false
+  },
+  "audit": {
+    "path": "design/figma-r4-audit-before-final-fixes.json",
+    "bytes": 72230,
+    "runId": "r4compact-1791504787585",
+    "counts": {
+      "Light": {
+        "roots": 14485,
+        "primaryRoots": 14483,
+        "legacyRoots": 2,
+        "visibleRoots": 14483,
+        "nodes": 915107,
+        "visibleNodes": 726851,
+        "texts": 204193,
+        "visibleTexts": 151705,
+        "reactionLayers": 88797,
+        "visibleReactionLayers": 88695,
+        "reactions": 88797,
+        "nodeActions": 58661,
+        "visibleNodeActions": 58559,
+        "closeBackActions": 30136
+      },
+      "Dark": {
+        "roots": 14485,
+        "primaryRoots": 14483,
+        "legacyRoots": 2,
+        "visibleRoots": 14483,
+        "nodes": 915107,
+        "visibleNodes": 726851,
+        "texts": 204193,
+        "visibleTexts": 151705,
+        "reactionLayers": 88796,
+        "visibleReactionLayers": 88695,
+        "reactions": 88796,
+        "nodeActions": 58660,
+        "visibleNodeActions": 58559,
+        "closeBackActions": 30136
+      }
+    },
+    "queues": {
+      "Light": {
+        "processed": 14485,
+        "queued": 14485,
+        "remaining": 0
+      },
+      "Dark": {
+        "processed": 14485,
+        "queued": 14485,
+        "remaining": 0
+      }
+    },
+    "issueCounts": {
+      "hiddenTargets": 53,
+      "legacyTargets": 52,
+      "themeReactionMismatch": 1
+    },
+    "incompleteRoots": 0,
+    "legacyUnscanned": 0,
+    "graph": {
+      "configuredDeclaredCount": 2,
+      "configuredEntryCount": 2,
+      "reviewAndConfiguredEntryCount": 94,
+      "reachableRoots": 28642,
+      "inspectedReachableRoots": 28642,
+      "rootsWithKnownEscape": 28966
+    },
+    "candidateInterpretation": "hiddenTargets与legacyTargets重叠，不能相加；均尚未逐项诊断。此文件不是最终通过报告。"
+  },
+  "evidence": {
+    "clickObservations": 71,
+    "uniquePixelCheckedClickImages": 45,
+    "nativeScreenshots": 90,
+    "allNativeScreenshotsReviewed": true
+  },
+  "openActualIssue": {
+    "id": "R4-OBS-ISSUE-003",
+    "description": "小号组件work配置完成、详情关闭后，Home返回进入账号管理页。浅深共享Home对应修复候选尚未应用。",
+    "homeIds": [
+      "46:142410",
+      "46:152771"
+    ],
+    "configIds": [
+      "46:142344",
+      "46:152705"
+    ]
+  },
+  "unappliedCandidates": [
+    "design/figma-plugin/r4-widget-return-repair.js",
+    "design/figma-plugin/r4-audit-compact-next.js"
+  ],
+  "runtime": {
+    "pluginClosed": true,
+    "auditNoLongerRunning": true,
+    "nativeFileLeftOpen": true,
+    "cloudSync": "not_fully_verified",
+    "nativeMemoryPercentAtPause": 94.28,
+    "nativeRecoveryMode": true
+  },
+  "resumeOrder": [
+    "先阅读暂停记录、交接及before-final-fixes审计，核对原文件同步和内存状态。",
+    "在原节点范围核验并局部修复小号返回和实际旧连线问题；不直接重跑生成或清理脚本。",
+    "修复后重新实际点击验证并进行最终只读审计。",
+    "确认云端同步、保存最终原生备份并更新交付记录。"
+  ]
+}

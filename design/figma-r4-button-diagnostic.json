@@ -1,0 +1,441 @@
+{
+  "status": "Dark 按钮文字只读诊断",
+  "mutatedNodeCount": 0,
+  "roots": [
+    {
+      "id": "46:139187",
+      "name": "R4/Dark/Dark · R4 NET · Review 50 · 有效评分 50 · 已阻止",
+      "buttons": [
+        {
+          "id": "46:139223",
+          "name": "Button/重试",
+          "type": "INSTANCE",
+          "visible": true,
+          "opacity": 1,
+          "x": 20,
+          "y": 91,
+          "width": 353,
+          "height": 44,
+          "bounds": {
+            "x": 10851,
+            "y": 89954,
+            "width": 353,
+            "height": 44
+          },
+          "fills": [
+            {
+              "type": "SOLID",
+              "visible": true,
+              "opacity": 1,
+              "blendMode": "NORMAL",
+              "color": {
+                "r": 0.9607843160629272,
+                "g": 0.9607843160629272,
+                "b": 0.9607843160629272
+              },
+              "boundVariables": {}
+            }
+          ],
+          "fillStyleId": "S:c9b4d823ad733e97ceeb4312d99f354d4f632e23,",
+          "clipsContent": false,
+          "layoutMode": "VERTICAL",
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "FIXED",
+          "primaryAxisAlignItems": "CENTER",
+          "counterAxisAlignItems": "CENTER",
+          "padding": {
+            "top": 0,
+            "bottom": 0,
+            "left": 0,
+            "right": 0
+          },
+          "texts": [
+            {
+              "id": "I46:139223;1:154",
+              "name": "继续",
+              "characters": "重试",
+              "visible": true,
+              "opacity": 1,
+              "x": 160.5,
+              "y": 10.5,
+              "width": 32,
+              "height": 23,
+              "bounds": {
+                "x": 11011.5,
+                "y": 89964.5,
+                "width": 32,
+                "height": 23
+              },
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "visible": true,
+                  "opacity": 1,
+                  "blendMode": "NORMAL",
+                  "color": {
+                    "r": 0.06666667014360428,
+                    "g": 0.06666667014360428,
+                    "b": 0.06666667014360428
+                  },
+                  "boundVariables": {}
+                }
+              ],
+              "fillStyleId": "S:ec5a6af3c5325a2240a814a59fdbc8ce3bd023e1,",
+              "fontName": {
+                "family": "PingFang SC",
+                "style": "Semibold"
+              },
+              "fontSize": 16,
+              "lineHeight": {
+                "unit": "PIXELS",
+                "value": 23
+              },
+              "hasMissingFont": false,
+              "textAutoResize": "WIDTH_AND_HEIGHT",
+              "layoutPositioning": "AUTO",
+              "layoutGrow": 0,
+              "contrast": 17.32023859639836,
+              "clippedBy": []
+            }
+          ]
+        },
+        {
+          "id": "46:139225",
+          "name": "Button/取消",
+          "type": "INSTANCE",
+          "visible": true,
+          "opacity": 1,
+          "x": 20,
+          "y": 147,
+          "width": 353,
+          "height": 44,
+          "bounds": {
+            "x": 10851,
+            "y": 90010,
+            "width": 353,
+            "height": 44
+          },
+          "fills": [
+            {
+              "type": "SOLID",
+              "visible": true,
+              "opacity": 1,
+              "blendMode": "NORMAL",
+              "color": {
+                "r": 0.14509804546833038,
+                "g": 0.14509804546833038,
+                "b": 0.14509804546833038
+              },
+              "boundVariables": {}
+            }
+          ],
+          "fillStyleId": "S:45c9d801b94392cbb96bcd0b026920ef1c8331bf,",
+          "clipsContent": false,
+          "layoutMode": "VERTICAL",
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "FIXED",
+          "primaryAxisAlignItems": "CENTER",
+          "counterAxisAlignItems": "CENTER",
+          "padding": {
+            "top": 0,
+            "bottom": 0,
+            "left": 0,
+            "right": 0
+          },
+          "texts": [
+            {
+              "id": "I46:139225;1:156",
+              "name": "继续",
+              "characters": "取消",
+              "visible": true,
+              "opacity": 1,
+              "x": 160.5,
+              "y": 10.5,
+              "width": 32,
+              "height": 23,
+              "bounds": {
+                "x": 11011.5,
+                "y": 90020.5,
+                "width": 32,
+                "height": 23
+              },
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "visible": true,
+                  "opacity": 1,
+                  "blendMode": "NORMAL",
+                  "color": {
+                    "r": 0.9803921580314636,
+                    "g": 0.9803921580314636,
+                    "b": 0.9803921580314636
+                  },
+                  "boundVariables": {}
+                }
+              ],
+              "fillStyleId": "S:f370799c7d1a552b53d5fb9eba36d283f368a536,",
+              "fontName": {
+                "family": "PingFang SC",
+                "style": "Semibold"
+              },
+              "fontSize": 16,
+              "lineHeight": {
+                "unit": "PIXELS",
+                "value": 23
+              },
+              "hasMissingFont": false,
+              "textAutoResize": "WIDTH_AND_HEIGHT",
+              "layoutPositioning": "AUTO",
+              "layoutGrow": 0,
+              "contrast": 14.68569493030006,
+              "clippedBy": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "46:139567",
+      "name": "R4/Dark/Dark · R4 NET · Review timeout · timeout · 无法完成检查",
+      "buttons": [
+        {
+          "id": "46:139603",
+          "name": "Button/重试",
+          "type": "INSTANCE",
+          "visible": true,
+          "opacity": 1,
+          "x": 20,
+          "y": 91,
+          "width": 353,
+          "height": 44,
+          "bounds": {
+            "x": 9552,
+            "y": 90858,
+            "width": 353,
+            "height": 44
+          },
+          "fills": [
+            {
+              "type": "SOLID",
+              "visible": true,
+              "opacity": 1,
+              "blendMode": "NORMAL",
+              "color": {
+                "r": 0.9607843160629272,
+                "g": 0.9607843160629272,
+                "b": 0.9607843160629272
+              },
+              "boundVariables": {}
+            }
+          ],
+          "fillStyleId": "S:c9b4d823ad733e97ceeb4312d99f354d4f632e23,",
+          "clipsContent": false,
+          "layoutMode": "VERTICAL",
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "FIXED",
+          "primaryAxisAlignItems": "CENTER",
+          "counterAxisAlignItems": "CENTER",
+          "padding": {
+            "top": 0,
+            "bottom": 0,
+            "left": 0,
+            "right": 0
+          },
+          "texts": [
+            {
+              "id": "I46:139603;1:154",
+              "name": "继续",
+              "characters": "重试",
+              "visible": true,
+              "opacity": 1,
+              "x": 160.5,
+              "y": 10.5,
+              "width": 32,
+              "height": 23,
+              "bounds": {
+                "x": 9712.5,
+                "y": 90868.5,
+                "width": 32,
+                "height": 23
+              },
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "visible": true,
+                  "opacity": 1,
+                  "blendMode": "NORMAL",
+                  "color": {
+                    "r": 0.06666667014360428,
+                    "g": 0.06666667014360428,
+                    "b": 0.06666667014360428
+                  },
+                  "boundVariables": {}
+                }
+              ],
+              "fillStyleId": "S:ec5a6af3c5325a2240a814a59fdbc8ce3bd023e1,",
+              "fontName": {
+                "family": "PingFang SC",
+                "style": "Semibold"
+              },
+              "fontSize": 16,
+              "lineHeight": {
+                "unit": "PIXELS",
+                "value": 23
+              },
+              "hasMissingFont": false,
+              "textAutoResize": "WIDTH_AND_HEIGHT",
+              "layoutPositioning": "AUTO",
+              "layoutGrow": 0,
+              "contrast": 17.32023859639836,
+              "clippedBy": []
+            }
+          ]
+        },
+        {
+          "id": "46:139605",
+          "name": "Button/取消",
+          "type": "INSTANCE",
+          "visible": true,
+          "opacity": 1,
+          "x": 20,
+          "y": 147,
+          "width": 353,
+          "height": 44,
+          "bounds": {
+            "x": 9552,
+            "y": 90914,
+            "width": 353,
+            "height": 44
+          },
+          "fills": [
+            {
+              "type": "SOLID",
+              "visible": true,
+              "opacity": 1,
+              "blendMode": "NORMAL",
+              "color": {
+                "r": 0.14509804546833038,
+                "g": 0.14509804546833038,
+                "b": 0.14509804546833038
+              },
+              "boundVariables": {}
+            }
+          ],
+          "fillStyleId": "S:45c9d801b94392cbb96bcd0b026920ef1c8331bf,",
+          "clipsContent": false,
+          "layoutMode": "VERTICAL",
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "FIXED",
+          "primaryAxisAlignItems": "CENTER",
+          "counterAxisAlignItems": "CENTER",
+          "padding": {
+            "top": 0,
+            "bottom": 0,
+            "left": 0,
+            "right": 0
+          },
+          "texts": [
+            {
+              "id": "I46:139605;1:156",
+              "name": "继续",
+              "characters": "取消",
+              "visible": true,
+              "opacity": 1,
+              "x": 160.5,
+              "y": 10.5,
+              "width": 32,
+              "height": 23,
+              "bounds": {
+                "x": 9712.5,
+                "y": 90924.5,
+                "width": 32,
+                "height": 23
+              },
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "visible": true,
+                  "opacity": 1,
+                  "blendMode": "NORMAL",
+                  "color": {
+                    "r": 0.9803921580314636,
+                    "g": 0.9803921580314636,
+                    "b": 0.9803921580314636
+                  },
+                  "boundVariables": {}
+                }
+              ],
+              "fillStyleId": "S:f370799c7d1a552b53d5fb9eba36d283f368a536,",
+              "fontName": {
+                "family": "PingFang SC",
+                "style": "Semibold"
+              },
+              "fontSize": 16,
+              "lineHeight": {
+                "unit": "PIXELS",
+                "value": 23
+              },
+              "hasMissingFont": false,
+              "textAutoResize": "WIDTH_AND_HEIGHT",
+              "layoutPositioning": "AUTO",
+              "layoutGrow": 0,
+              "contrast": 14.68569493030006,
+              "clippedBy": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "incoming": [
+    {
+      "node": "46:139141",
+      "root": "46:139141",
+      "name": "R4/Dark/Dark · R4 NET · Review 50 · 检查中 B",
+      "trigger": {
+        "type": "AFTER_TIMEOUT",
+        "timeout": 0.550000011920929
+      },
+      "action": {
+        "type": "NODE",
+        "destinationId": "46:139187",
+        "navigation": "SWAP",
+        "transition": {
+          "type": "DISSOLVE",
+          "easing": {
+            "type": "EASE_OUT"
+          },
+          "duration": 0.18000000715255737
+        },
+        "resetVideoPosition": false,
+        "resetScrollPosition": false,
+        "resetInteractiveComponents": false
+      }
+    },
+    {
+      "node": "46:139521",
+      "root": "46:139521",
+      "name": "R4/Dark/Dark · R4 NET · Review timeout · 检查中 B",
+      "trigger": {
+        "type": "AFTER_TIMEOUT",
+        "timeout": 0.550000011920929
+      },
+      "action": {
+        "type": "NODE",
+        "destinationId": "46:139567",
+        "navigation": "SWAP",
+        "transition": {
+          "type": "DISSOLVE",
+          "easing": {
+            "type": "EASE_OUT"
+          },
+          "duration": 0.18000000715255737
+        },
+        "resetVideoPosition": false,
+        "resetScrollPosition": false,
+        "resetInteractiveComponents": false
+      }
+    }
+  ],
+  "note": "Snapshots include actual fills, opacity, geometry and ancestor clipping. Matching siblings are searched for incoming transitions; no mutation has run."
+}

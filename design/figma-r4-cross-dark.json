@@ -1,0 +1,13 @@
+{
+  "status": "Dark Claude 后继续添加 Cursor 的代表性路径已接入",
+  "version": "1",
+  "sourceMask": 31,
+  "targetMask": 95,
+  "provider": "Cursor",
+  "account": "new.cursor@example.com",
+  "source": "53:586734",
+  "check": "65:2179278",
+  "readyModels": 16,
+  "pendingModels": 48,
+  "originalModelBatchesRerun": 0
+}

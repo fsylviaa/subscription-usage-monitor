@@ -1,0 +1,772 @@
+{
+  "status": "Light cleanup stage complete; final R4 acceptance pending",
+  "theme": "Light",
+  "complete": true,
+  "sourceOfCompletion": "design/figma-r4-cleanup-light-complete.json",
+  "completedIndices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "total": 32,
+  "remainingLegacyEdges": [],
+  "preservedReviewRootIds": [
+    "1:500",
+    "14:41953",
+    "1:536",
+    "14:42234",
+    "1:2169",
+    "14:49110",
+    "14:42459",
+    "1:939",
+    "14:42235",
+    "14:43670",
+    "14:43879",
+    "14:44088",
+    "14:49365",
+    "14:42457",
+    "14:43671",
+    "1:2503",
+    "14:45732",
+    "14:42067",
+    "1:3510",
+    "14:43112",
+    "1:3584",
+    "14:41954",
+    "14:42297",
+    "14:42299",
+    "14:42298",
+    "14:44147",
+    "14:42461",
+    "14:42460",
+    "1:3676",
+    "14:42449",
+    "14:42233",
+    "14:42451",
+    "14:42450",
+    "14:42452",
+    "14:42453",
+    "14:42454",
+    "14:42455",
+    "14:42456",
+    "14:42458",
+    "14:50564",
+    "1:2311",
+    "1:2347",
+    "14:43072",
+    "14:48956"
+  ],
+  "preservedReviewRootCount": 44,
+  "protectedRootIds": [
+    "1:500",
+    "1:536",
+    "1:2169",
+    "14:42067",
+    "1:3510",
+    "14:43112",
+    "1:3584",
+    "14:42460",
+    "1:2311",
+    "1:2347",
+    "14:43072",
+    "14:48956"
+  ],
+  "createdRootCount": null,
+  "createdRootCountUnavailableIndices": [
+    0,
+    23,
+    31
+  ],
+  "countPolicy": "Do not infer missing counts or use skipped:true as zero historical creation. Root totals require final native directory audit.",
+  "finalRepeatedVerification": {
+    "index": 31,
+    "skipped": true,
+    "hiddenLegacyRootIds": [],
+    "interpretation": "The prior successful final execution already hid legacy roots. This repeated receipt lists no newly hidden roots and does not mean hiding was omitted.",
+    "legacyVisibleCount": "pending_delivery_read_only_verification"
+  },
+  "index1Recovery": {
+    "initialFailure": "OVERLAY SmartAnimate incompatible during flush",
+    "fix": "DISSOLVE",
+    "rerun": "succeeded",
+    "existingRootsReused": true
+  },
+  "batches": [
+    {
+      "index": 0,
+      "report": null,
+      "status": "successful_native_execution_observed_by_executing_agent",
+      "createdRootCount": null,
+      "observedMade": 29,
+      "note": "No saved native receipt; observed made value is not promoted to a complete created-root count."
+    },
+    {
+      "index": 1,
+      "report": "design/figma-r4-cleanup-light-1.json",
+      "nativeResult": {
+        "index": 1,
+        "id": "14:42234",
+        "name": "R2/Light|Dashboard|7|R|0|old|Claude|||small",
+        "textCorrections": [],
+        "sourceContexts": [
+          {
+            "mask": 15,
+            "id": "14:42234"
+          }
+        ],
+        "navigationBoundary": "Settings and successful addition use the existing same-binding R4 model. Query failure, cancellation, reconnect failure, expanded details, and disconnect retain the visual source data.",
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 2,
+      "report": "design/figma-r4-cleanup-light-2.json",
+      "nativeResult": {
+        "index": 2,
+        "id": "14:49110",
+        "name": "R2/Light|Settings|7|R|1|old||||small",
+        "textCorrections": [],
+        "replacedChildren": true,
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 3,
+      "report": "design/figma-r4-cleanup-light-3.json",
+      "nativeResult": {
+        "index": 3,
+        "id": "14:42459",
+        "name": "R2/Light|Settings|7|R|2|old||||small",
+        "textCorrections": [],
+        "replacedChildren": true,
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 4,
+      "report": "design/figma-r4-cleanup-light-4.json",
+      "nativeResult": {
+        "index": 4,
+        "id": "1:939",
+        "name": "Light/Connect",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 5,
+      "report": "design/figma-r4-cleanup-light-5.json",
+      "nativeResult": {
+        "index": 5,
+        "id": "14:42235",
+        "name": "R2/Light|Menu|7|R|0|old||Claude||small",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 6,
+      "report": "design/figma-r4-cleanup-light-6.json",
+      "nativeResult": {
+        "index": 6,
+        "id": "14:43670",
+        "name": "R2/Light|Login|7|R|0|old||Claude||small",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 7,
+      "report": "design/figma-r4-cleanup-light-7.json",
+      "nativeResult": {
+        "index": 7,
+        "id": "14:43879",
+        "name": "R2/Light|Login|7|R|0|old||Codex||small",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 8,
+      "report": "design/figma-r4-cleanup-light-8.json",
+      "nativeResult": {
+        "index": 8,
+        "id": "14:44088",
+        "name": "R2/Light|Login|7|R|0|old||Cursor||small",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 9,
+      "report": "design/figma-r4-cleanup-light-9.json",
+      "nativeResult": {
+        "index": 9,
+        "id": "14:49365",
+        "name": "R2/Light|Connecting|7|R|0|old||Claude||small",
+        "textCorrections": [],
+        "staticLoadingIllustration": true,
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 10,
+      "report": "design/figma-r4-cleanup-light-10.json",
+      "nativeResult": {
+        "index": 10,
+        "id": "14:42457",
+        "name": "R2/Light|Failed|7|R|0|old||Claude||small",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 11,
+      "report": "design/figma-r4-cleanup-light-11.json",
+      "nativeResult": {
+        "index": 11,
+        "id": "14:43671",
+        "name": "R2/Light|Disconnect|7|R|0|old||Claude||small",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 12,
+      "report": "design/figma-r4-cleanup-light-12.json",
+      "nativeResult": {
+        "index": 12,
+        "id": "1:2503",
+        "name": "Light/Permission",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 13,
+      "report": "design/figma-r4-cleanup-light-13.json",
+      "nativeResult": {
+        "index": 13,
+        "id": "14:45732",
+        "name": "R2/Light|System|7|R|2|old||||small",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 14,
+      "report": "design/figma-r4-cleanup-light-14.json",
+      "nativeResult": {
+        "index": 14,
+        "id": "14:41954",
+        "name": "R2/Light|WidgetReview|7|R|0|old||Claude||small",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 15,
+      "report": "design/figma-r4-cleanup-light-15.json",
+      "nativeResult": {
+        "index": 15,
+        "id": "14:42297",
+        "name": "R2/Light|WidgetReview|7|R|0|old||Claude||medium",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 16,
+      "report": "design/figma-r4-cleanup-light-16.json",
+      "nativeResult": {
+        "index": 16,
+        "id": "14:42299",
+        "name": "R2/Light|WidgetConfig|7|R|0|old||Claude||small",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 17,
+      "report": "design/figma-r4-cleanup-light-17.json",
+      "nativeResult": {
+        "index": 17,
+        "id": "14:42298",
+        "name": "R2/Light|SystemHome|7|R|0|old||Claude||small",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 18,
+      "report": "design/figma-r4-cleanup-light-18.json",
+      "nativeResult": {
+        "index": 18,
+        "id": "14:44147",
+        "name": "R2/Light|SystemHome|7|R|0|old||Claude||medium",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 19,
+      "report": "design/figma-r4-cleanup-light-19.json",
+      "nativeResult": {
+        "index": 19,
+        "id": "14:42461",
+        "name": "R2/Light|WidgetState|7|R|0|old||Codex||small",
+        "textCorrections": [],
+        "createdRootCount": 1
+      },
+      "createdRootCount": 1
+    },
+    {
+      "index": 20,
+      "report": "design/figma-r4-cleanup-light-20.json",
+      "nativeResult": {
+        "index": 20,
+        "id": "1:3676",
+        "name": "Light/StateReview",
+        "textCorrections": [],
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 21,
+      "report": "design/figma-r4-cleanup-light-21.json",
+      "nativeResult": {
+        "index": 21,
+        "id": "14:42449",
+        "name": "R2/Light|Dashboard|0|R|0|old|||initial|small",
+        "textCorrections": [],
+        "sourceContexts": [
+          {
+            "mask": 0,
+            "id": "14:42449"
+          }
+        ],
+        "navigationBoundary": "Settings and successful addition use the existing same-binding R4 model. Query failure, cancellation, reconnect failure, expanded details, and disconnect retain the visual source data.",
+        "createdRootCount": 0
+      },
+      "createdRootCount": 0
+    },
+    {
+      "index": 22,
+      "report": "design/figma-r4-cleanup-light-22.json",
+      "nativeResult": {
+        "index": 22,
+        "id": "14:42233",
+        "name": "R2/Light|Dashboard|7|R|0|old|||refresh|small",
+        "textCorrections": [],
+        "sourceContexts": [
+          {
+            "mask": 15,
+            "id": "14:42233"
+          }
+        ],
+        "navigationBoundary": "Settings and successful addition use the existing same-binding R4 model. Query failure, cancellation, reconnect failure, expanded details, and disconnect retain the visual source data.",
+        "createdRootCount": 12
+      },
+      "createdRootCount": 12
+    },
+    {
+      "index": 23,
+      "report": "design/figma-r4-cleanup-light-23.json",
+      "nativeResult": {
+        "index": 23,
+        "id": "14:42451",
+        "skipped": true
+      },
+      "createdRootCount": null
+    },
+    {
+      "index": 24,
+      "report": "design/figma-r4-cleanup-light-24.json",
+      "nativeResult": {
+        "index": 24,
+        "id": "14:42450",
+        "name": "R2/Light|Dashboard|7|R|0|old|||nodata|small",
+        "textCorrections": [],
+        "sourceContexts": [
+          {
+            "mask": 1,
+            "id": "94:2523348"
+          },
+          {
+            "mask": 3,
+            "id": "94:2523527"
+          },
+          {
+            "mask": 5,
+            "id": "94:2523706"
+          },
+          {
+            "mask": 7,
+            "id": "94:2523885"
+          },
+          {
+            "mask": 9,
+            "id": "94:2524064"
+          },
+          {
+            "mask": 11,
+            "id": "94:2524243"
+          },
+          {
+            "mask": 13,
+            "id": "94:2524422"
+          },
+          {
+            "mask": 15,
+            "id": "14:42450"
+          }
+        ],
+        "navigationBoundary": "Settings and successful addition use the existing same-binding R4 model. Query failure, cancellation, reconnect failure, expanded details, and disconnect retain the visual source data.",
+        "createdRootCount": 34
+      },
+      "createdRootCount": 34
+    },
+    {
+      "index": 25,
+      "report": "design/figma-r4-cleanup-light-25.json",
+      "nativeResult": {
+        "index": 25,
+        "id": "14:42452",
+        "name": "R2/Light|Dashboard|7|R|0|old|||expired|small",
+        "textCorrections": [],
+        "sourceContexts": [
+          {
+            "mask": 1,
+            "id": "94:2526344"
+          },
+          {
+            "mask": 3,
+            "id": "94:2526523"
+          },
+          {
+            "mask": 5,
+            "id": "94:2526702"
+          },
+          {
+            "mask": 7,
+            "id": "94:2526881"
+          },
+          {
+            "mask": 9,
+            "id": "94:2527060"
+          },
+          {
+            "mask": 11,
+            "id": "94:2527239"
+          },
+          {
+            "mask": 13,
+            "id": "94:2527418"
+          },
+          {
+            "mask": 15,
+            "id": "14:42452"
+          }
+        ],
+        "navigationBoundary": "Settings and successful addition use the existing same-binding R4 model. Query failure, cancellation, reconnect failure, expanded details, and disconnect retain the visual source data.",
+        "createdRootCount": 34
+      },
+      "createdRootCount": 34
+    },
+    {
+      "index": 26,
+      "report": "design/figma-r4-cleanup-light-26.json",
+      "nativeResult": {
+        "index": 26,
+        "id": "14:42453",
+        "name": "R2/Light|Dashboard|7|R|0|old|||unavailable|small",
+        "textCorrections": [],
+        "sourceContexts": [
+          {
+            "mask": 8,
+            "id": "94:2529370"
+          },
+          {
+            "mask": 9,
+            "id": "94:2529559"
+          },
+          {
+            "mask": 10,
+            "id": "94:2529748"
+          },
+          {
+            "mask": 11,
+            "id": "94:2529937"
+          },
+          {
+            "mask": 12,
+            "id": "94:2530126"
+          },
+          {
+            "mask": 13,
+            "id": "94:2530315"
+          },
+          {
+            "mask": 14,
+            "id": "94:2530504"
+          },
+          {
+            "mask": 15,
+            "id": "14:42453"
+          }
+        ],
+        "navigationBoundary": "Settings and successful addition use the existing same-binding R4 model. Query failure, cancellation, reconnect failure, expanded details, and disconnect retain the visual source data.",
+        "createdRootCount": 34
+      },
+      "createdRootCount": 34
+    },
+    {
+      "index": 27,
+      "report": "design/figma-r4-cleanup-light-27.json",
+      "nativeResult": {
+        "index": 27,
+        "id": "14:42454",
+        "name": "R2/Light|Dashboard|7|R|0|old|||unknown|small",
+        "textCorrections": [],
+        "sourceContexts": [
+          {
+            "mask": 8,
+            "id": "94:2532466"
+          },
+          {
+            "mask": 9,
+            "id": "94:2532655"
+          },
+          {
+            "mask": 10,
+            "id": "94:2532844"
+          },
+          {
+            "mask": 11,
+            "id": "94:2533033"
+          },
+          {
+            "mask": 12,
+            "id": "94:2533222"
+          },
+          {
+            "mask": 13,
+            "id": "94:2533411"
+          },
+          {
+            "mask": 14,
+            "id": "94:2533600"
+          },
+          {
+            "mask": 15,
+            "id": "14:42454"
+          }
+        ],
+        "navigationBoundary": "Settings and successful addition use the existing same-binding R4 model. Query failure, cancellation, reconnect failure, expanded details, and disconnect retain the visual source data.",
+        "createdRootCount": 34
+      },
+      "createdRootCount": 34
+    },
+    {
+      "index": 28,
+      "report": "design/figma-r4-cleanup-light-28.json",
+      "nativeResult": {
+        "index": 28,
+        "id": "14:42455",
+        "name": "R2/Light|Dashboard|7|R|0|old|||unlimited|small",
+        "textCorrections": [],
+        "sourceContexts": [
+          {
+            "mask": 8,
+            "id": "94:2535559"
+          },
+          {
+            "mask": 9,
+            "id": "94:2535747"
+          },
+          {
+            "mask": 10,
+            "id": "94:2535935"
+          },
+          {
+            "mask": 11,
+            "id": "94:2536123"
+          },
+          {
+            "mask": 12,
+            "id": "94:2536311"
+          },
+          {
+            "mask": 13,
+            "id": "94:2536499"
+          },
+          {
+            "mask": 14,
+            "id": "94:2536687"
+          },
+          {
+            "mask": 15,
+            "id": "14:42455"
+          }
+        ],
+        "navigationBoundary": "Settings and successful addition use the existing same-binding R4 model. Query failure, cancellation, reconnect failure, expanded details, and disconnect retain the visual source data.",
+        "createdRootCount": 34
+      },
+      "createdRootCount": 34
+    },
+    {
+      "index": 29,
+      "report": "design/figma-r4-cleanup-light-29.json",
+      "nativeResult": {
+        "index": 29,
+        "id": "14:42456",
+        "name": "R2/Light|Dashboard|7|R|0|old|||noreset|small",
+        "textCorrections": [],
+        "sourceContexts": [
+          {
+            "mask": 8,
+            "id": "94:2538634"
+          },
+          {
+            "mask": 9,
+            "id": "94:2538821"
+          },
+          {
+            "mask": 10,
+            "id": "94:2539008"
+          },
+          {
+            "mask": 11,
+            "id": "94:2539195"
+          },
+          {
+            "mask": 12,
+            "id": "94:2539382"
+          },
+          {
+            "mask": 13,
+            "id": "94:2539569"
+          },
+          {
+            "mask": 14,
+            "id": "94:2539756"
+          },
+          {
+            "mask": 15,
+            "id": "14:42456"
+          }
+        ],
+        "navigationBoundary": "Settings and successful addition use the existing same-binding R4 model. Query failure, cancellation, reconnect failure, expanded details, and disconnect retain the visual source data.",
+        "createdRootCount": 34
+      },
+      "createdRootCount": 34
+    },
+    {
+      "index": 30,
+      "report": "design/figma-r4-cleanup-light-30.json",
+      "nativeResult": {
+        "index": 30,
+        "id": "14:42458",
+        "name": "R2/Light|Dashboard|7|R|0|old|||due|small",
+        "textCorrections": [],
+        "sourceContexts": [
+          {
+            "mask": 1,
+            "id": "94:2542011"
+          },
+          {
+            "mask": 3,
+            "id": "94:2542227"
+          },
+          {
+            "mask": 5,
+            "id": "94:2542443"
+          },
+          {
+            "mask": 7,
+            "id": "94:2542659"
+          },
+          {
+            "mask": 9,
+            "id": "94:2542875"
+          },
+          {
+            "mask": 11,
+            "id": "94:2543091"
+          },
+          {
+            "mask": 13,
+            "id": "94:2543307"
+          },
+          {
+            "mask": 15,
+            "id": "14:42458"
+          }
+        ],
+        "navigationBoundary": "Settings and successful addition use the existing same-binding R4 model. Query failure, cancellation, reconnect failure, expanded details, and disconnect retain the visual source data.",
+        "createdRootCount": 51
+      },
+      "createdRootCount": 51
+    },
+    {
+      "index": 31,
+      "report": "design/figma-r4-cleanup-light-complete.json",
+      "nativeResult": {
+        "index": 31,
+        "id": "14:50564",
+        "skipped": true
+      },
+      "createdRootCount": null,
+      "note": "Final repeated verification; skipped:true after the preceding successful execution."
+    }
+  ],
+  "finalStaticAndClickValidation": "pending"
+}

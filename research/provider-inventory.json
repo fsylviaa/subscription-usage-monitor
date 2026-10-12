@@ -1,0 +1,4222 @@
+[
+  {
+    "id": "codex",
+    "name": "Codex",
+    "quota": "会话/5小时、每周及平台实际报告的附加模型/月度窗口、恢复时间；可选reset credits库存、代码审查与网页明细；本机token费用估算",
+    "auth": "Codex PAT个人访问token；Codex OAuth凭据；Codex CLI RPC；可选ChatGPT网页会话。App自动主路径为PAT→OAuth→CLI。",
+    "category": "混合",
+    "categoryDetail": "订阅+余额+本地估算",
+    "iosNotes": "额度网络请求与解析可抽取，但完整iOS接入需重做凭据取得、账号绑定、安全保存和续期；手机不能读取Mac的Codex认证文件或运行Codex CLI。PAT仅当前官方Business/Enterprise范围，不能据此承诺普通个人订阅可直接接入。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/codex.md",
+    "docLine": 34,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Codex",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift",
+    "descriptorLine": 12,
+    "bundledJavaScript": false,
+    "notes": "Codex订阅≠OpenAI API；PAT当前官方面向Business/Enterprise（主研究已核实）。自动主路径PAT→OAuth→CLI；网页extras另行获取。桌面auth文件、CLI及其续期不能在独立iPhone应用中原样复用。",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "网页登录与授权均需验证",
+      "login": "候选A：在本App独立WKWebView打开ChatGPT官方登录页，登录完成后用WKHTTPCookieStore取得本App自己的会话，再接已有网页请求。候选B：确认本App获准的Sign in with ChatGPT客户端、回调及额度权限后用ASWebAuthenticationSession。Business/Enterprise还可评估手贴PAT。Apple、邮箱、SSO逐种实测，密码只交官方页面。",
+      "storage": "网页Cookie留在按账号隔离的WK数据仓；供原生请求使用的会话Cookie/临时accessToken放Keychain并记录账户和工作区。获准OAuth的access/refresh token及PAT分类型保存；退出清理网页与Keychain两处。",
+      "renewal": "网页路线：Cookie仍有效时可再请求/api/auth/session取得会话accessToken；这不是OAuth refresh_token，也不保证长久免登录，失效需重登。独立获准OAuth按其规则刷新；PAT失效重新签发。现有CLI共享凭据不能由手机另行轮换。",
+      "update": "源码网页路线先带Cookie GET chatgpt.com/backend-api/wham/usage；401时带同一Cookie GET /api/auth/session，读accessToken与user.email，再以Cookie+Bearer重试wham/usage，得到限额/重置/credits。工作区月度用量与remaining_balance按响应账户按需补查。OAuth/PAT另按账户范围查询，PAT先whoami确认。",
+      "blocker": "WK路线有明确源码连接点，但原实现限macOS，未证明手机登录、风控、条款或接口长期允许；Apple/邮箱/SSO需分别验证。Safari/ASWeb不导出Cookie。会话返回email不替代稳定账号/工作区校验。正式登录集成不自动授予额度权限；PAT非Plus/Pro通用入口。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBar/CLILoginRunner.swift",
+          "line": 31,
+          "reason": "首次登录调用官方CLI"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Codex/CodexProviderDescriptor.swift",
+          "line": 150,
+          "reason": "PAT→OAuth→CLI；465行共享续期禁止"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Codex/CodexPAT/CodexPATUsageFetcher.swift",
+          "line": 18,
+          "reason": "PAT先whoami再查账号额度"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher+SessionAuthorization.swift",
+          "line": 29,
+          "reason": "源码已有Cookie直查→401取会话accessToken→同Cookie与Bearer重试；文件当前限macOS"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher+SessionAuthorization.swift",
+          "line": 109,
+          "reason": "/api/auth/session返回accessToken与email；并非refresh_token交换"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher.swift",
+          "line": 24,
+          "reason": "网页usage端点是/backend-api/wham/usage"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/OpenAIWeb/OpenAIDashboardFetcher.swift",
+          "line": 1106,
+          "reason": "按账户补查月度用量、remaining_balance；余额请求带工作区头"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "openai",
+    "name": "OpenAI",
+    "quota": "组织或项目API费用、tokens、请求趋势；旧接口余额回退",
+    "auth": "组织Admin API key；普通API key仅旧余额路径",
+    "category": "余额费用",
+    "categoryDetail": "API花费/余额",
+    "iosNotes": "组织Admin API key的网络请求与解析可抽取，但不是ChatGPT/Codex登录方案；iOS应明确管理员权限范围、安全保管密钥并验证平台授权。普通个人订阅不能靠此key取得额度。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/openai.md",
+    "docLine": 15,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/openai.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/OpenAI/OpenAIAPIProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "不查询ChatGPT/Codex订阅；项目服务账号key不能代替组织Admin key，旧余额接口非当前公开API",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "拟让组织管理员在官方控制台创建Admin API key，用户粘贴；不是ChatGPT网页登录授权。",
+      "storage": "Admin key放Keychain；组织/项目ID及Keychain引用放普通配置，按账号隔离。",
+      "renewal": "API key不走refresh token；撤销、失效或权限不足时引导管理员换key。",
+      "update": "原生HTTPS请求/v1/organization/costs和/usage/completions；需要时带project_ids。",
+      "blocker": "只查API组织费用/用量，不查ChatGPT订阅；项目service-account key不能代替Admin key，不以旧credit_grants作为稳定首版。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/openai.md",
+          "line": 17,
+          "reason": "组织成本/用量及项目scope"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/openai.md",
+          "line": 38,
+          "reason": "Admin key与服务账号key不同"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "azureopenai",
+    "name": "Azure OpenAI",
+    "quota": "配置的部署是否能调用",
+    "auth": "Azure API key+endpoint+deployment",
+    "category": "其他",
+    "categoryDetail": "连接验证",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/azure-openai.md",
+    "docLine": 59,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/AzureOpenAI",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/AzureOpenAI/AzureOpenAIProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "仅部署验证，不提供Azure费用/额度；每次刷新会发真实ping模型请求，可能计费（v1最多64 completion tokens；旧接口max_tokens=1）。",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "仅辅助指标",
+      "login": "拟手工填写Azure资源key、HTTPS endpoint、deployment及API版本；无需网页登录。",
+      "storage": "key放Keychain；endpoint/deployment放绑定该key的配置，禁止把key发到用户误填的其他主机。",
+      "renewal": "无OAuth续期；key轮换由用户更新，失效后停止探测。",
+      "update": "仅用户主动验证时发chat/completions最小ping；此实现没有Azure剩余额度或费用接口。",
+      "blocker": "每次探测可能计费；v1最多64 completion tokens，旧接口max_tokens=1。网页登录+Keychain也不会凭空补出额度数据。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/azure-openai.md",
+          "line": 16,
+          "reason": "所需key/endpoint/deployment"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/azure-openai.md",
+          "line": 61,
+          "reason": "真实模型验证请求及参数"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/azure-openai.md",
+          "line": 79,
+          "reason": "可能产生费用且不是额度读取"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "claude",
+    "name": "Claude",
+    "quota": "会话/5小时、每周及模型专属窗口；可选额外用量/云会话credits；Admin API组织费用；本地token估算",
+    "auth": "Claude OAuth；网页Cookie；CLI PTY；组织Admin API key",
+    "category": "混合",
+    "categoryDetail": "订阅+API花费+本地估算",
+    "iosNotes": "订阅额度的网络解析可抽取，但桌面OAuth文件/Keychain、CLI PTY及桌面Cookie来源不可用于独立iPhone应用；需重新取得平台允许的移动登录与续期能力。组织Admin API key仅对应API账单，不能代替个人订阅登录。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/claude.md",
+    "docLine": 26,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Claude",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Claude/ClaudeProviderDescriptor.swift",
+    "descriptorLine": 5,
+    "bundledJavaScript": false,
+    "notes": "订阅/管理员账单/本地估算是不同来源；各窗口取决于账户返回",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "网页登录与授权均需验证",
+      "login": "候选A：在本App独立WKWebView完成claude.ai官方登录，由原生WKHTTPCookieStore取得自有sessionKey（含HttpOnly Cookie），接现有ClaudeWebAPIFetcher。候选B：获准本App OAuth客户端/usage权限后接系统授权回调。组织账单可手贴Admin key。Apple/邮箱/SSO等实际登录入口逐种验证。",
+      "storage": "自有sessionKey与对应组织ID放Keychain，WK会话按账号独立保存；OAuth凭据、Admin key另行隔离。退出清网页Cookie和Keychain，不能读取Safari/Claude App的凭据。",
+      "renewal": "网页请求返回新的sessionKey时同步Cookie仓与Keychain；源码会观察成功响应的Set-Cookie轮换，但不保证永不失效，过期重登。独立获准OAuth才按其授权刷新；现有CLI链由Claude CLI负责。",
+      "update": "网页Cookie: sessionKey=… 先GET claude.ai/api/organizations选组织，再GET /api/organizations/{id}/usage，按需读/prepaid/credits。OAuth走api.anthropic.com/api/oauth/usage及profile；Admin API是组织费用，不能替代个人订阅。",
+      "blocker": "WK会话路线与源码请求可衔接，但嵌入式登录、身份供应商跳转和风控未实测；不能把WK当通用保证。ASWeb不交出Cookie；CLI/setup-token不等于第三方手机有usage权限；组织选择错误会串账号。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBar/ClaudeLoginRunner.swift",
+          "line": 6,
+          "reason": "现有首次登录是claude auth login"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Claude/ClaudeOAuth/ClaudeOAuthCredentials.swift",
+          "line": 1561,
+          "reason": "按凭据owner决定谁刷新"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Claude/ClaudeOAuth/ClaudeOAuthUsageFetcher.swift",
+          "line": 60,
+          "reason": "usage/profile与所需请求头"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/claude.md",
+          "line": 159,
+          "reason": "setup-token不补usage权限"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Claude/ClaudeWeb/ClaudeWebAPIFetcher.swift",
+          "line": 104,
+          "reason": "sessionKey网页请求的组织→usage→prepaid端点"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Claude/ClaudeWeb/ClaudeWebAPIFetcher.swift",
+          "line": 596,
+          "reason": "组织请求把sessionKey放Cookie头"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Claude/ClaudeWeb/ClaudeWebAPIFetcher.swift",
+          "line": 1149,
+          "reason": "成功响应中的Set-Cookie可轮换sessionKey"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "clinepass",
+    "name": "ClinePass",
+    "quota": "5小时、每周、每月订阅额度及恢复时间",
+    "auth": "Cline API key；读取cline auth现有OAuth会话文件",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "API key路径的网络请求与解析较易抽取；现有cline auth会话路径依赖电脑登录文件且由Cline负责续期，iOS必须重新设计获准的登录和更新凭据流程，不能读电脑文件。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/clinepass.md",
+    "docLine": 45,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/clinepass.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/ClinePass/ClinePassProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "不提供Cline PAYG余额；会话到期交给Cline重新登录",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "拟优先让用户从Cline获取API key后粘贴；不复制电脑cline auth会话文件。",
+      "storage": "每个ClinePass账号key放Keychain，标签和选中账号ID单独保存。",
+      "renewal": "key失效手动替换；源码只读CLI access token且不续期，手机不应冒充拥有其刷新链。",
+      "update": "HTTPS GET api.cline.bot/api/v1/users/me/plan/usage-limits，显示返回的5小时/周/月窗口。",
+      "blocker": "需确认用户key被此接口接受及授权条件；不含Cline PAYG余额。ASWeb网页登录不是该key路径必要步骤。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/clinepass.md",
+          "line": 10,
+          "reason": "明确API key与CLI会话两条来源"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/clinepass.md",
+          "line": 26,
+          "reason": "CLI会话不刷新"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/clinepass.md",
+          "line": 47,
+          "reason": "具体额度endpoint"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "cursor",
+    "name": "Cursor",
+    "quota": "套餐总量、Cursor与第三方额度、账期；可选Grok Bot独立周额度；按源可含费用/tokens/请求及企业成员预算",
+    "auth": "Mac优先Cursor.app本地SQLite登录token，再网页Cookie/缓存；可手动Cookie",
+    "category": "混合",
+    "categoryDetail": "订阅+花费",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/cursor.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Cursor",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Cursor/CursorProviderDescriptor.swift",
+    "descriptorLine": 5,
+    "bundledJavaScript": false,
+    "notes": "App和网页可能不同账户；手机没有电脑Cursor数据库",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "候选：本App独立WKWebView打开cursor.com官方登录页；登录后由原生WKHTTPCookieStore读取自有WorkosCursorSessionToken，再传给已有CursorStatusProbe。Apple、邮箱、SSO等实际入口分别验证；不能读手机Cursor或Safari数据。",
+      "storage": "按账号独立WK数据仓；需要原生HTTPS时把WorkosCursorSessionToken及到期时间存Keychain，退出清Cookie和Keychain。",
+      "renewal": "接受本会话的Set-Cookie更新；登录失效时重新打开同账号登录流程。现有电脑SQLite access token不是可移植刷新链。",
+      "update": "原生HTTPS带同一Cookie GET cursor.com/api/usage-summary读取计划与额度；GET /api/auth/me取得用户身份，按稳定用户ID归属数据。旧版/api/usage和团队账单补充也须保持同一会话/团队。",
+      "blocker": "有Cookie→请求的源码连接点，仍未证实iOS中嵌入登录、跨站跳转、SSO及风控允许；ASWeb只能接获准回调，不能导出Safari Cookie。桌面SQLite的token拼Cookie是另一来源，手机不能照搬。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Cursor/CursorAppAuth.swift",
+          "line": 146,
+          "reason": "WorkosCursorSessionToken结构"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Cursor/CursorAppAuth.swift",
+          "line": 217,
+          "reason": "电脑数据库路径"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/cursor.md",
+          "line": 11,
+          "reason": "来源与账户差异"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Cursor/CursorStatusProbe.swift",
+          "line": 1368,
+          "reason": "/api/usage-summary以提供的Cookie请求"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Cursor/CursorStatusProbe.swift",
+          "line": 1456,
+          "reason": "/api/auth/me使用同一Cookie取得账户身份"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "opencode",
+    "name": "OpenCode",
+    "quota": "工作区Go 5小时/周额度；Zen预付余额；无Go的PAYG工作区30天费用",
+    "auth": "opencode.ai网页Cookie，选定workspace",
+    "category": "混合",
+    "categoryDetail": "订阅+API余额/花费",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/opencode.md",
+    "docLine": 10,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/OpenCode",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/OpenCode/OpenCodeProviderDescriptor.swift",
+    "descriptorLine": 5,
+    "bundledJavaScript": false,
+    "notes": "与OpenCode Go独立入口但会有重叠；不是所有OpenCode内使用其他服务的额度",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "拟在允许的WKWebView中登录opencode.ai并让用户选workspace；拿本App会话，不读取Safari Cookie。",
+      "storage": "auth和/或__Host-console_session存本App Cookie仓；原生请求所需值存Keychain，workspace ID随账户保存。",
+      "renewal": "沿同会话响应更新Cookie；失效重新登录。源码未提供可借用的手机OAuth刷新链。",
+      "update": "用Cookie列/console/api/orgs；选定x-org-id后读/go/status及/billing/status；旧页面另需/_server协议适配。",
+      "blocker": "网页登录是否允许嵌入、私有接口及旧server function ID都需验证；此入口不是“OpenCode里用到的全部平台额度”。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/opencode.md",
+          "line": 11,
+          "reason": "Cookie与Console接口"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/opencode.md",
+          "line": 34,
+          "reason": "旧server函数协议"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/opencode.md",
+          "line": 83,
+          "reason": "workspace绑定"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "opencodego",
+    "name": "OpenCode Go",
+    "quota": "5小时/周/月额度；本机opencode-go费用与tokens历史",
+    "auth": "API key；网页Cookie；本机SQLite",
+    "category": "混合",
+    "categoryDetail": "订阅+本地估算",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/opencodego.md",
+    "docLine": 10,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/OpenCodeGo",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/OpenCodeGo/OpenCodeGoProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "仅本地记录时额度为估算且账期可能偏移；手机不能直接读电脑数据库",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "拟优先手贴OpenCode Go API key；网页Cookie仅作为另行验证的可选来源。",
+      "storage": "每个key放Keychain，账号标签独立；不要合并电脑本地数据库记录。",
+      "renewal": "key失效要求替换；Cookie备用失效要求重新网页登录，不自动换另一账号。",
+      "update": "GET opencode.ai/zen/go/v1/usage，读取该key对应的rolling/weekly/monthly比例和reset。",
+      "blocker": "API路径不带电脑SQLite历史；纯手机不能得到原机本地费用估算。需验证key种类与平台许可。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/opencode.md",
+          "line": 14,
+          "reason": "API key与usage endpoint"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/opencode.md",
+          "line": 65,
+          "reason": "选定key隔离、不回退别的凭据"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/opencodego.md",
+          "line": 10,
+          "reason": "本地历史为另一路"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "alibaba",
+    "name": "Alibaba Coding Plan",
+    "quota": "Alibaba Coding Plan 5小时/周/月已用总量与恢复时间",
+    "auth": "百炼/Model Studio网页Cookie优先；API key备用",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/alibaba-coding-plan.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Alibaba",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Alibaba/AlibabaCodingPlanProviderDescriptor.swift",
+    "descriptorLine": 8,
+    "bundledJavaScript": false,
+    "notes": "大陆部分账户API key路径要求网页登录；需绑定国际/大陆区域",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "密钥或网页需分区验证",
+      "login": "拟先让用户选国际/大陆区并贴对应Coding Plan key；若返回ConsoleNeedLogin，再单独验证自有WKWebView控制台登录，不能宣称key必然足够。",
+      "storage": "key或本App控制台Cookie分开存Keychain；Cookie仓、sec_token、账号及region保持同scope。",
+      "renewal": "key撤销重填；网页登录Cookie随会话更新，失效重登并重取sec_token，无统一OAuth续期保证。",
+      "update": "对所选Model Studio/Bailian主机POST /data/api.json的queryCodingPlanInstanceInfoV2，解析5小时/周/月窗口。",
+      "blocker": "文档以网页会话为基线，部分大陆账号key路径不可用；跨域阿里云登录/验证码与WK兼容需实测，不能跨区乱发key。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/alibaba-coding-plan.md",
+          "line": 11,
+          "reason": "网页基线与次要API路径"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/alibaba-coding-plan.md",
+          "line": 29,
+          "reason": "区域endpoint"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/alibaba-coding-plan.md",
+          "line": 38,
+          "reason": "大陆ConsoleNeedLogin限制"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "alibabatokenplan",
+    "name": "Alibaba Token Plan",
+    "quota": "Team token-plan credits；Personal/Solo 5小时/7天/月度窗口与到期时间",
+    "auth": "已登录Bailian bl CLI；浏览器或手动Cookie",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/alibaba-token-plan.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Alibaba",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Alibaba/AlibabaTokenPlanProviderDescriptor.swift",
+    "descriptorLine": 8,
+    "bundledJavaScript": false,
+    "notes": "不支持API key；团队、个人和地域入口必须选对",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "拟验证独立WKWebView阿里云/百炼登录；用户明确选Team或Personal/Solo及国际/大陆区。手机不用bl CLI。",
+      "storage": "按账号和区域隔离WK Cookie仓；原生请求的域名限定Cookie、可用sec_token放Keychain，选区单独存。",
+      "renewal": "随网页会话更新Cookie；过期重登，重取控制台sec_token。不能用API key替代此认证。",
+      "update": "Team查GetSubscriptionSummary；Personal/Solo查usage/subscription/quota-config，分别绑定国际或大陆quota-host Cookie。",
+      "blocker": "多域Cookie/控制台校验和嵌入登录未在iOS验证；CLI登录结果无法从手机直接借用。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/alibaba-token-plan.md",
+          "line": 38,
+          "reason": "CLI与Web路由"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/alibaba-token-plan.md",
+          "line": 45,
+          "reason": "分Team/Personal及quota host"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/alibaba-token-plan.md",
+          "line": 58,
+          "reason": "无API-key认证"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "qwencloud",
+    "name": "Qwen Cloud",
+    "quota": "Qwen Cloud个人Token Plan 5小时/周/月用量、额度和恢复时间",
+    "auth": "Qwen Cloud/阿里云浏览器或手动Cookie",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/qwen-cloud.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/QwenCloud",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/QwenCloud/QwenCloudProviderDescriptor.swift",
+    "descriptorLine": 8,
+    "bundledJavaScript": false,
+    "notes": "仅网页会话，不能用推理API key代替；针对国际个人计划",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "拟在允许的WKWebView登录home.qwencloud.com的国际个人Token Plan控制台；不得把Qwen推理key当会话。",
+      "storage": "Qwen Cloud/阿里云Cookie按账号放独立WK仓；原生请求需要的Cookie和sec_token放Keychain。",
+      "renewal": "沿本会话更新Cookie；拒绝认证时重登，重新从页面/Cookie/user-info取得sec_token。",
+      "update": "通过sfm_bailian网关请求personal/api/v2/usage、subscription、quota-config，固定国际个人计划scope。",
+      "blocker": "只有网页会话路径；多域登录、CSRF/security token、嵌入浏览器限制需验证。ASWeb没有通用Cookie返回。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/qwen-cloud.md",
+          "line": 37,
+          "reason": "网关、三个API和sec_token来源"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/qwen-cloud.md",
+          "line": 53,
+          "reason": "仅web与国际个人计划"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "factory",
+    "name": "Droid",
+    "quota": "Droid新计费5小时/周/月及部分Core窗口；旧计费Standard/Premium token额度",
+    "auth": "Factory API key；网页Cookie；WorkOS访问/刷新token；本地存储",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "API key路径可抽取；WorkOS、桌面浏览器存储与CLI会话的取得及刷新不能直接照搬，需获准移动登录、会话续期并固定账户，避免回退切换身份。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/factory.md",
+    "docLine": 84,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Factory",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Factory/FactoryProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "不同计费版本两套形状；自动回退可能读另一账户，需明确固定账户",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "拟优先用户在Factory设置页创建API key后粘贴；无需先搬WorkOS网页登录。网页来源单列为实验候选。",
+      "storage": "Factory key放Keychain，账号/组织映射单独保存；若做网页路径，Cookie和WorkOS凭据独立保管。",
+      "renewal": "key失效换key；WorkOS refresh只有平台允许本App持有/更新对应授权时才轮换，不能借官方client ID默认续期。",
+      "update": "优先GET api.factory.ai/api/billing/limits；旧账制再按同账户/org读auth/me及organization/subscription/usage。",
+      "blocker": "不同计费版本字段不同；禁止key失败后默默换成别人的浏览器会话。WorkOS原代码借官方client和桌面storage，非通用移动授权。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/factory.md",
+          "line": 15,
+          "reason": "API key可独立取数"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/factory.md",
+          "line": 94,
+          "reason": "两套用量endpoint"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/factory.md",
+          "line": 103,
+          "reason": "WorkOS客户端和refresh依赖"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "fireworks",
+    "name": "Fireworks",
+    "quota": "最近30天已计价费用",
+    "auth": "API key+账户slug，可自动发现slug",
+    "category": "余额费用",
+    "categoryDetail": "API花费",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/fireworks.md",
+    "docLine": 24,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/fireworks.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Fireworks/FireworksProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "没有余额，也没有会话/周额度；普通‘支持’不等于可查剩余额度",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "拟让用户粘贴Fireworks key；先列该key可见账号，多个时由用户选account slug。",
+      "storage": "key放Keychain，所选slug绑定该key的账户配置。",
+      "renewal": "没有refresh流程；401/403提示更换/修复权限，slug失效重新选账号。",
+      "update": "GET api.fireworks.ai/v1/accounts后读accounts/{slug}/billing/summary，显式30天起止时间。",
+      "blocker": "只能得到近30天费用，不能据此显示充值余额或订阅剩余额度；需billing读取权限。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/fireworks.md",
+          "line": 16,
+          "reason": "API key与账号发现"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/fireworks.md",
+          "line": 24,
+          "reason": "billing summary路径"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/fireworks.md",
+          "line": 35,
+          "reason": "无剩余额度/余额"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "gemini",
+    "name": "Gemini",
+    "quota": "Pro/Flash/Flash Lite模型组最低剩余比例、恢复时间与套餐",
+    "auth": "读取Gemini CLI OAuth，Google token刷新",
+    "category": "订阅",
+    "categoryDetail": "订阅/模型额度",
+    "iosNotes": "网络解析可抽取；现有凭据与OAuth客户端配置依赖Gemini CLI安装，独立iPhone应用不能读取或照搬。需另建获准登录/续期并核实合同资格；旧个人OAuth已退役，Standard/Enterprise也已停止新售且仅既有合同续存至到期。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/gemini.md",
+    "docLine": 13,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Gemini",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Gemini/GeminiProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "仓库记录个人/AI Pro/Ultra旧CLI OAuth自2026-06-18退役；官方2026-10-09起Standard/Enterprise停止新售，既有合同服务继续至合同到期（主研究已核实）。API key不被此provider支持，不能承诺长期可用。",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "officialSource": "https://docs.cloud.google.com/gemini/docs/codeassist/sunset",
+    "mobileImplementation": {
+      "route": "desktop_dependency",
+      "verdict": "旧路线不宜直接作为首版",
+      "login": "现有入口读Gemini CLI登录文件。若做独立iOS，须重新确认仍服务的账号层级，以及本App获准Google OAuth客户端和内部quota权限；不是嵌入旧登录页即可。",
+      "storage": "仅保存本App获准的Google access/refresh token到Keychain，绑定project/tier；不导入CLI安装包client secret。",
+      "renewal": "独立获准授权才能用Google token endpoint续期；源码读取CLI客户端参数刷新不能直接照搬。",
+      "update": "既有请求为cloudcode-pa.googleapis.com/v1internal:retrieveUserQuota及loadCodeAssist，按project选择配额。",
+      "blocker": "个人/AI Pro/Ultra旧CLI线路已退役，企业也有退役安排；普通Gemini API key/Google登录不证明有此quota访问权。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/gemini.md",
+          "line": 15,
+          "reason": "只接受CLI OAuth而非API key"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/gemini.md",
+          "line": 23,
+          "reason": "凭据与安装包客户端提取"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/gemini.md",
+          "line": 49,
+          "reason": "内部quota与Google token接口"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "antigravity",
+    "name": "Antigravity",
+    "quota": "Gemini与Claude/GPT会话/周额度、最受限窗口、恢复信息；可选本地历史",
+    "auth": "本机语言服务器；agy CLI HTTPS；Google OAuth远程回退",
+    "category": "混合",
+    "categoryDetail": "订阅+本地历史",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/antigravity.md",
+    "docLine": 302,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Antigravity",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Antigravity/AntigravityProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "多套实验/私有入口；缺余量但有reset的行不能当100%已用；本机入口手机不可读",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "oauth_candidate",
+      "verdict": "授权需验证",
+      "login": "源码有Google OAuth登录，但client来自Antigravity桌面程序；拟向平台确认本App客户端及iOS回调许可后才改成ASWebAuthenticationSession。",
+      "storage": "独立授权的Google access/refresh/id token放Keychain，用户ID、project和套餐分开保存；电脑采集备选仅同步额度。",
+      "renewal": "按原grant绑定的client刷新Google token，原子保存轮换；不能改client ID继续用旧refresh token。",
+      "update": "按同账号project调用cloudcode-pa.googleapis.com的loadCodeAssist和retrieveUserQuotaSummary；只有模型可用性时标额度未知。",
+      "blocker": "本机language_server/agy端口手机不可用；远程OAuth可能只证明模型可用，未证明自己的client可读真实额度。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/antigravity.md",
+          "line": 96,
+          "reason": "远程可能只有availability"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/antigravity.md",
+          "line": 144,
+          "reason": "客户端解析与refresh绑定"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/antigravity.md",
+          "line": 163,
+          "reason": "远程内部endpoint"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBar/Providers/Antigravity/AntigravityLoginRunner.swift",
+          "line": 37,
+          "reason": "当前使用本地callback server"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "copilot",
+    "name": "Copilot",
+    "quota": "Premium/Chat余额百分比；AI credits已用；可选GitHub预算",
+    "auth": "GitHub设备码登录；token；可选网页登录预算",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "设备码流程和网络解析可参考，但不能直接复用桌面OAuth应用身份或token存储；发布iOS应用需验证自己的OAuth客户端、所需权限与内部usage接口授权，并重做安全保存及续期。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/copilot.md",
+    "docLine": 61,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Copilot",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Copilot/CopilotProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "内部API；API不提供reset；新的seat credits总额度需用户手填，不能猜",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "oauth_candidate",
+      "verdict": "授权需验证",
+      "login": "拟保留设备码体验：取得device code后打开GitHub官方页面，用户确认，App前台轮询拿token；先证明自己的client ID获准并可读Copilot额度。",
+      "storage": "GitHub OAuth token放Keychain；host+稳定数值user ID分开保存，企业与公有账号隔离。",
+      "renewal": "现有device flow只返回access token，未实现通用refresh链；撤销/失效时重走设备码，不承诺永久登录。",
+      "update": "用该token请求api.github.com/copilot_internal/user或匹配企业host；网页预算是另一条需要Cookie的可选来源。",
+      "blocker": "当前硬编码VS Code client ID；自己注册普通GitHub OAuth且得到read:user不证明可访问Copilot内部接口。后台轮询也受iOS限制。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Copilot/CopilotDeviceFlow.swift",
+          "line": 9,
+          "reason": "VS Code client与read:user"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Copilot/CopilotDeviceFlow.swift",
+          "line": 35,
+          "reason": "access-token返回模型"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/copilot.md",
+          "line": 33,
+          "reason": "内部quota及独立网页预算"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "devin",
+    "name": "Devin",
+    "quota": "每天/每周使用比例与恢复时间",
+    "auth": "Chromium localStorage会话；手动Bearer",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/devin.md",
+    "docLine": 106,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Devin",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Devin/DevinProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "不是网页登录页面嵌进来；手机拿不到桌面浏览器localStorage",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "拟在允许的独立WKWebView登录app.devin.ai并打开指定组织Usage页，读取本App同源localStorage里的Auth1/Auth0会话；不是只取Cookie。",
+      "storage": "提取的access token放Keychain，组织内部ID绑定该token；WK localStorage独立保存，退出两处清除。",
+      "renewal": "源码没有手机续期协议；会话拒绝时回同一网页重登并重取token/组织ID。不要把手贴Bearer当长期API key。",
+      "update": "GET app.devin.ai/api/{internal-org-id}/billing/quota/usage，按需要发送x-cog-org-id，取日/周用量。",
+      "blocker": "Auth0/SSO可能不支持嵌入WK；ASWeb成功不会把localStorage交给App。组织slug不能代替未经解析的内部ID。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/devin.md",
+          "line": 20,
+          "reason": "localStorage来源与组织绑定"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/devin.md",
+          "line": 94,
+          "reason": "auth1/Auth0字段而非Cookie"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/devin.md",
+          "line": 108,
+          "reason": "quota endpoint"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "zai",
+    "name": "z.ai",
+    "quota": "个人/团队Coding Plan窗口；MCP独立窗口；可选小时/每日模型tokens",
+    "auth": "API token；Global/CN区域；团队需org+project",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zai.md",
+    "docLine": 117,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/zai.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Zai/ZaiProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "不同计划/计量形状；未知结构不可认为兼容V3或0%已用",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "拟手贴z.ai/BigModel Coding Plan key并先选Global/CN；团队另填Organization ID与Project ID。",
+      "storage": "key放Keychain；region、personal/team和org/project与该key绑定保存。",
+      "renewal": "无网页续期；key失效要求更换或修复权限，不跨区域尝试其他账号key。",
+      "update": "GET所选主机/api/monitor/usage/quota/limit；团队带type=2和Bigmodel-Organization/Project。",
+      "blocker": "团队缺任一ID可能返回空数据，不能显示0%已用；无需把网页登录嵌进App，ID获取仍需清晰引导。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zai.md",
+          "line": 10,
+          "reason": "API-token-only"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zai.md",
+          "line": 102,
+          "reason": "endpoint与区域"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zai.md",
+          "line": 117,
+          "reason": "team headers及空数据陷阱"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "minimax",
+    "name": "MiniMax",
+    "quota": "Coding Plan prompts用量和恢复；可选30天token及模型/方式明细",
+    "auth": "Coding Plan API key；网页Cookie/token；本地浏览器存储",
+    "category": "订阅",
+    "categoryDetail": "订阅+历史",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/minimax.md",
+    "docLine": 14,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/MiniMax",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/MiniMax/MiniMaxProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "普通sk-api与Coding sk-cp不同；国际/大陆不同；网页额外明细不总可用",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "优先密钥路径",
+      "login": "拟先选国际/大陆并贴Coding Plan sk-cp key；若账号接口拒绝，再单独验证本App WK网页登录，不默认普通sk-api等价。",
+      "storage": "key放Keychain；若启用网页，Cookie与同源access token也按账号单独保存，WK数据仓独立。",
+      "renewal": "key失效更换；网页会话需要接受站点更新或重登，无证据可保证持久后台续期。",
+      "update": "按区域调用token_plan/remains或coding_plan/remains；网页账单历史仅作为同账号可选补充。",
+      "blocker": "sk-cp与sk-api用途不同；网页token可能在local/session storage或IndexedDB，单取Cookie不完整；嵌入登录需验证。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/minimax.md",
+          "line": 16,
+          "reason": "Coding key与普通key区别"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/minimax.md",
+          "line": 24,
+          "reason": "cookie与多种浏览器storage"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/MiniMax/MiniMaxUsageFetcher.swift",
+          "line": 150,
+          "reason": "两条remains API"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "manus",
+    "name": "Manus",
+    "quota": "月积分、每日刷新积分、总可用积分与每日reset",
+    "auth": "session_id网页Cookie或手动token",
+    "category": "订阅",
+    "categoryDetail": "订阅积分",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/manus.md",
+    "docLine": 13,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/manus.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Manus/ManusProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "月度renewal日期不可得；金额/积分不能互换",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "拟在站点允许的WKWebView登录manus.im，由原生WKHTTPCookieStore读取本App的session_id；也可提供高级手贴会话，但不当作标准登录。",
+      "storage": "session_id放Keychain用于原生HTTPS；WK会话按账号隔离，退出清理两处。",
+      "renewal": "会话失效或撤销后重新网页登录取得新session_id；源码没有refresh-token续期保证。",
+      "update": "把session_id作为Bearer请求api.manus.im/user.v1.UserService/GetAvailableCredits，显示月/日积分与总余额。",
+      "blocker": "不是普通开放API key；嵌入登录与风控待验证，ASWeb不能把Safari session_id直接交回来。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/manus.md",
+          "line": 18,
+          "reason": "Cookie与manual token"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/manus.md",
+          "line": 46,
+          "reason": "session_id转Bearer endpoint"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/manus.md",
+          "line": 72,
+          "reason": "过期需重新登录"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "kimi",
+    "name": "Kimi",
+    "quota": "Kimi Code周用量/5小时限制；可选网页月度会员总池与套餐",
+    "auth": "Kimi Code API key；CLI token；Kimi Desktop/网页会话",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "Kimi Code API key路径可抽取；CLI、桌面应用及浏览器登录态均不能从iPhone读取。若要网页月度总池等完整信息，需另建获准移动登录、会话续期与同账户核对。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/kimi.md",
+    "docLine": 17,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Kimi",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Kimi/KimiProviderDescriptor.swift",
+    "descriptorLine": 6,
+    "bundledJavaScript": false,
+    "notes": "Kimi Code≠Moonshot API余额；月度总池耗尽会阻塞短窗口；账户须匹配",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "拟让用户选China/International，再从对应Kimi Code Console创建并粘贴Code API key；不用桌面CLI/Desktop会话。",
+      "storage": "Code key放Keychain且与kimi.com/kimi.ai区域绑定；网页可选认证另存不混用。",
+      "renewal": "key失效重新生成；CLI/browser refresh token由原工具持有，手机不复制其刷新链。",
+      "update": "GET对应api.kimi.com或api.kimi.ai/coding/v1/usages，读取5小时/周/月Total池；缺失窗口不补造。",
+      "blocker": "Moonshot Open Platform key不是Kimi Code订阅key；月池耗尽会约束短窗口。网页额外信息需另验证，不是key自动获得全部账单。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/kimi.md",
+          "line": 13,
+          "reason": "与Moonshot分开"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/kimi.md",
+          "line": 50,
+          "reason": "Code key与endpoint"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/kimi.md",
+          "line": 68,
+          "reason": "月池可直接API取得"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/kimi.md",
+          "line": 85,
+          "reason": "CLI刷新归属"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "kilo",
+    "name": "Kilo",
+    "quota": "个人与选定组织credits、Kilo Pass用量",
+    "auth": "API token；已有Kilo CLI auth.json",
+    "category": "订阅",
+    "categoryDetail": "订阅/积分",
+    "iosNotes": "API token路径的网络解析可抽取；CLI登录文件来源不能搬到iPhone，需重新设计获准的凭据取得与续期，并把个人和组织账号范围固定。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/kilo.md",
+    "docLine": 13,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Kilo",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Kilo/KiloProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "组织分卡查询，不能把个人及组织池相加；手机需替换本地认证来源",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "拟手贴Kilo API token；先查可见组织让用户选择，避免依赖电脑kilo auth.json。",
+      "storage": "token放Keychain；个人与每个organization ID分scope保存，显示不相加。",
+      "renewal": "未实现可移植refresh协议；API token拒绝时由用户更新，CLI会话需由原CLI重登。",
+      "update": "请求app.kilo.ai/api/trpc的用量接口；组织请求带X-KILOCODE-ORGANIZATIONID。",
+      "blocker": "需确认提供的是可用Kilo token；API失败不应静默切到其他来源账号，组织权限要逐张卡验证。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/kilo.md",
+          "line": 14,
+          "reason": "API token及CLI来源"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/kilo.md",
+          "line": 35,
+          "reason": "失效更新token"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/kilo.md",
+          "line": 40,
+          "reason": "组织header和隔离"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "kiro",
+    "name": "Kiro",
+    "quota": "月套餐credits、bonus、可选overage池及费用",
+    "auth": "已登录kiro-cli调用/usage；读CLI token辅助GetUsageLimits",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/kiro.md",
+    "docLine": 14,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Kiro",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Kiro/KiroProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "强依赖本机CLI/SQLite；套餐、bonus、overage不可重复相加",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "desktop_dependency",
+      "verdict": "依赖电脑",
+      "login": "现有实现由用户在电脑kiro-cli登录AWS Builder ID；手机可配对电脑采集端。独立iOS授权须另向AWS确认客户端/权限，不能只嵌登录页。",
+      "storage": "电脑持有CLI凭据；手机仅存配对密钥到Keychain和非秘密额度快照。若未来独立授权成立再单独设计token保存。",
+      "renewal": "电脑CLI负责token刷新；手机刷新的是采集结果，断连显示最后时间，不能在手机轮换从SQLite复制的token。",
+      "update": "电脑运行kiro-cli /usage并按profile ARN用GetUsageLimits补overage；向手机同步已核对scope的结果。",
+      "blocker": "主要依赖CLI及私有SQLite token store；普通AWS IAM key或Builder ID网页登录不自动等于可读Kiro个人订阅额度。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/kiro.md",
+          "line": 12,
+          "reason": "CLI认证是现有路径"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/kiro.md",
+          "line": 26,
+          "reason": "GetUsageLimits与只读CLI凭据"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "vertexai",
+    "name": "Vertex AI",
+    "quota": "当前快照仅gcloud身份；另按Claude本地日志估算Vertex费用",
+    "auth": "gcloud ADC OAuth文件和Cloud Monitoring；本地Claude日志",
+    "category": "本地统计",
+    "categoryDetail": "身份+本地估算",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/vertexai.md",
+    "docLine": 31,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/VertexAI",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/VertexAI/VertexAIProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "源码确实primary/secondary nil，不能承诺显示剩余额度；非云账单",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "仅辅助指标／需另建OAuth",
+      "login": "若要独立手机查Cloud Monitoring，拟注册获准Google OAuth客户端，用系统授权并让用户选择有Monitoring权限的project；现有代码只读取gcloud ADC。",
+      "storage": "本App独立Google token放Keychain，project与账号绑定；不把服务账号私钥打进App。电脑日志方案仅同步统计结果。",
+      "renewal": "独立授权按Google token流程续期；现有ADC文件由gcloud拥有，不能照搬文件读写到iPhone。",
+      "update": "按project读Monitoring timeSeries中的aiplatform.googleapis.com quota usage/limit；但现有provider最终不发布额度窗口，本机Claude成本需电脑采集。",
+      "blocker": "Google登录不保证IAM授权；这不是Vertex账单API，不能承诺现成订阅剩余额度。独立手机需补数据映射与验证。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/vertexai.md",
+          "line": 11,
+          "reason": "唯一来源gcloud ADC"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/vertexai.md",
+          "line": 22,
+          "reason": "Monitoring指标"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/vertexai.md",
+          "line": 34,
+          "reason": "当前只发布身份而非quota窗口"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "augment",
+    "name": "Augment",
+    "quota": "Augment credits用量、总量、套餐/周期与恢复",
+    "auth": "auggie CLI；浏览器Cookie与会话续期",
+    "category": "订阅",
+    "categoryDetail": "订阅积分",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/augment.md",
+    "docLine": 13,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Augment",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Augment/AugmentProviderDescriptor.swift",
+    "descriptorLine": 8,
+    "bundledJavaScript": false,
+    "notes": "优先依赖电脑已登录CLI；网页是备用来源",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "拟验证在独立WKWebView完成app.augmentcode.com登录，再使用本App会话；若登录不允许嵌入，采用电脑auggie采集端。",
+      "storage": "本账号Cookie保留于WK数据仓；原生请求的session/CSRF Cookie放Keychain；退出停止保活并清两处。",
+      "renewal": "前台可参考api/auth/session等保活与Set-Cookie；401仍须重登。iOS不能保证每分钟保活或会话永久有效。",
+      "update": "用同会话请求/api/credits和/api/subscription；电脑备用执行auggie account status。",
+      "blocker": "现有优先CLI；Web含Auth0/NextAuth/AuthJS多种Cookie，单一token模板不足。ASWeb不会自动返回网站Cookie。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/augment.md",
+          "line": 62,
+          "reason": "多种会话Cookie"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/augment.md",
+          "line": 75,
+          "reason": "CLI优先及保活周期"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/augment.md",
+          "line": 97,
+          "reason": "credits/subscription"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Augment/AugmentSessionKeepalive.swift",
+          "line": 408,
+          "reason": "保活endpoint尝试"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "jetbrains",
+    "name": "JetBrains AI",
+    "quota": "JetBrains AI月度credits与下次补充时间",
+    "auth": "本机IDE XML；同一IDE较新idea.log",
+    "category": "本地统计",
+    "categoryDetail": "订阅本地缓存",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/jetbrains.md",
+    "docLine": 13,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/JetBrains",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/JetBrains/JetBrainsProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "不直接问云端；XML可能数周陈旧，日志格式不稳定；手机无法读电脑IDE文件",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "local_only",
+      "verdict": "依赖电脑",
+      "login": "不需要新网页登录；由电脑IDE正常登录。拟做电脑采集端读该IDE的XML/日志并与手机配对。",
+      "storage": "手机Keychain仅存配对密钥，额度快照带IDE来源和采集时间；不收JetBrains账号密码。",
+      "renewal": "IDE负责自身登录与额度更新；手机与电脑断连时显示旧时间，没有可直接移植的OAuth续期。",
+      "update": "电脑读AIAssistantQuotaManager2.xml及同一IDE较新的idea.log，将月credits/top-up结果同步手机。",
+      "blocker": "源码没有云额度查询入口；iPhone无法读取电脑IDE文件。网页登录+Keychain不提供这条缺失接口，XML还可能严重过时。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/jetbrains.md",
+          "line": 11,
+          "reason": "纯本地来源"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/jetbrains.md",
+          "line": 23,
+          "reason": "XML与较新日志来源及同IDE隔离"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "moonshot",
+    "name": "Moonshot",
+    "quota": "Kimi/Moonshot账户可用余额、现金欠费，USD/CNY",
+    "auth": "Moonshot API key，绑定国际/大陆区域",
+    "category": "余额费用",
+    "categoryDetail": "API余额",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/moonshot.md",
+    "docLine": 28,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/moonshot.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Moonshot/MoonshotProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "不是Kimi Code会员额度；不同地域key不能混发；无周/会话窗口",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "拟选国际/大陆区后手贴对应Moonshot Open Platform key；无需OAuth网页登录。",
+      "storage": "key放Keychain并绑定api.moonshot.ai或api.moonshot.cn；区域配置与该key成对保存。",
+      "renewal": "key撤销或失效引导用户替换，不自动跨域试key，不存在refresh-token续期。",
+      "update": "GET对应区域/v1/users/me/balance，显示available/voucher/cash balance并保留USD/CNY单位。",
+      "blocker": "查的是API账户余额，不是Kimi Code会员额度；不能把两个入口合并。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/moonshot.md",
+          "line": 11,
+          "reason": "API-only"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/moonshot.md",
+          "line": 30,
+          "reason": "区域绑定与balance endpoint"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "amp",
+    "name": "Amp",
+    "quota": "每日Amp Free；月Agent美元池、Orb小时池；个人/工作区充值余额",
+    "auth": "amp usage CLI；Amp access token；旧网页Cookie备用",
+    "category": "订阅",
+    "categoryDetail": "订阅+积分",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/amp.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Amp",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Amp/AmpProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "不同单位/信用池不能合并；旧免费额度time-to-full是计算值",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "拟让用户在Amp settings创建access token再粘贴，作为手机主路径；不用amp CLI或旧Cookie网页。",
+      "storage": "Amp access token放Keychain，个人及workspace scope保存为不同结果卡。",
+      "renewal": "token失效按官方设置重新创建；源码不提供refresh token。可选网页会话过期则重登。",
+      "update": "POST ampcode.com/api/internal?userDisplayBalanceInfo，解析免费量、月度Agent/Orb和个人/组织credits。",
+      "blocker": "仍是内部接口，需验证访问许可和稳定性；Agent美元、Orb小时、workspace余额不能合并。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/amp.md",
+          "line": 37,
+          "reason": "官方settings创建access token"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/amp.md",
+          "line": 49,
+          "reason": "token endpoint"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/amp.md",
+          "line": 60,
+          "reason": "失效重建token"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "t3chat",
+    "name": "T3 Chat",
+    "quota": "4小时Base与月度Overage比例及reset",
+    "auth": "自动/手动网页Cookie",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/t3chat.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/t3chat.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/T3Chat/T3ChatProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "未公开tRPC JSONL网页接口，随网站变化",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "拟验证在独立WKWebView登录t3.chat，并保留同会话的Cookie和允许的必要请求头；手动cURL导入只作高级备用。",
+      "storage": "本App Cookie仓按账号隔离，原生请求Cookie及敏感会话头放Keychain；不执行用户贴来的curl命令。",
+      "renewal": "接受同域Set-Cookie；过期重登。遇Vercel挑战须用户在可用网页完成，不承诺自动绕过或后台长久在线。",
+      "update": "GET t3.chat/api/trpc/getCustomerData，按JSONL解析4小时Base及月Overage窗口。",
+      "blocker": "明确未公开API；Cookie可能不足，还要有效Vercel请求上下文。ASWeb不返回这些Cookie/headers；WK登录和原生请求是否被接受要实测。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/t3chat.md",
+          "line": 14,
+          "reason": "非官方web接口"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/t3chat.md",
+          "line": 32,
+          "reason": "Cookie/cURL及header allowlist"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/t3chat.md",
+          "line": 50,
+          "reason": "JSONL endpoint"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/t3chat.md",
+          "line": 105,
+          "reason": "Vercel挑战与重登"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "langdock",
+    "name": "Langdock",
+    "quota": "个人5小时session及7天weekly百分比",
+    "auth": "必须手选Mac Edge已登录profile",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/langdock.md",
+    "docLine": 14,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/langdock.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Langdock/LangdockProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "没有自动挑账户、没有手动token路径；不含Extra Usage/工作区账单，历史禁用",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "desktop_dependency",
+      "verdict": "现有实现依赖电脑",
+      "login": "按现有实现应配对用户电脑的指定Edge profile；若要独立手机，必须新增并验证自有WKWebView会话适配器，源码没有手机授权或手贴token路径。",
+      "storage": "电脑现有会话仅内存读取，手机仅存配对密钥；新WK方案若成立，才在独立WK仓/Keychain保存本App会话，并重建账户归属策略。",
+      "renewal": "电脑由用户在选定Edge profile重登；不切换其他profile。新WK流程过期也须重登，当前没有可移植refresh授权。",
+      "update": "现有请求app.langdock.com内部usageSettings.getPersonalUsage，前后核对同一会话；电脑可向手机同步即时结果及时间。",
+      "blocker": "返回值不足以建立稳定账号身份，当前因此禁历史/云账号导出。不能简单加Keychain就打开跨设备历史；手机同步也是要新设计的明确会话scope。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/langdock.md",
+          "line": 14,
+          "reason": "仅选定macOS Edge profile"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/langdock.md",
+          "line": 23,
+          "reason": "Cookie仅内存不落盘"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/langdock.md",
+          "line": 38,
+          "reason": "无稳定身份所以禁历史/导出"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/langdock.md",
+          "line": 60,
+          "reason": "内部web endpoint"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "ollama",
+    "name": "Ollama",
+    "quota": "网页月度included credits或旧会话/周额度；API key仅认证可用",
+    "auth": "网页Cookie查额度；API key只验证Cloud访问",
+    "category": "混合",
+    "categoryDetail": "订阅/连接验证",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/ollama.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Ollama",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Ollama/OllamaProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "只有API key无法查Cloud额度；不是本机Ollama内存",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "额度需网页会话验证；密钥仅验证连接",
+      "login": "手机查额度需尝试在 App 自有 WKWebView 登录 ollama.com，取得 wos-session（WorkOS AuthKit）或兼容的旧会话 Cookie；是否允许嵌入登录待验证。用户粘贴 Ollama API key 只能验证 Cloud API 访问，不能替代网页额度会话。",
+      "storage": "Keychain 按账户保存会话 Cookie 及域/路径/有效期；API key 另存，不把两种凭据的身份混用。WKWebsiteDataStore 需与 App 自己的登录页面配对，不能读取 Safari 会话。",
+      "renewal": "仓库没有通用网页续签流程；settings 跳到 signin/AuthKit 时判过期，手机应重开原登录会话并更新 Cookie。API key 被撤销后由用户更换，不能假设它能刷新网页登录。",
+      "update": "带网页会话 GET https://ollama.com/settings，解析 Plan & Billing 月度 included credits/恢复时间及兼容旧窗口；API 模式验证 web_search 后读 tags，仅出连接信息。",
+      "blocker": "额度来自 HTML；页面改版和 WorkOS 登录/会话风控都可能使方案失效。不存在仓库已验证的 iOS OAuth callback。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/ollama.md",
+          "line": 22,
+          "reason": "API key与额度Cookie能力分开"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/ollama.md",
+          "line": 47,
+          "reason": "实际请求、wos-session及登录跳转失效判断"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "synthetic",
+    "name": "Synthetic",
+    "quota": "滚动5小时、每周tokens、每小时search额度",
+    "auth": "API key",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/synthetic.md",
+    "docLine": 29,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/synthetic.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Synthetic/SyntheticProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "独立配额不可相加；仅报告quota endpoint返回内容",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "手机引导用户去 Synthetic 控制台创建 API key，再主动粘贴到 App；仓库为 API-key-only，没有可直接搬用的网页登录回调。",
+      "storage": "Keychain 保存 Synthetic API key，按账户分项；不存控制台密码。",
+      "renewal": "此集成不实现 key 的自动续签；被撤销、失效或权限不足时提示用户在平台检查并更换。用量恢复时间不是密钥有效期。",
+      "update": "Authorization: Bearer 调 GET https://api.synthetic.new/v2/quotas，映射 rollingFiveHourLimit、weeklyTokenLimit、search.hourly。",
+      "blocker": "需要取得可读 quota 的有效 key；只展示服务实际返回的窗口，未进行 iOS 真账户验证。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/synthetic.md",
+          "line": 11,
+          "reason": "API-key-only及创建密钥入口"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/synthetic.md",
+          "line": 31,
+          "reason": "quota请求和三种窗口"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "openrouter",
+    "name": "OpenRouter",
+    "quota": "key花费上限、日/周/月用量；账户预付余额；管理key可查30天activity",
+    "auth": "API key；另可配置Management key",
+    "category": "余额费用",
+    "categoryDetail": "API预算+余额+花费",
+    "iosNotes": "API key/Management key的网络解析可抽取；须分清普通key与管理key权限，重做安全保存、账号绑定和凭据更新。此方式不建立任何上游平台的个人订阅登录。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/openrouter.md",
+    "docLine": 48,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/openrouter.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/OpenRouter/OpenRouterProviderDescriptor.swift",
+    "descriptorLine": 13,
+    "bundledJavaScript": true,
+    "notes": "key spending cap不是钱包余额；管理key与推理key权限不同；账户总量勿按key重复统计",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移；管理权限分开",
+      "login": "引导到 openrouter.ai/settings/keys 创建并粘贴普通 key；账户 Activity 可另填 Management key。仓库未实现手机 OAuth 登录，不能把打开网页理解为自动取得 key。",
+      "storage": "Keychain 分别保存主 key 与可选 Management key，绑定同一预期账户；只向允许的 OpenRouter origin 发送，管理 key 不替换另一账号余额查询凭据。",
+      "renewal": "key 失效由用户更新；不将限流/余额不足当登录过期。Management key 缺失或 Activity 拒绝只降级历史，保留有效主 key 数据。",
+      "update": "GET /api/v1/key 查所选 key 的预算/用量；/credits 查预付余额；/activity 需 Management key，且历史只向固定官方端点请求。",
+      "blocker": "普通 key、管理 key权限和统计范围不同；多 key可能共用账户余额，不能重复加总；自定义 API origin不能借此获得管理请求权限。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/openrouter.md",
+          "line": 29,
+          "reason": "必填主key和独立管理key的优先级"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/openrouter.md",
+          "line": 50,
+          "reason": "三个查询端点及凭据/账户隔离"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "elevenlabs",
+    "name": "ElevenLabs",
+    "quota": "订阅字符credits、voice slots与专业voice slots及reset",
+    "auth": "API key，需user_read权限",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/elevenlabs.md",
+    "docLine": 15,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/elevenlabs.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/ElevenLabs/ElevenLabsProviderDescriptor.swift",
+    "descriptorLine": 6,
+    "bundledJavaScript": true,
+    "notes": "语音字符积分，不是LLM tokens；字段缺失不代表零",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "打开 elevenlabs.io/app/settings/api-keys 由用户创建具有 user_read 权限的 key，并粘贴到 App；无需代收账户密码或提取网页 Cookie。",
+      "storage": "Keychain 保存 xi-api-key，绑定账号标签；IP白名单和权限是平台设置，不应在手机保存管理密码来改动。",
+      "renewal": "仓库不兑换刷新 token；invalid_api_key 提示更换，missing_permissions 提示补 user_read，403 还须检查 IP 白名单，避免一律要求重新登录。",
+      "update": "GET https://api.elevenlabs.io/v1/user/subscription，header xi-api-key；读字符额度、voice slots及下一次恢复时间。",
+      "blocker": "可查询额度的权限与调用语音权限不同；移动网络 IP变化可能被白名单拒绝；没有实测移动登录。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/elevenlabs.md",
+          "line": 38,
+          "reason": "key创建位置及订阅端点"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/elevenlabs.md",
+          "line": 63,
+          "reason": "撤销、user_read和IP白名单的不同错误"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "warp",
+    "name": "Warp",
+    "quota": "月credits及add-on credits、恢复时间",
+    "auth": "Warp wk- API key/token",
+    "category": "订阅",
+    "categoryDetail": "订阅积分",
+    "iosNotes": "使用平台API key的网络解析可抽取；iOS仍需明确用户取得key的流程、安全保存、撤销与更换，不等于已具备普通账号密码或Apple登录。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/warp.md",
+    "docLine": 13,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Warp",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Warp/WarpProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "API虽叫requestLimit实际按credits；月池耗尽再选附加池，不能直接合并",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "用户在 Warp 的 Settings→Platform→API Keys 创建 wk-... key，再粘贴到手机；仓库没有通过 Apple/邮箱网页登录为第三方手机发 token 的流程。",
+      "storage": "Keychain 保存 Warp key及账户归属；手机不需要读取 Warp 桌面登录文件。",
+      "renewal": "未实现自动更新 key；认证拒绝后提示在 Warp 检查/轮换。网络错误或边缘限流应退避，不清空可用 key。",
+      "update": "请求 https://app.warp.dev/graphql/v2?op=GetRequestLimitInfo，查询月度与附加 credits、nextRefreshTime。",
+      "blocker": "GraphQL字段名虽叫requestLimit，实际是credits；月度池/附加池分别展示，不能把API key可用当成所有套餐字段都保证返回。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/warp.md",
+          "line": 23,
+          "reason": "wk key取得方式"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/warp.md",
+          "line": 35,
+          "reason": "GraphQL查询与额度池语义"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "windsurf",
+    "name": "Windsurf",
+    "quota": "当前日/周额度与套餐reset，兼容旧credits缓存",
+    "auth": "网页localStorage的会话包刷新；本机SQLite备用",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/windsurf.md",
+    "docLine": 13,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Windsurf",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Windsurf/WindsurfProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "不同会话来源不是普通Cookie即可；本地模式数据可陈旧，手机无法读取",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "网页会话需验证；本地备用依赖电脑",
+      "login": "需在 App 自有 WKWebView 登录 app.devin.ai/兼容 windsurf.com，并从正确源的 localStorage取得完整 devin_*会话包；Cookie store本身不够。嵌入SSO是否允许必须验证，不能读取 Safari/Chrome的localStorage。",
+      "storage": "Keychain按同一来源保存 devin_session_token、devin_auth1_token、devin_account_id、devin_primary_org_id；不能跨源拼凑。保留自有网页数据存储供后续登录使用。",
+      "renewal": "仓库未实现独立移动会话续签；401后刷新/重登原网页，重新读取完整四字段并原子替换。不要让新token配旧org ID。",
+      "update": "POST windsurf.com/_backend/exa.seat_management_pb.SeatManagementService/GetPlanStatus；protobuf body，x-auth-token与x-devin-*头。",
+      "blocker": "不是普通Cookie登录；本机state.vscdb备用在iPhone不存在。网站会话取得/续期未在iOS验证；daily/weekly数据只能依据当前API返回。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/windsurf.md",
+          "line": 22,
+          "reason": "localStorage会话包与桌面SQLite两种路线"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/windsurf.md",
+          "line": 99,
+          "reason": "来源隔离、四字段及protobuf请求"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/windsurf.md",
+          "line": 160,
+          "reason": "401目前靠网页刷新重新导入"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "zed",
+    "name": "Zed",
+    "quota": "套餐、edit predictions、账期、欠款提醒；可选网页token支出/上限",
+    "auth": "Zed编辑器Keychain token；可选zed.dev Cookie",
+    "category": "混合",
+    "categoryDetail": "订阅+账单",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zed.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/zed.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Zed/ZedProviderDescriptor.swift",
+    "descriptorLine": 5,
+    "bundledJavaScript": true,
+    "notes": "编辑器登录≠网页登录；浏览器账单不能拼接另一编辑器身份",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "网页会话需验证；编辑器路线依赖电脑",
+      "login": "独立手机优先验证自有WKWebView登录 zed.dev后取得 zed.session，用网页billing路线。编辑器的GitHub登录所得user_id/access_token存在Mac钥匙串，手机不能直接读取；也不能用自家GitHub OAuth token冒充Zed token。",
+      "storage": "网页路线在Keychain保存zed.session和域/有效期；若未来获准Zed独立授权，再单独存user_id/access_token。两套身份不自动合并。",
+      "renewal": "网页Cookie过期重开同一登录页面；仓库未实现手机刷新令牌。编辑器token失效现由Zed编辑器重登处理，不是手机已有续期能力。",
+      "update": "网页 GET https://cloud.zed.dev/frontend/billing/usage；编辑器路线 GET /client/users/me并用Authorization: user_id access_token。",
+      "blocker": "浏览器billing是未文档化frontend接口，编辑器登录不产生网页登录；可迁移网络解析不等于已有iOS登录，custom-server令牌还须严格绑host。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zed.md",
+          "line": 16,
+          "reason": "可选zed.session查询且不可拼接编辑器身份"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zed.md",
+          "line": 35,
+          "reason": "编辑器Keychain token及自定义服务约束"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "perplexity",
+    "name": "Perplexity",
+    "quota": "循环credits、bonus、购买credits及可得renewal",
+    "auth": "Perplexity网页Cookie/session token",
+    "category": "订阅",
+    "categoryDetail": "订阅积分",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/perplexity.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/perplexity.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Perplexity/PerplexityProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "不是普通Perplexity API key；不提供token历史；不代表所有搜索次数限制",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "尝试在自有WKWebView登录 www.perplexity.ai，从自己的WKHTTPCookieStore取得authjs/next-auth session-token；可由native读HttpOnly，不能从ASWebAuthenticationSession导出Safari Cookie。必须先验证网站允许完整登录。",
+      "storage": "Keychain保存所需会话Cookie及域/路径/有效期；兼容__Secure-authjs、authjs、__Secure-next-auth、next-auth及分块，保持完整而不只截一段。",
+      "renewal": "仓库依赖重新登录/重新导入；认证拒绝时使旧缓存失效，回到原网页重登并更新会话，不承诺无人值守续期。",
+      "update": "GET https://www.perplexity.ai/rest/billing/credits?version=2.18&source=default，附Origin和account/usage Referer，分开recurring/bonus/purchased。",
+      "blocker": "Perplexity API key不能替代此网页会话；只覆盖返回的积分池，非所有搜索次数。私有接口、分块Cookie和第三方登录风控需验证。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/perplexity.md",
+          "line": 11,
+          "reason": "不是API key及支持的Cookie名"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/perplexity.md",
+          "line": 40,
+          "reason": "credits端点、请求头和分块会话处理"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/perplexity.md",
+          "line": 77,
+          "reason": "过期后需要重新登录"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "mimo",
+    "name": "Xiaomi MiMo",
+    "quota": "小米MiMo余额、付费/赠送分项、Token Plan credits；可选本地token计数",
+    "auth": "api-platform_serviceToken+userId Cookie",
+    "category": "混合",
+    "categoryDetail": "订阅+API余额+本地备用",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/mimo.md",
+    "docLine": 13,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/MiMo",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/MiMo/MiMoProviderDescriptor.swift",
+    "descriptorLine": 5,
+    "bundledJavaScript": false,
+    "notes": "本地fallback只是本地用量，不是真实平台剩余；区域/会话易失效",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "尝试自有WKWebView登录 platform.xiaomimimo.com控制台并完成小米SSO，取得api-platform_serviceToken和userId；仅得到小米登录成功提示不等于已取得平台业务会话。",
+      "storage": "Keychain按账户保存上述必需Cookie及可用的api-platform_ph/slh，绑定平台origin；自有WK数据存储维护网页登录，不读取手机Safari。",
+      "renewal": "平台会话过期时回原控制台重新登录，替换成匹配userId的新Cookie；仓库没有独立移动refresh-token流程。",
+      "update": "GET平台 /api/v1/balance、/tokenPlan/detail、/tokenPlan/usage，分开余额和Token Plan额度。",
+      "blocker": "小米SSO跨域及移动风控待验证；本地MiMo JSONL备用是电脑token计数，不是余额/剩余额度，不能作为手机实时额度替身。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/mimo.md",
+          "line": 42,
+          "reason": "必需Cookie和origin限制"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/MiMo/MiMoUsageFetcher.swift",
+          "line": 88,
+          "reason": "三个实际数据端点"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/mimo.md",
+          "line": 65,
+          "reason": "重登以及本地fallback限制"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "doubao",
+    "name": "Doubao",
+    "quota": "arkcli或AK/SK可查个人/团队Coding Plan与Agent Plan 5h/周/月；API key仅请求限制头",
+    "auth": "arkcli登录；Volcengine AK/SK；Ark API key",
+    "category": "订阅",
+    "categoryDetail": "订阅/限流探测",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/doubao.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Doubao",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Doubao/DoubaoProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "API key路径会发最小模型请求且可能没有额度头；不能承诺同等额度能力",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "AK/SK路径可改造；CLI依赖电脑；API key能力较少",
+      "login": "手机可让用户配置允许查计划的Volcengine AK/SK，或Ark API key；arkcli auth login是桌面SSO路线，不能直接改成手机浏览器回调，须另获平台支持的移动授权。",
+      "storage": "Keychain分开存AK/SK和Ark key，绑定账户/路线；不把错误key自动换成另一份凭据。不得把开发者自己的AK/SK硬编码发给所有用户。",
+      "renewal": "静态密钥由用户轮换；如设计临时凭据需另做授权及过期刷新。仓库arkcli会话的维护仍归CLI，不在iOS现成能力内。",
+      "update": "AK/SK签名POST open.volcengineapi.com的GetCodingPlanUsage和GetAFPUsage查各计划；Ark key则POST cn-beijing的/api/coding/v3/chat/completions，max_tokens=1、消息hi，从限流头取值。",
+      "blocker": "Ark key查询会发真实模型请求，可能消耗配额且不一定返回额度头；个人/团队、Coding/Agent和授权scope必须分别确认。AK/SK权限可能比单纯读额度大，先做最小权限验证。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/doubao.md",
+          "line": 31,
+          "reason": "API key与CLI/AKSK返回能力不同"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Doubao/DoubaoUsageFetcher.swift",
+          "line": 237,
+          "reason": "AKSK签名查询的两个OpenAPI action"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Doubao/DoubaoUsageFetcher.swift",
+          "line": 698,
+          "reason": "真实chat/completions探测请求"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "sakana",
+    "name": "Sakana AI",
+    "quota": "5小时/每周额度；可选PAYG余额与近期费用",
+    "auth": "仅手动Cookie，抓billing HTML",
+    "category": "混合",
+    "categoryDetail": "订阅+余额",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/sakana.md",
+    "docLine": 27,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/sakana.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Sakana/SakanaProviderDescriptor.swift",
+    "descriptorLine": 7,
+    "bundledJavaScript": true,
+    "notes": "无自动Cookie导入，HTML排版变化会坏；API推理key不能替代",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "仓库只接受手动Cookie。手机若要免复制，需新做自有WKWebView登录console.sakana.ai并从自己cookie store取得billing会话；尚无移动授权/续期实现。",
+      "storage": "Keychain保存仅向console.sakana.ai发送的完整有效会话及Cookie元数据；不沿用桌面普通config.json存Cookie的方式。",
+      "renewal": "401/403、跳转或落到不同origin视为过期，重新打开登录并更新Cookie；没有可直接复用的刷新令牌协议。",
+      "update": "GET https://console.sakana.ai/billing并解析HTML的5h/weekly；可选再GET ?tab=payAsYouGo看余额，失败保留主额度。",
+      "blocker": "并非推理API key；HTML结构/日期格式变更会失效，需验证WebView登录可用性；仓库无自动浏览器导入也无iOS流程。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/sakana.md",
+          "line": 17,
+          "reason": "手工Cookie和HTML抓取"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/sakana.md",
+          "line": 49,
+          "reason": "PAYG补充查询"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/sakana.md",
+          "line": 83,
+          "reason": "认证失效分类"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "abacus",
+    "name": "Abacus AI",
+    "quota": "ChatLLM/RouteLLM月compute points、套餐与账期",
+    "auth": "浏览器/手动Cookie",
+    "category": "订阅",
+    "categoryDetail": "订阅积分",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/abacus.md",
+    "docLine": 13,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/abacus.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Abacus/AbacusProviderDescriptor.swift",
+    "descriptorLine": 8,
+    "bundledJavaScript": true,
+    "notes": "网页内部接口；reserve/deficit是预测，不是平台额外额度",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "尝试自有WKWebView登录apps.abacus.ai，获取真正能调用组织额度的会话Cookie；只有营销/匿名Cookie不算登录成功。",
+      "storage": "Keychain保存abacus.ai/apps.abacus.ai有效会话并绑定验证得到的组织身份；请求仅发apps.abacus.ai，不扫描其他浏览器profile。",
+      "renewal": "仓库通过重新登录后导入新Cookie恢复；手机认证失效后回原页面登录，不因普通网络错误删除会话。没有已实现的手机refresh-token授权。",
+      "update": "GET /api/_getOrganizationComputePoints为主；并行可选POST /api/_getBillingInfo查套餐和账期；后者失败不丢掉已有compute points。",
+      "blocker": "组织额度不必等于个人余额；嵌入登录、会话生命周期和内部接口均需验证。没有账期就不能伪造恢复日期。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/abacus.md",
+          "line": 25,
+          "reason": "浏览器/手动会话来源"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/abacus.md",
+          "line": 39,
+          "reason": "组织积分及账单接口"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/abacus.md",
+          "line": 51,
+          "reason": "会话验证、origin范围、网络错误不清会话"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "mistral",
+    "name": "Mistral",
+    "quota": "Included API与Vibe月计划额度、credits；按账单单位/价目计算费用与tokens历史",
+    "auth": "admin.mistral.ai Cookie；可选console会话补充",
+    "category": "混合",
+    "categoryDetail": "订阅+余额+花费",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/mistral.md",
+    "docLine": 33,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Mistral",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Mistral/MistralProviderDescriptor.swift",
+    "descriptorLine": 5,
+    "bundledJavaScript": false,
+    "notes": "不是直接普通API key；费用计算依计价维度，API allowance/Vibe需分开",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "尝试自有WKWebView登录admin.mistral.ai，取得ory_session_*；Vibe补充还需csrftoken。普通Mistral推理API key不是此实现使用的凭据。",
+      "storage": "Keychain存会话Cookie、CSRF token及域/组织关联；console.mistral.ai备用请求仅可转发约定的ory_session_*和csrftoken，不把其他admin Cookie跨域发送。",
+      "renewal": "仓库无独立手机续签；会话被拒绝时打开同一组织的Admin页面重登，重新保存Cookie/CSRF；不要用过期token不断重试。",
+      "update": "GET admin /api/billing/v2/usage?month=&year=；可选/subscription及/api/billing/credits；缺Vibe额度且有CSRF时查询console /api-ui/trpc/billing.vibeUsage。",
+      "blocker": "跨域CSRF及组织范围要验证；Included API、Vibe allowance与账单单位费用不同，不能混成同一剩余额度；未验证嵌入SSO。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/mistral.md",
+          "line": 19,
+          "reason": "ory_session和csrf要求"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/mistral.md",
+          "line": 35,
+          "reason": "四条查询路径及跨域白名单"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "deepseek",
+    "name": "DeepSeek",
+    "quota": "账户余额及付费/赠送分项；可选今日/30天成本/tokens/模型明细",
+    "auth": "API key查余额；Chrome platform userToken可查余额+明细",
+    "category": "余额费用",
+    "categoryDetail": "API余额/花费",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/deepseek.md",
+    "docLine": 12,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/DeepSeek",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/DeepSeek/DeepSeekProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "不是DeepSeek聊天订阅；私有明细API；API key和浏览器账户需明确配对",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "API余额可迁移；网页明细需验证",
+      "login": "最稳首版由用户粘贴DeepSeek API key查余额。明细需另在自有WKWebView登录platform.deepseek.com并读取该origin localStorage的userToken；它不是Cookie也不是API key。",
+      "storage": "Keychain分开保存API key与platform userToken，按API凭据指纹/账户显式配对；WK自己的localStorage变化需另行同步，不能用Cookie store自动替代。",
+      "renewal": "API key撤销后人工更换；平台userToken收到认证码40002/40003时要求重登/重新取token，仓库没有移动refresh协议。换API key或账号时取消旧明细绑定。",
+      "update": "API Bearer GET api.deepseek.com/user/balance；网页token查platform /api/v0/users/get_user_summary及usage/by_api_key/amount、cost，失败可回当月汇总。",
+      "blocker": "账户网页明细是所有key总量，不能重复挂到每张key卡；私有端点可能变化。WebView登录和localStorage取token需实测，普通key不能查私有明细。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/deepseek.md",
+          "line": 12,
+          "reason": "两类凭据及各自端点"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/deepseek.md",
+          "line": 41,
+          "reason": "localStorage userToken和账号显式绑定"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/deepseek.md",
+          "line": 71,
+          "reason": "失效码和保留API余额的降级"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "deepinfra",
+    "name": "DeepInfra",
+    "quota": "预付余额/欠费、当前月费用、支出限制、暂停状态",
+    "auth": "API key",
+    "category": "余额费用",
+    "categoryDetail": "API余额/预算/花费",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/deepinfra.md",
+    "docLine": 20,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/deepinfra.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/DeepInfra/DeepInfraProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "负stripe_balance才表示预付款；无预算时不能编造百分比",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "用户从deepinfra.com/dash创建API key并粘贴；无需截取网页会话，也不需要手机知道平台密码。",
+      "storage": "Keychain保存API key并绑定所选账户；以Bearer仅发往api.deepinfra.com允许的地址。",
+      "renewal": "仓库不自动续签key；401提示平台创建新key，403区分为无billing读取权限，避免盲目刷新。",
+      "update": "GET /payment/checklist?compute_owed=true和/payment/usage?from=current；两者均为必需账单查询，不发模型请求。",
+      "blocker": "API key必须有账单权限；负stripe_balance代表预付余额、正数代表欠款，无spending limit时不生成预算百分比。移动真实账户仍需验证。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/deepinfra.md",
+          "line": 11,
+          "reason": "API-only、key创建及不发送模型请求"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/deepinfra.md",
+          "line": 27,
+          "reason": "两个billing端点、余额符号及401/403"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "codebuff",
+    "name": "Codebuff",
+    "quota": "credits余额；CLI会话额外提供订阅tier与每周rate limit",
+    "auth": "API key；codebuff login生成的credentials.json",
+    "category": "订阅",
+    "categoryDetail": "积分/订阅",
+    "iosNotes": "API key余额请求可抽取；周订阅额度依赖Codebuff CLI会话，手机不能读取电脑credentials.json，完整接入需重新建立获准的登录与续期路径。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/codebuff.md",
+    "docLine": 14,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Codebuff",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Codebuff/CodebuffProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "API key只拿余额，CLI session才能拿周窗口",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "API余额可迁移；订阅会话另需验证",
+      "login": "手机可先让用户粘贴Codebuff API key查credits。周额度需要CLI登录生成的authToken；仓库只读~/.config/manicode/credentials.json，未给独立手机网页登录/回调流程。",
+      "storage": "Keychain明确区分API key与将来获准的session authToken；不能把手工key标记成CLI session来强行查询订阅。",
+      "renewal": "API key失效人工更新；当前CLI session通过codebuff login重登，手机必须另验证可用授权/续期，不能读取电脑文件完成续签。",
+      "update": "POST https://www.codebuff.com/api/v1/usage查credits；只有CLI-session路线再GET /api/user/subscription查tier、账期及weeklyUsed/weeklyLimit。",
+      "blocker": "粘贴key不等于完整订阅支持；若无独立session授权，应明确首版余额-only或经电脑同步，而非承诺打开网页即自动有周额度。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/codebuff.md",
+          "line": 16,
+          "reason": "usage与subscription分别可用条件"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/codebuff.md",
+          "line": 28,
+          "reason": "key/CLI authToken来源不同"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/codebuff.md",
+          "line": 54,
+          "reason": "当前续期依靠codebuff login"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "venice",
+    "name": "Venice",
+    "quota": "API DIEM/USD余额；网页订阅credits、总credits、本周期花费、bank cap/refill",
+    "auth": "API key；显式Web用Chrome/手动Cookie",
+    "category": "混合",
+    "categoryDetail": "API余额/订阅积分",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/venice.md",
+    "docLine": 9,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/venice.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Venice/VeniceProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "Clerk会话约60秒且仅活跃网页续期；monthly refill非支出上限，不能显示耗尽比例",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "API余额可迁移；网页长期续期有明确障碍",
+      "login": "API余额让用户粘贴Venice key；订阅credits须尝试自有WKWebView登录venice.ai取legacy __venice-auth.session-token或Clerk __session，二者与API key分开。",
+      "storage": "Keychain分别存API key及网页会话Cookie和有效期。Clerk __session值作为Bearer发给outerface，不应把clerk.venice.ai的长效__client擅自当现成续签方案。",
+      "renewal": "当前Clerk会话约60秒，仅活跃Venice页面续期，仓库不mint新Clerk token。手机若页面挂起，Keychain保存也不能延长有效期；需获准的刷新流程或让用户回网页更新。",
+      "update": "API GET https://api.venice.ai/api/v1/billing/balance查DIEM/USD；Web请求https://outerface.venice.ai/api/user/session并读取订阅credits claims。",
+      "blocker": "一分钟会话使稳定后台看订阅额度不能靠保存一次Cookie解决；月refill不是spending limit，不画伪耗尽百分比；WebView可登录也仍须解决续期。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/venice.md",
+          "line": 17,
+          "reason": "Clerk/legacy凭据与outerface请求"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/venice.md",
+          "line": 24,
+          "reason": "约60秒寿命与不提供无人值守续期"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/venice.js",
+          "line": 16,
+          "reason": "API余额实际端点"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "commandcode",
+    "name": "Command Code",
+    "quota": "5小时/每周限制及月美元credits、套餐、账期",
+    "auth": "浏览器Cookie/手动Cookie或session token",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/command-code.md",
+    "docLine": 14,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/CommandCode",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/CommandCode/CommandCodeProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "订阅补充请求失败时保留已知额度；widget未支持",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证",
+      "login": "尝试自有WKWebView登录commandcode.ai并取得__Secure-commandcode_prod_.session_token或兼容better-auth会话；手动bare token当前会按生产cookie名组装。",
+      "storage": "Keychain保留完整会话/必要附加Cookie、域及有效期，账号绑定后才缓存订阅信息；不能用另一网页账号给已有key补数据。",
+      "renewal": "现有路线是旧会话失败后换浏览器新会话，未实现移动refresh-token；手机应回原登录页面重登、替换Cookie并清该凭据的旧plan缓存。",
+      "update": "向https://api.commandcode.ai请求/internal/billing/credits及可选/internal/billing/subscriptions，读5h/weekly/月credits；附加套餐查询失败保留主额度。",
+      "blocker": "网页登录域和billing API域不同，需验证业务允许的Cookie/请求范围；内部接口及嵌入SSO未实测，不能保证长驻后台续期。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/command-code.md",
+          "line": 24,
+          "reason": "实际session cookie命名及手动/浏览器来源"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/CommandCode/CommandCodeUsageFetcher.swift",
+          "line": 12,
+          "reason": "正式API与credits/subscriptions路径"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/command-code.md",
+          "line": 44,
+          "reason": "plan缓存按凭据绑定、有时效"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "qoder",
+    "name": "Qoder",
+    "quota": "大模型credits已用/总量，合并报告的sharedQuota，reset",
+    "auth": "国际/中国网页Cookie，自动Chrome或手动请求捕获",
+    "category": "订阅",
+    "categoryDetail": "订阅积分",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/qoder.md",
+    "docLine": 30,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/qoder.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Qoder/QoderProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "手动凭据要绑定正确域；不提供token费用历史",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "网页会话需验证；中国/国际站分开",
+      "login": "用户先选qoder.com或qoder.com.cn，再在对应的自有WKWebView登录，取得该站会话Cookie；不能把中国站凭据尝试发给国际站。",
+      "storage": "Keychain按账户+站点保存Cookie及origin；分别维护会话和缓存。手动请求导入需保留URL/Host，单独Cookie header在旧实现默认国际站。",
+      "renewal": "无独立手机refresh实现；认证失效清该站旧会话、回同站重登，不自动改地区或换别的账户。",
+      "update": "GET所选站点/api/v2/me/usages/big_model_credits，Origin/Referer跟随该站，读取totalQuota/sharedQuota及nextResetAt。",
+      "blocker": "区域/账号错配会查不到或串号；嵌入网页登录和长期会话需验证，不是Qoder推理key通用查询。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/qoder.md",
+          "line": 18,
+          "reason": "国际/中国登录与手动origin绑定"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/qoder.md",
+          "line": 34,
+          "reason": "地区端点、请求头和独立缓存"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/qoder.md",
+          "line": 64,
+          "reason": "现有失效恢复靠重新登录"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "stepfun",
+    "name": "StepFun",
+    "quota": "Step Plan 5h/周窗口；新credit-based套餐订阅/top-up余额",
+    "auth": "账号密码直接完成三步登录；或手动Oasis-Token",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "用户名密码换Oasis-Token的HTTPS流程和解析可抽取；它不依赖桌面浏览器导入。发布iOS应用仍需验证平台授权、验证码/风控兼容及续期，并重做密码和会话安全保存，不能沿用桌面明文配置。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/stepfun.md",
+    "docLine": 14,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/StepFun",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/StepFun/StepFunProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "直接收取用户名密码并换Oasis-Token；现有实现把密码写入config.cookieHeader，不能概括为全项目不存密码。iOS应重新设计凭据安全保存；token还需匹配device_id。",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "会话查询/刷新可参考；移动登录需验证",
+      "login": "仓库支持platform.stepfun.com的INGRESSCOOKIE→RegisterDevice→SignInByPassword换Oasis-Token，也接受手动token。手机宜验证自有网页登录后取得同等会话，或取得平台许可再用该登录协议；不能据源码保证验证码/SSO兼容。",
+      "storage": "Keychain保存Oasis-Token的access...refresh组合及匹配device_id/Oasis-Webid；建议不长期保存密码。不要沿用桌面把密码写入config.cookieHeader的实现。",
+      "renewal": "源码认证失败先POST PassportService/RefreshToken，取得新组合并保存，再重试查额；刷新失败手机让用户重登。桌面自动模式才可再用所存密码登录，manual不会回退密码。",
+      "update": "POST /api/step.openapi.devcenter.Dashboard/QueryStepPlanRateLimit；可选GetStepPlanStatus；Cookie与header携Oasis-Token、匹配Oasis-Webid。",
+      "blocker": "token的device_id不匹配会被判盗用；硬编码网页appid/user-agent不等于官方iOS授权。credit plan和5h/weekly plan两种数据形状须区分。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/StepFun/StepFunUsageFetcher.swift",
+          "line": 345,
+          "reason": "登录/刷新端点、设备ID约束"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/StepFun/StepFunProviderDescriptor.swift",
+          "line": 209,
+          "reason": "先刷新token后才考虑重新密码登录"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBar/Providers/StepFun/StepFunSettingsStore.swift",
+          "line": 19,
+          "reason": "现有密码存在cookieHeader，移动应重做"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "bedrock",
+    "name": "AWS Bedrock",
+    "quota": "AWS Bedrock当月/历史费用；可设月budget；14天Claude tokens/requests",
+    "auth": "AWS access keys/session token或AWS CLI profile/SSO",
+    "category": "余额费用",
+    "categoryDetail": "API花费/自定预算",
+    "iosNotes": "直接AWS凭据请求可抽取，但需要安全的短期凭据或获准移动身份方案；电脑AWS CLI profile/SSO/assume-role链不能原样搬到iPhone。查询费用和管理权限另需评估。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/bedrock.md",
+    "docLine": 14,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Bedrock",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Bedrock/BedrockProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "Cost Explorer查询本身收费；本地填budget不限制AWS收费；不是订阅剩余",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "签名查询可迁移；移动身份与角色授权需另做",
+      "login": "手机应由用户/组织提供最小只读权限AWS身份，优先设计获准的短期角色凭据；可配置AK/SK/session token，但不能内置全用户共用密钥。打开AWS控制台并登录不会自动得到给本App使用的凭据。",
+      "storage": "Keychain保存AccessKeyID、SecretAccessKey、临时SessionToken和到期时间，另存region/角色/账户关联；不读取电脑~/.aws或保存AWS主账户密码。",
+      "renewal": "短期凭据必须由实际获准的角色/SSO流程续领，到期后重新授权；仓库profile模式运行aws configure export-credentials，SSO由AWS CLI续，iPhone不能原样执行。静态key由用户轮换。",
+      "update": "复用AWS签名逻辑调用Cost Explorer GetCostAndUsage；可选CloudWatch GetMetricData取指定region的14天Claude指标。",
+      "blocker": "需ce:GetCostAndUsage、可选cloudwatch:GetMetricData；查询本身可能计费。它是账户费用/自设budget，不是订阅剩余；手机身份授权不由CodexBar现成提供。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/bedrock.md",
+          "line": 36,
+          "reason": "AK/SK、session token和CLI profile两种身份"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/bedrock.md",
+          "line": 78,
+          "reason": "必需IAM权限、region与数据范围"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/bedrock.md",
+          "line": 14,
+          "reason": "监控查询计费且budget不限制实际账单"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "grok",
+    "name": "Grok",
+    "quota": "Grok/SuperGrok credits比例、周期、按产品份额、可选reset coupons；本地历史",
+    "auth": "grok CLI；读取OAuth文件/手动Bearer；网页Cookie",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/grok.md",
+    "docLine": 16,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Grok",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Grok/GrokProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "不是xAI开发者钱包；部分CLI billing方法当前不可用；团队usage可能仅身份",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "独立授权需验证；Cookie单独不足",
+      "login": "现有主路线由grok login产生SuperGrok OAuth bearer，或手动粘贴；手机需平台允许本App的授权与callback，才能使用ASWebAuthenticationSession。网页Cookie路线另需浏览器WKE密钥证明，不能承诺WKWebView取Cookie就完成。",
+      "storage": "若取得本App获准的OAuth凭据，Keychain存access/refresh及expires_at、账号/团队；只粘贴bearer时只能当有限期凭据。WKE不是普通Cookie，不应擅自复制桌面密钥冒充移动登录。",
+      "renewal": "仓库读取CLI auth.json的约7天token，刷新归CLI；没有现成手机续签。手机应实现获准的refresh/token rotation，否则到期重授权。网页WKE认证失败不能靠不停换Cookie修好。",
+      "update": "Bearer GET https://cli-chat-proxy.grok.com/v1/billing?format=credits并附x-xai-token-auth；可选/settings；grok.com gRPC-web billing只是受WKE影响的备用。",
+      "blocker": "docs明确GetGrokCreditsConfig已要求WKE keypair，Cookie-only可no-credentials；xai-管理key被拒绝；团队usage可能仅身份。CLI/本地signals路线仍依赖电脑。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/grok.md",
+          "line": 55,
+          "reason": "CLI-proxy bearer额度请求"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/grok.md",
+          "line": 133,
+          "reason": "浏览器WKE证明，Cookie单独不够"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/grok.md",
+          "line": 169,
+          "reason": "CLI token来源、有效期、CLI负责刷新"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "groq",
+    "name": "Groq",
+    "quota": "组织每日费用、tokens、requests；Enterprise metrics备用",
+    "auth": "网页Stytch会话换JWT；Enterprise API key备用",
+    "category": "余额费用",
+    "categoryDetail": "API花费/用量",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/groq.md",
+    "docLine": 10,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Groq",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Groq/GroqProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "普通API key不能查Enterprise metrics；不是Grok，亦非订阅额度",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "网页会话/换JWT流程需验证；企业key有受限路线",
+      "login": "网页路线需验证自有WKWebView登录console.groq.com并取长期stytch_session，优于仅约5分钟的stytch_session_jwt。另有Enterprise API key路线，普通Groq key不能等价查询。",
+      "storage": "Keychain保存opaque stytch_session和对应组织，短JWT可仅放内存；Enterprise key另存。不要只存短JWT便宣称可长期后台刷新。",
+      "renewal": "源码每次用长期session向api.stytchb2b.groq.com/sdk/v1/b2b/sessions/authenticate换新JWT；session失效仍需网页重登。手机能否获准调用该前端SDK入口及嵌入登录待验证。",
+      "update": "用新JWT的organization claim选orgId，再Bearer GET api.groq.com/platform/v1/organizations/{orgId}/activity；企业key备用走Prometheus query。",
+      "blocker": "内置publishable Stytch token可能变更；长session也会过期/撤销。普通key在企业metrics可404，不能显示零；这里是Groq组织用量费用，非Grok订阅。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/groq.md",
+          "line": 27,
+          "reason": "长短session寿命、JWT交换及组织路由"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Groq/GroqConsoleStytch.swift",
+          "line": 31,
+          "reason": "实际session-token换JWT请求"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/groq.md",
+          "line": 57,
+          "reason": "Enterprise-only metrics限制"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "llmproxy",
+    "name": "LLM Proxy",
+    "quota": "最紧配额组、总请求/tokens、路由供应商、proxy给出的近似费用",
+    "auth": "API key+自建proxy URL",
+    "category": "其他",
+    "categoryDetail": "网关额度/估算",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/llm-proxy.md",
+    "docLine": 43,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/llmproxy.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/LLMProxy/LLMProxyProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "数据范围取决于代理，非直接登录每个上游平台；近似费用非账单",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移；需手机可达网关",
+      "login": "用户向自建LLM-API-Key-Proxy管理员取得key和Base URL，再输入手机；这是代理凭据，不会替用户登录每个上游模型平台。",
+      "storage": "Keychain将Bearer key绑定精确网关origin；Base URL可作普通设置。改host时需重新确认凭据去向，不能沿用旧key自动发新host。",
+      "renewal": "由网关管理员轮换/恢复key；仓库没有OAuth续签。401/403按网关契约处理，网络不可达不等于key过期。",
+      "update": "GET {baseURL}/v1/quota-stats，主域或/v1结尾会规范化；读quota_groups、请求/tokens及approx_cost。",
+      "blocker": "电脑localhost在手机上指手机自己；私网部署需要手机网络/VPN可达。发布版优先HTTPS，不照搬桌面允许私网明文HTTP；approx_cost非账单。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/llm-proxy.md",
+          "line": 10,
+          "reason": "quota-stats协议、key和Base URL"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/llm-proxy.md",
+          "line": 31,
+          "reason": "origin/HTTPS及私网HTTP边界"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "litellm",
+    "name": "LiteLLM",
+    "quota": "个人/团队budget和spend；权限不足可spend-only；可选用户模型历史",
+    "auth": "虚拟key+proxy URL",
+    "category": "余额费用",
+    "categoryDetail": "网关预算/花费",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/litellm.md",
+    "docLine": 43,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/litellm.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/LiteLLM/LiteLLMProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "不需master key；用户与团队/key范围不同，不能当平台会员额度",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "虚拟密钥路径可迁移；权限因部署而异",
+      "login": "由LiteLLM部署管理员提供用户/团队虚拟key和proxy URL，手机粘贴；不需要master key，也无统一第三方网页登录流程。",
+      "storage": "Keychain保存虚拟key并绑定网关origin；缓存需带user_id/team_id及key身份，避免换key后保留另一用户预算。",
+      "renewal": "管理员轮换key或修改读权限；不自动兑换refresh token。信息端点401/403/404可按部署规则降级自范围spend report，不能因此索取master key。",
+      "update": "Bearer GET /key/info后查匹配/user/info或/team/info；可用/key/spend/report、/user/spend/report降级；获准时/user/daily/activity补模型历史。",
+      "blocker": "手机必须可达proxy，localhost不代表电脑；权限和返回版本依部署。key/user/team统计范围不同，只有spend时不能发明剩余预算。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/litellm.md",
+          "line": 10,
+          "reason": "虚拟key和网关、非master凭据"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/litellm.md",
+          "line": 47,
+          "reason": "identity→预算查询及范围验证"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/litellm.md",
+          "line": 66,
+          "reason": "受权限影响的spend-only降级"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "bifrost",
+    "name": "Bifrost",
+    "quota": "key/供应商/模型多层budget、tokens/requests限流、模型spend",
+    "auth": "虚拟key+自建gateway URL",
+    "category": "余额费用",
+    "categoryDetail": "网关预算/限流",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/bifrost.md",
+    "docLine": 42,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/bifrost.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Bifrost/BifrostProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "重叠预算不可相加；日/月周期缺边界不能推测reset",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "虚拟密钥路径可迁移；需配置网关",
+      "login": "用户提供Bifrost虚拟key及自己的网关Base URL；无默认公共主机，不要求管理员/master凭据，也不登录上游供应商。",
+      "storage": "Keychain保存vk key并绑定网关origin；不把key放URL，使用x-bf-vk头。",
+      "renewal": "由网关管理员更新/撤销key；无自动OAuth续期。响应is_active=false可仍带预算，要显示停用状态而不当认证成功可调用模型。",
+      "update": "GET {baseURL}/api/governance/virtual-keys/quota，以x-bf-vk认证，读key/供应商/模型预算与requests/tokens限流。",
+      "blocker": "私网网关手机需网络可达，优先HTTPS；重叠预算/限流组件不可相加，缺日/月reset边界不可猜。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/bifrost.md",
+          "line": 10,
+          "reason": "self-service虚拟key无需master"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/bifrost.md",
+          "line": 36,
+          "reason": "Base URL必填、quota端点及key停用语义"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "aixy",
+    "name": "Aixy",
+    "quota": "key/user/team/project/org预算；7天key usage及预留额",
+    "auth": "项目API key+gateway URL",
+    "category": "余额费用",
+    "categoryDetail": "网关预算/花费",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/aixy.md",
+    "docLine": 34,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/aixy.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Aixy/AixyProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "预留不是已确认花费；不同预算重叠；估算/部分记录非发票",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移；密钥本身不是只读",
+      "login": "用户粘贴项目范围Aixy API key；默认api.aixy-gateway.com，或显式选择自建网关。该key还可发推理请求，不是专用只读登录令牌。",
+      "storage": "Keychain保存项目key并绑定选定网关origin、项目/账户；不要放URL或日志，也不把上游平台密钥再收进手机。",
+      "renewal": "管理员轮换/启用key；inactive/revoked/expired返回认证错误需更新。仓库无刷新令牌流程，404应检查网关版本/URL。",
+      "update": "Bearer GET {baseURL}/v1/usage，读取适用预算、预留额及七天key用量；此集成本身不发模型调用。",
+      "blocker": "key有推理能力，泄露可产生花费；私网部署需手机可达。reservations不是已结算费用，多个预算scope不可加总；刷新建议至少间隔一分钟。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/aixy.md",
+          "line": 14,
+          "reason": "项目key有推理权限与可配置网关"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/aixy.md",
+          "line": 36,
+          "reason": "usage端点、scope、失效及频率"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "deepgram",
+    "name": "Deepgram",
+    "quota": "语音小时、billable hours、agent hours、tokens、TTS字符、requests",
+    "auth": "API key+project，需usage:read",
+    "category": "其他",
+    "categoryDetail": "API用量",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/deepgram.md",
+    "docLine": 45,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/deepgram.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Deepgram/DeepgramProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "没有余额/剩余credits，本入口只显示已用量",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移；仅用量辅助指标",
+      "login": "用户在console.deepgram.com创建可访问目标project且有usage:read的API key并粘贴；可同时输入project UUID，无需获取网页登录Cookie。",
+      "storage": "Keychain保存API key；项目UUID/选择范围随账号保存。空project表示聚合key可见全部项目，应明确展示范围。",
+      "renewal": "key被撤销或过期由用户替换；缺usage:read需平台补权限，刷新网页不会修复权限。无仓库现成OAuth续签。",
+      "update": "Authorization: Token <key>；未指定project先GET /v1/projects，再GET /v1/projects/{id}/usage/breakdown带日期范围。",
+      "blocker": "只返回语音时长、tokens、字符和requests等已用量，没有credit balance/剩余额度；不能用这些指标伪造订阅进度条。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/deepgram.md",
+          "line": 15,
+          "reason": "project与usage:read要求"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/deepgram.md",
+          "line": 49,
+          "reason": "项目发现和usage查询"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/deepgram.md",
+          "line": 107,
+          "reason": "Token认证头且并非余额"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "poe",
+    "name": "Poe",
+    "quota": "当前points余额、近期/7天/30天points历史",
+    "auth": "Poe官方API key",
+    "category": "混合",
+    "categoryDetail": "积分余额/历史",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/poe.md",
+    "docLine": 28,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/poe.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Poe/PoeProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "余额为points，不自动等同具体订阅总量或恢复周期",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "打开poe.com/api/keys由用户创建/复制官方API key，再粘贴到手机；仓库明确不做OAuth或浏览器Cookie导入。",
+      "storage": "Keychain保存Poe API key及账户归属；不代收Poe密码。",
+      "renewal": "没有refresh-token机制可复用；认证失败让用户检查撤销/权限并更新key，历史请求失败不应清除仍可用的余额凭据。",
+      "update": "GET https://api.poe.com/usage/current_balance；可选/usage/points_history，按日期聚合7/30天points历史。",
+      "blocker": "显示points余额/历史，不能推导任何未返回的订阅总量或恢复周期；若要一键授权，须另验证Poe对本App的授权能力。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/poe.md",
+          "line": 10,
+          "reason": "官方key且不做OAuth/Cookie登录"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/poe.md",
+          "line": 32,
+          "reason": "必需余额与可选历史端点"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "chutes",
+    "name": "Chutes",
+    "quota": "4小时/月订阅quota；无订阅时PAYG quota",
+    "auth": "cpk_ API key",
+    "category": "订阅",
+    "categoryDetail": "订阅/额度",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/chutes.md",
+    "docLine": 35,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/chutes.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Chutes/ChutesProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "无识别窗口时保留无数据而不编造0%；计划形状可能变化",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "密钥路径可迁移",
+      "login": "用户按Chutes官方控制台/认证指南创建cpk_... key并粘贴，非手机自动网页登录回调；需确认可读取管理API的subscription_usage。",
+      "storage": "Keychain保存cpk key并绑定账户、允许的HTTPS管理API origin；自定义管理地址需验证而不能把key发任意站。",
+      "renewal": "仓库无token刷新协议；401/403提示平台检查权限/更换key。订阅窗口重置不等于密钥续期。",
+      "update": "Bearer GET https://api.chutes.ai/users/me/subscription_usage；缺窗口时补/users/me/quotas和/users/me/quota_usage/{chute_id}。",
+      "blocker": "无订阅账号可返回PAYG；字段不识别时保留无数据而非0%。权限、套餐形状及HTTPS endpoint需逐账户验证，未实测iOS。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/chutes.md",
+          "line": 19,
+          "reason": "cpk key取得和认证方式"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/chutes.md",
+          "line": 39,
+          "reason": "三级查询、PAYG及无数据语义"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/chutes.md",
+          "line": 64,
+          "reason": "读权限与HTTPS override"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "neuralwatt",
+    "name": "Neuralwatt",
+    "quota": "订阅kWh额度、独立预付USD余额、每key allowance",
+    "auth": "API key",
+    "category": "混合",
+    "categoryDetail": "订阅+API余额/预算",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/neuralwatt.md",
+    "docLine": 17,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/neuralwatt.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/NeuralWatt/NeuralWattProviderDescriptor.swift",
+    "descriptorLine": 6,
+    "bundledJavaScript": true,
+    "notes": "kWh与美元是两套账；充值余额不周期恢复",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "优先API key；网络解析可复用，不是网页登录授权。",
+      "login": "用户在Neuralwatt创建key后粘贴；项目不提供OAuth。",
+      "storage": "Keychain存API key，账号配置另存。",
+      "renewal": "无key续期协议；撤销/过期后用户换key。",
+      "update": "Bearer GET api.neuralwatt.com/v1/quota；分别读取账号订阅kWh、预付USD及key allowance。",
+      "blocker": "保存凭据不延长有效期；kWh与USD不能相加，移动可用性仍需实测。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/neuralwatt.md",
+          "line": 17,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/neuralwatt.md",
+          "line": 60,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/neuralwatt.js",
+          "line": 20,
+          "reason": "源码中的目标请求与认证/数据查询契约。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "helmcode",
+    "name": "Helmcode",
+    "quota": "Cloud/NaN Builders每模型quota、明确premium滚动tier；Cloud预付余额",
+    "auth": "Chrome/手动对应tenant网页Cookie",
+    "category": "混合",
+    "categoryDetail": "订阅+余额",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/helmcode.md",
+    "docLine": 10,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/helmcode.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Helmcode/HelmcodeProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "推理API key不提供dashboard quota；NaN无预付余额；租户需固定",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "可做自有WKWebView会话原型，尚未确认iOS授权方案。",
+      "login": "分别登录cloud.helmcode.com或cloud.nan.builders；只能取得App自己WebView的会话，不能读Safari/Chrome登录。",
+      "storage": "Cookie按tenant及domain/path/expiry隔离，存自有cookie store；必要凭据副本放Keychain。",
+      "renewal": "项目仅复用/拒绝会话，无refresh协议；过期回对应tenant重登。",
+      "update": "Cookie GET cloud-api.<tenant>/api/usage/quota及/api/billing；只有Cloud额外/api/billing/credits。",
+      "blocker": "推理key无权；SSO可能禁止嵌入登录；ASWebAuthenticationSession不能提供Safari Cookie。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/helmcode.md",
+          "line": 10,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/helmcode.md",
+          "line": 19,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/helmcode.md",
+          "line": 26,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/helmcode.md",
+          "line": 32,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/helmcode.ts",
+          "line": 70,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "clawrouter",
+    "name": "ClawRouter",
+    "quota": "月budget/spend、requests/tokens、最多5个路由供应商",
+    "auth": "API key+可选gateway URL",
+    "category": "余额费用",
+    "categoryDetail": "网关预算/花费",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/clawrouter.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/clawrouter.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/ClawRouter/ClawRouterProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "是policy范围聚合，同卡可含多个上游，不能当每个平台账户额度",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "优先API key，可抽取请求解析。",
+      "login": "用户创建路由key，提供默认或自建HTTPS部署地址。",
+      "storage": "Keychain存key，部署origin及账号标签绑定保存。",
+      "renewal": "无OAuth刷新，失效后换key，勿静默切账号。",
+      "update": "Bearer GET <origin>/v1/usage；scope是该key绑定policy的月预算/用量及路由分项。",
+      "blocker": "网关policy不是每家上游平台订阅授权，同policy多key不要重复求和。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/clawrouter.md",
+          "line": 11,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/clawrouter.md",
+          "line": 15,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/clawrouter.md",
+          "line": 29,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/clawrouter.md",
+          "line": 32,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/clawrouter.js",
+          "line": 19,
+          "reason": "源码中的目标请求与认证/数据查询契约。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "longcat",
+    "name": "LongCat",
+    "quota": "token-pack已用/总量、fuel-pack余额与到期",
+    "auth": "手动/environment Cookie；仅用户主动刷新可自动导入",
+    "category": "订阅",
+    "categoryDetail": "订阅/积分",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/longcat.md",
+    "docLine": 13,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/longcat.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/LongCat/LongCatProviderDescriptor.swift",
+    "descriptorLine": 5,
+    "bundledJavaScript": true,
+    "notes": "无持久session cache；后台刷新必须手动/env Cookie，iOS定时会遇到限制",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "可验证自有WebView会话，原后台会话策略需改造。",
+      "login": "自家WKWebView登录longcat.chat若允许，或用户明确粘贴Cookie；不能导出Safari登录。",
+      "storage": "保留Cookie的domain/path/expiry等属性；自有store管理，必要副本放Keychain。原自动导入不持久缓存。",
+      "renewal": "无refresh协议；原桌面自动导入仅主动刷新，后台需手动/env Cookie；手机到期重登。",
+      "update": "GET /api/v1/user-current验身份，POST /api/pay/quota/metering/token-packs/summary；必要tokenUsage回退，加pending-fuel-packages。",
+      "blocker": "内部接口/会话可能变；源码固定Chrome UA但未证明手机兼容；Keychain不能恢复过期登录。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/longcat.md",
+          "line": 13,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/longcat.md",
+          "line": 24,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/longcat.md",
+          "line": 29,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/longcat.md",
+          "line": 39,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/longcat.ts",
+          "line": 111,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "sub2api",
+    "name": "sub2api",
+    "quota": "key quota及5h/日/7天；订阅日/周/月限额；钱包余额；key用量",
+    "auth": "自建网关URL+组API key",
+    "category": "其他",
+    "categoryDetail": "网关额度/钱包",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/sub2api.md",
+    "docLine": 34,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/sub2api.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Sub2API/Sub2APIProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "网关账而非官方账户；wallet可跨key共用，不能求和；上游条款须另审",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "优先自建网关group key，不是网页登录上游账号。",
+      "login": "用户提供自己网关HTTPS地址及每组API key。",
+      "storage": "Keychain按origin+组账号保存key，普通配置保存组标签。",
+      "renewal": "无续期机制；网关管理员轮换key，401后更新。",
+      "update": "Bearer GET <origin>/v1/usage；按mode读key quota、订阅日周月计数、用户wallet及key用量。",
+      "blocker": "wallet/订阅池可能跨key共享，不能求和；不能当作上游官方订阅授权。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/sub2api.md",
+          "line": 11,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/sub2api.md",
+          "line": 18,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/sub2api.md",
+          "line": 30,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/sub2api.md",
+          "line": 34,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/sub2api.md",
+          "line": 51,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/sub2api.js",
+          "line": 13,
+          "reason": "源码中的目标请求与认证/数据查询契约。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "wayfinder",
+    "name": "Wayfinder",
+    "quota": "健康、路由分布、30天节省、决策时延",
+    "auth": "本机无认证loopback gateway；可配置HTTPS URL",
+    "category": "其他",
+    "categoryDetail": "网关健康/节省",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/wayfinder.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Wayfinder",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Wayfinder/WayfinderProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "不是订阅余额；手机127.0.0.1指自己，不是电脑",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "local_only",
+      "verdict": "网页登录不能解决；需要手机可达网关或电脑助手同步。",
+      "login": "无网站登录；127.0.0.1:8088原为电脑本地服务，手机同地址指手机自己。",
+      "storage": "保存授权网关地址；若新增认证，Keychain只存配对凭据，不索取不存在的网页登录token。",
+      "renewal": "无OAuth/Cookie续期；处理服务在线、配对与连接恢复。",
+      "update": "读/healthz、/router/models、/v1/savings?period=30d、/metrics；scope是该网关统计。",
+      "blocker": "需受控HTTPS桥接/连接；不能直接公开无认证管理接口；指标不是订阅剩余额度。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/wayfinder.md",
+          "line": 11,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/wayfinder.md",
+          "line": 23,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/wayfinder.md",
+          "line": 38,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/wayfinder.md",
+          "line": 52,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Wayfinder/WayfinderUsageFetcher.swift",
+          "line": 270,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "zenmux",
+    "name": "ZenMux",
+    "quota": "5小时/7天flow quota、准确计数/reset、套餐到期、PAYG USD余额",
+    "auth": "Management API key",
+    "category": "混合",
+    "categoryDetail": "订阅+API余额",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zenmux.md",
+    "docLine": 17,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/zenmux.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/ZenMux/ZenMuxProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "普通推理key无权；管理key权限面和服务依赖需评估",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "优先Management API key，可抽取官方管理查询。",
+      "login": "用户在Management Console创建管理key，普通推理key不适用。",
+      "storage": "Keychain存管理key并绑定账号和官方origin。",
+      "renewal": "无OAuth续期，key失效/撤销后更新。",
+      "update": "Bearer GET zenmux.ai/api/v1/management/subscription/detail及可选/payg/balance；5h/7天及PAYG。",
+      "blocker": "须明确管理key权限；不是现成手机号/Apple网页登录方案。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zenmux.md",
+          "line": 17,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zenmux.md",
+          "line": 34,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zenmux.md",
+          "line": 48,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/zenmux.js",
+          "line": 62,
+          "reason": "源码中的目标请求与认证/数据查询契约。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "aiand",
+    "name": "ai&",
+    "quota": "30天组织USD/JPY费用，最多最新1000条请求汇总",
+    "auth": "组织API key",
+    "category": "余额费用",
+    "categoryDetail": "API花费",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/aiand.md",
+    "docLine": 31,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/aiand.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/AiAnd/AiAndProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "无余额无quota；超过1000条明确partial，不能当完整账单",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "优先组织API key，不需网页会话。",
+      "login": "用户创建并粘贴ai&组织key。",
+      "storage": "Keychain按组织保存key，无需Cookie。",
+      "renewal": "项目无自动key更新，撤销/到期需轮换。",
+      "update": "Bearer GET api.aiand.com/logs?range=30days&limit=100，最多10页；按币种汇总组织cost。",
+      "blocker": "只有30天花费，无余额；超过1000条须标partial，同组织多key共享统计。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/aiand.md",
+          "line": 14,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/aiand.md",
+          "line": 31,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/aiand.md",
+          "line": 48,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/aiand.ts",
+          "line": 33,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "zoommate",
+    "name": "ZoomMate",
+    "quota": "credits已用/上限/账期；30天积分历史与消耗节奏",
+    "auth": "Chrome Cookie换短效token；或手动cURL capture",
+    "category": "订阅",
+    "categoryDetail": "订阅积分/历史",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zoommate.md",
+    "docLine": 121,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/zoommate.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/ZoomMate/ZoomMateProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "token约每小时过期；不同host凭据不可混用，credits不是美元",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "可研究Cookie换短token，iOS登录及续期待验证。",
+      "login": "自有WKWebView若能完成Zoom SSO，读取其对ai.zoom.us/zoommate.zoom.us及父域适用Cookie；不能取Safari Cookie。",
+      "storage": "Cookie按domain/path隔离，必要副本Keychain；mint的Bearer按原方案仅内存缓存并绑定会话。",
+      "renewal": "Cookie GET /ai-computer/api/v1/login/?continue=...重mint约1h Bearer；Cookie失效仍重登。手动cURL Bearer不能自动续期。",
+      "update": "Bearer查询credits/status和credits/history；scope为当前ZoomMate账号，主机回退不得转发不适用Cookie。",
+      "blocker": "未公开客户端接口，SSO可能禁止嵌入；Keychain只保存会话，不自动刷新失效SSO。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zoommate.md",
+          "line": 22,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zoommate.md",
+          "line": 73,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zoommate.md",
+          "line": 85,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/zoommate.md",
+          "line": 121,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/zoommate.ts",
+          "line": 125,
+          "reason": "源码中的目标请求与认证/数据查询契约。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "xai",
+    "name": "xAI",
+    "quota": "开发者团队已入账预付USD余额、30天日费用",
+    "auth": "Management key+team ID",
+    "category": "余额费用",
+    "categoryDetail": "API余额/花费",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/xai.md",
+    "docLine": 45,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/xai.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/XAI/XAIProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "不是SuperGrok会员；posted余额可能高于实时余额（周期花费尚未入账）",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "优先Management key+team ID，不是SuperGrok网页登录。",
+      "login": "用户创建开发者平台Management key，指定team。",
+      "storage": "Keychain存key，team ID与该凭据绑定。",
+      "renewal": "无key刷新实现，撤销/权限变化后更新。",
+      "update": "management-api.x.ai/v1/billing/teams/{team}/prepaid/balance及/usage；团队posted余额和30天USD费用。",
+      "blocker": "posted余额可能高于实时余额；不能当Grok消费订阅额度。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/xai.md",
+          "line": 17,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/xai.md",
+          "line": 45,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/xai.md",
+          "line": 60,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/xai.js",
+          "line": 16,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "notion",
+    "name": "Notion AI",
+    "quota": "Business/Enterprise每用户6小时和月周期AI allowance",
+    "auth": "Notion浏览器/手动Cookie，workspace选择",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/notion.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/notion.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Notion/NotionProviderDescriptor.swift",
+    "descriptorLine": 9,
+    "bundledJavaScript": true,
+    "notes": "不含Free/Plus、Custom Agents/Workers credits；内部API不稳定",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "可做自有网页会话原型；公开Notion OAuth不能直接替代内部usage认证。",
+      "login": "自有WKWebView登录若允许，取得token_v2；或用户手动提供。ASWebAuthenticationSession不导出Safari Cookie。",
+      "storage": "token_v2与必要Cookie存自有store/Keychain；workspace ID绑定账号，不静默选别的空间。",
+      "renewal": "仅复用会话，401清除失效会话；无refresh接口，到期重登。",
+      "update": "Cookie POST app.notion.com/api/v3/getSpaces和getCreditRateLimitStatus(spaceId)；Business/Enterprise每用户6h/月。",
+      "blocker": "SSO可能禁止嵌入，内部API会变；不含Free/Plus及Custom Agents/Workers credits。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/notion.md",
+          "line": 18,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/notion.md",
+          "line": 29,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/notion.md",
+          "line": 50,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/notion.md",
+          "line": 67,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/notion.md",
+          "line": 76,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/notion.ts",
+          "line": 128,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "ibmbob",
+    "name": "IBM Bob",
+    "quota": "每个可见team月Bobcoins与budget、聚合比例/续期",
+    "auth": "IBM Bob API key/JWT，regional bob.ibm.com",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/ibm-bob.md",
+    "docLine": 10,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/IBMBob",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/IBMBob/IBMBobProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "所有团队有有限budget才可聚合百分比；不限量仅用量",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "优先Bob API key；可接收JWT但没有移动登录/续期实现。",
+      "login": "用户从Bob门户创建API key；不能假设网页能直接交出可用JWT。",
+      "storage": "Keychain存key或获准JWT，绑定实例/团队；仅允许bob.ibm.com HTTPS域。",
+      "renewal": "项目无token刷新，key撤销/JWT过期后更新或重走获准登录。",
+      "update": "GET admin/v1/profile发现实例，再区域admin/v1/teams/{team}/users/{user}，附instance/team头；可见团队Bobcoins。",
+      "blocker": "API key用Apikey头，JWT用Bearer；两种有效期不同，多团队比例需可比预算。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/ibm-bob.md",
+          "line": 10,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/ibm-bob.md",
+          "line": 13,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/ibm-bob.md",
+          "line": 24,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/IBMBob/IBMBobUsageFetcher.swift",
+          "line": 208,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "nous",
+    "name": "Nous Portal",
+    "quota": "月credits、rollover、top-up、总可用及周期",
+    "auth": "只读Hermes device OAuth access token；手动access token",
+    "category": "订阅",
+    "categoryDetail": "订阅+积分",
+    "iosNotes": "网络解析可抽取；现有登录由电脑Hermes设备码流程负责，CodexBar只读约一小时访问token。iOS必须另建获准登录和续期，不能读取电脑凭据，不能随意使用会轮转的refresh token，推理key也不能替代。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/nous.md",
+    "docLine": 15,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/nous.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Nous/NousProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "推理key无效；约1小时过期；刷新token轮转风险，必须Hermes续期",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "oauth_candidate",
+      "verdict": "设备码OAuth是研究候选；未有获准独立手机客户端。",
+      "login": "原实现只读Hermes auth文件/access token。手机需平台允许的自有device/OAuth客户端，不能读电脑文件或沿用Hermes客户端身份。",
+      "storage": "获准后Keychain存本App独占access/refresh token及expiry/账号，勿复制Hermes共享refresh token。",
+      "renewal": "原access约1h，Hermes负责续期；refresh每次轮转且重放可撤销全会话。手机需独占、串行刷新，否则重新授权。",
+      "update": "Bearer GET portal.nousresearch.com/api/oauth/account；账号月credits、rollover、topup和total。",
+      "blocker": "推理key不读账；网页登录成功不等于获得OAuth回调/refresh权限，第三方iOS接入许可未证实。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/nous.md",
+          "line": 15,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/nous.md",
+          "line": 32,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/nous.md",
+          "line": 44,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/nous.md",
+          "line": 48,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/nous.ts",
+          "line": 13,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "muse",
+    "name": "Muse Code",
+    "quota": "Muse Code 5h/周quota；可选选定browser team quota；本地token历史",
+    "auth": "Muse CLI设备码token（Keychain/文件）；可选Meta Cookie",
+    "category": "混合",
+    "categoryDetail": "订阅+本地用量",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/muse.md",
+    "docLine": 12,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/muse.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Muse/MuseProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "LLM推理key无效；网页登录团队与CLI账号不能自动证明，补充quota标estimated；本地无美元费用",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "oauth_candidate",
+      "verdict": "设备码token可研究，但现实现依赖Muse CLI，非现成手机OAuth。",
+      "login": "读取CLI文件/Keychain的dca: token；手机需获准独立客户端。dev.meta.ai网页Cookie仅辅助选定team额度。",
+      "storage": "获准后Keychain存本App token/允许刷新材料和账号；网页Cookie/team ID单独绑定。",
+      "renewal": "未实现移动设备码刷新；凭据失效需获准续期/重登，网页会话另重登；不可借电脑CLI Keychain。",
+      "update": "POST api.meta.ai/muse-code/key读5h/周；缺quota时可选dev.meta.ai/team subscription-quota并核对账号和plan。",
+      "blocker": "LLM_与LLM|推理key无权；手选team补充仍标estimated；网页登录不带来电脑本地token历史。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/muse.md",
+          "line": 12,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/muse.md",
+          "line": 28,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/muse.md",
+          "line": 44,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/muse.md",
+          "line": 71,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/muse.ts",
+          "line": 17,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "coderabbit",
+    "name": "CodeRabbit",
+    "quota": "review次数、billing启用态、周期reset及可得plan",
+    "auth": "现有CodeRabbit CLI登录，执行usage",
+    "category": "其他",
+    "categoryDetail": "用量/账期",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/coderabbit.md",
+    "docLine": 42,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/CodeRabbit",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/CodeRabbit/CodeRabbitProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "无总额度分母、无余额；依赖本机CLI，手机需新来源",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "desktop_dependency",
+      "verdict": "不能用网页登录Cookie直接替换桌面实现。",
+      "login": "现运行已登录coderabbit usage；auth login及凭据由CLI全权维护。",
+      "storage": "独立手机没有已证实查询token；若用电脑助手，Keychain仅存助手配对密钥。",
+      "renewal": "CLI维护登录；手机请求助手更新，或待官方usage API/移动授权。",
+      "update": "本机coderabbit usage输出reviews、billing state、period reset。",
+      "blocker": "iPhone不能运行桌面CLI；上游仅hosted登录；没有总额度分母，网页登录也不能补出。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/coderabbit.md",
+          "line": 13,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/coderabbit.md",
+          "line": 32,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/coderabbit.md",
+          "line": 42,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/CodeRabbit/CodeRabbitCLIProbe.swift",
+          "line": 6,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "replicate",
+    "name": "Replicate",
+    "quota": "本月费用及可选预付credits",
+    "auth": "Chrome/手动Cookie，网页sessionid",
+    "category": "余额费用",
+    "categoryDetail": "API花费/余额",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/replicate.md",
+    "docLine": 9,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/replicate.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Replicate/ReplicateProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "Replicate API token不是网页会话；HTML React props/账单接口可能变",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "可验证自有网站会话；普通API token不能替代。",
+      "login": "自有WKWebView登录replicate.com若允许，需非空sessionid，CSRF可选；或手动Cookie。",
+      "storage": "保存Cookie域/path/expiry于自有store/Keychain，固定用户/组织scope。",
+      "renewal": "仅复用会话，失败重登；没有refresh协议或已验证手机长期后台会话。",
+      "update": "GET /account/billing解析React props选账户，再读其invoices当月monthly-usage和可选unused-credit。",
+      "blocker": "网页SSO可禁嵌入；React props/账单契约会变，不承诺手机已验证。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/replicate.md",
+          "line": 9,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/replicate.md",
+          "line": 11,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/replicate.md",
+          "line": 17,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/replicate.ts",
+          "line": 101,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "huggingface",
+    "name": "Hugging Face",
+    "quota": "Inference Providers当月费用、gross/included/limit；可选ZeroGPU时间；匹配网页账户预付wallet",
+    "auth": "access token/CLI token；可选同账户Cookie钱包",
+    "category": "余额费用",
+    "categoryDetail": "API花费/专项额度/余额",
+    "iosNotes": "access token网络解析可抽取；CLI token文件及桌面浏览器来源不能搬到iPhone。额外钱包需要独立网页登录态与账户ID匹配，完整移动登录和续期需重新设计。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/huggingface.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/huggingface.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/HuggingFace/HuggingFaceProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "不能由PRO套餐猜出inference额度；billing periodEnd只是报表截止不是reset",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "基础API优先access token；wallet另需匹配账号网页会话。",
+      "login": "创建read token或含Billing read的fine-grained token并粘贴；wallet可另试自有WKWebView会话，不读取Safari/CLI凭据。",
+      "storage": "Keychain存HF token，Cookie单独存自有store/Keychain；两者需opaque user ID严格相同，非只比邮箱。",
+      "renewal": "API token失效换新；网页会话到期重登，没明确refresh协议；每次wallet重核身份。",
+      "update": "Bearer /api/settings/billing/usage-v2与/api/spaces/zero-gpu/quota；Cookie /settings/billing及独立whoami-v2验证wallet。",
+      "blocker": "PRO不推出inference剩余额度；wallet不能仅靠token查；billing返回形状未公开。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/huggingface.md",
+          "line": 23,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/huggingface.md",
+          "line": 47,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/huggingface.md",
+          "line": 58,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/huggingface.ts",
+          "line": 67,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "raycast",
+    "name": "Raycast",
+    "quota": "月AI credits、剩余/总量、renewal和tier",
+    "auth": "Chrome/手动Raycast网站Cookie",
+    "category": "订阅",
+    "categoryDetail": "订阅积分",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/raycast.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/raycast.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Raycast/RaycastProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "桌面OAuth bearer不能替代网站session；未抓topup；不含BYOK/自带订阅/本地模型",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "可研究自有网站会话，不可拿桌面Bearer代替。",
+      "login": "自有WKWebView登录www.raycast.com若允许；需host-only __raycast_session，csrf_token可选。",
+      "storage": "Cookie属性保存自有store/Keychain，仅绑定www.raycast.com，勿发backend.raycast.com。",
+      "renewal": "无refresh实现，401后重登；Keychain不让过期session复活。",
+      "update": "Cookie GET www.raycast.com/frontend_api/current_user/ai_credits；个人月credits/renewal。",
+      "blocker": "网站非公开接口；桌面/api/v1/ai/credits是另一认证；不含topup、BYOK/自带订阅和本地模型。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/raycast.md",
+          "line": 13,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/raycast.md",
+          "line": 20,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/raycast.md",
+          "line": 32,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/raycast.md",
+          "line": 46,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/raycast.ts",
+          "line": 36,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "pi",
+    "name": "Pi",
+    "quota": "Pi/OMP日志token历史、按API价格估算费用",
+    "auth": "无登录；读本机transcripts",
+    "category": "本地统计",
+    "categoryDetail": "纯本地估算",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/pi.md",
+    "docLine": 10,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Pi",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Pi/PiProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": false,
+    "notes": "无订阅quota/余额；只看到本机记录、非真实账单，手机不能直接读电脑日志",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "local_only",
+      "verdict": "网页登录不适用，手机缺电脑日志来源。",
+      "login": "无平台登录，原实现读本机Pi/OMP transcripts。",
+      "storage": "不需平台token；若同步摘要，Keychain只存助手配对密钥，避免同步原始提示词。",
+      "renewal": "无会话续期，更新靠电脑扫描与同步恢复。",
+      "update": "从本机assistant记录统计tokens，按价目估算费用；scope只到所选本地日志。",
+      "blocker": "没有云端账号总量、订阅额度或余额；网页登录不能拿到其他设备历史。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/pi.md",
+          "line": 10,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/pi.md",
+          "line": 18,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/pi.md",
+          "line": 28,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Pi/PiProviderDescriptor.swift",
+          "line": 68,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "v0",
+    "name": "v0",
+    "quota": "billing allowance、独立on-demand balance、请求quota",
+    "auth": "v0 Platform API key，可选project scope",
+    "category": "混合",
+    "categoryDetail": "订阅/余额/限流",
+    "iosNotes": "Platform API key的网络解析可抽取，但不提供用户账号登录流程；iOS需要安全保存key、固定项目scope和提供更新凭据方式。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/v0.md",
+    "docLine": 10,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/v0.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/V0/V0ProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "金额单位按API返回，不能标成美元；未显示免费daily allowance/grace",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "优先Platform API key，不需模拟Cookie。",
+      "login": "用户创建v0 Platform API key，按需选project ID/slug。",
+      "storage": "Keychain存key，scope绑定该key，切账号不残留旧project。",
+      "renewal": "无OAuth续期，key失效/撤销后替换。",
+      "update": "Bearer api.v0.dev/v1/user/billing及/v1/rate-limits，使用相同scope。",
+      "blocker": "保留API金额单位，非一律USD；未显示free daily/grace；无现成Apple网页登录。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/v0.md",
+          "line": 10,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/v0.md",
+          "line": 12,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/v0.md",
+          "line": 14,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/v0.ts",
+          "line": 117,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "typesafe",
+    "name": "TypeSafe",
+    "quota": "账期spend、credit balance、credits到期与plan",
+    "auth": "Chrome/手动console Cookie",
+    "category": "余额费用",
+    "categoryDetail": "API花费/余额",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/typesafe.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/typesafe.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/TypeSafe/TypeSafeProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "推理key不行；动态Next.js action发现，网站更新会坏；credit到期非quota reset",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "可尝试自有会话，内部网页动作维护成本高。",
+      "login": "自有WKWebView登录console.typesafe.ai若允许，Cookie须匹配/settings/billing；推理key无效。",
+      "storage": "Cookie属性存自有store/Keychain；Next action ID为非秘密缓存，不是token。",
+      "renewal": "会话失效重登；action ID失效需重抓chunks发现并重试，12h缓存与登录续期是两件事。",
+      "update": "GET billing及static chunks发现Next action，POST []附Origin/Next-Action/Cookie，解析text/x-component。",
+      "blocker": "部署可改action/结构，SSO可禁嵌入；拒绝redirect；credits到期不是quota reset。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/typesafe.md",
+          "line": 14,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/typesafe.md",
+          "line": 22,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/typesafe.md",
+          "line": 30,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/typesafe.ts",
+          "line": 87,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "hyper",
+    "name": "Charm Hyper",
+    "quota": "原生Hypercredit余额(HC)",
+    "auth": "Chrome/手动会话优先，API key备用",
+    "category": "混合",
+    "categoryDetail": "积分余额",
+    "iosNotes": "API key余额解析可抽取；Chrome/manual session路径没有现成iOS登录方案，需另建获准会话取得、保存和续期；不能把有token输入框等同于登录已解决。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/hyper.md",
+    "docLine": 9,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/hyper.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Hyper/HyperProviderDescriptor.swift",
+    "descriptorLine": 5,
+    "bundledJavaScript": true,
+    "notes": "仅余额，无比例/plan/history/reset；不是美元",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "mixed",
+      "verdict": "API key优先，可减少网页会话依赖。",
+      "login": "用户粘贴HYPER_API_KEY；如一定网页登录，仅能验证自有WKWebView产生的hyper.charm.land会话。",
+      "storage": "Keychain存key；Cookie按账号/domain独立保存；别同时附Cookie与Bearer。",
+      "renewal": "key失效换新；Cookie无refresh协议，失效重登，显式web不暗换别的key账号。",
+      "update": "GET hyper.charm.land/v1/credits，分别用Bearer或Cookie；本账号HC余额。",
+      "blocker": "无比例/plan/history/reset；此集成未真实账户验证，不可声称手机已跑通。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/hyper.md",
+          "line": 12,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/hyper.md",
+          "line": 28,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/hyper.ts",
+          "line": 19,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "gitkraken",
+    "name": "GitKraken AI",
+    "quota": "个人周credits、组织shared pool、reset",
+    "auth": "手动网页账户session access token+可选org ID",
+    "category": "订阅",
+    "categoryDetail": "订阅积分",
+    "iosNotes": "网络解析可移植，但它需要手动复制网页账户Bearer且没有续期流程，不是普通开发者API key；需另设计获准的移动登录与续期。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/gitkraken.md",
+    "docLine": 15,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/gitkraken.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/GitKraken/GitKrakenProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "字段叫API token但实际复制网页Bearer；无OAuth/自动刷新/CLI session发现",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "当前仅手动网站Bearer，不是长期API key或已完成OAuth。",
+      "login": "从账号usage请求复制Bearer及gk-org-id；做WKWebView仍须确认获准token来源，不能假设Cookie等于token。",
+      "storage": "Keychain存session Bearer，org ID绑定会话，不存密码。",
+      "renewal": "明确无OAuth客户端/refresh流程；过期手动换或重新获准授权，Keychain不能续命。",
+      "update": "Bearer GET api.gitkraken.dev/v1/ai-tasks/usage，按需gk-org-id；个人周credits和组织pool。",
+      "blocker": "ASWebAuthenticationSession只有授权回调，不交网站Bearer/Safari Cookie；移动token获取未证实，没CLI回退。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/gitkraken.md",
+          "line": 15,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/gitkraken.md",
+          "line": 32,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/gitkraken.ts",
+          "line": 30,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "devpass",
+    "name": "DevPass",
+    "quota": "组织账期credits、premium周quota、key总spend/可选cap",
+    "auth": "普通LLM Gateway API key",
+    "category": "混合",
+    "categoryDetail": "订阅+API花费",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/devpass.md",
+    "docLine": 21,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/devpass.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/DevPass/DevPassProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "publishable/end-user session无效；月reset不提供；PAYG只总spend；尚无真实账户验证",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "优先普通LLM Gateway API key，可抽取请求。",
+      "login": "用户创建普通key；publishable key和end-user session无权读plan。",
+      "storage": "Keychain存key并绑定组织/账号，不需要Cookie。",
+      "renewal": "无refresh流程，失效由用户轮换key。",
+      "update": "Bearer GET api.llmgateway.io/v1/key；组织账期credits/premium周池与key累计spend/cap分开。",
+      "blocker": "组织池跨key共享，monthly reset未给；仓库未实测真实账户。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/devpass.md",
+          "line": 10,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/devpass.md",
+          "line": 21,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/devpass.md",
+          "line": 27,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/devpass.md",
+          "line": 32,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/devpass.ts",
+          "line": 9,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "atlascloud",
+    "name": "Atlas Cloud",
+    "quota": "账户可用USD余额",
+    "auth": "有balance read权限的API key",
+    "category": "余额费用",
+    "categoryDetail": "API余额",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/atlascloud.md",
+    "docLine": 13,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/atlascloud.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/AtlasCloud/AtlasCloudProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "不包含Atlas Coding Plan额度；无百分比/历史/reset",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "优先有balance read权限的key，无需网页会话。",
+      "login": "个人owner或团队Account Admin/Finance创建key，公开ak_ ID不是secret。",
+      "storage": "Keychain存秘密API key及账户标签，不能仅存公开ID。",
+      "renewal": "无自动刷新，无权限/撤销后换key。",
+      "update": "Bearer GET api.atlascloud.ai/public/v1/balance，校验account scope/USD，读取可用余额。",
+      "blocker": "不包含Coding Plan quota，无比例/reset/history；应核对授权而非假设网页万能。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/atlascloud.md",
+          "line": 9,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/atlascloud.md",
+          "line": 13,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/atlascloud.md",
+          "line": 18,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/atlascloud.js",
+          "line": 9,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "vercel",
+    "name": "Vercel AI Gateway",
+    "quota": "AI Gateway团队USD余额、历史累计spend",
+    "auth": "AI Gateway API key",
+    "category": "余额费用",
+    "categoryDetail": "API余额/花费",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/vercel.md",
+    "docLine": 13,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/vercel.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/Vercel/VercelProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "不是Vercel总账户/Pro套餐额度；无budget/per-key quota/reset",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "优先AI Gateway key，不需Vercel CLI或网页登录。",
+      "login": "用户提供目标团队AI Gateway key，换团队选另一key。",
+      "storage": "Keychain存key并绑定team标签，无需Vercel Cookie。",
+      "renewal": "无OAuth刷新，失效/撤销后更新key。",
+      "update": "Bearer GET ai-gateway.vercel.sh/v1/credits；团队balance和total_used。",
+      "blocker": "不是Vercel Pro套餐额度，无budget/per-key额度/reset，不能推算账期。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/vercel.md",
+          "line": 9,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/vercel.md",
+          "line": 13,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/vercel.md",
+          "line": 18,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/vercel.js",
+          "line": 9,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "llmman",
+    "name": "llmman",
+    "quota": "加载模型内存占用/上限、模型列表、store大小",
+    "auth": "本地llmman daemon，按需API key",
+    "category": "本地统计",
+    "categoryDetail": "本地资源",
+    "iosNotes": "需要替换电脑本地文件、浏览器、Keychain、CLI或本机服务入口；现有取数方式不能原样用于独立iPhone应用。若有远程API，仍需另建合法可用的凭据获取流程。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/llmman.md",
+    "docLine": 11,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/llmman.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/LLMMan/LLMManProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "非订阅额度、非余额；手机访问本机daemon需额外同步或网络方案",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "local_only",
+      "verdict": "网页登录不适用，需要连接电脑daemon或同步。",
+      "login": "提供手机可达llmman地址，daemon要求认证时再粘贴API key；127.0.0.1指当前设备。",
+      "storage": "Keychain存daemon key/助手配对密钥；地址普通配置。",
+      "renewal": "管理员维护key；服务离线/网络改变要重连，没有Cookie/OAuth续期。",
+      "update": "GET <daemon>/llmman/node与可选/api/version，按需Bearer；该机器memory/loaded/stored。",
+      "blocker": "是内存不是订阅；手机需局域网可达及权限，公网需HTTPS与认证，本机服务不会自动出现在手机。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/llmman.md",
+          "line": 11,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/llmman.md",
+          "line": 23,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/llmman.md",
+          "line": 36,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/llmman.ts",
+          "line": 24,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "xkiro",
+    "name": "xKiro",
+    "quota": "账号每日free tokens已用/上限/剩余，UTC零点reset",
+    "auth": "API key",
+    "category": "混合",
+    "categoryDetail": "每日免费额度",
+    "iosNotes": "仅网络请求和解析较易抽取，不代表已有完整iOS登录。需要确认平台允许的key/token获取方式与正确权限，重做安全保存、撤销/更新凭据、账号范围及后台刷新；桌面会话或文件来源不能直接搬用。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/xkiro.md",
+    "docLine": 14,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/xkiro.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/XKiro/XKiroProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "不是AWS Kiro；不含付费窗口/wallet；同账号多key返回同一量；无实测账户验证",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "key",
+      "verdict": "优先API key，抽取每日免费额度查询。",
+      "login": "用户粘贴XKIRO_API_KEY，项目不做网页/OAuth登录。",
+      "storage": "Keychain存key并绑定账号，多key同账号不要重复统计。",
+      "renewal": "无refresh机制，key失效需更新。",
+      "update": "Bearer GET api.xkiro.com/v1/usage；account-wide free_tokens每日用量、余量，UTC零点reset。",
+      "blocker": "不是AWS Kiro，不含paid windows/wallet；项目无真实认证账户验证。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/xkiro.md",
+          "line": 10,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/xkiro.md",
+          "line": 14,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/xkiro.md",
+          "line": 18,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/xkiro.md",
+          "line": 35,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/xkiro.ts",
+          "line": 9,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "museai",
+    "name": "Muse (muse.ai)",
+    "quota": "muse.ai Free/Power/Maximum周百分比、reset、付费tokens left、top-up",
+    "auth": "浏览器/手动muse.ai Cookie",
+    "category": "订阅",
+    "categoryDetail": "订阅",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/museai.md",
+    "docLine": 10,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/museai.js",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/MuseAI/MuseAIProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "与Muse Code分开；无usage API，通过动态Next.js action；网站部署可能换action ID",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "可研究自有WebView登录；无稳定usage API，维护成本高。",
+      "login": "自有WKWebView登录muse.ai若SSO允许；Muse Code CLI登录不适用；ASWebAuthenticationSession不提供Safari Cookie。",
+      "storage": "Cookie属性存自有store/Keychain；action ID为独立非秘密缓存。",
+      "renewal": "跳auth.muse.ai/403需重登；action ID部署变更时404，重新发现并重试一次，不是token refresh。",
+      "update": "POST fetchSubscriptionAction附Sec-Fetch-*；读取周比例/reset/plan/topup；static chunks不得带Cookie。",
+      "blocker": "SSO/loader可能变化；发现限96页面+32settings chunks也可能失败；付费tokens文本非周原始总量。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/museai.md",
+          "line": 13,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/museai.md",
+          "line": 21,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/museai.md",
+          "line": 27,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/museai.md",
+          "line": 32,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/museai.js",
+          "line": 50,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "lithosai",
+    "name": "LithosAI",
+    "quota": "组织预付USD余额、card/hold状态、可选UTC今日/本月费用",
+    "auth": "Chrome/手动console session+CSRF Cookies",
+    "category": "余额费用",
+    "categoryDetail": "API余额/花费",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/lithosai.md",
+    "docLine": 14,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/lithosai.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/LithosAI/LithosAIProviderDescriptor.swift",
+    "descriptorLine": 4,
+    "bundledJavaScript": true,
+    "notes": "推理key不能查账；无百分比/reset；私有dashboard接口",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "可验证本App网站会话，推理key不能查账。",
+      "login": "自有WKWebView登录console.lithosai.cloud若允许；需同session的__Host-console_session及__Host-console_csrf。",
+      "storage": "Cookie域/path/expiry存自有store/Keychain；org绑定会话，CSRF不是独立登录key。",
+      "renewal": "无refresh协议，401重登、403保留权限错误；读取当前active org。",
+      "update": "GET /api/me、/api/billing及可选/api/billing/spend；附同源X-Organization-Id及X-Console-Csrf。",
+      "blocker": "原生侧可处理本App cookie store里的HttpOnly，不能靠document.cookie；私有接口/SSO移动兼容未证实。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/lithosai.md",
+          "line": 14,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/lithosai.md",
+          "line": 22,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/lithosai.md",
+          "line": 31,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/lithosai.md",
+          "line": 37,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/lithosai.ts",
+          "line": 16,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  },
+  {
+    "id": "workbuddy",
+    "name": "WorkBuddy",
+    "quota": "月credits已用/剩余/总量、reserved、套餐、最早账期reset",
+    "auth": "Chrome/手动www.workbuddy.cn Cookie",
+    "category": "订阅",
+    "categoryDetail": "订阅积分",
+    "iosNotes": "取数解析可参考，但桌面浏览器会话导入不能搬到iOS；需单独验证可用的移动登录、会话保存/续期及私有接口稳定性。",
+    "docPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/workbuddy.md",
+    "docLine": 27,
+    "sourcePath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/workbuddy.ts",
+    "descriptorPath": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Providers/WorkBuddy/WorkBuddyProviderDescriptor.swift",
+    "descriptorLine": 6,
+    "bundledJavaScript": true,
+    "notes": "不读桌面加密token；登录CodeBuddy不保证同域可用；付费形状仅free账户验证",
+    "verification": "本地静态研究：登记描述器、相关实现及文档；未进行真实账户联网验证。",
+    "mobileImplementation": {
+      "route": "web_session",
+      "verdict": "移动适配高风险；当前只证实macOS Chrome会话，不能承诺WKWebView可用。",
+      "login": "应在手机实际登录上下文中验证平台是否接受该WKWebView User-Agent与会话组合；现实现仅www.workbuddy.cn的macOS Chrome Cookie，不证明手机可用。",
+      "storage": "Cookie与登录时UA/版本成对绑定，自有store/Keychain保存；不读电脑加密token。",
+      "renewal": "无refresh协议；Cookie/UA不匹配401须重登/重验；当前及前一Chrome主版本重试不是iOS通用续期。",
+      "update": "Cookie+匹配UA POST /billing/meter/get-user-resource-summary，paid/free-packages取账期；已登录账号credits。",
+      "blocker": "真实UA绑定：不同UA会401。不能写成伪装Chrome即可绕过；Keychain不保证凭据跨设备/浏览器长期有效。另有包code硬编码、每类100条及付费形状验证不足。",
+      "evidence": [
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/workbuddy.md",
+          "line": 27,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/workbuddy.md",
+          "line": 41,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/workbuddy.md",
+          "line": 57,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/docs/workbuddy.md",
+          "line": 90,
+          "reason": "文档直接说明凭据来源、续期责任、查询范围或平台限制。"
+        },
+        {
+          "path": "/Users/iceflying/codex/订阅用量监控/Reference/CodexBar/Sources/CodexBarCore/Resources/Plugins/workbuddy.ts",
+          "line": 24,
+          "reason": "当前实现的查询路径、凭据处理或本地数据边界。"
+        }
+      ],
+      "verification": "基于本地源码与Apple平台能力的拟议改造；没有进行iPhone真机或真实账户登录验证。"
+    }
+  }
+]

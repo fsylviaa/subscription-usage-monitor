@@ -1,0 +1,41 @@
+{
+  "status": "verified",
+  "path": "design/订阅额度 iPhone 原型-R4-最终验收-2026-10-09.fig",
+  "bytes": 10245818,
+  "sha256": "c259e30b5560459cbc9a2b1c9c2247a4cb3a81afb035b9a2eabd873179913b56",
+  "isFinal": true,
+  "archiveIntegrity": "passed",
+  "archiveMembers": [
+    "canvas.fig",
+    "thumbnail.png",
+    "meta.json",
+    "images/"
+  ],
+  "exportMeta": {
+    "client_meta": {
+      "background_color": {
+        "r": 0.8980392217636108,
+        "g": 0.8980392217636108,
+        "b": 0.8980392217636108,
+        "a": 1
+      },
+      "thumbnail_size": {
+        "width": 7,
+        "height": 381
+      },
+      "render_coordinates": {
+        "x": 100,
+        "y": 100,
+        "width": 18092,
+        "height": 983640
+      }
+    },
+    "file_name": "订阅额度 iPhone 原型",
+    "developer_related_links": [],
+    "exported_at": "2026-10-09T05:35:54.289Z"
+  },
+  "verifiedAt": "2026-10-09T05:36:15.371512+00:00",
+  "scope": "Final same-file native export after 39 localized reaction edits, frozen audit and 87 recorded click observations; cloud synchronization is recorded separately.",
+  "canvasSha256": "5b536085fcb7e497170775c762929eb11c568871fc94437352904303ea42334c",
+  "matchesPostAuditCheckpointCanvas": true
+}

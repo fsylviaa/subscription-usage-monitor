@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-08",
+  "status": "blocked_editor_unresponsive_write_result_unverified",
+  "requirementsUpdated": true,
+  "baselineInspection": "design/figma-r4-before.json",
+  "templateInspection": "design/figma-r4-templates.json",
+  "acceptanceChecklist": "app/docs/acceptance-r4.md",
+  "mcp": "Starter tool-call limit",
+  "conditionalActions": "Rejected by current plan",
+  "setVariableActions": "Rejected by current plan",
+  "editor": "Desktop plugin and editor did not respond to cancel/close/reload; R4 write completion unverified",
+  "cloudRecoveryBackup": {
+    "path": "design/订阅额度 iPhone 原型-R4前云端恢复备份.fig",
+    "bytes": 1349933,
+    "sha256": "c19317c4cf7a49e20f181eeef00704ad416b0029c80c2640b39d5dd8885b62e3",
+    "archiveIntegrity": "passed",
+    "purpose": "Cloud recovery snapshot captured during R4 blocker; not a completed R4 deliverable"
+  },
+  "validation": {
+    "staticR4": "not_run",
+    "clickR4": "not_run",
+    "cloudSyncR4": "unverified"
+  },
+  "doNotRun": "core-r4.js / interaction-r4.js are incomplete authoring drafts with known issues; do not apply or rerun blindly",
+  "pendingUser": "Restore the same Figma desktop file to an editable/saving state",
+  "recovery_2026_10_08": {
+    "app": "responding_after_user_restart",
+    "comparison": "figma-r4-recovered.json exactly equals figma-r4-before.json",
+    "baseline_roots": [
+      49,
+      1750,
+      49,
+      1750
+    ],
+    "partial_r4_before_restart": false,
+    "native_fonts": "loaded successfully",
+    "networkLightHub": "46:136512",
+    "networkDarkHub": "46:138573",
+    "scope": "Network-only stage currently written; account/system/widget follow-on stages pending; no final completion claim",
+    "clickEvidence": [
+      "review-r4/light-score49-click.jpg",
+      "review-r4/light-score50-click.jpg"
+    ]
+  }
+}

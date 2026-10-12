@@ -1,0 +1,520 @@
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { expectNoNarrowedCostCast } from "../support/costCastWidths";
+
+const mockState = vi.hoisted(() => {
+  const awaitedResults: unknown[] = [];
+  const executeResults: Array<Array<Record<string, unknown>>> = [];
+  const limitCalls: unknown[] = [];
+
+  const tables = {
+    users: {
+      id: "users.id",
+      username: "users.username",
+      displayName: "users.displayName",
+      avatarUrl: "users.avatarUrl",
+    },
+    submissions: {
+      id: "submissions.id",
+      userId: "submissions.userId",
+      totalTokens: "submissions.totalTokens",
+      totalCost: "submissions.totalCost",
+      submitCount: "submissions.submitCount",
+      updatedAt: "submissions.updatedAt",
+    },
+    dailyBreakdown: {
+      submissionId: "dailyBreakdown.submissionId",
+      date: "dailyBreakdown.date",
+      tokens: "dailyBreakdown.tokens",
+      cost: "dailyBreakdown.cost",
+    },
+  };
+
+  const eq = vi.fn(() => "eq");
+  const and = vi.fn(() => "and");
+  const gte = vi.fn(() => "gte");
+  const lte = vi.fn(() => "lte");
+  const sql = Object.assign(
+    vi.fn((strings: TemplateStringsArray, ...values: unknown[]) => ({
+      strings: Array.from(strings),
+      values,
+      as: () => ({}),
+    })),
+    {
+      raw: vi.fn(),
+    },
+  );
+
+  const db = {
+    select: vi.fn(() => {
+      const builder = {
+        from: vi.fn(() => builder),
+        leftJoin: vi.fn(() => builder),
+        innerJoin: vi.fn(() => builder),
+        where: vi.fn(() => builder),
+        groupBy: vi.fn(() => builder),
+        orderBy: vi.fn(() => builder),
+        limit: vi.fn((value: unknown) => {
+          limitCalls.push(value);
+          return builder;
+        }),
+        then: (resolve: (value: unknown) => unknown) =>
+          resolve(awaitedResults.shift() ?? []),
+      };
+
+      return builder;
+    }),
+    execute: vi.fn(async () => executeResults.shift() ?? []),
+  };
+
+  return {
+    db,
+    tables,
+    eq,
+    and,
+    gte,
+    lte,
+    sql,
+    reset() {
+      awaitedResults.length = 0;
+      executeResults.length = 0;
+      limitCalls.length = 0;
+      db.select.mockClear();
+      db.execute.mockClear();
+      eq.mockClear();
+      and.mockClear();
+      gte.mockClear();
+      lte.mockClear();
+      sql.mockClear();
+      sql.raw.mockClear();
+    },
+    pushAwaitedResult(value: unknown) {
+      awaitedResults.push(value);
+    },
+    pushExecuteResult(rows: Array<Record<string, unknown>>) {
+      executeResults.push(rows);
+    },
+    limitCalls,
+  };
+});
+
+vi.mock("next/cache", () => ({
+  unstable_cache: (fn: () => unknown) => fn,
+}));
+
+vi.mock("@/lib/db", () => ({
+  db: mockState.db,
+  users: mockState.tables.users,
+  submissions: mockState.tables.submissions,
+  dailyBreakdown: mockState.tables.dailyBreakdown,
+}));
+
+vi.mock("@/lib/db/usernameLookup", () => {
+  class AmbiguousUsernameError extends Error {}
+
+  return {
+    AmbiguousUsernameError,
+    USERNAME_LOOKUP_LIMIT: 2,
+    getSingleUsernameMatch: (rows: readonly unknown[], username: string) => {
+      if (rows.length > 1) {
+        throw new AmbiguousUsernameError(
+          `Multiple users match username ${username} case-insensitively`,
+        );
+      }
+      return rows[0] ?? null;
+    },
+    normalizeUsernameCacheKey: (username: string) => username.toLowerCase(),
+    usernameEqualsIgnoreCase: (username: string) =>
+      mockState.sql`lower(${mockState.tables.users.username}) = ${username.toLowerCase()}`,
+  };
+});
+
+vi.mock("drizzle-orm", () => ({
+  eq: mockState.eq,
+  and: mockState.and,
+  gte: mockState.gte,
+  lte: mockState.lte,
+  sql: mockState.sql,
+}));
+
+type ModuleExports = typeof import("../../src/lib/embed/getUserEmbedStats");
+
+let getUserEmbedStats: ModuleExports["getUserEmbedStats"];
+let getUserEmbedContributions: ModuleExports["getUserEmbedContributions"];
+
+/**
+ * A conditional `ORDER BY` is interpolated as a nested `sql` fragment, so a
+ * plain `String(...)` would flatten it to `[object Object]` and hide the very
+ * clause these tests are about. Recurse into fragments instead, so a single
+ * assertion can read a whole window clause.
+ */
+function serializeSqlValue(value: unknown): string {
+  const fragment = value as { strings?: unknown; values?: unknown[] };
+  if (!value || typeof value !== "object" || !Array.isArray(fragment.strings)) {
+    return String(value);
+  }
+
+  const parts = fragment.strings as string[];
+  const values = fragment.values ?? [];
+
+  return parts.reduce(
+    (text, part, index) =>
+      `${text}${part}${index < values.length ? serializeSqlValue(values[index]) : ""}`,
+    "",
+  );
+}
+
+function serializeSqlCalls(): string[] {
+  return mockState.sql.mock.calls.map((call) => {
+    const [strings, ...values] = call as [TemplateStringsArray, ...unknown[]];
+
+    return serializeSqlValue({ strings: Array.from(strings), values });
+  });
+}
+
+/** Whitespace-insensitive view of a query, for asserting on a whole clause. */
+function collapseSql(text: string | undefined): string {
+  return (text ?? "").replace(/\s+/g, " ").trim();
+}
+
+beforeAll(async () => {
+  const embedModule = await import("../../src/lib/embed/getUserEmbedStats");
+  getUserEmbedStats = embedModule.getUserEmbedStats;
+  getUserEmbedContributions = embedModule.getUserEmbedContributions;
+});
+
+beforeEach(() => {
+  mockState.reset();
+});
+
+describe("user embed data", () => {
+  // The lifetime card has to agree with the leaderboard's all-time tab, which
+  // shares one position between tied users. Only the finite windows below rank
+  // sequentially.
+  it("keeps the lifetime embed rank on shared RANK with no tie-breakers", async () => {
+    mockState.pushAwaitedResult([
+      {
+        id: "user-alice",
+        username: "alice",
+        displayName: "Alice",
+        avatarUrl: null,
+        totalTokens: 3000,
+        totalCost: 40,
+        submissionCount: 1,
+        updatedAt: new Date("2026-03-12T09:00:00.000Z"),
+      },
+    ]);
+    mockState.pushExecuteResult([{ rank: 2, total: 3 }]);
+
+    await getUserEmbedStats("alice", "tokens");
+    const tokenSqlTexts = serializeSqlCalls();
+
+    expect(tokenSqlTexts.some((text) => text.includes("RANK() OVER"))).toBe(
+      true,
+    );
+    expect(tokenSqlTexts.some((text) => text.includes("ROW_NUMBER"))).toBe(
+      false,
+    );
+    expect(
+      tokenSqlTexts.some((text) =>
+        /total_tokens DESC, CAST\(total_cost AS DECIMAL\(\d+,4\)\) DESC/.test(
+          text,
+        ),
+      ),
+    ).toBe(false);
+
+    mockState.reset();
+    mockState.pushAwaitedResult([
+      {
+        id: "user-alice",
+        username: "alice",
+        displayName: "Alice",
+        avatarUrl: null,
+        totalTokens: 3000,
+        totalCost: 40,
+        submissionCount: 1,
+        updatedAt: new Date("2026-03-12T09:00:00.000Z"),
+      },
+    ]);
+    mockState.pushExecuteResult([{ rank: 2, total: 3 }]);
+
+    await getUserEmbedStats("alice", "cost");
+    const costSqlTexts = serializeSqlCalls();
+
+    expect(costSqlTexts.some((text) => text.includes("RANK() OVER"))).toBe(
+      true,
+    );
+    expect(costSqlTexts.some((text) => text.includes("ROW_NUMBER"))).toBe(false);
+    expect(
+      costSqlTexts.some((text) =>
+        /CAST\(total_cost AS DECIMAL\(\d+,4\)\) DESC, total_tokens DESC/.test(
+          text,
+        ),
+      ),
+    ).toBe(false);
+  });
+
+  it.each([
+    {
+      sortBy: "tokens" as const,
+      metricOrder: "total_tokens DESC, total_cost DESC",
+    },
+    {
+      sortBy: "cost" as const,
+      metricOrder: "total_cost DESC, total_tokens DESC",
+    },
+  ])(
+    "ranks the finite embed window the way the leaderboard's period tab ranks $sortBy",
+    async ({ sortBy, metricOrder }) => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-03-12T12:00:00.000Z"));
+
+      try {
+        mockState.pushAwaitedResult([
+          {
+            id: "user-alice",
+            username: "alice",
+            displayName: "Alice",
+            avatarUrl: null,
+            totalTokens: 3000,
+            totalCost: 40,
+            submissionCount: 3,
+            latestDate: "2026-03-14",
+            updatedAt: new Date("2026-03-14T09:00:00.000Z"),
+          },
+        ]);
+        mockState.pushExecuteResult([{ totalTokens: 700, totalCost: 7 }]);
+        // postgres-js hands a bigint rank back as a string.
+        mockState.pushExecuteResult([{ rank: "2", total: 10 }]);
+
+        const stats = await getUserEmbedStats("alice", sortBy, "week");
+        const sqlTexts = serializeSqlCalls();
+        const periodRankSql = sqlTexts.find((text) =>
+          text.includes("ROW_NUMBER() OVER"),
+        );
+
+        // Two users on the same total have to read the same two distinct
+        // positions here and on the leaderboard's period tab, so the window
+        // clause has to match it term for term.
+        expect(periodRankSql).toBeDefined();
+        expect(collapseSql(periodRankSql)).toContain(
+          `ROW_NUMBER() OVER ( ORDER BY ${metricOrder}, LOWER(username) ASC, user_id ASC ) AS rank`,
+        );
+        // Shared RANK is what the profile and embed period windows used to
+        // emit, and it is what made a tie read differently per surface.
+        expect(sqlTexts.some((text) => text.includes("RANK() OVER"))).toBe(
+          false,
+        );
+        // Only the ordering within a tie changed: the same rows are counted,
+        // and the "of N" denominator still counts them all.
+        expect(collapseSql(periodRankSql)).toContain(
+          "WHERE u.leaderboard_hidden = false AND d.date >= 2026-03-08 AND d.date <= 2026-03-14",
+        );
+        expect(collapseSql(periodRankSql)).toContain(
+          "GROUP BY s.user_id, u.username",
+        );
+        expect(collapseSql(periodRankSql)).toContain(
+          "SELECT COUNT(*)::int FROM rankable",
+        );
+        expect(stats?.stats).toMatchObject({ rank: 2, rankTotal: 10 });
+      } finally {
+        vi.useRealTimers();
+      }
+    },
+  );
+
+  it("casts total_cost at full column precision for cost-sorted embed stats", async () => {
+    mockState.pushAwaitedResult([
+      {
+        id: "user-alice",
+        username: "alice",
+        displayName: "Alice",
+        avatarUrl: null,
+        totalTokens: 3000,
+        totalCost: 40,
+        submissionCount: 1,
+        updatedAt: new Date("2026-03-12T09:00:00.000Z"),
+      },
+    ]);
+    mockState.pushExecuteResult([{ rank: 2, total: 3 }]);
+
+    await getUserEmbedStats("alice", "cost");
+
+    // submissions.total_cost is decimal(18,4); narrowing the cast overflows for
+    // costs >= the narrowed ceiling and 500s the embed for that user.
+    expectNoNarrowedCostCast(serializeSqlCalls());
+  });
+
+  it("looks up embed stats usernames case-insensitively and returns the canonical username", async () => {
+    mockState.pushAwaitedResult([
+      {
+        id: "user-imlunahey",
+        username: "ImLunaHey",
+        displayName: "Luna",
+        avatarUrl: null,
+        totalTokens: 1200,
+        totalCost: 12,
+        submissionCount: 1,
+        updatedAt: new Date("2026-03-12T09:00:00.000Z"),
+      },
+    ]);
+    mockState.pushExecuteResult([{ rank: 4 }]);
+
+    const stats = await getUserEmbedStats("imlunahey", "tokens");
+    const sqlTexts = serializeSqlCalls();
+
+    expect(stats?.user.username).toBe("ImLunaHey");
+    expect(stats?.stats.rank).toBe(4);
+    expect(mockState.limitCalls[0]).toBe(2);
+    expect(
+      sqlTexts.some((text) =>
+        text.toLowerCase().includes("lower(users.username) = imlunahey"),
+      ),
+    ).toBe(true);
+  });
+
+  it("looks up embed contributions usernames case-insensitively", async () => {
+    mockState.pushAwaitedResult([{ id: "user-imlunahey" }]);
+    mockState.pushAwaitedResult([]);
+
+    const contributions = await getUserEmbedContributions("IMLUNAHEY");
+    const sqlTexts = serializeSqlCalls();
+
+    expect(contributions).toEqual([]);
+    expect(mockState.limitCalls[0]).toBe(2);
+    expect(
+      sqlTexts.some((text) =>
+        text.toLowerCase().includes("lower(users.username) = imlunahey"),
+      ),
+    ).toBe(true);
+  });
+
+  it("scopes embed totals and rank to an anchored trailing seven-day window", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-03-12T12:00:00.000Z"));
+
+    try {
+      mockState.pushAwaitedResult([
+        {
+          id: "user-alice",
+          username: "alice",
+          displayName: "Alice",
+          avatarUrl: null,
+          totalTokens: 3000,
+          totalCost: 40,
+          submissionCount: 3,
+          latestDate: "2026-03-14",
+          updatedAt: new Date("2026-03-14T09:00:00.000Z"),
+        },
+      ]);
+      mockState.pushExecuteResult([{ totalTokens: 700, totalCost: 7 }]);
+      mockState.pushExecuteResult([{ rank: 2, total: 10 }]);
+
+      const stats = await getUserEmbedStats("alice", "tokens", "week");
+      const sqlTexts = serializeSqlCalls();
+
+      expect(stats).toMatchObject({
+        period: "week",
+        dateRange: { start: "2026-03-08", end: "2026-03-14" },
+        stats: {
+          totalTokens: 700,
+          totalCost: 7,
+          submissionCount: 3,
+          rank: 2,
+          rankTotal: 10,
+        },
+      });
+      expect(
+        sqlTexts.some(
+          (text) =>
+            text.includes("WITH rankable AS") &&
+            text.includes("FROM daily_breakdown d") &&
+            text.includes("ROW_NUMBER() OVER") &&
+            text.includes("d.date >= 2026-03-08") &&
+            text.includes("d.date <= 2026-03-14"),
+        ),
+      ).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("bounds contribution queries to a finite stats window", async () => {
+    const dateRange = { start: "2026-03-01", end: "2026-03-07" };
+    mockState.pushAwaitedResult([{ id: "user-alice" }]);
+    mockState.pushAwaitedResult([
+      { date: "2026-03-01", tokens: 10, cost: 1 },
+      { date: "2026-03-07", tokens: 100, cost: 10 },
+    ]);
+
+    const contributions = await getUserEmbedContributions(
+      "alice",
+      dateRange,
+    );
+
+    expect(mockState.gte).toHaveBeenCalledWith(
+      mockState.tables.dailyBreakdown.date,
+      dateRange.start,
+    );
+    expect(mockState.lte).toHaveBeenCalledWith(
+      mockState.tables.dailyBreakdown.date,
+      dateRange.end,
+    );
+    expect(contributions?.map(({ intensity }) => intensity)).toEqual([1, 4]);
+  });
+
+  it("derives contribution intensity from max-relative tokens even when cost is zero", async () => {
+    mockState.pushAwaitedResult([{ id: "user-alice" }]);
+    const end = new Date();
+    end.setUTCHours(0, 0, 0, 0);
+    end.setUTCDate(end.getUTCDate() - 1);
+    mockState.pushAwaitedResult(
+      [1, 25, 26, 50, 51, 75, 76, 100].map((tokens, index) => ({
+        date: (() => {
+          const date = new Date(end);
+          date.setUTCDate(date.getUTCDate() - (7 - index));
+          return date.toISOString().slice(0, 10);
+        })(),
+        tokens,
+        cost: 0,
+      })),
+    );
+
+    const contributions = await getUserEmbedContributions("alice");
+
+    expect(contributions?.map(({ intensity }) => intensity)).toEqual([
+      1, 2, 2, 3, 3, 4, 4, 4,
+    ]);
+    expect(contributions?.every(({ totalCost }) => totalCost === 0)).toBe(true);
+  });
+
+  it("rejects ambiguous case-insensitive embed stats matches", async () => {
+    mockState.pushAwaitedResult([
+      {
+        id: "user-imlunahey",
+        username: "ImLunaHey",
+        displayName: "Luna",
+        avatarUrl: null,
+        totalTokens: 1200,
+        totalCost: 12,
+        submissionCount: 1,
+        updatedAt: new Date("2026-03-12T09:00:00.000Z"),
+      },
+      {
+        id: "user-imlunahey-duplicate",
+        username: "imlunahey",
+        displayName: "Luna Duplicate",
+        avatarUrl: null,
+        totalTokens: 100,
+        totalCost: 1,
+        submissionCount: 1,
+        updatedAt: new Date("2026-03-12T09:00:00.000Z"),
+      },
+    ]);
+
+    await expect(getUserEmbedStats("imlunahey", "tokens")).rejects.toThrow(
+      "Multiple users match username imlunahey case-insensitively",
+    );
+    expect(mockState.limitCalls[0]).toBe(2);
+  });
+});

@@ -1,0 +1,68 @@
+{
+  "fileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+  "recordedAt": "2026-10-09T05:43:31.660503+00:00",
+  "status": "cloud_full_verification_blocked_by_figma_memory",
+  "overallCloudSynchronizationVerified": false,
+  "namedVersion": {
+    "title": "R4 · 网络检查与返回路径验收 · 2026-10-09",
+    "id": "2408215105198163984",
+    "url": "https://www.figma.com/design/LwH8GU8iQfxhxIT3YXAcyR?version-id=2408215105198163984&node-id=0-1",
+    "saveOperationSucceeded": true,
+    "historyListObserved": true,
+    "copyLinkSucceeded": true,
+    "completeVersionReadVerified": false
+  },
+  "latestKeyChangesPublished": {
+    "verified": true,
+    "evidence": "design/figma-r4-click-log.json",
+    "cases": "R4-CLICK-072..081",
+    "scope": "Both Home BACK fixes from three real sources; ten cleared visible headers; not all-file synchronization proof"
+  },
+  "fixedVersionAttempts": [
+    {
+      "client": "independent Chrome",
+      "result": "Figma out-of-browser-memory at about 3.2 GB; fixed version never confirmed fully loaded",
+      "recovery": "Open in recovery mode removed version-id and rendered current same-file canvas; this is not fixed-version verification",
+      "currentFileMemoryPercentAfterRecovery": 55.3
+    },
+    {
+      "client": "native Figma",
+      "result": "Named row selected and URL contained fixed version-id; prior canvas remained visible before a later out-of-browser-memory dialog. Earlier screenshot cannot prove completed fixed-version load.",
+      "export": "Save Local Copy requested while version selected; no fixed-version export or save dialog confirmed. No cloud/local byte equality claimed.",
+      "evidence": [
+        "design/review-r4/resume-final-version-native.jpg",
+        "design/review-r4/resume-final-version-native-oom.jpg",
+        "design/figma-r4-final-version-native-ax.txt"
+      ],
+      "recovery": "Requested same-file current recovery; final UI observation to be appended"
+    }
+  ],
+  "finalNativeBackup": "design/figma-r4-final-backup-2026-10-09.json",
+  "localEvidence": "Final backup ZIP passed; canvas.fig exactly matches the post-audit checkpoint; no design writes occurred after the frozen audit.",
+  "notDone": [
+    "No restore-version operation",
+    "No duplicate/new file",
+    "No removal of archive nodes",
+    "No imported replacement",
+    "No fixed-version export claimed",
+    "No overall sync pass inferred from prototype entries"
+  ],
+  "remainingTask": "Confirm all-file cloud persistence when the fixed version can be read without Figma memory failure; avoid rerunning completed design generation, audit, or runtime scenarios.",
+  "reference": {
+    "url": "https://help.figma.com/hc/en-us/articles/360038006754-View-a-file-s-version-history",
+    "use": "Official semantics: named versions are file snapshots; used only to understand save/view behavior, not as evidence that this particular snapshot finished loading."
+  },
+  "finalUiState": {
+    "observedAt": "2026-10-09T05:44:41.083401+00:00",
+    "nativeSameFileRecovered": true,
+    "nativeFileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+    "nativeCurrentUrlStillRecovery": true,
+    "nativeMemoryPercent": 53.64,
+    "nativeFourR4SectionsObserved": true,
+    "pluginClosed": true,
+    "nativeFileLeftOpen": true,
+    "originalLightPrototypeEntryLoaded": "1:500",
+    "prototypeHandoffImage": "design/review-r4/resume-final-light-entry.jpg",
+    "cloudVersionVerificationStillBlocked": true
+  }
+}

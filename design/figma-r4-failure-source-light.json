@@ -1,0 +1,89 @@
+{
+  "status": "Light 查询失败现可在保留旧数据的来源上评审",
+  "changed": true,
+  "createdRootCount": 1,
+  "createdRoot": {
+    "id": "65:2175533",
+    "name": "R4/Light/Network/QueryFailureLaunch"
+  },
+  "existingControlsChanged": [
+    {
+      "id": "46:138390",
+      "before": [
+        {
+          "action": {
+            "type": "NODE",
+            "destinationId": "46:138266",
+            "navigation": "OVERLAY",
+            "transition": {
+              "type": "DISSOLVE",
+              "easing": {
+                "type": "EASE_OUT"
+              },
+              "duration": 0.18000000715255737
+            },
+            "resetVideoPosition": false,
+            "resetScrollPosition": false,
+            "resetInteractiveComponents": false
+          },
+          "actions": [
+            {
+              "type": "NODE",
+              "destinationId": "46:138266",
+              "navigation": "OVERLAY",
+              "transition": {
+                "type": "DISSOLVE",
+                "easing": {
+                  "type": "EASE_OUT"
+                },
+                "duration": 0.18000000715255737
+              },
+              "resetVideoPosition": false,
+              "resetScrollPosition": false,
+              "resetInteractiveComponents": false
+            }
+          ],
+          "trigger": {
+            "type": "ON_CLICK"
+          }
+        }
+      ],
+      "destination": "65:2175533",
+      "navigation": "NAVIGATE"
+    }
+  ],
+  "source": "1:536",
+  "snapshot": {
+    "accounts": [
+      "alin.claude@example.com",
+      "alin.claude@example.com",
+      "alin.codex@example.com",
+      "alin.codex@example.com",
+      "work.codex@example.com",
+      "work.codex@example.com",
+      "alin.cursor@example.com",
+      "alin.cursor@example.com"
+    ],
+    "account": "work.codex@example.com",
+    "values": [
+      "70%",
+      "85%"
+    ],
+    "updated": "套餐 Plus · 上次成功更新 09:41"
+  },
+  "gate": "46:138266",
+  "passed": "46:138350",
+  "querying": "46:138184",
+  "failed": "46:138225",
+  "retry": "53:306039",
+  "retrySuccess": "53:306001",
+  "launchDelaySeconds": 0.15,
+  "closeBehavior": "CLOSE keeps the launch background and its 70% / 85%, 09:41 snapshot.",
+  "preserved": [
+    "base15 source",
+    "existing check/query/retry/close paths",
+    "product controls",
+    "shared components",
+    "delivery manifest"
+  ]
+}

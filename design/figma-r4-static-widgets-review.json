@@ -1,0 +1,656 @@
+{
+  "schemaVersion": 1,
+  "fileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+  "reviewDate": "2026-10-09",
+  "reviewer": "network_author subagent",
+  "evidenceType": "direct_native_png_pixel_review",
+  "scope": "design/review-r4/native/*widgets*.png；浅深各11张，共22张。只检查这些原生静态图片的可见内容。",
+  "method": "通过view_image逐张实际显示所有22张原生PNG，按浅深对应组比较；未重编码、裁剪或修改图片。另读取PNG头与SHA记录证据身份。",
+  "result": "passed_for_reviewed_static_scope",
+  "reviewedCount": 22,
+  "perThemeCount": {
+    "light": 11,
+    "dark": 11
+  },
+  "issueCount": 0,
+  "issues": [],
+  "crossThemeObservations": [
+    "两套账号身份、额度数值、未知/空态文字对应一致。",
+    "完成配置work70%/85%，同平台个人Codex38%/64%，跨平台Claude39%/72%；未受影响Cursor均为62%、$12.40/$20.00。",
+    "未知候选仅显示未获取额度，不展示虚构0%或被断开账号旧额度；空态为未连接账号，无数据。",
+    "空态无轻点对应账号的过时说明；非空组件保留对应点击说明。",
+    "黑白灰明暗对应，已用实色段与剩余数字方向一致；此为视觉观察，不替代精确条长计算。",
+    "小组件头部成功时间沿用R3隐藏状态；顶部9:41是系统状态栏，未把它当成小组件更新时间证据。"
+  ],
+  "limitations": [
+    "静态图片不能证明点击目标、返回路径、候选列表顺序、动画或网络检查执行。相关行为需引用原生审计与实际点击日志。",
+    "旧缓存stale-target有意显示旧work身份/额度；其点击进入当前绑定状态的证据另见R4-CLICK-057/058，不能仅凭本静态图推断。",
+    "本检查不覆盖另外68张原生PNG、全部画布根或整轮TXT清单；不标记最终R4验收完成。"
+  ],
+  "relatedBehaviorEvidence": {
+    "file": "design/figma-r4-click-log.json",
+    "entries": [
+      "R4-CLICK-054",
+      "R4-CLICK-055",
+      "R4-CLICK-057",
+      "R4-CLICK-058"
+    ],
+    "evidenceSeparation": "这些是既有点击记录引用，并非本次静态检查新执行的点击。"
+  },
+  "images": [
+    {
+      "theme": "light",
+      "nodeId": "46:141872",
+      "registryName": "R4/Light/Widgets/Gallery/small",
+      "filename": "light-widgets-gallery-small.png",
+      "path": "design/review-r4/native/light-widgets-gallery-small.png",
+      "bytes": 25275,
+      "sha256": "4c944fb3b02e105300305efd0f6ccf4677fafe7a68960b941ba12e2583dd5d9e",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Claude · alin.claude"
+        ],
+        "quota": [
+          "剩余39%",
+          "剩余72%"
+        ],
+        "observation": "小号预览中身份、每周/5小时额度及重置文字完整，评审与系统示意标识可见。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "light",
+      "nodeId": "46:142760",
+      "registryName": "R4/Light/Widgets/Gallery/medium",
+      "filename": "light-widgets-gallery-medium.png",
+      "path": "design/review-r4/native/light-widgets-gallery-medium.png",
+      "bytes": 25858,
+      "sha256": "8e722bea0a869a085cda41ca4c4644d863fa0d9487213b5abc15abf6b953347d",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Claude · alin.claude"
+        ],
+        "quota": [
+          "剩余39%",
+          "剩余72%"
+        ],
+        "observation": "中号预览身份及两周期额度完整，两条进度条和重置文字不重叠。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "light",
+      "nodeId": "46:142344",
+      "registryName": "R4/Light/Widgets/Config/small/C",
+      "filename": "light-widgets-choose-work.png",
+      "path": "design/review-r4/native/light-widgets-choose-work.png",
+      "bytes": 23633,
+      "sha256": "2d22d4a1a7678cf03418f83a17a54651c6da1c9cf621db9a6965a6d35dc19337",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "alin.claude@example.com",
+          "alin.codex@example.com",
+          "work.codex@example.com",
+          "alin.cursor@example.com"
+        ],
+        "selected": "work.codex@example.com",
+        "observation": "四个账号身份完整且彼此区分，勾选位于work Codex行，完成按钮未遮挡。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "light",
+      "nodeId": "46:142410",
+      "registryName": "R4/Light/Widgets/Home/Config/small/C",
+      "filename": "light-widgets-configured-pair.png",
+      "path": "design/review-r4/native/light-widgets-configured-pair.png",
+      "bytes": 22493,
+      "sha256": "5aee2b8453f315811524f065c1577b7dd9f66423048dc887f04aca8e9170e87a",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Codex · work.codex",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "work:剩余70%/85%",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "左右两组件分别为work Codex和Cursor；数值及周期/金额位于各自组件边界内。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "light",
+      "nodeId": "46:143605",
+      "registryName": "R4/Light/Widgets/Home/Fallback/ABD",
+      "filename": "light-widgets-same-platform.png",
+      "path": "design/review-r4/native/light-widgets-same-platform.png",
+      "bytes": 22571,
+      "sha256": "f9b7c06160649c4204089dd685cdc28fb659a1ad95fb0df471b6b98aae86d457",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Codex · alin.codex",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "个人Codex:剩余38%/64%",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "回退结果显示个人Codex的新身份及其38%/64%，没有沿用work的70%/85%；Cursor保持原值。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "light",
+      "nodeId": "46:143770",
+      "registryName": "R4/Light/Widgets/Home/Fallback/AD",
+      "filename": "light-widgets-cross-platform.png",
+      "path": "design/review-r4/native/light-widgets-cross-platform.png",
+      "bytes": 22318,
+      "sha256": "6b9eb1edf0060e21c84f430130103c943d42c1d4d89899cf9aedb11e34b80342",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Claude · alin.claude",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "Claude:剩余39%/72%",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "回退结果为Claude及其39%/72%；Cursor组件保持原身份和数值。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "light",
+      "nodeId": "46:144101",
+      "registryName": "R4/Light/Widgets/Home/Fallback/Empty",
+      "filename": "light-widgets-empty.png",
+      "path": "design/review-r4/native/light-widgets-empty.png",
+      "bytes": 13370,
+      "sha256": "ed7eed9712257962f08112dde7bb6d12f143e113fe87baef5f7d7c86b31d77bb",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [],
+        "quota": [],
+        "visibleEmptyText": "未连接账号，无数据",
+        "observation": "两个组件都显示规定空态，不显示残留账号/额度；已删除不适用的轻点对应账号说明，组件与下方图标间距收紧，无替代文案。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "light",
+      "nodeId": "46:146314",
+      "registryName": "R4/Light/Widgets/Home/MultipleCandidates",
+      "filename": "light-widgets-multiple-candidates.png",
+      "path": "design/review-r4/native/light-widgets-multiple-candidates.png",
+      "bytes": 22571,
+      "sha256": "f9b7c06160649c4204089dd685cdc28fb659a1ad95fb0df471b6b98aae86d457",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Codex · alin.codex",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "个人Codex:剩余38%/64%",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "静态结果为个人Codex38%/64%，Cursor保持原值；候选排序选择过程需由原生/点击记录证明。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "light",
+      "nodeId": "65:1349611",
+      "registryName": "R4/Light/AccountWidgets/Set-10/Pending-1",
+      "filename": "light-widgets-same-platform-pending.png",
+      "path": "design/review-r4/native/light-widgets-same-platform-pending.png",
+      "bytes": 20118,
+      "sha256": "f25ea884a4743233fb74eddf20684f38950e6acbb7d4b8843149e6d9ae6159de",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Codex · alin.codex",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "个人Codex:未获取额度",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "新候选显示未获取额度，没有0%、work旧额度或旧额度条；Cursor未改变。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "light",
+      "nodeId": "65:1346604",
+      "registryName": "R4/Light/AccountWidgets/Set-9/Pending-0",
+      "filename": "light-widgets-cross-platform-pending.png",
+      "path": "design/review-r4/native/light-widgets-cross-platform-pending.png",
+      "bytes": 20146,
+      "sha256": "3d810f24352929654e349099854757374945e12f5cb39225abde896c0958099d",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Claude · alin.claude",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "Claude:未获取额度",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "Claude候选显示未获取额度，没有伪造额度或旧work值；Cursor未改变。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "light",
+      "nodeId": "94:2477991",
+      "registryName": "R4/Light/Widgets/Stale/Pending-10-1",
+      "filename": "light-widgets-stale-target.png",
+      "path": "design/review-r4/native/light-widgets-stale-target.png",
+      "bytes": 22493,
+      "sha256": "5aee2b8453f315811524f065c1577b7dd9f66423048dc887f04aca8e9170e87a",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Codex · work.codex",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "旧缓存work:剩余70%/85%",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "评审专用旧缓存画面有意保留work旧值，Cursor仍正确；静态图不能验证失效目标，实际目标与返回见点击057/058。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "dark",
+      "nodeId": "46:152233",
+      "registryName": "R4/Dark/Widgets/Gallery/small",
+      "filename": "dark-widgets-gallery-small.png",
+      "path": "design/review-r4/native/dark-widgets-gallery-small.png",
+      "bytes": 25407,
+      "sha256": "63196712925988e8cc77443a858bc294d89f6175481fffaa70fc1717871eeda1",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Claude · alin.claude"
+        ],
+        "quota": [
+          "剩余39%",
+          "剩余72%"
+        ],
+        "observation": "小号预览中身份、每周/5小时额度及重置文字完整，评审与系统示意标识可见。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "dark",
+      "nodeId": "46:153121",
+      "registryName": "R4/Dark/Widgets/Gallery/medium",
+      "filename": "dark-widgets-gallery-medium.png",
+      "path": "design/review-r4/native/dark-widgets-gallery-medium.png",
+      "bytes": 26013,
+      "sha256": "4e140d9800846a4a6cdf9f2295279da30010eb0b0d9fc1d618c6b5c1b584b89e",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Claude · alin.claude"
+        ],
+        "quota": [
+          "剩余39%",
+          "剩余72%"
+        ],
+        "observation": "中号预览身份及两周期额度完整，两条进度条和重置文字不重叠。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "dark",
+      "nodeId": "46:152705",
+      "registryName": "R4/Dark/Widgets/Config/small/C",
+      "filename": "dark-widgets-choose-work.png",
+      "path": "design/review-r4/native/dark-widgets-choose-work.png",
+      "bytes": 23190,
+      "sha256": "d9bc54202b4b12c6df29c180ba9eb1761c2cd898d9c06660149216dd11ca5b41",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "alin.claude@example.com",
+          "alin.codex@example.com",
+          "work.codex@example.com",
+          "alin.cursor@example.com"
+        ],
+        "selected": "work.codex@example.com",
+        "observation": "四个账号身份完整且彼此区分，勾选位于work Codex行，完成按钮未遮挡。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "dark",
+      "nodeId": "46:152771",
+      "registryName": "R4/Dark/Widgets/Home/Config/small/C",
+      "filename": "dark-widgets-configured-pair.png",
+      "path": "design/review-r4/native/dark-widgets-configured-pair.png",
+      "bytes": 22330,
+      "sha256": "725fa34a44a780e044bcedac615634698aecc036001ba0208c0dd152fca380e6",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Codex · work.codex",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "work:剩余70%/85%",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "左右两组件分别为work Codex和Cursor；数值及周期/金额位于各自组件边界内。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "dark",
+      "nodeId": "46:153966",
+      "registryName": "R4/Dark/Widgets/Home/Fallback/ABD",
+      "filename": "dark-widgets-same-platform.png",
+      "path": "design/review-r4/native/dark-widgets-same-platform.png",
+      "bytes": 22399,
+      "sha256": "4df8863058e1430407d7d4caf3d3f1a5d1d3d6ebe81735f0f4e8b6e61f83e429",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Codex · alin.codex",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "个人Codex:剩余38%/64%",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "回退结果显示个人Codex的新身份及其38%/64%，没有沿用work的70%/85%；Cursor保持原值。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "dark",
+      "nodeId": "46:154131",
+      "registryName": "R4/Dark/Widgets/Home/Fallback/AD",
+      "filename": "dark-widgets-cross-platform.png",
+      "path": "design/review-r4/native/dark-widgets-cross-platform.png",
+      "bytes": 22081,
+      "sha256": "bfba5dc5beb05c0cf8ad4a6308b896dd62fcc6c8692cd8c95d5f412c1f51c14f",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Claude · alin.claude",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "Claude:剩余39%/72%",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "回退结果为Claude及其39%/72%；Cursor组件保持原身份和数值。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "dark",
+      "nodeId": "46:154462",
+      "registryName": "R4/Dark/Widgets/Home/Fallback/Empty",
+      "filename": "dark-widgets-empty.png",
+      "path": "design/review-r4/native/dark-widgets-empty.png",
+      "bytes": 13304,
+      "sha256": "c986c9c71bec5ce393fc2f63bcf38e44390d759f811ba36a83c4bcb40652e84b",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [],
+        "quota": [],
+        "visibleEmptyText": "未连接账号，无数据",
+        "observation": "两个组件都显示规定空态，不显示残留账号/额度；已删除不适用的轻点对应账号说明，组件与下方图标间距收紧，无替代文案。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "dark",
+      "nodeId": "46:156675",
+      "registryName": "R4/Dark/Widgets/Home/MultipleCandidates",
+      "filename": "dark-widgets-multiple-candidates.png",
+      "path": "design/review-r4/native/dark-widgets-multiple-candidates.png",
+      "bytes": 22399,
+      "sha256": "4df8863058e1430407d7d4caf3d3f1a5d1d3d6ebe81735f0f4e8b6e61f83e429",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Codex · alin.codex",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "个人Codex:剩余38%/64%",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "静态结果为个人Codex38%/64%，Cursor保持原值；候选排序选择过程需由原生/点击记录证明。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "dark",
+      "nodeId": "65:1639468",
+      "registryName": "R4/Dark/AccountWidgets/Set-10/Pending-1",
+      "filename": "dark-widgets-same-platform-pending.png",
+      "path": "design/review-r4/native/dark-widgets-same-platform-pending.png",
+      "bytes": 20193,
+      "sha256": "ac32a5168ac4b0888906584432d6e74a37ab1e31825a84be82c50bfcf8be52c3",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Codex · alin.codex",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "个人Codex:未获取额度",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "新候选显示未获取额度，没有0%、work旧额度或旧额度条；Cursor未改变。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "dark",
+      "nodeId": "65:1636461",
+      "registryName": "R4/Dark/AccountWidgets/Set-9/Pending-0",
+      "filename": "dark-widgets-cross-platform-pending.png",
+      "path": "design/review-r4/native/dark-widgets-cross-platform-pending.png",
+      "bytes": 20149,
+      "sha256": "ae8fcc01cb8665a692c91eba372c6c741e8c37e4a1b9b1bed9e2a6f35b949f27",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Claude · alin.claude",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "Claude:未获取额度",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "Claude候选显示未获取额度，没有伪造额度或旧work值；Cursor未改变。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    },
+    {
+      "theme": "dark",
+      "nodeId": "94:2478095",
+      "registryName": "R4/Dark/Widgets/Stale/Pending-10-1",
+      "filename": "dark-widgets-stale-target.png",
+      "path": "design/review-r4/native/dark-widgets-stale-target.png",
+      "bytes": 22330,
+      "sha256": "725fa34a44a780e044bcedac615634698aecc036001ba0208c0dd152fca380e6",
+      "dimensions": {
+        "width": 393,
+        "height": 852
+      },
+      "pixelReview": "viewed_directly_with_view_image",
+      "result": "passed_for_visible_static_scope",
+      "identityAndQuota": {
+        "identity": [
+          "Codex · work.codex",
+          "Cursor · alin.cursor"
+        ],
+        "quota": [
+          "旧缓存work:剩余70%/85%",
+          "Cursor:剩余62%",
+          "$12.40/$20.00"
+        ],
+        "observation": "评审专用旧缓存画面有意保留work旧值，Cursor仍正确；静态图不能验证失效目标，实际目标与返回见点击057/058。"
+      },
+      "layout": "可见文字、账号身份、额度条与操作文字均在画面/组件边界内，未观察到遮挡、切断或相互覆盖。",
+      "issues": []
+    }
+  ]
+}

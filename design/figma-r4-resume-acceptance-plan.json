@@ -1,0 +1,377 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-09",
+  "fileKey": "LwH8GU8iQfxhxIT3YXAcyR",
+  "kind": "read_only_acceptance_resume_plan",
+  "status": "planned_not_executed",
+  "author": "acceptance_review subagent",
+  "scope": "读取历史需求、决定、验收与观察，规划剩余验证；未操作Figma/UI，未修改历史文档或观察。",
+  "readSources": [
+    "app/docs/requirements.md",
+    "app/docs/decisions.md",
+    "app/docs/acceptance-r4.md",
+    "app/docs/figma-handoff-2026-10-08.md",
+    "design/figma-r3-text-final-audit.json",
+    "design/figma-r4-click-log.json",
+    "design/figma-plugin/r4-widget-return-repair.js",
+    "design/figma-plugin/r4-widgets.js"
+  ],
+  "requirementsVersion": "0.6",
+  "mustPreserve": [
+    "唯一现有文件及四区；原有浅深各44张R3可见评审画面",
+    "黑白灰、三平台、同平台多账号、常显身份",
+    "固定剩余数值；条形左已用右剩余；刷新/连接横排",
+    "TXT-01～06删除结果与必要示意、错误提示",
+    "网络检查 >50 且仅Figma模拟；评审模拟入口不进入产品绕过流程",
+    "可信旧数据与原成功更新时间；失败不新增账号；只读缓存/倒计时不触发检查"
+  ],
+  "evidenceRules": [
+    "历史 observed 只覆盖条目明确写出的行为；不能扩张为全排列通过",
+    "未单独保存短相位截图不否定已实际观察的结果，但不能宣称逐帧验收",
+    "原生90图可复用为其可见静态证据，不能代替修复后连线审计或返回栈点击",
+    "49/50既有真实观察继续有效；不可用旧测试重跑替代新发现错误修复",
+    "Figma原型加载成功不证明编辑器全部云端同步；原生备份、同步和点击各自取证"
+  ],
+  "r3Baseline": {
+    "visibleFramesPerTheme": 44,
+    "removedTextCount": 30,
+    "specifiedTextResidue": 0,
+    "preservedTextChanges": 0,
+    "visibleScreensChangedAtR3TextPass": 18,
+    "unchangedImagesAtR3TextPass": 70,
+    "historicalOnly": "原R3交互区指纹不应继续要求不变；D-34已明确授权R4交互修订。"
+  },
+  "reusableObservedGroups": [
+    {
+      "scope": "49/50阻止；51继续；浅色三类无分数失败取消",
+      "entries": [
+        "004",
+        "008",
+        "012",
+        "013",
+        "014",
+        "015",
+        "016",
+        "023",
+        "024",
+        "026",
+        "046"
+      ],
+      "boundary": "Dark026是摘要，三类失败的逐项取消目标和账号保留未记录；不能整体升级通过。"
+    },
+    {
+      "scope": "浅深全部/单账号刷新与work重连；Codex添加取消/成功/断开",
+      "entries": [
+        "004",
+        "005",
+        "006",
+        "007",
+        "008",
+        "009",
+        "028",
+        "029",
+        "030",
+        "031",
+        "032",
+        "033"
+      ],
+      "boundary": "仅指定账号/来源主链，不等于三平台任意排列。"
+    },
+    {
+      "scope": "首次查询无缓存失败保持未知；从新卡菜单重查成功",
+      "entries": [
+        "017",
+        "018",
+        "044",
+        "045"
+      ],
+      "boundary": "菜单刷新不是首次失败面板Retry；若宣称该面板Retry可用须补直接点击。"
+    },
+    {
+      "scope": "普通可信缓存及R3特殊09:11/12:41来源失败、重试、同源返回",
+      "entries": [
+        "035",
+        "050",
+        "060",
+        "061",
+        "064"
+      ],
+      "boundary": "Dark035未记录work具体失败前后数值，但Dark061/064提供明确旧值及时间的真实证据。"
+    },
+    {
+      "scope": "后台内联失败重试与App自动更新检查；小组件内联失败/评审再次查询",
+      "entries": [
+        "019",
+        "020",
+        "021",
+        "047",
+        "049",
+        "052",
+        "053",
+        "065",
+        "066"
+      ],
+      "boundary": "评审系统再次查询是恰当模拟；不要求增加产品小组件重试按钮。"
+    },
+    {
+      "scope": "通知权限允许/拒绝/系统返回；指定新增后的On保持；通知检查及已删除目标",
+      "entries": [
+        "010",
+        "027",
+        "034",
+        "039",
+        "056",
+        "059",
+        "067",
+        "068",
+        "069"
+      ],
+      "boundary": "权限均为模拟；Settings-denied审计差异若修复仍要定向回归。"
+    },
+    {
+      "scope": "浅深中号配置完整返回",
+      "entries": [
+        "036",
+        "071"
+      ],
+      "boundary": "不受小号003已知问题直接影响；不重复作为小号正确证据。"
+    },
+    {
+      "scope": "小组件同平台/跨平台/全空回退、多候选顺序和未受影响D",
+      "entries": [
+        "001",
+        "002",
+        "003",
+        "037",
+        "038",
+        "041",
+        "043"
+      ],
+      "boundary": "Light041最后Back画面未确认；可在本轮该分支局部回归中补齐。"
+    },
+    {
+      "scope": "无可信额度候选、旧缓存失效点击仍进入当前有效绑定",
+      "entries": [
+        "054",
+        "055",
+        "057",
+        "058"
+      ],
+      "boundary": "浅色同平台未知、深色跨平台未知及双主题旧缓存代表样例；不扩任意排列。"
+    },
+    {
+      "scope": "普通首页教程浅深首步X/第二步Done；设置/空态来源教程",
+      "entries": [
+        "011",
+        "038",
+        "043",
+        "062",
+        "063"
+      ],
+      "boundary": "只覆盖上述来源。"
+    },
+    {
+      "scope": "最终浅深入口、目录返回、后台下部可滚动",
+      "entries": [
+        "065",
+        "066"
+      ],
+      "boundary": "无需重复用入口可达证明整体同步。"
+    }
+  ],
+  "homeBackSemantics": {
+    "reason": "r4-widgets.js先将Home/Config/small/C箭头接Config，随后把同一Home作为fallback基态，又覆写箭头为Accounts/ABCD。共享Home有Config、评审Hub及Accounts多个实际来源；固定Accounts目标与INT-04/INT-09来源语义冲突。",
+    "repairCandidate": "仅两共享Home导航箭头改ON_CLICK BACK；现有详情OVERLAY/CLOSE及Home indicator保留。",
+    "light": {
+      "hub": "46:140634",
+      "home": "46:142410",
+      "config": "46:142344"
+    },
+    "dark": {
+      "hub": "46:150995",
+      "gallery": "46:152233",
+      "initialConfig": "46:152337",
+      "config": "46:152705",
+      "home": "46:152771",
+      "accounts": "46:154688"
+    },
+    "historyRequirement": "应从正式入口/Widgets Hub真实点入构建历史；不能孤立深链到Home后用BACK无历史判断通过/失败。",
+    "listReturnMeaning": "Home→App/Accounts→列表返回Home（NAVIGATE）后，Home BACK应回刚才Accounts；其来源已不是最初Config。详情CLOSE不应改变来源历史。",
+    "escapeMeaning": "现有Home indicator固定回Widgets Hub是孤立深链/评审的出口；箭头BACK与indicator分工保留。",
+    "validationStatus": "proposal_only_not_applied_or_ui_verified"
+  },
+  "remainingClickMatrix": [
+    {
+      "id": "RESUME-CLICK-01",
+      "priority": 0,
+      "themes": [
+        "Light",
+        "Dark"
+      ],
+      "when": "003局部修复后静态验证完成",
+      "path": "正式入口→Widgets Hub→小号Gallery→Add→Config选work→Done→共享Home→work详情→CLOSE→Home导航Back→Config→Back→Gallery→Back→Hub",
+      "expect": [
+        "Home为work70/85与Cursor62%及$12.40/20",
+        "详情work身份/Plus/09:41/70/85一致",
+        "CLOSE回同Home；Home Back回该主题原work Config且选中保留",
+        "整链可退出；不误入Accounts"
+      ],
+      "closes": "R4-OBS-ISSUE-003（须两主题实际结果）"
+    },
+    {
+      "id": "RESUME-CLICK-02",
+      "priority": 0,
+      "themes": [
+        "Light",
+        "Dark"
+      ],
+      "when": "同上",
+      "path": "Widgets Hub→断开后的回退·逐账号操作→共享Home→Home导航Back",
+      "expect": [
+        "回到实际Widgets Hub",
+        "原组件身份/额度不因BACK修复变化"
+      ],
+      "note": "与配置来源分开创建历史"
+    },
+    {
+      "id": "RESUME-CLICK-03",
+      "priority": 0,
+      "themes": [
+        "Light",
+        "Dark"
+      ],
+      "when": "同上",
+      "path": "Widgets Hub→共享Home→App账号列表→列表Back返回Home→Home导航Back→账号列表",
+      "expect": [
+        "Home Back回最近实际账号列表",
+        "不会错误强制回Config/默认首页",
+        "Home indicator仍有Hub出口"
+      ],
+      "note": "源记录确认列表Back是NAVIGATE；观察运行时历史，不只看节点动作"
+    },
+    {
+      "id": "RESUME-CLICK-04",
+      "priority": 0,
+      "themes": [
+        "Light",
+        "Dark"
+      ],
+      "when": "hiddenTargets/legacyTargets逐项诊断修复后",
+      "path": "从可见来源进入每类受修复的Widget详情/账号列表→点击可见Expand account→关闭/返回",
+      "expect": [
+        "身份/额度/原成功时间对应具体账号",
+        "不进入隐藏R2、已用或偏好旧页面",
+        "覆盖backup账号误连的可见展开；关闭回真正来源"
+      ],
+      "selection": "按实际受影响owner清单核对每个写入；UI至少覆盖每种不同来源/目标/账号结构，若修复不等价则逐项点击",
+      "remaining": "当前尚无最终目标诊断结果，不能提前将53/52分类为无害或相加"
+    },
+    {
+      "id": "RESUME-CLICK-05",
+      "priority": 0,
+      "themes": [
+        "Light",
+        "Dark"
+      ],
+      "when": "Settings-denied差异定位并修复后",
+      "path": "AccountSystem/Set-15/Settings-denied→受影响控件→对应系统权限示意/返回来源→关闭或Back",
+      "expect": [
+        "浅深同一动作、时序、目的及来源语义",
+        "按模拟系统状态返回正确On/Off；账号集合保留",
+        "不重复强制权限请求，无无法退出"
+      ],
+      "selection": "以实际差异reaction为准；不要仅重跑067/068而漏受影响控件"
+    },
+    {
+      "id": "RESUME-CLICK-06",
+      "priority": 1,
+      "themes": [
+        "Dark"
+      ],
+      "when": "最终静态审计后、正式评审来源",
+      "path": "网络评审分别进入超时/网站不可用/无有效评分→取消或返回",
+      "expect": [
+        "三个原因分别表达，无虚构分数",
+        "返回同来源，原账号/可信额度/成功时间保持",
+        "逐项记节点与结果，补026的摘要缺口"
+      ],
+      "reuse": "Light012–014已明确观察；90图可复用静态文案，新增这里只补运行时返回"
+    },
+    {
+      "id": "RESUME-CLICK-07",
+      "priority": 1,
+      "themes": [
+        "Light",
+        "Dark"
+      ],
+      "when": "失败重试覆盖补证",
+      "path": "尚无明确Retry证据的网站不可用/无有效评分分支→Retry→正在检查→51→原授权或查询→退出",
+      "expect": [
+        "重试真实重进检查；自动继续原操作范围",
+        "无额外产品绕过按钮；退出正确来源",
+        "不把51当额度成功"
+      ],
+      "reuse": "Light50重试024、Dark超时重试026、页内后台019/047及查询Retry050/060/061/064不重复；具体选取取决于最终静态发现这些分支是否共享同一已验证Retry行为"
+    },
+    {
+      "id": "RESUME-CLICK-08",
+      "priority": 1,
+      "themes": [
+        "Light"
+      ],
+      "when": "小组件可见展开修复回归时合并执行",
+      "path": "多候选断开work→B小组件详情→Close/Back→原MultipleCandidates Home",
+      "expect": [
+        "明确观察最终原Home并保存结果",
+        "B38/64与D62不变"
+      ],
+      "closes": "041最后返回证据缺口，不重新展开全回退链"
+    },
+    {
+      "id": "RESUME-CLICK-09",
+      "priority": 1,
+      "themes": [
+        "Light",
+        "Dark"
+      ],
+      "when": "首次查询失败面板Retry未被新范围验证时",
+      "path": "R4Review→新增后首次查询失败→失败面板Retry",
+      "expect": [
+        "直接Retry控件重新检查；通过才再查询",
+        "无缓存期间保持未获取/—；旧账号/时间保留"
+      ],
+      "note": "018/045从菜单刷新，不可充当面板Retry证据；若交付不声称该按钮已点击，明确保留部分观察。"
+    },
+    {
+      "id": "RESUME-CLICK-10",
+      "priority": 1,
+      "themes": [
+        "Light",
+        "Dark"
+      ],
+      "when": "最终动效一致性检查",
+      "path": "选择代表网络检查→通过→自动授权/查询链及教程过渡",
+      "expect": [
+        "轻量反馈可实际观察；无需用户再点通过",
+        "失败停留可操作，不无限循环或假成功",
+        "对应浅深时序/目标先由静态reaction对照，UI补观察任何变化相位"
+      ],
+      "note": "已有检查实际观察和90图可复用；不要求为每个短暂相位重复截图，未捕获的相位如实说明。"
+    }
+  ],
+  "finalReadOnlyAndDeliveryChecks": [
+    "所有诊断与局部修改完成后冻结写入，替换compact模块而非双载；使用分批只读完整审计，避开旧全量Audit。",
+    "审计保留问题清单与范围；hiddenTargets与legacyTargets按实际边去重，不把计数相加；已隐藏owner也要核对来源可达性。",
+    "0失效/隐藏旧目标或每个明确处置证据；浅深reaction差异逐项解释；无未扫描/不完整队列。",
+    "最终静态图仅重导出有视觉变化或需要新证据的画面；原90图未变则引用，不以重做已验证画面代替问题处理。",
+    "本轮点击新记录从072后续编号，不改写历史观察为本轮执行；每条明确像素观察与附件。",
+    "确认当前同一文件可保存和云端同步状态，保存最终原生.fig并记录字节数/SHA256/ZIP完整性；保留暂停备份。",
+    "更新figma-state、live-progress、acceptance和handoff；完成/未执行/受阻状态按实际证据分开；需求0.6无需再升级。"
+  ],
+  "notNewProductQuestions": [
+    "评分阈值及来源已确认",
+    "小组件回退顺序已确认",
+    "本轮范围及动画授权已确认",
+    "BACK按真实来源的语义符合既有INT要求；需验证而非重新询问产品规则"
+  ]
+}
