@@ -7,14 +7,16 @@
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f4f4;color:#202020;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:1560px;margin:auto;padding:32px 24px}header{margin-bottom:24px}h1{margin:0 0 8px;font-size:26px}header p{margin:0;color:#666;font-size:15px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.card{overflow:hidden;background:white;border:1px solid #ddd;border-radius:10px}.preview{display:flex;align-items:center;justify-content:center;height:300px;background:#fafafa}.preview img{display:block;width:100%;height:100%;object-fit:contain}.caption{padding:14px 16px 16px}h2{margin:0;font-size:16px;line-height:1.5;font-weight:600;overflow-wrap:anywhere}h2 span{color:#777}.caption p{margin:8px 0 0;font-size:14px;color:#666}a{color:#2458b5;text-underline-offset:3px}.empty{grid-column:1/-1;color:#666}@media(max-width:1050px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){main{padding:24px 16px}.grid{grid-template-columns:1fr}.preview{height:280px}}
 .tabs{display:flex;gap:8px;margin-bottom:20px}.tab{padding:10px 16px;border:1px solid #ccc;border-radius:8px;background:transparent;color:#555;font:inherit;cursor:pointer}.tab[aria-selected="true"]{background:#202020;border-color:#202020;color:white}.tab:focus-visible{outline:2px solid #2458b5;outline-offset:3px}
+h2 .selection-number{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;margin-right:4px;padding:0 6px;border-radius:6px;background:#202020;color:white;font-size:18px;vertical-align:middle}.caption .origin{font-size:13px}
 </style>
 </head>
 <body>
 <main>
-<header><h1>首页卡片 · 设计参考初筛</h1><p>60 个原作参考 · 点击截图或原作链接查看详情</p></header>
+<header><h1>首页卡片 · 设计参考初筛</h1><p>60 个原作参考 · 选中 11 个 · 点击截图或原作链接查看详情</p></header>
 <div class="tabs" role="tablist" aria-label="参考批次">
 <button class="tab" type="button" role="tab" id="batch-1-tab" aria-controls="batch-1" aria-selected="false" tabindex="-1">第一批30个</button>
-<button class="tab" type="button" role="tab" id="batch-2-tab" aria-controls="batch-2" aria-selected="true" tabindex="0">第二批30个</button>
+<button class="tab" type="button" role="tab" id="batch-2-tab" aria-controls="batch-2" aria-selected="false" tabindex="-1">第二批30个</button>
+<button class="tab" type="button" role="tab" id="selected-tab" aria-controls="selected" aria-selected="true" tabindex="0">选中的</button>
 </div>
 <section role="tabpanel" id="batch-1" aria-labelledby="batch-1-tab" hidden>
 <div class="grid">
@@ -140,7 +142,7 @@
 </article>
 </div>
 </section>
-<section role="tabpanel" id="batch-2" aria-labelledby="batch-2-tab">
+<section role="tabpanel" id="batch-2" aria-labelledby="batch-2-tab" hidden>
 <div class="grid">
 <article class="card" id="reference-batch-2-01">
   <a class="preview" href="https://dribbble.com/shots/26613948-Cloud-Storage-Dashboard" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/01.jpg" alt="01 · Cloud Storage Dashboard" decoding="async"></a>
@@ -261,6 +263,54 @@
 <article class="card" id="reference-batch-2-30">
   <a class="preview" href="https://ui8.net/pickolab-studio/products/grapho---blockchain-and-cryptocurrency-pitch-deck" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/30.jpg" alt="30 · Grapho - Blockchain and Cryptocurrency Pitch Deck" decoding="async"></a>
   <div class="caption"><h2><span>30</span> Grapho - Blockchain and Cryptocurrency Pitch Deck</h2><p>UI8 · <a href="https://ui8.net/pickolab-studio/products/grapho---blockchain-and-cryptocurrency-pitch-deck" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+</div>
+</section>
+<section role="tabpanel" id="selected" aria-labelledby="selected-tab">
+<div class="grid">
+<article class="card" id="selected-reference-1">
+  <a class="preview" href="https://dribbble.com/shots/21752734-Skala-progress-bar" target="_blank" rel="noopener noreferrer"><img src="screenshots/11.jpg" alt="选中 1 · Skala progress bar" decoding="async"></a>
+  <div class="caption"><h2><span class="selection-number">1</span> Skala progress bar</h2><p class="origin">第一批 · 原编号 11</p><p>Dribbble · <a href="https://dribbble.com/shots/21752734-Skala-progress-bar" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="selected-reference-2">
+  <a class="preview" href="https://www.pinterest.com/pin/350577152263222155/" target="_blank" rel="noopener noreferrer"><img src="screenshots/17.jpg" alt="选中 2 · 发光胶囊进度卡片（原 Pin 未命名）" decoding="async"></a>
+  <div class="caption"><h2><span class="selection-number">2</span> 发光胶囊进度卡片（原 Pin 未命名）</h2><p class="origin">第一批 · 原编号 17</p><p>Pinterest · <a href="https://www.pinterest.com/pin/350577152263222155/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="selected-reference-3">
+  <a class="preview" href="https://www.pinterest.com/pin/592504894770745443/" target="_blank" rel="noopener noreferrer"><img src="screenshots/19.jpg" alt="选中 3 · 密集分段刻度卡片（原 Pin 未命名）" decoding="async"></a>
+  <div class="caption"><h2><span class="selection-number">3</span> 密集分段刻度卡片（原 Pin 未命名）</h2><p class="origin">第一批 · 原编号 19</p><p>Pinterest · <a href="https://www.pinterest.com/pin/592504894770745443/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="selected-reference-4">
+  <a class="preview" href="https://dribbble.com/shots/18707010-Toyota-GR86-Gauge-Exploration" target="_blank" rel="noopener noreferrer"><img src="screenshots/28.jpg" alt="选中 4 · Toyota GR86 Gauge Exploration" decoding="async"></a>
+  <div class="caption"><h2><span class="selection-number">4</span> Toyota GR86 Gauge Exploration</h2><p class="origin">第一批 · 原编号 28</p><p>Dribbble · <a href="https://dribbble.com/shots/18707010-Toyota-GR86-Gauge-Exploration" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="selected-reference-5">
+  <a class="preview" href="https://www.pinterest.com/pin/30047522509762503/" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/11.jpg" alt="选中 5 · Battery Charging UI with Dynamic Island | iOS Energy Status Design" decoding="async"></a>
+  <div class="caption"><h2><span class="selection-number">5</span> Battery Charging UI with Dynamic Island | iOS Energy Status Design</h2><p class="origin">第二批 · 原编号 11</p><p>Pinterest · <a href="https://www.pinterest.com/pin/30047522509762503/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="selected-reference-6">
+  <a class="preview" href="https://www.pinterest.com/pin/13510867627884208/" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/13.jpg" alt="选中 6 · 紫色分段电量卡片（原 Pin 未命名）" decoding="async"></a>
+  <div class="caption"><h2><span class="selection-number">6</span> 紫色分段电量卡片（原 Pin 未命名）</h2><p class="origin">第二批 · 原编号 13</p><p>Pinterest · <a href="https://www.pinterest.com/pin/13510867627884208/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="selected-reference-7">
+  <a class="preview" href="https://www.pinterest.com/pin/869194796817868888/" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/14.jpg" alt="选中 7 · 绿色液体电量填充（原 Pin 未命名）" decoding="async"></a>
+  <div class="caption"><h2><span class="selection-number">7</span> 绿色液体电量填充（原 Pin 未命名）</h2><p class="origin">第二批 · 原编号 14</p><p>Pinterest · <a href="https://www.pinterest.com/pin/869194796817868888/" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="selected-reference-8">
+  <a class="preview" href="https://huaban.com/pins/6830690582" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/19.jpg" alt="选中 8 · 常规内容-图标系列扁平风加载进度条元素" decoding="async"></a>
+  <div class="caption"><h2><span class="selection-number">8</span> 常规内容-图标系列扁平风加载进度条元素</h2><p class="origin">第二批 · 原编号 19</p><p>花瓣 · <a href="https://huaban.com/pins/6830690582" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="selected-reference-9">
+  <a class="preview" href="https://huaban.com/pins/6385482101" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/20.jpg" alt="选中 9 · 小红书爆款加载中卡通涂鸦风标记文字" decoding="async"></a>
+  <div class="caption"><h2><span class="selection-number">9</span> 小红书爆款加载中卡通涂鸦风标记文字</h2><p class="origin">第二批 · 原编号 20</p><p>花瓣 · <a href="https://huaban.com/pins/6385482101" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="selected-reference-10">
+  <a class="preview" href="https://huaban.com/pins/6271331369" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/21.jpg" alt="选中 10 · 图标系列-通用-发光进度码通用贴纸" decoding="async"></a>
+  <div class="caption"><h2><span class="selection-number">10</span> 图标系列-通用-发光进度码通用贴纸</h2><p class="origin">第二批 · 原编号 21</p><p>花瓣 · <a href="https://huaban.com/pins/6271331369" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
+</article>
+<article class="card" id="selected-reference-11">
+  <a class="preview" href="https://www.behance.net/gallery/248537291/Gym-Workout-App" target="_blank" rel="noopener noreferrer"><img src="screenshots-batch-2/24.jpg" alt="选中 11 · Gym Workout App" decoding="async"></a>
+  <div class="caption"><h2><span class="selection-number">11</span> Gym Workout App</h2><p class="origin">第二批 · 原编号 24</p><p>Behance · <a href="https://www.behance.net/gallery/248537291/Gym-Workout-App" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
 </article>
 </div>
 </section>
