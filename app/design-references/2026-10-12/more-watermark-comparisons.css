@@ -1,0 +1,19 @@
+/* New lower pairs 2–11 only. Backgrounds stay intact; text and graphs paint above the knot. */
+.more-watermark-comparison{border-top:1px solid #d4d7dc;--wm-width:49%;--wm-right:-9%;--wm-bottom:-16%;--wm-dark-opacity:.12;--wm-light-opacity:.08}
+.more-watermark-comparison .more-watermark-label{max-width:960px;min-width:620px;margin:0 auto 16px;color:#676b72;font-size:12px;line-height:1.5}
+.more-watermark-comparison [data-watermark-copy] .comparison-watermark-account{position:relative;isolation:isolate;overflow:hidden}
+.more-watermark-comparison [data-watermark-copy] .comparison-watermark-decoration{position:absolute;width:var(--wm-width);aspect-ratio:1;right:var(--wm-right);bottom:var(--wm-bottom);opacity:var(--wm-dark-opacity);z-index:1;pointer-events:none;user-select:none}
+.more-watermark-comparison [data-watermark-copy] .comparison-watermark-decoration svg{display:block;width:100%;height:100%}
+.more-watermark-comparison [data-watermark-copy][data-theme="light"] .comparison-watermark-decoration{opacity:var(--wm-light-opacity)}
+.more-watermark-comparison [data-watermark-copy] :is(.quota-head,.quota-meta,.quota-name,.quota-reset,.quota-number,.quota-graph,.dial-wrap){position:relative;z-index:2}
+.more-watermark-comparison [data-watermark-copy] .dial-readout{z-index:3}
+.more-watermark-comparison[data-watermark-style="capsule"]{--wm-width:48%;--wm-dark-opacity:.13;--wm-light-opacity:.085}
+.more-watermark-comparison[data-watermark-style="ticks"]{--wm-width:46%;--wm-right:-8%;--wm-dark-opacity:.085;--wm-light-opacity:.065}
+.more-watermark-comparison[data-watermark-style="dials"]{--wm-width:53%;--wm-right:-11%;--wm-bottom:-13%;--wm-dark-opacity:.15;--wm-light-opacity:.10}
+.more-watermark-comparison[data-watermark-style="island"]{--wm-width:48%;--wm-dark-opacity:.12;--wm-light-opacity:.085}
+.more-watermark-comparison[data-watermark-style="blocks"]{--wm-width:54%;--wm-right:-11%;--wm-bottom:-12%;--wm-dark-opacity:.15;--wm-light-opacity:.10}
+.more-watermark-comparison[data-watermark-style="liquid"]{--wm-width:51%;--wm-right:-10%;--wm-dark-opacity:.14;--wm-light-opacity:.095}
+.more-watermark-comparison[data-watermark-style="ticket"]{--wm-width:48%;--wm-right:-10%;--wm-dark-opacity:.095;--wm-light-opacity:.07}
+.more-watermark-comparison[data-watermark-style="journal"]{--wm-width:48%;--wm-bottom:-14%;--wm-dark-opacity:.15;--wm-light-opacity:.11}
+.more-watermark-comparison[data-watermark-style="glass"]{--wm-width:54%;--wm-right:-12%;--wm-bottom:-12%;--wm-dark-opacity:.15;--wm-light-opacity:.10}
+.more-watermark-comparison[data-watermark-style="panels"]{--wm-width:55%;--wm-right:-12%;--wm-bottom:-10%;--wm-dark-opacity:.115;--wm-light-opacity:.085}

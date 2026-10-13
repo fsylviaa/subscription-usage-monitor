@@ -173,6 +173,34 @@ def render_first_watermark_comparison():
     return '<div class="prototype-comparison first-watermark-comparison"><p class="first-watermark-label">水印版 · 与上方原版同步</p><div class="prototype-pair">' + ''.join(variants) + '</div></div>'
 
 
+def render_style_watermark_comparison(number):
+    """Candidates 2–11: copy each original and tint the knot to its material."""
+    styles = {
+        2: ("capsule", ("#b2efbb", "#78dcbf", "#a8ded1"), ("#6a967e", "#78a598", "#568a80")),
+        3: ("ticks", ("#d9dde3", "#bac2cf", "#f0f1f3"), ("#657080", "#4b5563", "#77808b")),
+        4: ("dials", ("#efcf8c", "#d4ad67", "#b58544"), ("#936327", "#b58947", "#a97732")),
+        5: ("island", ("#a5d7b2", "#88b99b", "#7fa68f"), ("#598069", "#779883", "#638f7c")),
+        6: ("blocks", ("#c0a0ee", "#d6bdf4", "#ab8cc8"), ("#7652a2", "#9873b2", "#836299")),
+        7: ("liquid", ("#80dcc9", "#9ac9b0", "#7dacbc"), ("#4f947f", "#779fac", "#679a83")),
+        8: ("ticket", ("#e0dfd9", "#c1c3c7", "#d7d5ce"), ("#30302d", "#555652", "#3e4246")),
+        9: ("journal", ("#d4b85a", "#e4ca71", "#f1d985"), ("#8f772b", "#b89b3b", "#9f852f")),
+        10: ("glass", ("#94dbf5", "#78c5eb", "#5bb5df"), ("#4a8fb4", "#759ebc", "#608caf")),
+        11: ("panels", ("#d58d52", "#e7a269", "#f4b680"), ("#a06a3b", "#ca9868", "#b18055")),
+    }
+    kind, dark, light = styles[number]
+    variants = []
+    for theme, label, palette in (("dark", "暗色", dark), ("light", "亮色", light)):
+        uid = f"q{number}-watermark-{theme}-color"
+        gradient = f'<defs><linearGradient id="{uid}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="{palette[0]}"/><stop offset=".55" stop-color="{palette[1]}"/><stop offset="1" stop-color="{palette[2]}"/></linearGradient></defs>'
+        logo = (BASE / "watermark-logo.svg").read_text(encoding="utf-8")
+        logo = logo.replace('<path ', gradient + '<path ', 1).replace('fill="currentColor"', f'fill="url(#{uid})"')
+        copy = render_prototype(number, theme).replace(f'q{number}-', f'q{number}-watermark-')
+        copy = copy.replace(f'方案{number} {label}', f'方案{number} 水印版 {label}')
+        copy = copy.replace('<div class="quota-account">', f'<div class="quota-account comparison-watermark-account"><div class="comparison-watermark-decoration" aria-hidden="true">{logo}</div>', 1)
+        variants.append(f'<div class="prototype-variant" data-theme="{theme}" data-watermark-copy><p class="quota-theme">{label}</p>{copy}</div>')
+    return f'<div class="prototype-comparison more-watermark-comparison" data-watermark-style="{kind}"><p class="more-watermark-label">水印版 · 与上方原版同步</p><div class="prototype-pair">' + ''.join(variants) + '</div></div>'
+
+
 def render_selected_cards(references, second_references, selected_mappings, adaptation_details=()):
     batches = {
         1: {int(item["id"]): item for item in references},
@@ -203,6 +231,8 @@ def render_selected_cards(references, second_references, selected_mappings, adap
 </article>""")
             if number == 1:
                 cards[-1] = cards[-1].replace('\n<div class="quota-controls">', '\n' + render_first_watermark_comparison() + '\n<div class="quota-controls">', 1)
+            elif 2 <= number <= 11:
+                cards[-1] = cards[-1].replace('\n<div class="quota-controls">', '\n' + render_style_watermark_comparison(number) + '\n<div class="quota-controls">', 1)
         elif number in details:
             cards.append(f"""<article class="card selected-card" id="selected-reference-{number}" data-detail-target="detail-{number}" tabindex="0" aria-label="查看选中参考 {number} 的适配说明" aria-haspopup="dialog" aria-controls="detail-{number}">
   <button class="preview detail-preview" type="button" aria-label="查看选中参考 {number} 的适配说明"><img src="{image}" alt="选中 {number} · {title}" decoding="async"></button>
@@ -318,6 +348,7 @@ def build_gallery(references, second_references, selected_mappings=(), adaptatio
     liquid_css = (BASE / "horizontal-liquid.css").read_text(encoding="utf-8")
     liquid_js = (BASE / "horizontal-liquid.js").read_text(encoding="utf-8")
     first_comparison_css = (BASE / "first-watermark-comparison.css").read_text(encoding="utf-8")
+    more_comparison_css = (BASE / "more-watermark-comparisons.css").read_text(encoding="utf-8")
     return f"""<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -333,6 +364,7 @@ h2 .selection-number{{display:inline-flex;align-items:center;justify-content:cen
 {watermark_css}
 {liquid_css}
 {first_comparison_css}
+{more_comparison_css}
 </style>
 </head>
 <body>

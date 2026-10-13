@@ -1,0 +1,1655 @@
+{
+  "date": "2026-10-13",
+  "scope": "Add lower watermark pairs to candidates 2–11 only; original upper pairs and candidates 1/12 preserved",
+  "candidate_1_user_feedback": "User explicitly said 第一款效果可以; visual effect accepted, not expanded to input/device-specific verification",
+  "static_checks": {
+    "card-1-unchanged": true,
+    "card-12-unchanged": true,
+    "card-2-original-unchanged": true,
+    "card-2-four-views-original-controls": true,
+    "card-3-original-unchanged": true,
+    "card-3-four-views-original-controls": true,
+    "card-4-original-unchanged": true,
+    "card-4-four-views-original-controls": true,
+    "card-5-original-unchanged": true,
+    "card-5-four-views-original-controls": true,
+    "card-6-original-unchanged": true,
+    "card-6-four-views-original-controls": true,
+    "card-7-original-unchanged": true,
+    "card-7-four-views-original-controls": true,
+    "card-8-original-unchanged": true,
+    "card-8-four-views-original-controls": true,
+    "card-9-original-unchanged": true,
+    "card-9-four-views-original-controls": true,
+    "card-10-original-unchanged": true,
+    "card-10-four-views-original-controls": true,
+    "card-11-original-unchanged": true,
+    "card-11-four-views-original-controls": true,
+    "dialog-1-unchanged": true,
+    "dialog-2-unchanged": true,
+    "dialog-3-unchanged": true,
+    "dialog-4-unchanged": true,
+    "dialog-5-unchanged": true,
+    "dialog-6-unchanged": true,
+    "dialog-7-unchanged": true,
+    "dialog-8-unchanged": true,
+    "dialog-9-unchanged": true,
+    "dialog-10-unchanged": true,
+    "dialog-11-unchanged": true,
+    "dialog-12-unchanged": true,
+    "60-original-cards-unchanged": true,
+    "original-css-js-unchanged": true,
+    "all-existing-assets-unchanged": true,
+    "unique-ids": true,
+    "all-svg-local-references-valid": true,
+    "46-theme-cards": true,
+    "92-draggable-graphs": true,
+    "24-controls": true,
+    "new-css-only-matches-new-lower-rows": true,
+    "backgrounds-retained-and-content-raised": true
+  },
+  "interaction_checks": {
+    "environment": "Offline Node fixture from generated HTML, controlled SVG matrices/bounds and frame clock; no browser rendering or real input",
+    "checks": [
+      {
+        "name": "all defaults, four-view clones, and preserved 1/12",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card2 week view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card2 five view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card2 independent four-view animation",
+        "result": "pass"
+      },
+      {
+        "name": "card2 lower-light takeover keeps other window animating",
+        "result": "pass"
+      },
+      {
+        "name": "card2 consecutive demos end newest target",
+        "result": "pass"
+      },
+      {
+        "name": "card2 original still drives watermark views",
+        "result": "pass"
+      },
+      {
+        "name": "card2 one pair of controls, decorative watermark only below",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card3 week view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card3 five view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card3 independent four-view animation",
+        "result": "pass"
+      },
+      {
+        "name": "card3 lower-light takeover keeps other window animating",
+        "result": "pass"
+      },
+      {
+        "name": "card3 consecutive demos end newest target",
+        "result": "pass"
+      },
+      {
+        "name": "card3 original still drives watermark views",
+        "result": "pass"
+      },
+      {
+        "name": "card3 one pair of controls, decorative watermark only below",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card4 week view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card4 five view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card4 independent four-view animation",
+        "result": "pass"
+      },
+      {
+        "name": "card4 lower-light takeover keeps other window animating",
+        "result": "pass"
+      },
+      {
+        "name": "card4 consecutive demos end newest target",
+        "result": "pass"
+      },
+      {
+        "name": "card4 original still drives watermark views",
+        "result": "pass"
+      },
+      {
+        "name": "card4 one pair of controls, decorative watermark only below",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card5 week view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card5 five view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card5 independent four-view animation",
+        "result": "pass"
+      },
+      {
+        "name": "card5 lower-light takeover keeps other window animating",
+        "result": "pass"
+      },
+      {
+        "name": "card5 consecutive demos end newest target",
+        "result": "pass"
+      },
+      {
+        "name": "card5 original still drives watermark views",
+        "result": "pass"
+      },
+      {
+        "name": "card5 one pair of controls, decorative watermark only below",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card6 week view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card6 five view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card6 independent four-view animation",
+        "result": "pass"
+      },
+      {
+        "name": "card6 lower-light takeover keeps other window animating",
+        "result": "pass"
+      },
+      {
+        "name": "card6 consecutive demos end newest target",
+        "result": "pass"
+      },
+      {
+        "name": "card6 original still drives watermark views",
+        "result": "pass"
+      },
+      {
+        "name": "card6 one pair of controls, decorative watermark only below",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card7 week view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card7 five view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card7 independent four-view animation",
+        "result": "pass"
+      },
+      {
+        "name": "card7 lower-light takeover keeps other window animating",
+        "result": "pass"
+      },
+      {
+        "name": "card7 consecutive demos end newest target",
+        "result": "pass"
+      },
+      {
+        "name": "card7 original still drives watermark views",
+        "result": "pass"
+      },
+      {
+        "name": "card7 one pair of controls, decorative watermark only below",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card8 week view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card8 five view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card8 independent four-view animation",
+        "result": "pass"
+      },
+      {
+        "name": "card8 lower-light takeover keeps other window animating",
+        "result": "pass"
+      },
+      {
+        "name": "card8 consecutive demos end newest target",
+        "result": "pass"
+      },
+      {
+        "name": "card8 original still drives watermark views",
+        "result": "pass"
+      },
+      {
+        "name": "card8 one pair of controls, decorative watermark only below",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card9 week view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card9 five view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card9 independent four-view animation",
+        "result": "pass"
+      },
+      {
+        "name": "card9 lower-light takeover keeps other window animating",
+        "result": "pass"
+      },
+      {
+        "name": "card9 consecutive demos end newest target",
+        "result": "pass"
+      },
+      {
+        "name": "card9 original still drives watermark views",
+        "result": "pass"
+      },
+      {
+        "name": "card9 one pair of controls, decorative watermark only below",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card10 week view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card10 five view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card10 independent four-view animation",
+        "result": "pass"
+      },
+      {
+        "name": "card10 lower-light takeover keeps other window animating",
+        "result": "pass"
+      },
+      {
+        "name": "card10 consecutive demos end newest target",
+        "result": "pass"
+      },
+      {
+        "name": "card10 original still drives watermark views",
+        "result": "pass"
+      },
+      {
+        "name": "card10 one pair of controls, decorative watermark only below",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five precision 0 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five precision 100 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five precision 0.1 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five precision 99.9 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five precision 73.4 and other states independent",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card11 week view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five view0 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five view0 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five view0 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five view1 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five view1 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five view1 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five view2 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five view2 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five view2 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five view3 keyboard endpoints/increments",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five view3 pointer width200",
+        "result": "pass"
+      },
+      {
+        "name": "card11 five view3 pointer width112",
+        "result": "pass"
+      },
+      {
+        "name": "card11 independent four-view animation",
+        "result": "pass"
+      },
+      {
+        "name": "card11 lower-light takeover keeps other window animating",
+        "result": "pass"
+      },
+      {
+        "name": "card11 consecutive demos end newest target",
+        "result": "pass"
+      },
+      {
+        "name": "card11 original still drives watermark views",
+        "result": "pass"
+      },
+      {
+        "name": "card11 one pair of controls, decorative watermark only below",
+        "result": "pass"
+      },
+      {
+        "name": "first and twelfth remain at original defaults after other-card operations",
+        "result": "pass"
+      },
+      {
+        "name": "liquid four-view idle stays in same phase and preserves percentage",
+        "result": "pass"
+      },
+      {
+        "name": "liquid loop pauses outside viewport and hidden page",
+        "result": "pass"
+      },
+      {
+        "name": "reduced motion stops idle and all ten demos reach target immediately",
+        "result": "pass"
+      },
+      {
+        "name": "first existing shared interaction still works",
+        "result": "pass"
+      }
+    ]
+  },
+  "syntax": "Python and embedded JS passed",
+  "deterministic_generation_sha256": "42303c759d0874ae1790ecc56bfdf096537f924e4efc41b7a356d8c7a631e6c3",
+  "browser_visual_validation": "not tested: earlier file-protocol rejection still applies, no alternative browser or HTTP workaround attempted",
+  "actual_mouse_keyboard_touch": "not tested",
+  "screenshots": "No new browser screenshots",
+  "test_fixture_correction": "First fixture used a self-comparison for animation peer isolation. Replaced with a real peer snapshot comparison and reran all 396 final checks; final results below are from corrected fixture.",
+  "cleanup": {
+    "path": "/private/tmp/quota-watermark-2-11-check",
+    "process_confirmation": "Both synchronous Node check runs completed with exit_code 0; no background service/build/install started",
+    "before_file_bytes": 2828661,
+    "before_allocated_bytes": 2846720,
+    "after_bytes": 0,
+    "result": "removed",
+    "app_builds": "none"
+  }
+}
