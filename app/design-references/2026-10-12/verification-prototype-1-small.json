@@ -1,0 +1,580 @@
+{
+  "date": "2026-10-13",
+  "scope": "第1款小号组件暗/亮网页预览；其他款/App/Figma不改",
+  "structure": {
+    "environment": "offline source checks; no browser rendering",
+    "checks": [
+      {
+        "check": "第2款整卡逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "第3款整卡逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "第4款整卡逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "第5款整卡逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "第6款整卡逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "第7款整卡逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "第8款整卡逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "第9款整卡逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "第10款整卡逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "第11款整卡逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "第12款整卡逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "第1款说明弹窗保持",
+        "passed": true
+      },
+      {
+        "check": "第2款说明弹窗保持",
+        "passed": true
+      },
+      {
+        "check": "第3款说明弹窗保持",
+        "passed": true
+      },
+      {
+        "check": "第4款说明弹窗保持",
+        "passed": true
+      },
+      {
+        "check": "第5款说明弹窗保持",
+        "passed": true
+      },
+      {
+        "check": "第6款说明弹窗保持",
+        "passed": true
+      },
+      {
+        "check": "第7款说明弹窗保持",
+        "passed": true
+      },
+      {
+        "check": "第8款说明弹窗保持",
+        "passed": true
+      },
+      {
+        "check": "第9款说明弹窗保持",
+        "passed": true
+      },
+      {
+        "check": "第10款说明弹窗保持",
+        "passed": true
+      },
+      {
+        "check": "第11款说明弹窗保持",
+        "passed": true
+      },
+      {
+        "check": "第12款说明弹窗保持",
+        "passed": true
+      },
+      {
+        "check": "两批60个原参考逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "全页ID唯一",
+        "passed": true
+      },
+      {
+        "check": "全部SVG本地引用有对应ID",
+        "passed": true
+      },
+      {
+        "check": "移除新增小号排即可恢复第1款整卡",
+        "passed": true
+      },
+      {
+        "check": "小号排位于水印之后控件之前",
+        "passed": true
+      },
+      {
+        "check": "仅第1款新增两张小号预览",
+        "passed": true
+      },
+      {
+        "check": "第1款六卡12图、仍仅两滑块一演示",
+        "passed": true
+      },
+      {
+        "check": "全页48主题96额度图形24精调",
+        "passed": true
+      },
+      {
+        "check": "小号只保留精简头部与窗口、数字",
+        "passed": true
+      },
+      {
+        "check": "小号斜粒减密而原斜粒保持",
+        "passed": true
+      },
+      {
+        "check": "小号水印装饰隐藏于无障碍层",
+        "passed": true
+      },
+      {
+        "check": "CSS仅匹配第1款新增小号",
+        "passed": true
+      },
+      {
+        "check": "近方形固定布局、装饰静态不接收输入",
+        "passed": true
+      },
+      {
+        "check": "全部既有CSS/JS/原图/资源保持",
+        "passed": true
+      }
+    ]
+  },
+  "interaction": {
+    "environment": "offline actual HTML data tree and unchanged JS controller; controlled geometry/events/clock; not browser UI",
+    "checks": [
+      {
+        "check": "默认周73、5小时50六路一致",
+        "passed": true
+      },
+      {
+        "check": "week精调0%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "week精调100%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "week精调0.1%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "week精调99.9%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "week精调73.4%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "week精调50%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "week精调1.2%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "five精调0%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "five精调100%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "five精调0.1%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "five精调99.9%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "five精调73.4%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "five精调50%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "five精调1.2%端点/小数与隔离",
+        "passed": true
+      },
+      {
+        "check": "week图1键盘Home六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图1键盘ArrowRight六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图1键盘End六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图1键盘ArrowLeft六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图1宽154拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "week图1宽112拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "week图2键盘Home六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图2键盘ArrowRight六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图2键盘End六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图2键盘ArrowLeft六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图2宽154拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "week图2宽112拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "week图3键盘Home六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图3键盘ArrowRight六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图3键盘End六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图3键盘ArrowLeft六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图3宽154拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "week图3宽112拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "week图4键盘Home六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图4键盘ArrowRight六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图4键盘End六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图4键盘ArrowLeft六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图4宽154拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "week图4宽112拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "week图5键盘Home六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图5键盘ArrowRight六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图5键盘End六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图5键盘ArrowLeft六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图5宽154拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "week图5宽112拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "week图6键盘Home六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图6键盘ArrowRight六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图6键盘End六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图6键盘ArrowLeft六路同步",
+        "passed": true
+      },
+      {
+        "check": "week图6宽154拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "week图6宽112拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "five图1键盘Home六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图1键盘ArrowRight六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图1键盘End六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图1键盘ArrowLeft六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图1宽154拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "five图1宽112拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "five图2键盘Home六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图2键盘ArrowRight六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图2键盘End六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图2键盘ArrowLeft六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图2宽154拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "five图2宽112拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "five图3键盘Home六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图3键盘ArrowRight六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图3键盘End六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图3键盘ArrowLeft六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图3宽154拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "five图3宽112拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "five图4键盘Home六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图4键盘ArrowRight六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图4键盘End六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图4键盘ArrowLeft六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图4宽154拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "five图4宽112拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "five图5键盘Home六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图5键盘ArrowRight六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图5键盘End六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图5键盘ArrowLeft六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图5宽154拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "five图5宽112拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "five图6键盘Home六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图6键盘ArrowRight六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图6键盘End六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图6键盘ArrowLeft六路同步",
+        "passed": true
+      },
+      {
+        "check": "five图6宽154拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "five图6宽112拖动/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "演示中间帧六路一致并保持其他款",
+        "passed": true
+      },
+      {
+        "check": "演示95/82终点",
+        "passed": true
+      },
+      {
+        "check": "小号亮版周拖动接管、另一窗演示继续",
+        "passed": true
+      },
+      {
+        "check": "快速连续演示仅到最新73/50目标",
+        "passed": true
+      },
+      {
+        "check": "上排反向调节同步小号",
+        "passed": true
+      },
+      {
+        "check": "减少动态结束到目标、无残留帧",
+        "passed": true
+      },
+      {
+        "check": "小号与原版尺寸变化不改值且斜粒角度有限",
+        "passed": true
+      },
+      {
+        "check": "两小号水印从未被额度/演示改写",
+        "passed": true
+      }
+    ]
+  },
+  "syntax": {
+    "python_syntax": "passed",
+    "css_brace_balance": "passed",
+    "rebuild_sha256": "9854f51daa5781ce4145a00d1c6af1a0b91fac081e0a699b3d47b19cafeeb6e6",
+    "rebuild_identical": true
+  },
+  "check_script_sha256": {
+    "check_structure.py": "16253c0640d76b359f5bc8f97d69c9b784456567c8ef29eb13d768ec5b43cf1b",
+    "check_interaction.cjs": "4722d0e8705c1160adef5799f1a5a96d4b260a2ca59f251fff84797f11e2f37f"
+  },
+  "first_attempts": [
+    {
+      "result": "failed check-script assertion, not product defect",
+      "reason": "全页主题数误含CSS属性选择器；修正为只统计主题HTML元素后复验通过"
+    },
+    {
+      "result": "failed check-script assertion, not product defect",
+      "reason": "斜粒数量首次遗漏accent图层复制；校正实际三图层计数后复验通过"
+    }
+  ],
+  "browser": {
+    "status": "pending",
+    "attempt": "读取用户已打开的本地参考网页tab2002540192",
+    "reason": "Browser URL policy blocks file protocol; allowed http/https; no workaround used",
+    "new_screenshot": false
+  },
+  "user_review": "未亲验新增小号",
+  "cleanup": {
+    "status": "completed",
+    "directory": "/private/tmp/quota-card1-small-check",
+    "files": 10,
+    "file_bytes_before": 3404911,
+    "allocated_bytes_before": 3428352,
+    "file_bytes_after": 0,
+    "allocated_bytes_after": 0,
+    "confirmed_absent": true,
+    "usage_check": "全部同步检查命令已退出；未启动后台服务、App构建/测试/安装或浏览器进程；必要结果先归档后清理"
+  }
+}

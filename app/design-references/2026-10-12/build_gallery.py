@@ -30,7 +30,7 @@ def render_cards(references, id_prefix="reference"):
     return "\n".join(cards) if cards else '<p class="empty">原作截图和链接整理后将显示在这里。</p>'
 
 
-def render_prototype(number, theme):
+def render_prototype(number, theme, *, small=False):
     if number > 3:
         return render_extra_prototype(number, theme)
     kind = {1: "skala", 2: "capsule", 3: "ticks"}[number]
@@ -39,6 +39,8 @@ def render_prototype(number, theme):
         ("week", "每周额度", 73, "10月19日 09:00"),
         ("five", "5小时额度", 50, "今日 23:30"),
     ):
+        if small:
+            name = "每周" if key == "week" else "5 小时"
         uid = f"q{number}-{key}-{theme}"
         width = remaining * 10
         defs = f'<clipPath id="{uid}-remaining"><rect data-remaining-clip x="0" y="0" width="{width}" height="80"/></clipPath>'
@@ -56,9 +58,10 @@ def render_prototype(number, theme):
             elements, neutral = [], []
             palette = ["#6fd8b4", "#7fcde4", "#7d8bdf", "#b688dd", "#f57ea5", "#e9d86d"]
             if kind == "skala":
-                for column in range(32):
+                columns = 20 if small else 32
+                for column in range(columns):
                     for row in range(3):
-                        x = 16 + column * (968 / 31)
+                        x = 16 + column * (968 / (columns - 1))
                         y = 12 + row * 22
                         shape = f'<rect x="{x-15:.3f}" y="{y}" width="30" height="6" rx="3" data-grain data-cx="{x:.3f}" data-cy="{y+3}" transform="rotate(45 {x:.3f} {y+3})"'
                         neutral.append(shape + ' class="quota-neutral-grain" fill="#3c4048"/>')
@@ -74,8 +77,9 @@ def render_prototype(number, theme):
             texture = ''.join(elements)
             accent_texture = texture.replace('#e9ebee', '#ffffff') if kind == 'ticks' else texture
             drawing = ''.join(neutral) + f'<g clip-path="url(#{uid}-remaining)"><g class="quota-surface">{texture}</g><g clip-path="url(#{uid}-change)"><g data-accent opacity="0">{accent_texture}</g></g></g>'
+        reset_markup = '' if small else f'<div class="quota-reset">下次重置 · {reset}</div>'
         rows.append(f'''<section class="quota-window" data-window="{key}" aria-label="{name}">
-<div class="quota-meta"><div><div class="quota-name">{name}</div><div class="quota-reset">下次重置 · {reset}</div></div><div class="quota-number"><small>剩余</small><strong data-number>{remaining}%</strong></div></div>
+<div class="quota-meta"><div><div class="quota-name">{name}</div>{reset_markup}</div><div class="quota-number"><small>剩余</small><strong data-number>{remaining}%</strong></div></div>
 <svg class="quota-graph" viewBox="0 0 1000 80" preserveAspectRatio="none" role="slider" tabindex="0" aria-label="方案{number} {'暗色' if theme == 'dark' else '亮色'} {name}剩余百分比" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{remaining}" aria-orientation="horizontal"><defs>{defs}</defs>{drawing}</svg>
 </section>''')
     return f"""<div class="prototype-stage {kind}"><div class="quota-account"><div class="quota-head"><div class="quota-brand">Codex <span class="quota-plan">· Plus</span></div></div>{''.join(rows)}</div></div>"""
@@ -173,6 +177,24 @@ def render_first_watermark_comparison():
     return '<div class="prototype-comparison first-watermark-comparison"><p class="first-watermark-label">水印版 · 与上方原版同步</p><div class="prototype-pair">' + ''.join(variants) + '</div></div>'
 
 
+def render_first_small_comparison():
+    """One near-square pair, sharing candidate 1's existing two quota states."""
+    variants = []
+    for theme, label, palette in (
+        ("dark", "暗版", ("#7fcde4", "#b688dd", "#f57ea5")),
+        ("light", "亮版", ("#477da0", "#876799", "#ba748e")),
+    ):
+        uid = f"q1-small-{theme}-watermark-color"
+        gradient = f'<defs><linearGradient id="{uid}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="{palette[0]}"/><stop offset=".55" stop-color="{palette[1]}"/><stop offset="1" stop-color="{palette[2]}"/></linearGradient></defs>'
+        logo = (BASE / "watermark-logo.svg").read_text(encoding="utf-8")
+        logo = logo.replace('<path ', gradient + '<path ', 1).replace('fill="currentColor"', f'fill="url(#{uid})"')
+        compact = render_prototype(1, theme, small=True).replace('q1-', 'q1-small-')
+        compact = compact.replace('方案1 ', '方案1 小号组件 ')
+        compact = compact.replace('<div class="quota-account">', f'<div class="quota-account small-widget-account"><div class="small-widget-watermark" aria-hidden="true">{logo}</div>', 1)
+        variants.append(f'<div class="prototype-variant" data-theme="{theme}" data-small-widget><p class="quota-theme">小号组件{label}</p>{compact}</div>')
+    return '<div class="prototype-comparison first-small-comparison"><p class="small-widget-label">小号组件 · 与上方共用额度</p><div class="prototype-pair">' + ''.join(variants) + '</div></div>'
+
+
 def render_style_watermark_comparison(number):
     """Candidates 2–11: copy each original and tint the knot to its material."""
     styles = {
@@ -230,7 +252,7 @@ def render_selected_cards(references, second_references, selected_mappings, adap
   <div class="caption"><h2><span class="selection-number">{number}</span> {title}</h2><p class="origin">{batch_name} · 原编号 {original_number:02d}</p><p>{source} · <a href="{url}" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
 </article>""")
             if number == 1:
-                cards[-1] = cards[-1].replace('\n<div class="quota-controls">', '\n' + render_first_watermark_comparison() + '\n<div class="quota-controls">', 1)
+                cards[-1] = cards[-1].replace('\n<div class="quota-controls">', '\n' + render_first_watermark_comparison() + '\n' + render_first_small_comparison() + '\n<div class="quota-controls">', 1)
             elif 2 <= number <= 11:
                 cards[-1] = cards[-1].replace('\n<div class="quota-controls">', '\n' + render_style_watermark_comparison(number) + '\n<div class="quota-controls">', 1)
         elif number in details:
@@ -349,6 +371,7 @@ def build_gallery(references, second_references, selected_mappings=(), adaptatio
     liquid_js = (BASE / "horizontal-liquid.js").read_text(encoding="utf-8")
     first_comparison_css = (BASE / "first-watermark-comparison.css").read_text(encoding="utf-8")
     more_comparison_css = (BASE / "more-watermark-comparisons.css").read_text(encoding="utf-8")
+    small_comparison_css = (BASE / "first-small-comparison.css").read_text(encoding="utf-8")
     return f"""<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -365,6 +388,7 @@ h2 .selection-number{{display:inline-flex;align-items:center;justify-content:cen
 {liquid_css}
 {first_comparison_css}
 {more_comparison_css}
+{small_comparison_css}
 </style>
 </head>
 <body>
