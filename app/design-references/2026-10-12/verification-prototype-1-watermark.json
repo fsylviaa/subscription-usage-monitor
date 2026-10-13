@@ -1,0 +1,228 @@
+{
+  "date": "2026-10-13",
+  "scope": "Candidate 1 only: keep original dark/light pair, append watermark dark/light pair, shared controls",
+  "static_checks": {
+    "card-2-unchanged": true,
+    "card-3-unchanged": true,
+    "card-4-unchanged": true,
+    "card-5-unchanged": true,
+    "card-6-unchanged": true,
+    "card-7-unchanged": true,
+    "card-8-unchanged": true,
+    "card-9-unchanged": true,
+    "card-10-unchanged": true,
+    "card-11-unchanged": true,
+    "card-12-unchanged": true,
+    "dialog-1-unchanged": true,
+    "dialog-2-unchanged": true,
+    "dialog-3-unchanged": true,
+    "dialog-4-unchanged": true,
+    "dialog-5-unchanged": true,
+    "dialog-6-unchanged": true,
+    "dialog-7-unchanged": true,
+    "dialog-8-unchanged": true,
+    "dialog-9-unchanged": true,
+    "dialog-10-unchanged": true,
+    "dialog-11-unchanged": true,
+    "dialog-12-unchanged": true,
+    "original-60-cards-unchanged": true,
+    "first-card-only-appends-watermark-pair": true,
+    "original-css-and-js-unchanged": true,
+    "all-existing-resources-unchanged": true,
+    "unique-ids": true,
+    "all-svg-local-references-valid": true,
+    "four-theme-cards": true,
+    "eight-draggable-graphs": true,
+    "one-pair-of-controls": true,
+    "one-demo-button": true,
+    "watermark-only-new-pair": true
+  },
+  "interaction_checks": {
+    "environment": "Offline Node fixture from generated HTML; no actual browser rendering or input",
+    "checks": [
+      {
+        "name": "default original and watermark four-way sync",
+        "result": "pass"
+      },
+      {
+        "name": "week precision 0, other window/cards independent",
+        "result": "pass"
+      },
+      {
+        "name": "week precision 100, other window/cards independent",
+        "result": "pass"
+      },
+      {
+        "name": "week precision 0.1, other window/cards independent",
+        "result": "pass"
+      },
+      {
+        "name": "week precision 99.9, other window/cards independent",
+        "result": "pass"
+      },
+      {
+        "name": "week precision 73.4, other window/cards independent",
+        "result": "pass"
+      },
+      {
+        "name": "five precision 0, other window/cards independent",
+        "result": "pass"
+      },
+      {
+        "name": "five precision 100, other window/cards independent",
+        "result": "pass"
+      },
+      {
+        "name": "five precision 0.1, other window/cards independent",
+        "result": "pass"
+      },
+      {
+        "name": "five precision 99.9, other window/cards independent",
+        "result": "pass"
+      },
+      {
+        "name": "five precision 73.4, other window/cards independent",
+        "result": "pass"
+      },
+      {
+        "name": "week view0 keyboard four-way sync",
+        "result": "pass"
+      },
+      {
+        "name": "week view0 drag width400, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "week view0 drag width250, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "week view1 keyboard four-way sync",
+        "result": "pass"
+      },
+      {
+        "name": "week view1 drag width400, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "week view1 drag width250, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "week view2 keyboard four-way sync",
+        "result": "pass"
+      },
+      {
+        "name": "week view2 drag width400, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "week view2 drag width250, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "week view3 keyboard four-way sync",
+        "result": "pass"
+      },
+      {
+        "name": "week view3 drag width400, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "week view3 drag width250, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "five view0 keyboard four-way sync",
+        "result": "pass"
+      },
+      {
+        "name": "five view0 drag width400, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "five view0 drag width250, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "five view1 keyboard four-way sync",
+        "result": "pass"
+      },
+      {
+        "name": "five view1 drag width400, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "five view1 drag width250, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "five view2 keyboard four-way sync",
+        "result": "pass"
+      },
+      {
+        "name": "five view2 drag width400, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "five view2 drag width250, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "five view3 keyboard four-way sync",
+        "result": "pass"
+      },
+      {
+        "name": "five view3 drag width400, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "five view3 drag width250, reverse and limits",
+        "result": "pass"
+      },
+      {
+        "name": "shared demo intermediate and final across all four views",
+        "result": "pass"
+      },
+      {
+        "name": "watermark light drag takes over week while five continues",
+        "result": "pass"
+      },
+      {
+        "name": "original dark drag updates watermark versions too",
+        "result": "pass"
+      },
+      {
+        "name": "consecutive demos only finish newest target",
+        "result": "pass"
+      },
+      {
+        "name": "pointer cancel releases capture and ends movement",
+        "result": "pass"
+      },
+      {
+        "name": "reduced motion immediately reaches target in all four views",
+        "result": "pass"
+      },
+      {
+        "name": "resize keeps values and watermark stays decorative",
+        "result": "pass"
+      }
+    ]
+  },
+  "syntax": "Python and embedded JavaScript passed",
+  "deterministic_generation_sha256": "6e3aac9aa3f942d843bacd23312c6bb706f1a502b6c89507fbe25944d5a657f6",
+  "browser_visual_validation": "not tested: earlier file-protocol rejection still applies; no alternate browser or HTTP workaround attempted",
+  "actual_mouse_keyboard_touch": "not tested",
+  "screenshots": "No new browser screenshots",
+  "original_pair_protection": "Removing only the appended lower pair restores the entire original candidate-1 article byte-for-byte; original CSS/JS unchanged",
+  "cleanup": {
+    "path": "/private/tmp/quota-card1-watermark-check",
+    "process_confirmation": "All task verification commands returned synchronously; no background service/build/install started",
+    "before_file_bytes": 2060430,
+    "before_allocated_bytes": 2080768,
+    "after_bytes": 0,
+    "result": "removed",
+    "app_builds": "none"
+  }
+}

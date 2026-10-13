@@ -154,6 +154,25 @@ def render_prototype_controls(number):
     return f"""<div class="quota-controls">{''.join(controls)}<div class="quota-actions"><button class="quota-play" type="button" data-demo>演示变化</button><button class="adaptation-button quota-detail" type="button" data-detail-target="detail-{number}" aria-haspopup="dialog" aria-controls="detail-{number}">原图与适配说明</button></div><p class="quota-help">{help_text}</p></div>"""
 
 
+def render_first_watermark_comparison():
+    """Append an isolated watermark pair; reuse candidate 1's original layout."""
+    variants = []
+    for theme, label, palette in (
+        ("dark", "暗色", ("#7fcde4", "#b688dd", "#f57ea5")),
+        ("light", "亮色", ("#477da0", "#876799", "#ba748e")),
+    ):
+        uid = f"q1-watermark-{theme}-color"
+        gradient = f'<defs><linearGradient id="{uid}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="{palette[0]}"/><stop offset=".55" stop-color="{palette[1]}"/><stop offset="1" stop-color="{palette[2]}"/></linearGradient></defs>'
+        logo = (BASE / "watermark-logo.svg").read_text(encoding="utf-8")
+        logo = logo.replace('<path ', gradient + '<path ', 1).replace('fill="currentColor"', f'fill="url(#{uid})"')
+        original = render_prototype(1, theme)
+        copy = original.replace('q1-', 'q1-watermark-')
+        copy = copy.replace(f'方案1 {label}', f'方案1 水印版 {label}')
+        copy = copy.replace('<div class="quota-account">', f'<div class="quota-account comparison-watermark-account"><div class="comparison-watermark-decoration" aria-hidden="true">{logo}</div>', 1)
+        variants.append(f'<div class="prototype-variant" data-theme="{theme}" data-watermark-copy><p class="quota-theme">{label}</p>{copy}</div>')
+    return '<div class="prototype-comparison first-watermark-comparison"><p class="first-watermark-label">水印版 · 与上方原版同步</p><div class="prototype-pair">' + ''.join(variants) + '</div></div>'
+
+
 def render_selected_cards(references, second_references, selected_mappings, adaptation_details=()):
     batches = {
         1: {int(item["id"]): item for item in references},
@@ -182,6 +201,8 @@ def render_selected_cards(references, second_references, selected_mappings, adap
 {render_prototype_controls(number)}
   <div class="caption"><h2><span class="selection-number">{number}</span> {title}</h2><p class="origin">{batch_name} · 原编号 {original_number:02d}</p><p>{source} · <a href="{url}" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
 </article>""")
+            if number == 1:
+                cards[-1] = cards[-1].replace('\n<div class="quota-controls">', '\n' + render_first_watermark_comparison() + '\n<div class="quota-controls">', 1)
         elif number in details:
             cards.append(f"""<article class="card selected-card" id="selected-reference-{number}" data-detail-target="detail-{number}" tabindex="0" aria-label="查看选中参考 {number} 的适配说明" aria-haspopup="dialog" aria-controls="detail-{number}">
   <button class="preview detail-preview" type="button" aria-label="查看选中参考 {number} 的适配说明"><img src="{image}" alt="选中 {number} · {title}" decoding="async"></button>
@@ -296,6 +317,7 @@ def build_gallery(references, second_references, selected_mappings=(), adaptatio
     watermark_js = (BASE / "watermark.js").read_text(encoding="utf-8")
     liquid_css = (BASE / "horizontal-liquid.css").read_text(encoding="utf-8")
     liquid_js = (BASE / "horizontal-liquid.js").read_text(encoding="utf-8")
+    first_comparison_css = (BASE / "first-watermark-comparison.css").read_text(encoding="utf-8")
     return f"""<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -310,6 +332,7 @@ h2 .selection-number{{display:inline-flex;align-items:center;justify-content:cen
 {prototype_css}
 {watermark_css}
 {liquid_css}
+{first_comparison_css}
 </style>
 </head>
 <body>
