@@ -132,6 +132,7 @@
   const durations = {dials:700,island:540,blocks:420,liquid:1050,ticket:280,journal:650,glass:750,panels:480};
   document.querySelectorAll('[data-extra-prototype]').forEach(card => {
     const kind = card.dataset.extraPrototype;
+    if (kind === 'liquid') return; // Candidate 7 now has its own horizontal liquid controller.
     const states = ['week','five'].map(key => {
       const input = card.querySelector(`input[data-control="${key}"]`);
       const state = {value:Number(input.value),target:Number(input.value),frame:0,pointer:null};

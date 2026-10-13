@@ -1,0 +1,190 @@
+{
+  "date": "2026-10-13",
+  "scope": "Candidate 7 horizontal liquid and idle motion only; simulated data",
+  "static_checks": {
+    "selected-reference-1-unchanged": true,
+    "detail-1-unchanged": true,
+    "selected-reference-2-unchanged": true,
+    "detail-2-unchanged": true,
+    "selected-reference-3-unchanged": true,
+    "detail-3-unchanged": true,
+    "selected-reference-4-unchanged": true,
+    "detail-4-unchanged": true,
+    "selected-reference-5-unchanged": true,
+    "detail-5-unchanged": true,
+    "selected-reference-6-unchanged": true,
+    "detail-6-unchanged": true,
+    "selected-reference-8-unchanged": true,
+    "detail-8-unchanged": true,
+    "selected-reference-9-unchanged": true,
+    "detail-9-unchanged": true,
+    "selected-reference-10-unchanged": true,
+    "detail-10-unchanged": true,
+    "selected-reference-11-unchanged": true,
+    "detail-11-unchanged": true,
+    "selected-reference-12-unchanged": true,
+    "detail-12-unchanged": true,
+    "60-original-cards-unchanged": true,
+    "original-css-unchanged": true,
+    "shared-js-only-adds-liquid-skip": true,
+    "original-resources-unchanged": true,
+    "unique-ids": true,
+    "four-horizontal-vessels": true,
+    "no-vertical-vessels": true
+  },
+  "interaction_checks": {
+    "environment": "Offline Node DOM fixture, controlled SVG matrices and frame clock; no browser rendering or actual UI input",
+    "checks": [
+      {
+        "name": "old liquid controller skipped",
+        "result": "pass"
+      },
+      {
+        "name": "defaults and horizontal semantics",
+        "result": "pass"
+      },
+      {
+        "name": "week exact volume 0%, independent window",
+        "result": "pass"
+      },
+      {
+        "name": "week exact volume 100%, independent window",
+        "result": "pass"
+      },
+      {
+        "name": "week exact volume 0.1%, independent window",
+        "result": "pass"
+      },
+      {
+        "name": "week exact volume 99.9%, independent window",
+        "result": "pass"
+      },
+      {
+        "name": "week exact volume 73.4%, independent window",
+        "result": "pass"
+      },
+      {
+        "name": "five exact volume 0%, independent window",
+        "result": "pass"
+      },
+      {
+        "name": "five exact volume 100%, independent window",
+        "result": "pass"
+      },
+      {
+        "name": "five exact volume 0.1%, independent window",
+        "result": "pass"
+      },
+      {
+        "name": "five exact volume 99.9%, independent window",
+        "result": "pass"
+      },
+      {
+        "name": "five exact volume 73.4%, independent window",
+        "result": "pass"
+      },
+      {
+        "name": "week theme0 horizontal pointer at width200",
+        "result": "pass"
+      },
+      {
+        "name": "week theme0 horizontal pointer at width112",
+        "result": "pass"
+      },
+      {
+        "name": "week theme0 keyboard and cancellation",
+        "result": "pass"
+      },
+      {
+        "name": "week theme1 horizontal pointer at width200",
+        "result": "pass"
+      },
+      {
+        "name": "week theme1 horizontal pointer at width112",
+        "result": "pass"
+      },
+      {
+        "name": "week theme1 keyboard and cancellation",
+        "result": "pass"
+      },
+      {
+        "name": "five theme0 horizontal pointer at width200",
+        "result": "pass"
+      },
+      {
+        "name": "five theme0 horizontal pointer at width112",
+        "result": "pass"
+      },
+      {
+        "name": "five theme0 keyboard and cancellation",
+        "result": "pass"
+      },
+      {
+        "name": "five theme1 horizontal pointer at width200",
+        "result": "pass"
+      },
+      {
+        "name": "five theme1 horizontal pointer at width112",
+        "result": "pass"
+      },
+      {
+        "name": "five theme1 keyboard and cancellation",
+        "result": "pass"
+      },
+      {
+        "name": "idle wave and bubbles move without changing quota",
+        "result": "pass"
+      },
+      {
+        "name": "visible dark/light animate in same phase",
+        "result": "pass"
+      },
+      {
+        "name": "demo has intermediate values and correct final volume",
+        "result": "pass"
+      },
+      {
+        "name": "light drag takes over week, five continues",
+        "result": "pass"
+      },
+      {
+        "name": "consecutive demos replace older target",
+        "result": "pass"
+      },
+      {
+        "name": "offscreen pauses frame loop",
+        "result": "pass"
+      },
+      {
+        "name": "hidden document pauses frame loop",
+        "result": "pass"
+      },
+      {
+        "name": "reduced motion is static and demo immediate",
+        "result": "pass"
+      },
+      {
+        "name": "reduce during demo finishes target and stops",
+        "result": "pass"
+      },
+      {
+        "name": "0 and 100 are flat, empty hides bubbles and meniscus",
+        "result": "pass"
+      }
+    ]
+  },
+  "syntax": "Python, independent JS and embedded JS passed",
+  "deterministic_generation_sha256": "0106235cc6b30888d2da07744223b296fbffbccd1e3d58e0a18fdbbbbfe5856e",
+  "browser_visual_validation": "not tested: prior file protocol rejection retained, no alternate browser/HTTP workaround attempted",
+  "actual_mouse_keyboard_touch": "not tested",
+  "screenshots": "No new browser screenshots",
+  "cleanup": {
+    "path": "/private/tmp/quota-liquid-horizontal-check",
+    "process_confirmation": "All task checks returned synchronously with exit code 0; no background service/build/install process started",
+    "before_file_bytes": 1760575,
+    "before_allocated_bytes": 1785856,
+    "after_bytes": 0,
+    "app_builds": "none",
+    "result": "removed"
+  }
+}

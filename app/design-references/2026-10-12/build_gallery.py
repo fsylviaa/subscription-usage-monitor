@@ -104,9 +104,10 @@ def render_extra_prototype(number, theme):
                 ticks.append(f'<line x1="{120+r*math.cos(a):.4f}" y1="{116+r*math.sin(a):.4f}" x2="{120+109*math.cos(a):.4f}" y2="{116+109*math.sin(a):.4f}" stroke-width="{2 if i%5==0 else 1}"/>')
             art = f'<circle cx="120" cy="116" r="81" class="dial-face"/><path d="{arc}" fill="none" class="extra-neutral" stroke-width="10"/><g class="dial-muted">{"".join(ticks)}</g><path d="{arc}" fill="none" class="dial-active" stroke-width="10" pathLength="100" stroke-dasharray="{value} 100" data-dial-fill/><g class="dial-active" mask="url(#{uid}-arc)">{"".join(ticks)}</g><g data-needle transform="rotate({135+value*2.7} 120 116)"><path d="M 192 116 L 217 116" class="dial-needle" stroke-width="3"/></g><circle cx="120" cy="116" r="65" class="dial-inner"/>'
         elif kind == 'liquid':
-            box, orientation = '0 0 160 240', 'vertical'
-            defs = f'<linearGradient id="{uid}-fluid" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#93f47e"/><stop offset=".5" stop-color="#48c570"/><stop offset="1" stop-color="#187b63"/></linearGradient><clipPath id="{uid}-vessel"><rect x="28" y="20" width="104" height="200"/></clipPath><clipPath id="{uid}-fluid-area"><path data-liquid-clip d="M28 {220-value*2} H132 V220 H28 Z"/></clipPath>'
-            art = f'<rect x="20" y="12" width="120" height="216" rx="25" class="vessel-shell"/><rect x="28" y="20" width="104" height="200" class="liquid-used extra-neutral"/><g clip-path="url(#{uid}-vessel)"><path data-liquid d="M28 {220-value*2} H132 V220 H28 Z" fill="url(#{uid}-fluid)"/><path data-meniscus fill="none" stroke="#c3ffc0" stroke-width="1.5"/><g clip-path="url(#{uid}-fluid-area)"><g data-fluid-bubbles fill="#ddffd3" opacity=".28"><circle cx="53" cy="183" r="3"/><circle cx="98" cy="158" r="2"/></g><path data-liquid-shine d="M35 25 H41 V220 H35 Z" fill="white" opacity=".12"/></g></g><path d="M24 190 V42 Q24 20 43 17" fill="none" class="vessel-shine" stroke-width="2"/>'
+            box, orientation = '0 0 240 110', 'horizontal'
+            boundary = 20 + value * 2
+            defs = f'<linearGradient id="{uid}-fluid" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#93f47e"/><stop offset=".5" stop-color="#48c570"/><stop offset="1" stop-color="#187b63"/></linearGradient><clipPath id="{uid}-vessel"><rect x="20" y="24" width="200" height="62"/></clipPath><clipPath id="{uid}-fluid-area"><path data-liquid-clip d="M20 24 H{boundary} V86 H20 Z"/></clipPath>'
+            art = f'<rect x="12" y="16" width="216" height="78" rx="22" class="vessel-shell"/><rect x="20" y="24" width="200" height="62" class="liquid-used extra-neutral"/><g clip-path="url(#{uid}-vessel)"><path data-liquid d="M20 24 H{boundary} V86 H20 Z" fill="url(#{uid}-fluid)"/><path data-meniscus fill="none" stroke="#c3ffc0" stroke-width="1.5"/><g clip-path="url(#{uid}-fluid-area)"><g data-fluid-bubbles fill="#ddffd3"><circle data-bubble cx="52" cy="67" r="3" opacity=".28"/><circle data-bubble cx="98" cy="44" r="2" opacity=".22"/><circle data-bubble cx="146" cy="70" r="2.5" opacity=".25"/></g><path data-liquid-shine d="M25 29 H215 V34 H25 Z" fill="white" opacity=".12"/></g></g><path d="M16 72 V39 Q16 20 34 20 H190" fill="none" class="vessel-shine" stroke-width="2"/>'
         else:
             # Active coordinate span is exactly 0..1000. Shells and caps are excluded.
             defs = f'<clipPath id="{uid}-remaining"><rect data-extra-clip x="0" y="0" width="{value*10}" height="160"/></clipPath><clipPath id="{uid}-change"><rect data-extra-change x="0" y="0" width="0" height="160"/></clipPath>'
@@ -148,6 +149,8 @@ def render_prototype_controls(number):
         uid = f"q{number}-{key}"
         controls.append(f"""<label class="quota-control" for="{uid}-input"><span class="quota-control-line"><span>{name} · 剩余百分比</span><output data-output="{key}" for="{uid}-input">{remaining}%</output></span><input id="{uid}-input" data-control="{key}" type="range" min="0" max="100" step="0.1" value="{remaining}" aria-label="方案{number} {name}剩余百分比精调"></label>""")
     help_text = "明暗两版共用数值。亮色表示剩余，灰色表示已用；可拖动图形或精调滑块，时间与数值均为模拟。" if number <= 3 else "明暗两版共用数值。实体／强调部分表示剩余，灰色表示已用；可拖动图形或精调滑块，时间与数值均为模拟。"
+    if number == 7:
+        help_text += " 横向拖动调节，液面与气泡轻微动态不改变剩余数值。"
     return f"""<div class="quota-controls">{''.join(controls)}<div class="quota-actions"><button class="quota-play" type="button" data-demo>演示变化</button><button class="adaptation-button quota-detail" type="button" data-detail-target="detail-{number}" aria-haspopup="dialog" aria-controls="detail-{number}">原图与适配说明</button></div><p class="quota-help">{help_text}</p></div>"""
 
 
@@ -222,6 +225,8 @@ def render_detail_dialogs(references, second_references, selected_mappings, adap
             sections.append(f"<section class=\"adaptation-section\"><h3>{section_title}</h3>{paragraphs}</section>")
         sections_html = "\n".join(sections)
         notice = ("已制作网页交互样机，正式 App 尚未采用；此处保留原图和原适配说明。本轮网页明暗并排，数字与亮色均表示剩余、灰色表示已用；旧正文的实色已用、邮箱及箭头建议为历史方案，以当前样机为准。拖动与滑块仅用于网页，原作动画未验证。" if number in (1, 2, 3) else "已制作网页交互样机，正式 App 尚未采用；原图与详细历史说明保留。最新要求：明暗并排、Codex · Plus精简头部、下次重置在窗口名下；数字与实体／强调部分均表示剩余，灰色表示已用，第8款亮版黑色斜块表示剩余。旧正文中的实色已用、邮箱／箭头等建议已被取代；拖动与精调仅属网页模拟，原作动画未验证。")
+        if number == 7:
+            notice += " 2026-10-13最新修订：容器已改为横向，绿色从左到右表示剩余，支持横向拖动；可见时液面轻微起伏、气泡漂动，不改变百分比，减少动态时静止。下方纵向容器及液位高度描述仅为历史建议，以当前网页为准。"
         dialogs.append(f"""<dialog class="detail-dialog" id="detail-{number}" aria-labelledby="detail-title-{number}" aria-describedby="detail-note-{number}">
 <div class="detail-shell">
   <header class="detail-header"><h2 id="detail-title-{number}"><span class="selection-number">{number}</span> {title}</h2><button class="detail-close" type="button" data-close-dialog autofocus aria-label="关闭参考 {number} 的适配说明">关闭</button></header>
@@ -289,6 +294,8 @@ def build_gallery(references, second_references, selected_mappings=(), adaptatio
     prototype_js = (BASE / "prototype.js").read_text(encoding="utf-8")
     watermark_css = (BASE / "watermark.css").read_text(encoding="utf-8")
     watermark_js = (BASE / "watermark.js").read_text(encoding="utf-8")
+    liquid_css = (BASE / "horizontal-liquid.css").read_text(encoding="utf-8")
+    liquid_js = (BASE / "horizontal-liquid.js").read_text(encoding="utf-8")
     return f"""<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -302,6 +309,7 @@ h2 .selection-number{{display:inline-flex;align-items:center;justify-content:cen
 .selected-card{{cursor:pointer}}.selected-card:focus-visible{{outline:2px solid #2458b5;outline-offset:3px}}.detail-preview{{width:100%;border:0;padding:0;cursor:pointer}}.adaptation-button{{border:0;padding:0;background:none;color:#2458b5;text-decoration:underline;text-underline-offset:3px;font:inherit;cursor:pointer}}.detail-dialog{{width:min(1040px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);padding:0;border:1px solid #ddd;border-radius:12px;color:#202020;overflow:hidden}}.detail-dialog::backdrop{{background:rgba(0,0,0,.45)}}.detail-shell{{display:flex;flex-direction:column;max-height:calc(100dvh - 32px)}}.detail-header{{display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none;margin:0;padding:16px 20px;border-bottom:1px solid #ddd;background:white}}.detail-header h2{{font-size:18px}}.detail-close{{flex:none;padding:9px 16px;border:1px solid #bbb;border-radius:7px;background:white;color:#202020;font:inherit;cursor:pointer}}.detail-close:focus-visible,.detail-preview:focus-visible,.adaptation-button:focus-visible{{outline:2px solid #2458b5;outline-offset:3px}}.detail-body{{min-height:0;overflow:auto;overscroll-behavior:contain;padding:20px 24px 32px;line-height:1.75}}.detail-origin{{margin:0 0 12px;color:#666;font-size:14px}}.detail-notice{{margin:0 0 20px;padding:12px 16px;border:1px solid #ddd;border-radius:8px;background:#f7f7f7;font-size:14px;color:#555}}.detail-image-link{{display:block;margin-bottom:24px;background:#fafafa}}.detail-image{{display:block;width:100%;height:auto;max-height:260px;object-fit:contain}}.adaptation-text{{max-width:760px;margin:auto}}.detail-direction{{margin:0 0 10px;font-size:18px}}.detail-summary{{margin:0 0 24px}}.adaptation-section{{margin-top:24px}}.adaptation-section h3{{margin:0 0 8px;font-size:18px}}.adaptation-section p{{margin:0 0 10px;overflow-wrap:anywhere}}.figma-description{{white-space:pre-wrap;padding:14px 16px;background:#f7f7f7;border:1px solid #ddd;border-radius:8px}}@media(max-width:650px){{.detail-header{{padding:12px 14px;gap:10px}}.detail-header h2{{font-size:16px}}.detail-close{{padding:8px 12px}}.detail-body{{padding:16px 16px 24px}}}}
 {prototype_css}
 {watermark_css}
+{liquid_css}
 </style>
 </head>
 <body>
@@ -393,6 +401,7 @@ h2 .selection-number{{display:inline-flex;align-items:center;justify-content:cen
 }}
 {prototype_js}
 {watermark_js}
+{liquid_js}
 </script>
 </body>
 </html>
