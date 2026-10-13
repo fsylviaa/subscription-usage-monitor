@@ -1,0 +1,75 @@
+/* Only newly appended small pairs 2–12. Each style retains its own art, palette and material. */
+#selected .more-small-comparison{border-top:1px solid #d4d7dc;--wm-width:64%;--wm-right:-14%;--wm-bottom:-13%}
+#selected .more-small-comparison .small-widget-label{max-width:960px;margin:0 auto 16px;color:#676b72;font-size:12px;line-height:1.5}
+#selected .more-small-comparison .prototype-pair{grid-template-columns:repeat(2,184px);justify-content:center;gap:32px;min-width:400px;max-width:960px}
+#selected .more-small-comparison .prototype-stage{min-height:0;display:block}
+#selected .more-small-comparison .quota-theme{margin-bottom:10px}
+#selected .more-small-comparison .quota-account{width:184px;height:184px;padding:14px;overflow:hidden}
+#selected .more-small-comparison .quota-head{margin:0 0 14px}
+#selected .more-small-comparison .quota-brand{font-size:14px;line-height:18px;letter-spacing:-.2px;white-space:nowrap}
+#selected .more-small-comparison .quota-meta{display:flex;align-items:baseline;gap:4px;margin:0 0 4px}
+#selected .more-small-comparison .quota-name{font-size:11px;line-height:16px;white-space:nowrap}
+#selected .more-small-comparison .quota-number{display:flex;flex-direction:row;align-items:baseline;gap:3px;width:auto;margin:0}
+#selected .more-small-comparison .quota-number small{font-size:9px;line-height:12px}
+#selected .more-small-comparison .quota-number strong{font-size:20px;line-height:22px;letter-spacing:-.6px}
+#selected .more-small-comparison .quota-graph{height:24px;margin:0;max-width:none}
+#selected .more-small-comparison .quota-window+.quota-window{margin-top:13px}
+#selected .more-small-comparison .extra-windows,#selected .more-small-comparison .watermark-windows{grid-template-columns:minmax(0,1fr);gap:10px}
+#selected .more-small-comparison .extra-window{padding:0;min-width:0}
+#selected .more-small-comparison .extra-window+.extra-window,#selected .more-small-comparison .watermark-window+.watermark-window{margin-top:0}
+#selected .more-small-comparison .ticks .quota-account{border-radius:14px}
+#selected .more-small-comparison .capsule .quota-graph{height:26px}
+
+/* Two compact instrument rows: dial at left; stable readable label and number at right. */
+#selected .more-small-comparison .dials .quota-head{margin-bottom:10px}
+#selected .more-small-comparison .dials .extra-windows{gap:8px}
+#selected .more-small-comparison .dials .extra-window{display:grid;grid-template-columns:60px minmax(0,1fr);grid-template-rows:1fr 1fr;column-gap:8px;align-items:center}
+#selected .more-small-comparison .dials .quota-name{grid-column:2;grid-row:1;align-self:end}
+#selected .more-small-comparison .dial-wrap{display:contents;margin:0}
+#selected .more-small-comparison .dials .quota-graph{grid-column:1;grid-row:1/3;width:60px;height:55px;aspect-ratio:240/220}
+#selected .more-small-comparison .dial-readout{position:static;grid-column:2;grid-row:2;transform:none;flex-direction:row;justify-content:flex-start;align-items:baseline;gap:3px}
+#selected .more-small-comparison .dial-readout small{font-size:9px;line-height:12px}
+#selected .more-small-comparison .dial-readout strong{font-size:20px;line-height:22px;letter-spacing:-.6px}
+#selected .more-small-comparison .dials .quota-graph[aria-valuenow="0.0"] .dial-needle{stroke:var(--muted)}
+
+/* Keep the green rail and readout inside the original black island. */
+#selected .more-small-comparison .island .quota-head{margin-bottom:10px}
+#selected .more-small-comparison .island .extra-windows{gap:10px}
+#selected .more-small-comparison .island-shell{margin-top:4px;padding:0 9px;gap:8px;border-radius:24px}
+#selected .more-small-comparison .island .quota-graph{height:36px;min-width:0}
+#selected .more-small-comparison .island .quota-number{flex-direction:column;align-items:center;gap:0;width:45px}
+#selected .more-small-comparison .island .quota-number strong{font-size:18px;line-height:20px}
+
+/* Purple, ticket, glass and orange materials use two shallow inset panels. */
+#selected .more-small-comparison :is(.blocks,.ticket,.glass,.panels) .quota-account{padding:12px}
+#selected .more-small-comparison :is(.blocks,.ticket,.glass,.panels) .quota-head{margin-bottom:8px}
+#selected .more-small-comparison :is(.blocks,.ticket,.glass,.panels) .extra-windows{gap:8px}
+#selected .more-small-comparison :is(.blocks,.ticket,.glass,.panels) .extra-window{padding:6px;border-radius:12px}
+#selected .more-small-comparison :is(.blocks,.ticket,.glass,.panels) .quota-number strong{font-size:18px;line-height:20px}
+#selected .more-small-comparison :is(.blocks,.glass) .quota-graph{height:20px}
+#selected .more-small-comparison .ticket .quota-account{border-radius:10px}
+#selected .more-small-comparison .ticket .extra-window{border-radius:6px}
+#selected .more-small-comparison .ticket .quota-graph{height:20px;border-width:2px;margin-bottom:3px}
+#selected .more-small-comparison .ticket .extra-window:after{left:6px;right:6px;bottom:4px}
+#selected .more-small-comparison .panels .quota-graph{height:18px}
+
+/* The horizontal fluid keeps its true vessel aspect ratio beside each readout. */
+#selected .more-small-comparison .liquid .quota-head{margin-bottom:10px}
+#selected .more-small-comparison .liquid .extra-window{display:grid;grid-template-columns:minmax(0,1fr) 84px;gap:8px;align-items:center}
+#selected .more-small-comparison .liquid .quota-meta{display:block;margin:0}
+#selected .more-small-comparison .liquid .quota-number{flex-direction:column;align-items:flex-start;gap:0;margin-top:2px}
+#selected .more-small-comparison .liquid .quota-graph{width:84px;height:auto;aspect-ratio:240/110;margin:0;cursor:ew-resize;touch-action:pan-y}
+
+#selected .more-small-comparison .journal .quota-head{padding-bottom:8px;margin-bottom:8px}
+#selected .more-small-comparison .journal .quota-graph{height:24px}
+
+/* Candidate 12 retains blue bars and a monochrome corner knot; no extra header icon. */
+#selected .more-small-comparison .watermark-account{border-radius:24px}
+#selected .more-small-comparison .watermark-windows{gap:20px}
+#selected .more-small-comparison .watermark-window{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;column-gap:4px}
+#selected .more-small-comparison .watermark-window .quota-name{grid-column:1;grid-row:1}
+#selected .more-small-comparison .watermark-number{grid-column:2;grid-row:1;margin:0}
+#selected .more-small-comparison .watermark-number strong{font-size:24px;line-height:26px;letter-spacing:-.6px}
+#selected .more-small-comparison .watermark-graph{grid-column:1/3;grid-row:2;height:8px;margin-top:7px}
+#selected .more-small-comparison .watermark-decoration{width:64%;right:-14%;bottom:-13%}
+@media(max-width:650px){#selected .more-small-comparison .prototype-pair{gap:24px;min-width:392px}}

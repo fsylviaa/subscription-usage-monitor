@@ -2,6 +2,7 @@
 """Generate a local reference gallery from two independent JSON batches."""
 
 import json
+import re
 from html import escape
 from pathlib import Path
 
@@ -254,7 +255,7 @@ def render_selected_cards(references, second_references, selected_mappings, adap
             if number == 1:
                 cards[-1] = cards[-1].replace('\n<div class="quota-controls">', '\n' + render_first_watermark_comparison() + '\n' + render_first_small_comparison() + '\n<div class="quota-controls">', 1)
             elif 2 <= number <= 11:
-                cards[-1] = cards[-1].replace('\n<div class="quota-controls">', '\n' + render_style_watermark_comparison(number) + '\n<div class="quota-controls">', 1)
+                cards[-1] = cards[-1].replace('\n<div class="quota-controls">', '\n' + render_style_watermark_comparison(number) + '\n' + render_more_small_comparison(number) + '\n<div class="quota-controls">', 1)
         elif number in details:
             cards.append(f"""<article class="card selected-card" id="selected-reference-{number}" data-detail-target="detail-{number}" tabindex="0" aria-label="查看选中参考 {number} 的适配说明" aria-haspopup="dialog" aria-controls="detail-{number}">
   <button class="preview detail-preview" type="button" aria-label="查看选中参考 {number} 的适配说明"><img src="{image}" alt="选中 {number} · {title}" decoding="async"></button>
@@ -338,8 +339,33 @@ def render_watermark_card():
     variants = ''.join(f'<div class="prototype-variant" data-theme="{theme}"><p class="quota-theme">{label}</p>{render_watermark_prototype(theme)}</div>' for theme, label in (("dark", "暗色"), ("light", "亮色")))
     return f'''<article class="card prototype-card" id="selected-reference-12" data-watermark-prototype>
 <div class="prototype-comparison"><div class="prototype-pair">{variants}</div></div>
+{render_more_small_comparison(12)}
 {render_prototype_controls(12)}
 <div class="caption"><h2><span class="selection-number">12</span> Codex · 右下角图标水印</h2><p class="origin">用户截图 · 新增方案</p><p>左右双栏 · 大百分比 · 蓝色进度条 · 裁切水印</p></div></article>'''
+
+
+def render_more_small_comparison(number):
+    """Reuse each style's own quota art and watermark; only compact new copies."""
+    if number == 12:
+        variants = []
+        for theme, label in (("dark", "暗版"), ("light", "亮版")):
+            compact = render_watermark_prototype(theme).replace('q12-', 'q12-small-')
+            compact = re.sub(r'<div class="quota-reset watermark-reset">.*?</div>', '', compact, flags=re.S)
+            compact = re.sub(r'<span class="watermark-brand-icon" aria-hidden="true">.*?</span>', '', compact, flags=re.S)
+            compact = compact.replace('quota-account watermark-account', 'quota-account watermark-account small-widget-account')
+            compact = compact.replace('方案12 ', '方案12 小号组件 ')
+            variants.append(f'<div class="prototype-variant" data-theme="{theme}" data-small-widget><p class="quota-theme">小号组件{label}</p>{compact}</div>')
+        return '<div class="prototype-comparison more-small-comparison" data-small-style="watermark"><p class="small-widget-label">小号组件 · 与上方共用额度</p><div class="prototype-pair">' + ''.join(variants) + '</div></div>'
+    compact = render_style_watermark_comparison(number)
+    compact = compact.replace('prototype-comparison more-watermark-comparison', 'prototype-comparison more-watermark-comparison more-small-comparison')
+    compact = compact.replace(f'q{number}-watermark-', f'q{number}-small-')
+    compact = compact.replace('quota-account comparison-watermark-account', 'quota-account comparison-watermark-account small-widget-account')
+    compact = re.sub(r'<div class="quota-reset">.*?</div>', '', compact, flags=re.S)
+    compact = compact.replace('>每周额度</div>', '>每周</div>').replace('>5小时额度</div>', '>5 小时</div>')
+    compact = compact.replace('data-watermark-copy>', 'data-watermark-copy data-small-widget>')
+    compact = compact.replace('class="more-watermark-label">水印版 · 与上方原版同步', 'class="small-widget-label">小号组件 · 与上方共用额度')
+    compact = compact.replace('>暗色</p>', '>小号组件暗版</p>').replace('>亮色</p>', '>小号组件亮版</p>')
+    return compact.replace(f'方案{number} 水印版 ', f'方案{number} 小号组件 ')
 
 
 def render_watermark_detail():
@@ -372,6 +398,7 @@ def build_gallery(references, second_references, selected_mappings=(), adaptatio
     first_comparison_css = (BASE / "first-watermark-comparison.css").read_text(encoding="utf-8")
     more_comparison_css = (BASE / "more-watermark-comparisons.css").read_text(encoding="utf-8")
     small_comparison_css = (BASE / "first-small-comparison.css").read_text(encoding="utf-8")
+    more_small_css = (BASE / "more-small-comparisons.css").read_text(encoding="utf-8")
     return f"""<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -389,6 +416,7 @@ h2 .selection-number{{display:inline-flex;align-items:center;justify-content:cen
 {first_comparison_css}
 {more_comparison_css}
 {small_comparison_css}
+{more_small_css}
 </style>
 </head>
 <body>

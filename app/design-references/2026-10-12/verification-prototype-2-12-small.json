@@ -1,0 +1,1673 @@
+{
+  "date": "2026-10-13",
+  "scope": "第2—12款小号暗/亮网页预览；第1款已认可源码保持；App/Figma不改",
+  "user_review": {
+    "first_small": "用户明确第1款小号组件效果可以",
+    "new_small": "第2—12款本人未亲验"
+  },
+  "structure": {
+    "environment": "source protection/structure, no browser rendering",
+    "checks": [
+      {
+        "check": "第1款全卡（含已认可小号）逐字节保持",
+        "passed": true
+      },
+      {
+        "check": "第2款移除仅新增小号排恢复整卡",
+        "passed": true
+      },
+      {
+        "check": "第2款两张小号共享原两精调/一演示",
+        "passed": true
+      },
+      {
+        "check": "第2款精简信息及静态水印结构",
+        "passed": true
+      },
+      {
+        "check": "第3款移除仅新增小号排恢复整卡",
+        "passed": true
+      },
+      {
+        "check": "第3款两张小号共享原两精调/一演示",
+        "passed": true
+      },
+      {
+        "check": "第3款精简信息及静态水印结构",
+        "passed": true
+      },
+      {
+        "check": "第4款移除仅新增小号排恢复整卡",
+        "passed": true
+      },
+      {
+        "check": "第4款两张小号共享原两精调/一演示",
+        "passed": true
+      },
+      {
+        "check": "第4款精简信息及静态水印结构",
+        "passed": true
+      },
+      {
+        "check": "第5款移除仅新增小号排恢复整卡",
+        "passed": true
+      },
+      {
+        "check": "第5款两张小号共享原两精调/一演示",
+        "passed": true
+      },
+      {
+        "check": "第5款精简信息及静态水印结构",
+        "passed": true
+      },
+      {
+        "check": "第6款移除仅新增小号排恢复整卡",
+        "passed": true
+      },
+      {
+        "check": "第6款两张小号共享原两精调/一演示",
+        "passed": true
+      },
+      {
+        "check": "第6款精简信息及静态水印结构",
+        "passed": true
+      },
+      {
+        "check": "第7款移除仅新增小号排恢复整卡",
+        "passed": true
+      },
+      {
+        "check": "第7款两张小号共享原两精调/一演示",
+        "passed": true
+      },
+      {
+        "check": "第7款精简信息及静态水印结构",
+        "passed": true
+      },
+      {
+        "check": "第8款移除仅新增小号排恢复整卡",
+        "passed": true
+      },
+      {
+        "check": "第8款两张小号共享原两精调/一演示",
+        "passed": true
+      },
+      {
+        "check": "第8款精简信息及静态水印结构",
+        "passed": true
+      },
+      {
+        "check": "第9款移除仅新增小号排恢复整卡",
+        "passed": true
+      },
+      {
+        "check": "第9款两张小号共享原两精调/一演示",
+        "passed": true
+      },
+      {
+        "check": "第9款精简信息及静态水印结构",
+        "passed": true
+      },
+      {
+        "check": "第10款移除仅新增小号排恢复整卡",
+        "passed": true
+      },
+      {
+        "check": "第10款两张小号共享原两精调/一演示",
+        "passed": true
+      },
+      {
+        "check": "第10款精简信息及静态水印结构",
+        "passed": true
+      },
+      {
+        "check": "第11款移除仅新增小号排恢复整卡",
+        "passed": true
+      },
+      {
+        "check": "第11款两张小号共享原两精调/一演示",
+        "passed": true
+      },
+      {
+        "check": "第11款精简信息及静态水印结构",
+        "passed": true
+      },
+      {
+        "check": "第12款移除仅新增小号排恢复整卡",
+        "passed": true
+      },
+      {
+        "check": "第12款两张小号共享原两精调/一演示",
+        "passed": true
+      },
+      {
+        "check": "第12款精简信息及静态水印结构",
+        "passed": true
+      },
+      {
+        "check": "第1款完整说明保持",
+        "passed": true
+      },
+      {
+        "check": "第2款完整说明保持",
+        "passed": true
+      },
+      {
+        "check": "第3款完整说明保持",
+        "passed": true
+      },
+      {
+        "check": "第4款完整说明保持",
+        "passed": true
+      },
+      {
+        "check": "第5款完整说明保持",
+        "passed": true
+      },
+      {
+        "check": "第6款完整说明保持",
+        "passed": true
+      },
+      {
+        "check": "第7款完整说明保持",
+        "passed": true
+      },
+      {
+        "check": "第8款完整说明保持",
+        "passed": true
+      },
+      {
+        "check": "第9款完整说明保持",
+        "passed": true
+      },
+      {
+        "check": "第10款完整说明保持",
+        "passed": true
+      },
+      {
+        "check": "第11款完整说明保持",
+        "passed": true
+      },
+      {
+        "check": "第12款完整说明保持",
+        "passed": true
+      },
+      {
+        "check": "两批60个原参考保持",
+        "passed": true
+      },
+      {
+        "check": "所有ID唯一且SVG引用均存在",
+        "passed": true
+      },
+      {
+        "check": "全页70主题140图形24精调、24小号预览",
+        "passed": true
+      },
+      {
+        "check": "所有旧CSS/JS/原图/资源SHA保持",
+        "passed": true
+      },
+      {
+        "check": "新增CSS只作用新增2—12小号",
+        "passed": true
+      },
+      {
+        "check": "所有小号近方形及上下两组",
+        "passed": true
+      },
+      {
+        "check": "仪表0%指针转灰、其他强调按原裁切控制",
+        "passed": true
+      },
+      {
+        "check": "新装饰无自行动画",
+        "passed": true
+      },
+      {
+        "check": "Python语法通过",
+        "passed": true
+      },
+      {
+        "check": "新CSS括号平衡",
+        "passed": true
+      },
+      {
+        "check": "重复生成SHA一致",
+        "passed": true
+      },
+      {
+        "check": "实际HTML内嵌JS语法通过",
+        "passed": true
+      }
+    ],
+    "html_sha256": "6f7d99143334c2ad3fc425541526d52f475b873eb47b39ce05e4d9ff62e6edfc"
+  },
+  "interaction": {
+    "environment": "offline actual HTML and unchanged three controllers; controlled SVG transforms/events/frame clock, not rendered browser UI",
+    "checks": [
+      {
+        "check": "2默认双窗同值",
+        "passed": true
+      },
+      {
+        "check": "2/week精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "2/week精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "2/week精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "2/week精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "2/week精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "2/week精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "2/five精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "2/five精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "2/five精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "2/five精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "2/five精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "2/five精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "2/week小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "2/week小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "2/week小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "2/week小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "2/week小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "2/week小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "2/five小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "2/five小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "2/five小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "2/five小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "2/five小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "2/five小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "2演示中间帧同步与跨款独立",
+        "passed": true
+      },
+      {
+        "check": "2演示95/82终点",
+        "passed": true
+      },
+      {
+        "check": "2小号亮版接管周、5小时继续到1",
+        "passed": true
+      },
+      {
+        "check": "2连续演示仅最新目标",
+        "passed": true
+      },
+      {
+        "check": "2原版反向调节更新新增小号",
+        "passed": true
+      },
+      {
+        "check": "3默认双窗同值",
+        "passed": true
+      },
+      {
+        "check": "3/week精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "3/week精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "3/week精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "3/week精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "3/week精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "3/week精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "3/five精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "3/five精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "3/five精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "3/five精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "3/five精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "3/five精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "3/week小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "3/week小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "3/week小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "3/week小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "3/week小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "3/week小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "3/five小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "3/five小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "3/five小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "3/five小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "3/five小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "3/five小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "3演示中间帧同步与跨款独立",
+        "passed": true
+      },
+      {
+        "check": "3演示95/82终点",
+        "passed": true
+      },
+      {
+        "check": "3小号亮版接管周、5小时继续到1",
+        "passed": true
+      },
+      {
+        "check": "3连续演示仅最新目标",
+        "passed": true
+      },
+      {
+        "check": "3原版反向调节更新新增小号",
+        "passed": true
+      },
+      {
+        "check": "4默认双窗同值",
+        "passed": true
+      },
+      {
+        "check": "4/week精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "4/week精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "4/week精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "4/week精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "4/week精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "4/week精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "4/five精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "4/five精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "4/five精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "4/five精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "4/five精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "4/five精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "4/week小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "4/week小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "4/week小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "4/week小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "4/week小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "4/week小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "4/five小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "4/five小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "4/five小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "4/five小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "4/five小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "4/five小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "4演示中间帧同步与跨款独立",
+        "passed": true
+      },
+      {
+        "check": "4演示95/82终点",
+        "passed": true
+      },
+      {
+        "check": "4小号亮版接管周、5小时继续到1",
+        "passed": true
+      },
+      {
+        "check": "4连续演示仅最新目标",
+        "passed": true
+      },
+      {
+        "check": "4原版反向调节更新新增小号",
+        "passed": true
+      },
+      {
+        "check": "5默认双窗同值",
+        "passed": true
+      },
+      {
+        "check": "5/week精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "5/week精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "5/week精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "5/week精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "5/week精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "5/week精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "5/five精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "5/five精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "5/five精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "5/five精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "5/five精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "5/five精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "5/week小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "5/week小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "5/week小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "5/week小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "5/week小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "5/week小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "5/five小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "5/five小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "5/five小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "5/five小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "5/five小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "5/five小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "5演示中间帧同步与跨款独立",
+        "passed": true
+      },
+      {
+        "check": "5演示95/82终点",
+        "passed": true
+      },
+      {
+        "check": "5小号亮版接管周、5小时继续到1",
+        "passed": true
+      },
+      {
+        "check": "5连续演示仅最新目标",
+        "passed": true
+      },
+      {
+        "check": "5原版反向调节更新新增小号",
+        "passed": true
+      },
+      {
+        "check": "6默认双窗同值",
+        "passed": true
+      },
+      {
+        "check": "6/week精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "6/week精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "6/week精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "6/week精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "6/week精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "6/week精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "6/five精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "6/five精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "6/five精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "6/five精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "6/five精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "6/five精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "6/week小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "6/week小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "6/week小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "6/week小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "6/week小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "6/week小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "6/five小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "6/five小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "6/five小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "6/five小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "6/five小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "6/five小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "6演示中间帧同步与跨款独立",
+        "passed": true
+      },
+      {
+        "check": "6演示95/82终点",
+        "passed": true
+      },
+      {
+        "check": "6小号亮版接管周、5小时继续到1",
+        "passed": true
+      },
+      {
+        "check": "6连续演示仅最新目标",
+        "passed": true
+      },
+      {
+        "check": "6原版反向调节更新新增小号",
+        "passed": true
+      },
+      {
+        "check": "7默认双窗同值",
+        "passed": true
+      },
+      {
+        "check": "7/week精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "7/week精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "7/week精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "7/week精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "7/week精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "7/week精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "7/five精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "7/five精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "7/five精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "7/five精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "7/five精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "7/five精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "7/week小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "7/week小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "7/week小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "7/week小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "7/week小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "7/week小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "7/five小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "7/five小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "7/five小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "7/five小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "7/five小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "7/five小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "7演示中间帧同步与跨款独立",
+        "passed": true
+      },
+      {
+        "check": "7演示95/82终点",
+        "passed": true
+      },
+      {
+        "check": "7小号亮版接管周、5小时继续到1",
+        "passed": true
+      },
+      {
+        "check": "7连续演示仅最新目标",
+        "passed": true
+      },
+      {
+        "check": "7原版反向调节更新新增小号",
+        "passed": true
+      },
+      {
+        "check": "8默认双窗同值",
+        "passed": true
+      },
+      {
+        "check": "8/week精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "8/week精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "8/week精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "8/week精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "8/week精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "8/week精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "8/five精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "8/five精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "8/five精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "8/five精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "8/five精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "8/five精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "8/week小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "8/week小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "8/week小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "8/week小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "8/week小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "8/week小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "8/five小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "8/five小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "8/five小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "8/five小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "8/five小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "8/five小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "8演示中间帧同步与跨款独立",
+        "passed": true
+      },
+      {
+        "check": "8演示95/82终点",
+        "passed": true
+      },
+      {
+        "check": "8小号亮版接管周、5小时继续到1",
+        "passed": true
+      },
+      {
+        "check": "8连续演示仅最新目标",
+        "passed": true
+      },
+      {
+        "check": "8原版反向调节更新新增小号",
+        "passed": true
+      },
+      {
+        "check": "9默认双窗同值",
+        "passed": true
+      },
+      {
+        "check": "9/week精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "9/week精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "9/week精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "9/week精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "9/week精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "9/week精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "9/five精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "9/five精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "9/five精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "9/five精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "9/five精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "9/five精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "9/week小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "9/week小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "9/week小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "9/week小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "9/week小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "9/week小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "9/five小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "9/five小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "9/five小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "9/five小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "9/five小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "9/five小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "9演示中间帧同步与跨款独立",
+        "passed": true
+      },
+      {
+        "check": "9演示95/82终点",
+        "passed": true
+      },
+      {
+        "check": "9小号亮版接管周、5小时继续到1",
+        "passed": true
+      },
+      {
+        "check": "9连续演示仅最新目标",
+        "passed": true
+      },
+      {
+        "check": "9原版反向调节更新新增小号",
+        "passed": true
+      },
+      {
+        "check": "10默认双窗同值",
+        "passed": true
+      },
+      {
+        "check": "10/week精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "10/week精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "10/week精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "10/week精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "10/week精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "10/week精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "10/five精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "10/five精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "10/five精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "10/five精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "10/five精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "10/five精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "10/week小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "10/week小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "10/week小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "10/week小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "10/week小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "10/week小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "10/five小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "10/five小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "10/five小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "10/five小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "10/five小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "10/five小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "10演示中间帧同步与跨款独立",
+        "passed": true
+      },
+      {
+        "check": "10演示95/82终点",
+        "passed": true
+      },
+      {
+        "check": "10小号亮版接管周、5小时继续到1",
+        "passed": true
+      },
+      {
+        "check": "10连续演示仅最新目标",
+        "passed": true
+      },
+      {
+        "check": "10原版反向调节更新新增小号",
+        "passed": true
+      },
+      {
+        "check": "11默认双窗同值",
+        "passed": true
+      },
+      {
+        "check": "11/week精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "11/week精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "11/week精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "11/week精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "11/week精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "11/week精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "11/five精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "11/five精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "11/five精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "11/five精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "11/five精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "11/five精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "11/week小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "11/week小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "11/week小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "11/week小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "11/week小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "11/week小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "11/five小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "11/five小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "11/five小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "11/five小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "11/five小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "11/five小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "11演示中间帧同步与跨款独立",
+        "passed": true
+      },
+      {
+        "check": "11演示95/82终点",
+        "passed": true
+      },
+      {
+        "check": "11小号亮版接管周、5小时继续到1",
+        "passed": true
+      },
+      {
+        "check": "11连续演示仅最新目标",
+        "passed": true
+      },
+      {
+        "check": "11原版反向调节更新新增小号",
+        "passed": true
+      },
+      {
+        "check": "12默认双窗同值",
+        "passed": true
+      },
+      {
+        "check": "12/week精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "12/week精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "12/week精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "12/week精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "12/week精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "12/week精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "12/five精调0与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "12/five精调100与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "12/five精调0.1与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "12/five精调99.9与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "12/five精调73.4与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "12/five精调1.2与跨窗跨款隔离",
+        "passed": true
+      },
+      {
+        "check": "12/week小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "12/week小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "12/week小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "12/week小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "12/week小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "12/week小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "12/five小号1键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "12/five小号1尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "12/five小号1尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "12/five小号2键盘端点与0.1步长",
+        "passed": true
+      },
+      {
+        "check": "12/five小号2尺寸1坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "12/five小号2尺寸0.7坐标/反向/越界/取消",
+        "passed": true
+      },
+      {
+        "check": "12演示中间帧同步与跨款独立",
+        "passed": true
+      },
+      {
+        "check": "12演示95/82终点",
+        "passed": true
+      },
+      {
+        "check": "12小号亮版接管周、5小时继续到1",
+        "passed": true
+      },
+      {
+        "check": "12连续演示仅最新目标",
+        "passed": true
+      },
+      {
+        "check": "12原版反向调节更新新增小号",
+        "passed": true
+      },
+      {
+        "check": "7号六版动态同相、数值不变、平均边界正确",
+        "passed": true
+      },
+      {
+        "check": "7号0/100边界平直且0无气泡",
+        "passed": true
+      },
+      {
+        "check": "7号移出视口暂停/恢复",
+        "passed": true
+      },
+      {
+        "check": "7号页面隐藏暂停/恢复",
+        "passed": true
+      },
+      {
+        "check": "2减少动态结束到95/82目标",
+        "passed": true
+      },
+      {
+        "check": "3减少动态结束到95/82目标",
+        "passed": true
+      },
+      {
+        "check": "4减少动态结束到95/82目标",
+        "passed": true
+      },
+      {
+        "check": "5减少动态结束到95/82目标",
+        "passed": true
+      },
+      {
+        "check": "6减少动态结束到95/82目标",
+        "passed": true
+      },
+      {
+        "check": "7减少动态结束到95/82目标",
+        "passed": true
+      },
+      {
+        "check": "8减少动态结束到95/82目标",
+        "passed": true
+      },
+      {
+        "check": "9减少动态结束到95/82目标",
+        "passed": true
+      },
+      {
+        "check": "10减少动态结束到95/82目标",
+        "passed": true
+      },
+      {
+        "check": "11减少动态结束到95/82目标",
+        "passed": true
+      },
+      {
+        "check": "12减少动态结束到95/82目标",
+        "passed": true
+      },
+      {
+        "check": "减少动态无持续调度",
+        "passed": true
+      },
+      {
+        "check": "几何重测不改全部额度且无NaN",
+        "passed": true
+      },
+      {
+        "check": "所有原/新水印树未经交互改写",
+        "passed": true
+      },
+      {
+        "check": "第1款已认可小号必要同步回归",
+        "passed": true
+      }
+    ]
+  },
+  "check_script_sha256": {
+    "structure.py": "1f189081648002f184e522a15052c40ac0a24e6f5021d08445d0b15918f02595",
+    "interaction.cjs": "2c92a816769583ca6615a1108c865c658ecdf18624d6cd725b8b6c3554ee0e96"
+  },
+  "first_attempts": [
+    {
+      "status": "check-script assertion failed, not product defect",
+      "reason": "首次检查错误预期第7款减少动态目标为3/1；全部款已各点4次演示，实际下一目标均95/82。校正测试预期后完整复验349项通过。"
+    }
+  ],
+  "browser": {
+    "status": "pending",
+    "reason": "沿用本会话既有file协议安全拒绝；本轮未再尝试该动作、未使用HTTP/其他表面/间接方式绕过",
+    "screenshot_added": false
+  },
+  "cleanup": {
+    "status": "completed",
+    "directory": "/private/tmp/quota-small-2-12-check",
+    "files": 8,
+    "file_bytes_before": 4150986,
+    "allocated_bytes_before": 4161536,
+    "file_bytes_after": 0,
+    "allocated_bytes_after": 0,
+    "confirmed_absent": true,
+    "usage_check": "全部同步检查和生成器已退出；无后台服务、App构建/测试/安装或新浏览器进程。必要JSON先归档，再清理。"
+  }
+}
