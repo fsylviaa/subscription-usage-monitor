@@ -35,11 +35,39 @@ h2 .selection-number{display:inline-flex;align-items:center;justify-content:cent
 .dials .extra-neutral{fill:none}
 .dials .quota-reset,.blocks .quota-reset,.liquid .quota-reset,.ticket .quota-reset,.glass .quota-reset{min-height:34px}
 
+/* Candidate 12 only. The decorative knot stays beneath all readable content. */
+#selected-reference-12 .watermark-account{position:relative;isolation:isolate;overflow:hidden;container-type:inline-size;padding:26px 24px 27px;background:#000;color:#f4f4f5;border:0;border-radius:28px;box-shadow:0 9px 24px #00000012}
+#selected-reference-12 .watermark-decoration{position:absolute;width:48%;aspect-ratio:1;right:-8%;bottom:-17%;color:#fff;opacity:.075;z-index:-1;pointer-events:none;user-select:none}
+#selected-reference-12 .watermark-decoration svg{display:block;width:100%;height:100%}
+#selected-reference-12 .quota-head{position:relative;margin-bottom:24px}
+#selected-reference-12 .quota-brand{display:flex;align-items:center;gap:10px;font-size:20px;line-height:1.3;font-weight:650}
+#selected-reference-12 .watermark-brand-icon{display:flex;width:28px;height:28px;flex:none;color:inherit}
+#selected-reference-12 .watermark-brand-icon svg{width:100%;height:100%}
+#selected-reference-12 .quota-plan{color:#bcbcc3;font-size:15px;white-space:nowrap}
+#selected-reference-12 .watermark-windows{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+#selected-reference-12 .watermark-window{min-width:0;margin:0}
+#selected-reference-12 .quota-name{font-size:14px;font-weight:600;line-height:1.4;color:#929297}
+#selected-reference-12 .watermark-number{margin:9px 0 16px;white-space:nowrap;font-variant-numeric:tabular-nums}
+#selected-reference-12 .watermark-number strong{display:block;font-size:clamp(32px,13cqi,57px);font-weight:650;letter-spacing:-1.5px;line-height:1.06}
+#selected-reference-12 .watermark-graph{width:100%;height:11px;touch-action:pan-y;cursor:ew-resize;border-radius:6px}
+#selected-reference-12 .watermark-graph:focus-visible{outline-color:#329eff}
+#selected-reference-12 .watermark-used{fill:#292929}
+#selected-reference-12 .watermark-fill{fill:#329eff}
+#selected-reference-12 .watermark-reset{display:flex;align-items:flex-start;gap:4px;margin-top:8px;color:#929297;font-size:11px;line-height:1.5}
+#selected-reference-12 .watermark-clock{width:14px;height:14px;flex:none;margin-top:1px}
+#selected-reference-12 .watermark-reset span{min-width:0;overflow-wrap:anywhere}
+#selected-reference-12 [data-theme="light"] .watermark-account{background:#fafbfc;color:#202124;box-shadow:0 9px 24px #2434480d}
+#selected-reference-12 [data-theme="light"] .watermark-decoration{color:#1c2736;opacity:.065}
+#selected-reference-12 [data-theme="light"] .quota-plan{color:#686d77}
+#selected-reference-12 [data-theme="light"] .quota-name,#selected-reference-12 [data-theme="light"] .watermark-reset{color:#6f747c}
+#selected-reference-12 [data-theme="light"] .watermark-used{fill:#e0e3e7}
+@media(max-width:850px){#selected-reference-12 .watermark-account{padding:22px 18px 24px;border-radius:24px}#selected-reference-12 .watermark-windows{gap:16px}#selected-reference-12 .quota-brand{font-size:18px;gap:8px}#selected-reference-12 .quota-plan{font-size:13px}#selected-reference-12 .watermark-brand-icon{width:25px;height:25px}#selected-reference-12 .quota-name{font-size:13px}#selected-reference-12 .watermark-reset{font-size:10px}#selected-reference-12 .watermark-decoration{width:54%;right:-10%;bottom:-12%}}
+
 </style>
 </head>
 <body>
 <main>
-<header><h1>首页卡片 · 设计参考初筛</h1><p>60 个原作参考 · 选中 11 个 · 选中1—11可拖动预览；原图与适配说明见独立入口</p></header>
+<header><h1>首页卡片 · 设计参考初筛</h1><p>60 个原作参考 · 选中 11 个原作 + 1 个截图方案 · 方案1—12可拖动预览（含新增截图方案）；原图与适配说明见独立入口</p></header>
 <div class="tabs" role="tablist" aria-label="参考批次">
 <button class="tab" type="button" role="tab" id="batch-1-tab" aria-controls="batch-1" aria-selected="false" tabindex="-1">第一批30个</button>
 <button class="tab" type="button" role="tab" id="batch-2-tab" aria-controls="batch-2" aria-selected="false" tabindex="-1">第二批30个</button>
@@ -443,6 +471,32 @@ h2 .selection-number{display:inline-flex;align-items:center;justify-content:cent
 <div class="quota-controls"><label class="quota-control" for="q11-week-input"><span class="quota-control-line"><span>每周额度 · 剩余百分比</span><output data-output="week" for="q11-week-input">73%</output></span><input id="q11-week-input" data-control="week" type="range" min="0" max="100" step="0.1" value="73" aria-label="方案11 每周额度剩余百分比精调"></label><label class="quota-control" for="q11-five-input"><span class="quota-control-line"><span>5小时额度 · 剩余百分比</span><output data-output="five" for="q11-five-input">50%</output></span><input id="q11-five-input" data-control="five" type="range" min="0" max="100" step="0.1" value="50" aria-label="方案11 5小时额度剩余百分比精调"></label><div class="quota-actions"><button class="quota-play" type="button" data-demo>演示变化</button><button class="adaptation-button quota-detail" type="button" data-detail-target="detail-11" aria-haspopup="dialog" aria-controls="detail-11">原图与适配说明</button></div><p class="quota-help">明暗两版共用数值。实体／强调部分表示剩余，灰色表示已用；可拖动图形或精调滑块，时间与数值均为模拟。</p></div>
   <div class="caption"><h2><span class="selection-number">11</span> Gym Workout App</h2><p class="origin">第二批 · 原编号 24</p><p>Behance · <a href="https://www.behance.net/gallery/248537291/Gym-Workout-App" target="_blank" rel="noopener noreferrer">查看原作 ↗</a></p></div>
 </article>
+<article class="card prototype-card" id="selected-reference-12" data-watermark-prototype>
+<div class="prototype-comparison"><div class="prototype-pair"><div class="prototype-variant" data-theme="dark"><p class="quota-theme">暗色</p><div class="prototype-stage watermark-stage"><div class="quota-account watermark-account">
+<div class="watermark-decoration" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="10 10 80 80" fill="none" focusable="false"><path d="M83.7733 42.8087C84.6678 40.1149 84.9771 37.2613 84.6807 34.4385C84.3843 31.6156 83.489 28.8885 82.0544 26.4394C77.6908 18.8436 68.9203 14.9365 60.3548 16.7725C57.9831 14.1344 54.9591 12.1668 51.5864 11.0673C48.2137 9.96772 44.611 9.77498 41.1402 10.5084C37.6694 11.2418 34.4527 12.8755 31.8132 15.2455C29.1736 17.6155 27.204 20.6383 26.1024 24.0103C23.3212 24.5806 20.6938 25.738 18.3958 27.405C16.0977 29.0721 14.1819 31.2104 12.7765 33.6772C8.36538 41.2609 9.3669 50.8267 15.2527 57.3327C14.3549 60.0251 14.0424 62.8782 14.3361 65.7012C14.6298 68.5241 15.523 71.2518 16.9558 73.7017C21.325 81.3002 30.1011 85.207 38.6712 83.3686C40.5554 85.4904 42.8707 87.1858 45.4623 88.3416C48.0539 89.4975 50.8622 90.0871 53.6999 90.0713C62.4793 90.079 70.2575 84.4114 72.9393 76.0515C75.7201 75.4802 78.347 74.3225 80.6449 72.6555C82.9427 70.9886 84.8587 68.8507 86.2649 66.3846C90.6227 58.8145 89.6172 49.3005 83.7733 42.8087ZM53.6999 84.8356C50.1955 84.8411 46.801 83.6129 44.1116 81.3661L44.5848 81.098L60.5123 71.9043C60.9087 71.6718 61.2379 71.3402 61.4674 70.942C61.6969 70.5439 61.8189 70.0929 61.8215 69.6333V47.1769L68.5553 51.072C68.6225 51.1063 68.6694 51.1707 68.6814 51.2456V69.854C68.6641 78.1208 61.9667 84.8183 53.6999 84.8356ZM21.4977 71.0843C19.7402 68.0497 19.1092 64.4925 19.7156 61.0386L20.1885 61.3225L36.1321 70.5165C36.5266 70.748 36.9757 70.87 37.4331 70.87C37.8905 70.87 38.3396 70.748 38.7341 70.5165L58.21 59.2883V67.0628C58.2081 67.1031 58.1973 67.1424 58.1782 67.1779C58.1591 67.2134 58.1322 67.2441 58.0996 67.2678L41.9671 76.5722C34.798 80.7022 25.6388 78.2463 21.4977 71.0843ZM17.3026 36.3898C19.0723 33.3357 21.8655 31.0062 25.1878 29.8138V48.7376C25.1818 49.1949 25.2986 49.6453 25.5261 50.042C25.7535 50.4387 26.0833 50.7671 26.4809 50.9928L45.8622 62.1739L39.1283 66.069C39.0919 66.0883 39.0513 66.0984 39.0101 66.0984C38.9689 66.0984 38.9283 66.0883 38.8919 66.069L22.7908 56.7809C15.6359 52.6337 13.1822 43.4816 17.3026 36.3112V36.3898ZM72.624 49.2426L53.1792 37.9512L59.8976 34.0718C59.9341 34.0524 59.9747 34.0423 60.016 34.0423C60.0573 34.0423 60.0979 34.0524 60.1344 34.0718L76.2355 43.3761C78.6973 44.7966 80.7043 46.8882 82.0221 49.4065C83.3398 51.9249 83.914 54.7661 83.6775 57.5985C83.4411 60.431 82.4038 63.1377 80.6867 65.4027C78.9696 67.6677 76.6436 69.3975 73.9803 70.3901V51.466C73.9663 51.0096 73.834 50.5647 73.5962 50.1749C73.3584 49.7851 73.0234 49.4638 72.624 49.2426ZM79.3261 39.1657L78.8529 38.8815L62.9411 29.6089C62.5442 29.376 62.0924 29.2532 61.6322 29.2532C61.172 29.2532 60.7202 29.376 60.3233 29.6089L40.8629 40.8374V33.0628C40.8587 33.0233 40.8654 32.9834 40.882 32.9473C40.8987 32.9113 40.9248 32.8803 40.9575 32.8579L57.0586 23.5692C59.5263 22.1476 62.3478 21.458 65.193 21.5811C68.0382 21.7042 70.7896 22.6348 73.1253 24.2642C75.461 25.8936 77.2845 28.1543 78.3825 30.782C79.4806 33.4097 79.8077 36.2957 79.3257 39.1025V39.1657H79.3261ZM37.1888 52.9484L30.455 49.069C30.4213 49.0487 30.3925 49.0212 30.3707 48.9884C30.3488 48.9557 30.3345 48.9186 30.3286 48.8797V30.3188C30.3323 27.4714 31.1466 24.6839 32.6761 22.2822C34.2057 19.8805 36.3874 17.9639 38.9661 16.7564C41.5448 15.549 44.4139 15.1005 47.2381 15.4636C50.0622 15.8267 52.7247 16.9862 54.9141 18.8067L54.4409 19.0748L38.5134 28.2686C38.117 28.5011 37.7879 28.8327 37.5584 29.2308C37.329 29.629 37.207 30.0799 37.2045 30.5395L37.1888 52.9487V52.9484ZM40.8472 45.0632L49.5209 40.0643L58.21 45.0635V55.0615L49.5523 60.0608L40.8632 55.0615L40.8472 45.0632Z" fill="currentColor"/></svg>
+</div>
+<div class="quota-head"><div class="quota-brand"><span class="watermark-brand-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="10 10 80 80" fill="none" focusable="false"><path d="M83.7733 42.8087C84.6678 40.1149 84.9771 37.2613 84.6807 34.4385C84.3843 31.6156 83.489 28.8885 82.0544 26.4394C77.6908 18.8436 68.9203 14.9365 60.3548 16.7725C57.9831 14.1344 54.9591 12.1668 51.5864 11.0673C48.2137 9.96772 44.611 9.77498 41.1402 10.5084C37.6694 11.2418 34.4527 12.8755 31.8132 15.2455C29.1736 17.6155 27.204 20.6383 26.1024 24.0103C23.3212 24.5806 20.6938 25.738 18.3958 27.405C16.0977 29.0721 14.1819 31.2104 12.7765 33.6772C8.36538 41.2609 9.3669 50.8267 15.2527 57.3327C14.3549 60.0251 14.0424 62.8782 14.3361 65.7012C14.6298 68.5241 15.523 71.2518 16.9558 73.7017C21.325 81.3002 30.1011 85.207 38.6712 83.3686C40.5554 85.4904 42.8707 87.1858 45.4623 88.3416C48.0539 89.4975 50.8622 90.0871 53.6999 90.0713C62.4793 90.079 70.2575 84.4114 72.9393 76.0515C75.7201 75.4802 78.347 74.3225 80.6449 72.6555C82.9427 70.9886 84.8587 68.8507 86.2649 66.3846C90.6227 58.8145 89.6172 49.3005 83.7733 42.8087ZM53.6999 84.8356C50.1955 84.8411 46.801 83.6129 44.1116 81.3661L44.5848 81.098L60.5123 71.9043C60.9087 71.6718 61.2379 71.3402 61.4674 70.942C61.6969 70.5439 61.8189 70.0929 61.8215 69.6333V47.1769L68.5553 51.072C68.6225 51.1063 68.6694 51.1707 68.6814 51.2456V69.854C68.6641 78.1208 61.9667 84.8183 53.6999 84.8356ZM21.4977 71.0843C19.7402 68.0497 19.1092 64.4925 19.7156 61.0386L20.1885 61.3225L36.1321 70.5165C36.5266 70.748 36.9757 70.87 37.4331 70.87C37.8905 70.87 38.3396 70.748 38.7341 70.5165L58.21 59.2883V67.0628C58.2081 67.1031 58.1973 67.1424 58.1782 67.1779C58.1591 67.2134 58.1322 67.2441 58.0996 67.2678L41.9671 76.5722C34.798 80.7022 25.6388 78.2463 21.4977 71.0843ZM17.3026 36.3898C19.0723 33.3357 21.8655 31.0062 25.1878 29.8138V48.7376C25.1818 49.1949 25.2986 49.6453 25.5261 50.042C25.7535 50.4387 26.0833 50.7671 26.4809 50.9928L45.8622 62.1739L39.1283 66.069C39.0919 66.0883 39.0513 66.0984 39.0101 66.0984C38.9689 66.0984 38.9283 66.0883 38.8919 66.069L22.7908 56.7809C15.6359 52.6337 13.1822 43.4816 17.3026 36.3112V36.3898ZM72.624 49.2426L53.1792 37.9512L59.8976 34.0718C59.9341 34.0524 59.9747 34.0423 60.016 34.0423C60.0573 34.0423 60.0979 34.0524 60.1344 34.0718L76.2355 43.3761C78.6973 44.7966 80.7043 46.8882 82.0221 49.4065C83.3398 51.9249 83.914 54.7661 83.6775 57.5985C83.4411 60.431 82.4038 63.1377 80.6867 65.4027C78.9696 67.6677 76.6436 69.3975 73.9803 70.3901V51.466C73.9663 51.0096 73.834 50.5647 73.5962 50.1749C73.3584 49.7851 73.0234 49.4638 72.624 49.2426ZM79.3261 39.1657L78.8529 38.8815L62.9411 29.6089C62.5442 29.376 62.0924 29.2532 61.6322 29.2532C61.172 29.2532 60.7202 29.376 60.3233 29.6089L40.8629 40.8374V33.0628C40.8587 33.0233 40.8654 32.9834 40.882 32.9473C40.8987 32.9113 40.9248 32.8803 40.9575 32.8579L57.0586 23.5692C59.5263 22.1476 62.3478 21.458 65.193 21.5811C68.0382 21.7042 70.7896 22.6348 73.1253 24.2642C75.461 25.8936 77.2845 28.1543 78.3825 30.782C79.4806 33.4097 79.8077 36.2957 79.3257 39.1025V39.1657H79.3261ZM37.1888 52.9484L30.455 49.069C30.4213 49.0487 30.3925 49.0212 30.3707 48.9884C30.3488 48.9557 30.3345 48.9186 30.3286 48.8797V30.3188C30.3323 27.4714 31.1466 24.6839 32.6761 22.2822C34.2057 19.8805 36.3874 17.9639 38.9661 16.7564C41.5448 15.549 44.4139 15.1005 47.2381 15.4636C50.0622 15.8267 52.7247 16.9862 54.9141 18.8067L54.4409 19.0748L38.5134 28.2686C38.117 28.5011 37.7879 28.8327 37.5584 29.2308C37.329 29.629 37.207 30.0799 37.2045 30.5395L37.1888 52.9487V52.9484ZM40.8472 45.0632L49.5209 40.0643L58.21 45.0635V55.0615L49.5523 60.0608L40.8632 55.0615L40.8472 45.0632Z" fill="currentColor"/></svg>
+</span><span>Codex <span class="quota-plan">· Plus</span></span></div></div>
+<div class="watermark-windows"><section class="quota-window watermark-window" data-window="week" aria-label="每周额度">
+<div class="quota-name">每周</div><div class="watermark-number"><strong data-number>73%</strong></div>
+<svg class="quota-graph watermark-graph" viewBox="0 0 1000 28" preserveAspectRatio="none" role="slider" tabindex="0" aria-label="方案12 暗色 每周剩余百分比" aria-valuemin="0" aria-valuemax="100" aria-valuenow="73" aria-orientation="horizontal"><defs><clipPath id="q12-week-dark-track"><rect data-watermark-track width="1000" height="28" rx="14"/></clipPath></defs><rect data-watermark-track class="watermark-used" width="1000" height="28" rx="14"/><g clip-path="url(#q12-week-dark-track)"><rect data-watermark-fill class="watermark-fill" width="730" height="28" rx="14"/></g></svg>
+<div class="quota-reset watermark-reset"><svg class="watermark-clock" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.4 7M3 5v6h6M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>3天后 09:57</span></div></section><section class="quota-window watermark-window" data-window="five" aria-label="5 小时额度">
+<div class="quota-name">5 小时</div><div class="watermark-number"><strong data-number>50%</strong></div>
+<svg class="quota-graph watermark-graph" viewBox="0 0 1000 28" preserveAspectRatio="none" role="slider" tabindex="0" aria-label="方案12 暗色 5 小时剩余百分比" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-orientation="horizontal"><defs><clipPath id="q12-five-dark-track"><rect data-watermark-track width="1000" height="28" rx="14"/></clipPath></defs><rect data-watermark-track class="watermark-used" width="1000" height="28" rx="14"/><g clip-path="url(#q12-five-dark-track)"><rect data-watermark-fill class="watermark-fill" width="500" height="28" rx="14"/></g></svg>
+<div class="quota-reset watermark-reset"><svg class="watermark-clock" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.4 7M3 5v6h6M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>3小时0分后</span></div></section></div></div></div></div><div class="prototype-variant" data-theme="light"><p class="quota-theme">亮色</p><div class="prototype-stage watermark-stage"><div class="quota-account watermark-account">
+<div class="watermark-decoration" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="10 10 80 80" fill="none" focusable="false"><path d="M83.7733 42.8087C84.6678 40.1149 84.9771 37.2613 84.6807 34.4385C84.3843 31.6156 83.489 28.8885 82.0544 26.4394C77.6908 18.8436 68.9203 14.9365 60.3548 16.7725C57.9831 14.1344 54.9591 12.1668 51.5864 11.0673C48.2137 9.96772 44.611 9.77498 41.1402 10.5084C37.6694 11.2418 34.4527 12.8755 31.8132 15.2455C29.1736 17.6155 27.204 20.6383 26.1024 24.0103C23.3212 24.5806 20.6938 25.738 18.3958 27.405C16.0977 29.0721 14.1819 31.2104 12.7765 33.6772C8.36538 41.2609 9.3669 50.8267 15.2527 57.3327C14.3549 60.0251 14.0424 62.8782 14.3361 65.7012C14.6298 68.5241 15.523 71.2518 16.9558 73.7017C21.325 81.3002 30.1011 85.207 38.6712 83.3686C40.5554 85.4904 42.8707 87.1858 45.4623 88.3416C48.0539 89.4975 50.8622 90.0871 53.6999 90.0713C62.4793 90.079 70.2575 84.4114 72.9393 76.0515C75.7201 75.4802 78.347 74.3225 80.6449 72.6555C82.9427 70.9886 84.8587 68.8507 86.2649 66.3846C90.6227 58.8145 89.6172 49.3005 83.7733 42.8087ZM53.6999 84.8356C50.1955 84.8411 46.801 83.6129 44.1116 81.3661L44.5848 81.098L60.5123 71.9043C60.9087 71.6718 61.2379 71.3402 61.4674 70.942C61.6969 70.5439 61.8189 70.0929 61.8215 69.6333V47.1769L68.5553 51.072C68.6225 51.1063 68.6694 51.1707 68.6814 51.2456V69.854C68.6641 78.1208 61.9667 84.8183 53.6999 84.8356ZM21.4977 71.0843C19.7402 68.0497 19.1092 64.4925 19.7156 61.0386L20.1885 61.3225L36.1321 70.5165C36.5266 70.748 36.9757 70.87 37.4331 70.87C37.8905 70.87 38.3396 70.748 38.7341 70.5165L58.21 59.2883V67.0628C58.2081 67.1031 58.1973 67.1424 58.1782 67.1779C58.1591 67.2134 58.1322 67.2441 58.0996 67.2678L41.9671 76.5722C34.798 80.7022 25.6388 78.2463 21.4977 71.0843ZM17.3026 36.3898C19.0723 33.3357 21.8655 31.0062 25.1878 29.8138V48.7376C25.1818 49.1949 25.2986 49.6453 25.5261 50.042C25.7535 50.4387 26.0833 50.7671 26.4809 50.9928L45.8622 62.1739L39.1283 66.069C39.0919 66.0883 39.0513 66.0984 39.0101 66.0984C38.9689 66.0984 38.9283 66.0883 38.8919 66.069L22.7908 56.7809C15.6359 52.6337 13.1822 43.4816 17.3026 36.3112V36.3898ZM72.624 49.2426L53.1792 37.9512L59.8976 34.0718C59.9341 34.0524 59.9747 34.0423 60.016 34.0423C60.0573 34.0423 60.0979 34.0524 60.1344 34.0718L76.2355 43.3761C78.6973 44.7966 80.7043 46.8882 82.0221 49.4065C83.3398 51.9249 83.914 54.7661 83.6775 57.5985C83.4411 60.431 82.4038 63.1377 80.6867 65.4027C78.9696 67.6677 76.6436 69.3975 73.9803 70.3901V51.466C73.9663 51.0096 73.834 50.5647 73.5962 50.1749C73.3584 49.7851 73.0234 49.4638 72.624 49.2426ZM79.3261 39.1657L78.8529 38.8815L62.9411 29.6089C62.5442 29.376 62.0924 29.2532 61.6322 29.2532C61.172 29.2532 60.7202 29.376 60.3233 29.6089L40.8629 40.8374V33.0628C40.8587 33.0233 40.8654 32.9834 40.882 32.9473C40.8987 32.9113 40.9248 32.8803 40.9575 32.8579L57.0586 23.5692C59.5263 22.1476 62.3478 21.458 65.193 21.5811C68.0382 21.7042 70.7896 22.6348 73.1253 24.2642C75.461 25.8936 77.2845 28.1543 78.3825 30.782C79.4806 33.4097 79.8077 36.2957 79.3257 39.1025V39.1657H79.3261ZM37.1888 52.9484L30.455 49.069C30.4213 49.0487 30.3925 49.0212 30.3707 48.9884C30.3488 48.9557 30.3345 48.9186 30.3286 48.8797V30.3188C30.3323 27.4714 31.1466 24.6839 32.6761 22.2822C34.2057 19.8805 36.3874 17.9639 38.9661 16.7564C41.5448 15.549 44.4139 15.1005 47.2381 15.4636C50.0622 15.8267 52.7247 16.9862 54.9141 18.8067L54.4409 19.0748L38.5134 28.2686C38.117 28.5011 37.7879 28.8327 37.5584 29.2308C37.329 29.629 37.207 30.0799 37.2045 30.5395L37.1888 52.9487V52.9484ZM40.8472 45.0632L49.5209 40.0643L58.21 45.0635V55.0615L49.5523 60.0608L40.8632 55.0615L40.8472 45.0632Z" fill="currentColor"/></svg>
+</div>
+<div class="quota-head"><div class="quota-brand"><span class="watermark-brand-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="10 10 80 80" fill="none" focusable="false"><path d="M83.7733 42.8087C84.6678 40.1149 84.9771 37.2613 84.6807 34.4385C84.3843 31.6156 83.489 28.8885 82.0544 26.4394C77.6908 18.8436 68.9203 14.9365 60.3548 16.7725C57.9831 14.1344 54.9591 12.1668 51.5864 11.0673C48.2137 9.96772 44.611 9.77498 41.1402 10.5084C37.6694 11.2418 34.4527 12.8755 31.8132 15.2455C29.1736 17.6155 27.204 20.6383 26.1024 24.0103C23.3212 24.5806 20.6938 25.738 18.3958 27.405C16.0977 29.0721 14.1819 31.2104 12.7765 33.6772C8.36538 41.2609 9.3669 50.8267 15.2527 57.3327C14.3549 60.0251 14.0424 62.8782 14.3361 65.7012C14.6298 68.5241 15.523 71.2518 16.9558 73.7017C21.325 81.3002 30.1011 85.207 38.6712 83.3686C40.5554 85.4904 42.8707 87.1858 45.4623 88.3416C48.0539 89.4975 50.8622 90.0871 53.6999 90.0713C62.4793 90.079 70.2575 84.4114 72.9393 76.0515C75.7201 75.4802 78.347 74.3225 80.6449 72.6555C82.9427 70.9886 84.8587 68.8507 86.2649 66.3846C90.6227 58.8145 89.6172 49.3005 83.7733 42.8087ZM53.6999 84.8356C50.1955 84.8411 46.801 83.6129 44.1116 81.3661L44.5848 81.098L60.5123 71.9043C60.9087 71.6718 61.2379 71.3402 61.4674 70.942C61.6969 70.5439 61.8189 70.0929 61.8215 69.6333V47.1769L68.5553 51.072C68.6225 51.1063 68.6694 51.1707 68.6814 51.2456V69.854C68.6641 78.1208 61.9667 84.8183 53.6999 84.8356ZM21.4977 71.0843C19.7402 68.0497 19.1092 64.4925 19.7156 61.0386L20.1885 61.3225L36.1321 70.5165C36.5266 70.748 36.9757 70.87 37.4331 70.87C37.8905 70.87 38.3396 70.748 38.7341 70.5165L58.21 59.2883V67.0628C58.2081 67.1031 58.1973 67.1424 58.1782 67.1779C58.1591 67.2134 58.1322 67.2441 58.0996 67.2678L41.9671 76.5722C34.798 80.7022 25.6388 78.2463 21.4977 71.0843ZM17.3026 36.3898C19.0723 33.3357 21.8655 31.0062 25.1878 29.8138V48.7376C25.1818 49.1949 25.2986 49.6453 25.5261 50.042C25.7535 50.4387 26.0833 50.7671 26.4809 50.9928L45.8622 62.1739L39.1283 66.069C39.0919 66.0883 39.0513 66.0984 39.0101 66.0984C38.9689 66.0984 38.9283 66.0883 38.8919 66.069L22.7908 56.7809C15.6359 52.6337 13.1822 43.4816 17.3026 36.3112V36.3898ZM72.624 49.2426L53.1792 37.9512L59.8976 34.0718C59.9341 34.0524 59.9747 34.0423 60.016 34.0423C60.0573 34.0423 60.0979 34.0524 60.1344 34.0718L76.2355 43.3761C78.6973 44.7966 80.7043 46.8882 82.0221 49.4065C83.3398 51.9249 83.914 54.7661 83.6775 57.5985C83.4411 60.431 82.4038 63.1377 80.6867 65.4027C78.9696 67.6677 76.6436 69.3975 73.9803 70.3901V51.466C73.9663 51.0096 73.834 50.5647 73.5962 50.1749C73.3584 49.7851 73.0234 49.4638 72.624 49.2426ZM79.3261 39.1657L78.8529 38.8815L62.9411 29.6089C62.5442 29.376 62.0924 29.2532 61.6322 29.2532C61.172 29.2532 60.7202 29.376 60.3233 29.6089L40.8629 40.8374V33.0628C40.8587 33.0233 40.8654 32.9834 40.882 32.9473C40.8987 32.9113 40.9248 32.8803 40.9575 32.8579L57.0586 23.5692C59.5263 22.1476 62.3478 21.458 65.193 21.5811C68.0382 21.7042 70.7896 22.6348 73.1253 24.2642C75.461 25.8936 77.2845 28.1543 78.3825 30.782C79.4806 33.4097 79.8077 36.2957 79.3257 39.1025V39.1657H79.3261ZM37.1888 52.9484L30.455 49.069C30.4213 49.0487 30.3925 49.0212 30.3707 48.9884C30.3488 48.9557 30.3345 48.9186 30.3286 48.8797V30.3188C30.3323 27.4714 31.1466 24.6839 32.6761 22.2822C34.2057 19.8805 36.3874 17.9639 38.9661 16.7564C41.5448 15.549 44.4139 15.1005 47.2381 15.4636C50.0622 15.8267 52.7247 16.9862 54.9141 18.8067L54.4409 19.0748L38.5134 28.2686C38.117 28.5011 37.7879 28.8327 37.5584 29.2308C37.329 29.629 37.207 30.0799 37.2045 30.5395L37.1888 52.9487V52.9484ZM40.8472 45.0632L49.5209 40.0643L58.21 45.0635V55.0615L49.5523 60.0608L40.8632 55.0615L40.8472 45.0632Z" fill="currentColor"/></svg>
+</span><span>Codex <span class="quota-plan">· Plus</span></span></div></div>
+<div class="watermark-windows"><section class="quota-window watermark-window" data-window="week" aria-label="每周额度">
+<div class="quota-name">每周</div><div class="watermark-number"><strong data-number>73%</strong></div>
+<svg class="quota-graph watermark-graph" viewBox="0 0 1000 28" preserveAspectRatio="none" role="slider" tabindex="0" aria-label="方案12 亮色 每周剩余百分比" aria-valuemin="0" aria-valuemax="100" aria-valuenow="73" aria-orientation="horizontal"><defs><clipPath id="q12-week-light-track"><rect data-watermark-track width="1000" height="28" rx="14"/></clipPath></defs><rect data-watermark-track class="watermark-used" width="1000" height="28" rx="14"/><g clip-path="url(#q12-week-light-track)"><rect data-watermark-fill class="watermark-fill" width="730" height="28" rx="14"/></g></svg>
+<div class="quota-reset watermark-reset"><svg class="watermark-clock" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.4 7M3 5v6h6M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>3天后 09:57</span></div></section><section class="quota-window watermark-window" data-window="five" aria-label="5 小时额度">
+<div class="quota-name">5 小时</div><div class="watermark-number"><strong data-number>50%</strong></div>
+<svg class="quota-graph watermark-graph" viewBox="0 0 1000 28" preserveAspectRatio="none" role="slider" tabindex="0" aria-label="方案12 亮色 5 小时剩余百分比" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-orientation="horizontal"><defs><clipPath id="q12-five-light-track"><rect data-watermark-track width="1000" height="28" rx="14"/></clipPath></defs><rect data-watermark-track class="watermark-used" width="1000" height="28" rx="14"/><g clip-path="url(#q12-five-light-track)"><rect data-watermark-fill class="watermark-fill" width="500" height="28" rx="14"/></g></svg>
+<div class="quota-reset watermark-reset"><svg class="watermark-clock" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.4 7M3 5v6h6M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>3小时0分后</span></div></section></div></div></div></div></div></div>
+<div class="quota-controls"><label class="quota-control" for="q12-week-input"><span class="quota-control-line"><span>每周额度 · 剩余百分比</span><output data-output="week" for="q12-week-input">73%</output></span><input id="q12-week-input" data-control="week" type="range" min="0" max="100" step="0.1" value="73" aria-label="方案12 每周额度剩余百分比精调"></label><label class="quota-control" for="q12-five-input"><span class="quota-control-line"><span>5小时额度 · 剩余百分比</span><output data-output="five" for="q12-five-input">50%</output></span><input id="q12-five-input" data-control="five" type="range" min="0" max="100" step="0.1" value="50" aria-label="方案12 5小时额度剩余百分比精调"></label><div class="quota-actions"><button class="quota-play" type="button" data-demo>演示变化</button><button class="adaptation-button quota-detail" type="button" data-detail-target="detail-12" aria-haspopup="dialog" aria-controls="detail-12">原图与适配说明</button></div><p class="quota-help">明暗两版共用数值。实体／强调部分表示剩余，灰色表示已用；可拖动图形或精调滑块，时间与数值均为模拟。</p></div>
+<div class="caption"><h2><span class="selection-number">12</span> Codex · 右下角图标水印</h2><p class="origin">用户截图 · 新增方案</p><p>左右双栏 · 大百分比 · 蓝色进度条 · 裁切水印</p></div></article>
 </div>
 </section>
 </main>
@@ -688,6 +742,16 @@ h2 .selection-number{display:inline-flex;align-items:center;justify-content:cent
   </div>
 </div>
 </dialog>
+<dialog class="detail-dialog" id="detail-12" aria-labelledby="detail-title-12" aria-describedby="detail-note-12"><div class="detail-shell">
+<header class="detail-header"><h2 id="detail-title-12"><span class="selection-number">12</span> Codex · 右下角图标水印</h2><button class="detail-close" type="button" data-close-dialog autofocus aria-label="关闭参考 12 的适配说明">关闭</button></header>
+<div class="detail-body"><p class="detail-origin">来源：用户提供的“截屏 2026-10-13 09.57.25.jpeg”。</p>
+<p class="detail-notice" id="detail-note-12">网页候选，正式 App 尚未采用。数字和蓝色均表示剩余，灰色表示已用；默认每周73%、5小时50%，时间与额度均为模拟。原截图中的“8分钟前”和“重置次数”仅留在原图中，候选卡片按用户要求省略。</p>
+<img class="detail-image" src="screenshots-user/12.jpeg" alt="用户提供的水印卡片原截图" decoding="async">
+<div class="adaptation-text"><p class="detail-direction"><strong>适配方向：</strong>保留截图整体排布，突出右下角低对比度图标水印。</p>
+<section class="adaptation-section"><h3>卡片排布</h3><p>顶部是结形图标与Codex · Plus。每周在左，5 小时在右；各栏依次是窗口名称、大百分比、蓝色圆角进度条和带时钟图标的下次重置时间。两栏属于同一账户，不添加更新时间、重置次数、邮箱、下拉箭头或额外操作。</p></section>
+<section class="adaptation-section"><h3>水印与明暗</h3><p>复用项目既有结形矢量图标。大图标固定在卡片右下角，超出右边和下边的部分由卡片圆角裁切；图标在文字和进度条后面，低对比度、静止且不接收点击或焦点。暗版为黑色底和微亮水印，亮版为浅底和微暗水印。</p></section>
+<section class="adaptation-section"><h3>比例与网页演示</h3><p>蓝色长度精确表达剩余，灰色表达已用，0%无蓝色、100%整条蓝色；小数连续显示。明暗两版共用每周和5小时两个独立数值，可直接拖动蓝条或使用精调滑块、方向键及Home／End。演示变化仅在点击时播放，拖动立即接管相应窗口，时间固定、不自动补满。</p></section>
+<section class="adaptation-section"><h3>范围</h3><p>此款只增加到本地设计参考网页。原11款、原两批参考和说明保持；不代表App视觉定稿，不实施SwiftUI或Figma修改。</p></section></div></div></div></dialog>
 <script>
 {
   const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
@@ -998,6 +1062,102 @@ h2 .selection-number{display:inline-flex;align-items:center;justify-content:cent
       demoIndex=(demoIndex+1)%demos.length;
       states.forEach((state,i)=>state.animate(demos[demoIndex][i]));
     });
+  });
+})();
+
+/* Candidate 12 owns two values, shared by its light/dark views only. */
+(() => {
+  const card = document.querySelector('[data-watermark-prototype]');
+  if (!card) return;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const clamp = value => Math.max(0, Math.min(100, value));
+  const format = value => Number(value.toFixed(1)).toString();
+  const demos = [[73, 50], [95, 82], [3, 1], [0, 100]];
+  const states = ['week', 'five'].map(key => {
+    const input = card.querySelector(`[data-control="${key}"]`);
+    const output = card.querySelector(`[data-output="${key}"]`);
+    const state = {value:Number(input.value), target:Number(input.value), frame:0, pointer:null};
+    const views = [...card.querySelectorAll(`.quota-window[data-window="${key}"]`)].map(windowNode => ({
+      windowNode, graph:windowNode.querySelector('.quota-graph'),
+      fill:windowNode.querySelector('[data-watermark-fill]'), radius:14,
+    }));
+    function render(value) {
+      state.value = Math.round(clamp(value)*10)/10;
+      const width = state.value*10;
+      for (const view of views) {
+        view.fill.setAttribute('width', width.toFixed(4));
+        view.fill.setAttribute('rx', Math.min(view.radius, width/2));
+        view.windowNode.querySelector('[data-number]').textContent = `${format(state.value)}%`;
+        view.graph.setAttribute('aria-valuenow', state.value.toFixed(1));
+        view.graph.setAttribute('aria-valuetext', `剩余 ${format(state.value)}%，已用 ${format(100-state.value)}%`);
+      }
+      input.value = state.value.toFixed(1);
+      output.textContent = `${format(state.value)}%`;
+    }
+    function stop() {cancelAnimationFrame(state.frame);state.frame=0;state.target=state.value;}
+    function set(value) {stop();render(value);}
+    function animate(value) {
+      stop();state.target=clamp(value);
+      if (reduced.matches) {render(state.target);return;}
+      const from=state.value, target=state.target, start=performance.now();
+      const step = now => {
+        const t=Math.min(1,(now-start)/380);
+        render(from+(target-from)*(1-Math.pow(1-t,3)));
+        state.frame=t<1?requestAnimationFrame(step):0;
+      };
+      state.frame=requestAnimationFrame(step);
+    }
+    for (const view of views) {
+      const graph=view.graph;
+      const geometry = () => {
+        const matrix=graph.getScreenCTM();
+        if (!matrix || !matrix.a || !matrix.d) return;
+        view.radius=Math.min(500,14*Math.abs(matrix.d/matrix.a));
+        graph.querySelectorAll('[data-watermark-track]').forEach(track => track.setAttribute('rx',view.radius));
+        render(state.value);
+      };
+      const fromPointer = event => {
+        const matrix=graph.getScreenCTM();
+        if (!matrix) return;
+        const point=new DOMPoint(event.clientX,event.clientY).matrixTransform(matrix.inverse());
+        set(point.x/1000*100);
+      };
+      graph.addEventListener('pointerdown', event => {
+        if (!event.isPrimary || event.button!==0 || state.pointer) return;
+        state.pointer={graph,id:event.pointerId};
+        graph.setPointerCapture(event.pointerId);graph.focus({preventScroll:true});fromPointer(event);
+      });
+      graph.addEventListener('pointermove', event => {
+        if(state.pointer?.graph===graph && state.pointer.id===event.pointerId) fromPointer(event);
+      });
+      const endPointer = event => {
+        if(state.pointer?.graph!==graph || state.pointer.id!==event.pointerId) return;
+        if(event.type==='pointerup') fromPointer(event);
+        state.pointer=null;
+        if(graph.hasPointerCapture(event.pointerId)) graph.releasePointerCapture(event.pointerId);
+      };
+      graph.addEventListener('pointerup',endPointer);graph.addEventListener('pointercancel',endPointer);
+      graph.addEventListener('lostpointercapture',() => {if(state.pointer?.graph===graph)state.pointer=null;});
+      graph.addEventListener('keydown', event => {
+        let value;
+        if(event.key==='Home')value=0;else if(event.key==='End')value=100;
+        else if(event.key==='ArrowRight'||event.key==='ArrowUp')value=state.value+(event.shiftKey?10:.1);
+        else if(event.key==='ArrowLeft'||event.key==='ArrowDown')value=state.value-(event.shiftKey?10:.1);
+        else return;
+        event.preventDefault();set(value);
+      });
+      geometry();new ResizeObserver(geometry).observe(graph);
+    }
+    input.addEventListener('input',() => set(Number(input.value)));
+    input.addEventListener('pointerdown',stop);input.addEventListener('keydown',stop);
+    reduced.addEventListener('change',() => {if(reduced.matches && state.frame)set(state.target);});
+    render(state.value);
+    return {animate};
+  });
+  let demoIndex=0;
+  card.querySelector('[data-demo]').addEventListener('click',() => {
+    demoIndex=(demoIndex+1)%demos.length;
+    states.forEach((state,index) => state.animate(demos[demoIndex][index]));
   });
 })();
 

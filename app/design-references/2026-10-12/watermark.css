@@ -1,0 +1,27 @@
+/* Candidate 12 only. The decorative knot stays beneath all readable content. */
+#selected-reference-12 .watermark-account{position:relative;isolation:isolate;overflow:hidden;container-type:inline-size;padding:26px 24px 27px;background:#000;color:#f4f4f5;border:0;border-radius:28px;box-shadow:0 9px 24px #00000012}
+#selected-reference-12 .watermark-decoration{position:absolute;width:48%;aspect-ratio:1;right:-8%;bottom:-17%;color:#fff;opacity:.075;z-index:-1;pointer-events:none;user-select:none}
+#selected-reference-12 .watermark-decoration svg{display:block;width:100%;height:100%}
+#selected-reference-12 .quota-head{position:relative;margin-bottom:24px}
+#selected-reference-12 .quota-brand{display:flex;align-items:center;gap:10px;font-size:20px;line-height:1.3;font-weight:650}
+#selected-reference-12 .watermark-brand-icon{display:flex;width:28px;height:28px;flex:none;color:inherit}
+#selected-reference-12 .watermark-brand-icon svg{width:100%;height:100%}
+#selected-reference-12 .quota-plan{color:#bcbcc3;font-size:15px;white-space:nowrap}
+#selected-reference-12 .watermark-windows{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+#selected-reference-12 .watermark-window{min-width:0;margin:0}
+#selected-reference-12 .quota-name{font-size:14px;font-weight:600;line-height:1.4;color:#929297}
+#selected-reference-12 .watermark-number{margin:9px 0 16px;white-space:nowrap;font-variant-numeric:tabular-nums}
+#selected-reference-12 .watermark-number strong{display:block;font-size:clamp(32px,13cqi,57px);font-weight:650;letter-spacing:-1.5px;line-height:1.06}
+#selected-reference-12 .watermark-graph{width:100%;height:11px;touch-action:pan-y;cursor:ew-resize;border-radius:6px}
+#selected-reference-12 .watermark-graph:focus-visible{outline-color:#329eff}
+#selected-reference-12 .watermark-used{fill:#292929}
+#selected-reference-12 .watermark-fill{fill:#329eff}
+#selected-reference-12 .watermark-reset{display:flex;align-items:flex-start;gap:4px;margin-top:8px;color:#929297;font-size:11px;line-height:1.5}
+#selected-reference-12 .watermark-clock{width:14px;height:14px;flex:none;margin-top:1px}
+#selected-reference-12 .watermark-reset span{min-width:0;overflow-wrap:anywhere}
+#selected-reference-12 [data-theme="light"] .watermark-account{background:#fafbfc;color:#202124;box-shadow:0 9px 24px #2434480d}
+#selected-reference-12 [data-theme="light"] .watermark-decoration{color:#1c2736;opacity:.065}
+#selected-reference-12 [data-theme="light"] .quota-plan{color:#686d77}
+#selected-reference-12 [data-theme="light"] .quota-name,#selected-reference-12 [data-theme="light"] .watermark-reset{color:#6f747c}
+#selected-reference-12 [data-theme="light"] .watermark-used{fill:#e0e3e7}
+@media(max-width:850px){#selected-reference-12 .watermark-account{padding:22px 18px 24px;border-radius:24px}#selected-reference-12 .watermark-windows{gap:16px}#selected-reference-12 .quota-brand{font-size:18px;gap:8px}#selected-reference-12 .quota-plan{font-size:13px}#selected-reference-12 .watermark-brand-icon{width:25px;height:25px}#selected-reference-12 .quota-name{font-size:13px}#selected-reference-12 .watermark-reset{font-size:10px}#selected-reference-12 .watermark-decoration{width:54%;right:-10%;bottom:-12%}}

@@ -1,0 +1,195 @@
+{
+  "date": "2026-10-13",
+  "scope": "Candidate 12 only, local simulated quota data",
+  "static_checks": {
+    "selected-reference-1-unchanged": true,
+    "detail-1-unchanged": true,
+    "selected-reference-2-unchanged": true,
+    "detail-2-unchanged": true,
+    "selected-reference-3-unchanged": true,
+    "detail-3-unchanged": true,
+    "selected-reference-4-unchanged": true,
+    "detail-4-unchanged": true,
+    "selected-reference-5-unchanged": true,
+    "detail-5-unchanged": true,
+    "selected-reference-6-unchanged": true,
+    "detail-6-unchanged": true,
+    "selected-reference-7-unchanged": true,
+    "detail-7-unchanged": true,
+    "selected-reference-8-unchanged": true,
+    "detail-8-unchanged": true,
+    "selected-reference-9-unchanged": true,
+    "detail-9-unchanged": true,
+    "selected-reference-10-unchanged": true,
+    "detail-10-unchanged": true,
+    "selected-reference-11-unchanged": true,
+    "detail-11-unchanged": true,
+    "original-60-cards-unchanged": true,
+    "original-css-js-unchanged": true,
+    "original-resources-unchanged": true,
+    "screenshot-unmodified": true,
+    "unique-ids": true,
+    "12-selected-cards": true,
+    "12-dialogs": true,
+    "24-theme-cards": true,
+    "48-draggable-graphs": true
+  },
+  "interaction_checks": {
+    "environment": "Offline Node DOM fixture; no browser/UI interaction or visual rendering",
+    "checks": [
+      {
+        "name": "defaults shared by two themes",
+        "result": "pass"
+      },
+      {
+        "name": "week precise 0% and independent window",
+        "result": "pass"
+      },
+      {
+        "name": "week precise 100% and independent window",
+        "result": "pass"
+      },
+      {
+        "name": "week precise 99.9% and independent window",
+        "result": "pass"
+      },
+      {
+        "name": "week precise 0.1% and independent window",
+        "result": "pass"
+      },
+      {
+        "name": "week precise 73.4% and independent window",
+        "result": "pass"
+      },
+      {
+        "name": "five precise 0% and independent window",
+        "result": "pass"
+      },
+      {
+        "name": "five precise 100% and independent window",
+        "result": "pass"
+      },
+      {
+        "name": "five precise 99.9% and independent window",
+        "result": "pass"
+      },
+      {
+        "name": "five precise 0.1% and independent window",
+        "result": "pass"
+      },
+      {
+        "name": "five precise 73.4% and independent window",
+        "result": "pass"
+      },
+      {
+        "name": "week theme0 keyboard endpoints and increments",
+        "result": "pass"
+      },
+      {
+        "name": "week theme0 pointer mapping at width200",
+        "result": "pass"
+      },
+      {
+        "name": "week theme0 pointer mapping at width112",
+        "result": "pass"
+      },
+      {
+        "name": "week theme0 cancel ends drag",
+        "result": "pass"
+      },
+      {
+        "name": "week theme1 keyboard endpoints and increments",
+        "result": "pass"
+      },
+      {
+        "name": "week theme1 pointer mapping at width200",
+        "result": "pass"
+      },
+      {
+        "name": "week theme1 pointer mapping at width112",
+        "result": "pass"
+      },
+      {
+        "name": "week theme1 cancel ends drag",
+        "result": "pass"
+      },
+      {
+        "name": "five theme0 keyboard endpoints and increments",
+        "result": "pass"
+      },
+      {
+        "name": "five theme0 pointer mapping at width200",
+        "result": "pass"
+      },
+      {
+        "name": "five theme0 pointer mapping at width112",
+        "result": "pass"
+      },
+      {
+        "name": "five theme0 cancel ends drag",
+        "result": "pass"
+      },
+      {
+        "name": "five theme1 keyboard endpoints and increments",
+        "result": "pass"
+      },
+      {
+        "name": "five theme1 pointer mapping at width200",
+        "result": "pass"
+      },
+      {
+        "name": "five theme1 pointer mapping at width112",
+        "result": "pass"
+      },
+      {
+        "name": "five theme1 cancel ends drag",
+        "result": "pass"
+      },
+      {
+        "name": "ignore secondary and nonprimary input",
+        "result": "pass"
+      },
+      {
+        "name": "animation interpolates and ends in shared values",
+        "result": "pass"
+      },
+      {
+        "name": "dragging light week interrupts it while five continues",
+        "result": "pass"
+      },
+      {
+        "name": "consecutive demos only finish newest target",
+        "result": "pass"
+      },
+      {
+        "name": "reduced motion demo is immediate",
+        "result": "pass"
+      },
+      {
+        "name": "reducing motion during animation completes target",
+        "result": "pass"
+      },
+      {
+        "name": "watermark svg is decorative and content is isolated",
+        "result": "pass"
+      }
+    ]
+  },
+  "python_syntax": "pass",
+  "repeat_generation_sha256": "22ffb38b359c1b3d6eef2453c3d8e26875ea3a1e65b010fd9d19de47337a74f3",
+  "repeat_generation": "pass",
+  "browser_visual_validation": "not performed: CUA rejected file URL protocol; no workaround used",
+  "real_mouse_keyboard_touch": "not tested",
+  "screenshots": "No new browser screenshots. User original JPEG preserved unmodified.",
+  "temporary_artifacts_cleanup": {
+    "path": "/private/tmp/quota-watermark-12-check",
+    "process_confirmation": "All task commands exited; no background/build/test/install process started. Global ps unavailable in sandbox.",
+    "before_file_bytes": 1706617,
+    "before_allocated_bytes": 1728512,
+    "after_bytes": 0,
+    "result": "removed",
+    "first_attempt": "Global process inventory denied by sandbox; deletion had not started.",
+    "app_builds": "none",
+    "retained": "final HTML, CSS/JS/SVG sources, unmodified original screenshot copy and small validation JSON"
+  }
+}

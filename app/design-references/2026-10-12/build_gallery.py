@@ -239,16 +239,56 @@ def render_detail_dialogs(references, second_references, selected_mappings, adap
     return "\n".join(dialogs)
 
 
+def render_watermark_prototype(theme):
+    """Screenshot-inspired candidate 12; isolated from the original eleven."""
+    logo = (BASE / "watermark-logo.svg").read_text(encoding="utf-8")
+    rows = []
+    clock = '<svg class="watermark-clock" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.4 7M3 5v6h6M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    for key, name, value, reset in (("week", "每周", 73, "3天后 09:57"), ("five", "5 小时", 50, "3小时0分后")):
+        uid = f"q12-{key}-{theme}"
+        rows.append(f'''<section class="quota-window watermark-window" data-window="{key}" aria-label="{name}额度">
+<div class="quota-name">{name}</div><div class="watermark-number"><strong data-number>{value}%</strong></div>
+<svg class="quota-graph watermark-graph" viewBox="0 0 1000 28" preserveAspectRatio="none" role="slider" tabindex="0" aria-label="方案12 {"暗色" if theme == "dark" else "亮色"} {name}剩余百分比" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{value}" aria-orientation="horizontal"><defs><clipPath id="{uid}-track"><rect data-watermark-track width="1000" height="28" rx="14"/></clipPath></defs><rect data-watermark-track class="watermark-used" width="1000" height="28" rx="14"/><g clip-path="url(#{uid}-track)"><rect data-watermark-fill class="watermark-fill" width="{value*10}" height="28" rx="14"/></g></svg>
+<div class="quota-reset watermark-reset">{clock}<span>{reset}</span></div></section>''')
+    return f'''<div class="prototype-stage watermark-stage"><div class="quota-account watermark-account">
+<div class="watermark-decoration" aria-hidden="true">{logo}</div>
+<div class="quota-head"><div class="quota-brand"><span class="watermark-brand-icon" aria-hidden="true">{logo}</span><span>Codex <span class="quota-plan">· Plus</span></span></div></div>
+<div class="watermark-windows">{''.join(rows)}</div></div></div>'''
+
+
+def render_watermark_card():
+    variants = ''.join(f'<div class="prototype-variant" data-theme="{theme}"><p class="quota-theme">{label}</p>{render_watermark_prototype(theme)}</div>' for theme, label in (("dark", "暗色"), ("light", "亮色")))
+    return f'''<article class="card prototype-card" id="selected-reference-12" data-watermark-prototype>
+<div class="prototype-comparison"><div class="prototype-pair">{variants}</div></div>
+{render_prototype_controls(12)}
+<div class="caption"><h2><span class="selection-number">12</span> Codex · 右下角图标水印</h2><p class="origin">用户截图 · 新增方案</p><p>左右双栏 · 大百分比 · 蓝色进度条 · 裁切水印</p></div></article>'''
+
+
+def render_watermark_detail():
+    return '''<dialog class="detail-dialog" id="detail-12" aria-labelledby="detail-title-12" aria-describedby="detail-note-12"><div class="detail-shell">
+<header class="detail-header"><h2 id="detail-title-12"><span class="selection-number">12</span> Codex · 右下角图标水印</h2><button class="detail-close" type="button" data-close-dialog autofocus aria-label="关闭参考 12 的适配说明">关闭</button></header>
+<div class="detail-body"><p class="detail-origin">来源：用户提供的“截屏 2026-10-13 09.57.25.jpeg”。</p>
+<p class="detail-notice" id="detail-note-12">网页候选，正式 App 尚未采用。数字和蓝色均表示剩余，灰色表示已用；默认每周73%、5小时50%，时间与额度均为模拟。原截图中的“8分钟前”和“重置次数”仅留在原图中，候选卡片按用户要求省略。</p>
+<img class="detail-image" src="screenshots-user/12.jpeg" alt="用户提供的水印卡片原截图" decoding="async">
+<div class="adaptation-text"><p class="detail-direction"><strong>适配方向：</strong>保留截图整体排布，突出右下角低对比度图标水印。</p>
+<section class="adaptation-section"><h3>卡片排布</h3><p>顶部是结形图标与Codex · Plus。每周在左，5 小时在右；各栏依次是窗口名称、大百分比、蓝色圆角进度条和带时钟图标的下次重置时间。两栏属于同一账户，不添加更新时间、重置次数、邮箱、下拉箭头或额外操作。</p></section>
+<section class="adaptation-section"><h3>水印与明暗</h3><p>复用项目既有结形矢量图标。大图标固定在卡片右下角，超出右边和下边的部分由卡片圆角裁切；图标在文字和进度条后面，低对比度、静止且不接收点击或焦点。暗版为黑色底和微亮水印，亮版为浅底和微暗水印。</p></section>
+<section class="adaptation-section"><h3>比例与网页演示</h3><p>蓝色长度精确表达剩余，灰色表达已用，0%无蓝色、100%整条蓝色；小数连续显示。明暗两版共用每周和5小时两个独立数值，可直接拖动蓝条或使用精调滑块、方向键及Home／End。演示变化仅在点击时播放，拖动立即接管相应窗口，时间固定、不自动补满。</p></section>
+<section class="adaptation-section"><h3>范围</h3><p>此款只增加到本地设计参考网页。原11款、原两批参考和说明保持；不代表App视觉定稿，不实施SwiftUI或Figma修改。</p></section></div></div></div></dialog>'''
+
+
 def build_gallery(references, second_references, selected_mappings=(), adaptation_details=()):
     count = len(references) + len(second_references)
-    guidance = "选中1—11可拖动预览；原图与适配说明见独立入口" if adaptation_details else "点击截图或原作链接查看详情"
-    status = f"{count} 个原作参考 · 选中 {len(selected_mappings)} 个 · {guidance}" if count else "正在搜集原作参考"
+    guidance = "方案1—12可拖动预览（含新增截图方案）；原图与适配说明见独立入口" if adaptation_details else "点击截图或原作链接查看详情"
+    status = f"{count} 个原作参考 · 选中 {len(selected_mappings)} 个原作 + 1 个截图方案 · {guidance}" if count else "正在搜集原作参考"
     first_content = render_cards(references)
     second_content = render_cards(second_references, "reference-batch-2")
-    selected_content = render_selected_cards(references, second_references, selected_mappings, adaptation_details)
-    detail_dialogs = render_detail_dialogs(references, second_references, selected_mappings, adaptation_details)
+    selected_content = render_selected_cards(references, second_references, selected_mappings, adaptation_details) + "\n" + render_watermark_card()
+    detail_dialogs = render_detail_dialogs(references, second_references, selected_mappings, adaptation_details) + "\n" + render_watermark_detail()
     prototype_css = (BASE / "prototype.css").read_text(encoding="utf-8")
     prototype_js = (BASE / "prototype.js").read_text(encoding="utf-8")
+    watermark_css = (BASE / "watermark.css").read_text(encoding="utf-8")
+    watermark_js = (BASE / "watermark.js").read_text(encoding="utf-8")
     return f"""<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -261,6 +301,7 @@ def build_gallery(references, second_references, selected_mappings=(), adaptatio
 h2 .selection-number{{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;margin-right:4px;padding:0 6px;border-radius:6px;background:#202020;color:white;font-size:18px;vertical-align:middle}}.caption .origin{{font-size:13px}}
 .selected-card{{cursor:pointer}}.selected-card:focus-visible{{outline:2px solid #2458b5;outline-offset:3px}}.detail-preview{{width:100%;border:0;padding:0;cursor:pointer}}.adaptation-button{{border:0;padding:0;background:none;color:#2458b5;text-decoration:underline;text-underline-offset:3px;font:inherit;cursor:pointer}}.detail-dialog{{width:min(1040px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);padding:0;border:1px solid #ddd;border-radius:12px;color:#202020;overflow:hidden}}.detail-dialog::backdrop{{background:rgba(0,0,0,.45)}}.detail-shell{{display:flex;flex-direction:column;max-height:calc(100dvh - 32px)}}.detail-header{{display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none;margin:0;padding:16px 20px;border-bottom:1px solid #ddd;background:white}}.detail-header h2{{font-size:18px}}.detail-close{{flex:none;padding:9px 16px;border:1px solid #bbb;border-radius:7px;background:white;color:#202020;font:inherit;cursor:pointer}}.detail-close:focus-visible,.detail-preview:focus-visible,.adaptation-button:focus-visible{{outline:2px solid #2458b5;outline-offset:3px}}.detail-body{{min-height:0;overflow:auto;overscroll-behavior:contain;padding:20px 24px 32px;line-height:1.75}}.detail-origin{{margin:0 0 12px;color:#666;font-size:14px}}.detail-notice{{margin:0 0 20px;padding:12px 16px;border:1px solid #ddd;border-radius:8px;background:#f7f7f7;font-size:14px;color:#555}}.detail-image-link{{display:block;margin-bottom:24px;background:#fafafa}}.detail-image{{display:block;width:100%;height:auto;max-height:260px;object-fit:contain}}.adaptation-text{{max-width:760px;margin:auto}}.detail-direction{{margin:0 0 10px;font-size:18px}}.detail-summary{{margin:0 0 24px}}.adaptation-section{{margin-top:24px}}.adaptation-section h3{{margin:0 0 8px;font-size:18px}}.adaptation-section p{{margin:0 0 10px;overflow-wrap:anywhere}}.figma-description{{white-space:pre-wrap;padding:14px 16px;background:#f7f7f7;border:1px solid #ddd;border-radius:8px}}@media(max-width:650px){{.detail-header{{padding:12px 14px;gap:10px}}.detail-header h2{{font-size:16px}}.detail-close{{padding:8px 12px}}.detail-body{{padding:16px 16px 24px}}}}
 {prototype_css}
+{watermark_css}
 </style>
 </head>
 <body>
@@ -351,6 +392,7 @@ h2 .selection-number{{display:inline-flex;align-items:center;justify-content:cen
   }});
 }}
 {prototype_js}
+{watermark_js}
 </script>
 </body>
 </html>
@@ -364,4 +406,4 @@ if __name__ == "__main__":
     adaptation_details = json.loads(DETAILS_SOURCE.read_text(encoding="utf-8")) if DETAILS_SOURCE.exists() else []
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(build_gallery(references, second_references, selected_mappings, adaptation_details), encoding="utf-8")
-    print(f"Generated {OUTPUT} ({len(references)} + {len(second_references)} references; {len(selected_mappings)} selected; {len(adaptation_details)} details)")
+    print(f"Generated {OUTPUT} ({len(references)} + {len(second_references)} references; {len(selected_mappings)} selected originals + screenshot candidate 12; {len(adaptation_details)+1} details)")
