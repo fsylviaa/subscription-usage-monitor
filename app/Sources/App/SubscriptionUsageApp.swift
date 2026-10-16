@@ -8,16 +8,31 @@ struct SubscriptionUsageApp: App {
 
     var body: some Scene {
         WindowGroup {
+            #if DEBUG
+            if QuotaStyleLabView.requested {
+                QuotaStyleLabView()
+            } else {
+                productionRoot
+            }
+            #else
+            productionRoot
+            #endif
+        }
+    }
+
+    private var productionRoot: some View {
             RootView(connection: AppBackgroundRuntime.shared.flow,
                      preferences: AppBackgroundRuntime.shared.preferences,
                      onBackground: { Task { await AppBackgroundRuntime.shared.coordinator.scheduleIfNeeded() } },
                      reminderScheduler: AppBackgroundRuntime.shared.reminderScheduler)
-        }
     }
 }
 
 final class SubscriptionAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions options: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        #if DEBUG
+        if QuotaStyleLabView.requested { return true }
+        #endif
         // Install before launch finishes so cold-start notification responses survive.
         UNUserNotificationCenter.current().delegate = self
         AppBackgroundRuntime.shared.register()

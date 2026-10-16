@@ -1,0 +1,10 @@
+T67 | capsule | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT67Capsule]' passed (1.522 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.522 (1.523) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.522 (1.524) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.522 (1.525) seconds
+T67 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT67NativeCapsuleUI]' passed (18.195 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.195 (18.202) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.195 (18.210) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.195 (18.217) seconds

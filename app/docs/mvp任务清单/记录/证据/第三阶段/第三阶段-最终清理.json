@@ -1,0 +1,23 @@
+{
+  "recordedUTC": "2026-10-15T04:55:44.571985+00:00",
+  "occupancyCheck": "ps no matching build/test/install/compiler processes; lsof +D returned no open files immediately before cleanup",
+  "scope": "only this phase build/T78-stage3 and used T79 temporary commit text; archived evidence, sources, installed app, production data and unrelated caches preserved",
+  "items": [
+    {
+      "path": "/Users/iceflying/codex/订阅用量监控/app/build/T78-stage3",
+      "fileBytesBefore": 560481337,
+      "allocatedFileBytesBefore": 572944384,
+      "existsAfter": false,
+      "fileBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/stage3-t79-commit.txt",
+      "fileBytesBefore": 29890,
+      "allocatedFileBytesBefore": 32768,
+      "existsAfter": false,
+      "fileBytesAfter": 0
+    }
+  ],
+  "totalFileBytesBefore": 560511227,
+  "totalFileBytesAfter": 0
+}

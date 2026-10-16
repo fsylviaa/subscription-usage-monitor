@@ -1,0 +1,47 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Failed",
+  "startTime": 1791990928.968,
+  "finishTime": 1791991443.094,
+  "passedTests": 0,
+  "failedTests": 1,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [
+    {
+      "failureText": "XCTAssertTrue failed",
+      "targetName": "SubscriptionUsageUITests",
+      "testIdentifier": 1,
+      "testIdentifierString": "CodexQuotaUITests/testT80TemporaryPinnedInstanceSurvivesStyleAndRestart()",
+      "testIdentifierURL": "test://com.apple.xcode/SubscriptionUsage/SubscriptionUsageUITests/CodexQuotaUITests/testT80TemporaryPinnedInstanceSurvivesStyleAndRestart",
+      "testName": "testT80TemporaryPinnedInstanceSurvivesStyleAndRestart()"
+    }
+  ],
+  "source": "T80-pin3.xcresult",
+  "images": [
+    {
+      "name": "T80-临时指定户-original",
+      "path": "T80指定户首轮局部通过-T80-临时指定户-original.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-original",
+      "path": "T80指定户首轮局部通过-T78-选择页-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80指定户首轮局部通过-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

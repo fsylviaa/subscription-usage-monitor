@@ -1,0 +1,170 @@
+[
+  {
+    "frames": 20,
+    "mid": 17,
+    "phase": 0,
+    "staticBranchInjected": false,
+    "style": "skala"
+  },
+  {
+    "frames": 29,
+    "mid": 26,
+    "phase": 0,
+    "staticBranchInjected": false,
+    "style": "capsule"
+  },
+  {
+    "frames": 15,
+    "mid": 13,
+    "phase": 0,
+    "staticBranchInjected": false,
+    "style": "ticks"
+  },
+  {
+    "frames": 44,
+    "mid": 41,
+    "phase": 0,
+    "staticBranchInjected": false,
+    "style": "dials"
+  },
+  {
+    "frames": 34,
+    "mid": 32,
+    "phase": 0,
+    "staticBranchInjected": false,
+    "style": "island"
+  },
+  {
+    "frames": 27,
+    "mid": 25,
+    "phase": 0,
+    "staticBranchInjected": false,
+    "style": "blocks"
+  },
+  {
+    "frames": 69,
+    "mid": 45,
+    "phase": 45,
+    "staticBranchInjected": false,
+    "style": "liquid"
+  },
+  {
+    "frames": 18,
+    "mid": 16,
+    "phase": 0,
+    "staticBranchInjected": false,
+    "style": "ticket"
+  },
+  {
+    "frames": 41,
+    "mid": 38,
+    "phase": 0,
+    "staticBranchInjected": false,
+    "style": "journal"
+  },
+  {
+    "frames": 47,
+    "mid": 44,
+    "phase": 0,
+    "staticBranchInjected": false,
+    "style": "glass"
+  },
+  {
+    "frames": 30,
+    "mid": 28,
+    "phase": 0,
+    "staticBranchInjected": false,
+    "style": "panels"
+  },
+  {
+    "frames": 24,
+    "mid": 22,
+    "phase": 0,
+    "staticBranchInjected": false,
+    "style": "watermark"
+  },
+  {
+    "frames": 2,
+    "mid": 0,
+    "phase": 0,
+    "staticBranchInjected": true,
+    "style": "skala"
+  },
+  {
+    "frames": 2,
+    "mid": 0,
+    "phase": 0,
+    "staticBranchInjected": true,
+    "style": "capsule"
+  },
+  {
+    "frames": 2,
+    "mid": 0,
+    "phase": 0,
+    "staticBranchInjected": true,
+    "style": "ticks"
+  },
+  {
+    "frames": 2,
+    "mid": 0,
+    "phase": 0,
+    "staticBranchInjected": true,
+    "style": "dials"
+  },
+  {
+    "frames": 2,
+    "mid": 0,
+    "phase": 0,
+    "staticBranchInjected": true,
+    "style": "island"
+  },
+  {
+    "frames": 2,
+    "mid": 0,
+    "phase": 0,
+    "staticBranchInjected": true,
+    "style": "blocks"
+  },
+  {
+    "frames": 2,
+    "mid": 0,
+    "phase": 0,
+    "staticBranchInjected": true,
+    "style": "liquid"
+  },
+  {
+    "frames": 2,
+    "mid": 0,
+    "phase": 0,
+    "staticBranchInjected": true,
+    "style": "ticket"
+  },
+  {
+    "frames": 2,
+    "mid": 0,
+    "phase": 0,
+    "staticBranchInjected": true,
+    "style": "journal"
+  },
+  {
+    "frames": 2,
+    "mid": 0,
+    "phase": 0,
+    "staticBranchInjected": true,
+    "style": "glass"
+  },
+  {
+    "frames": 2,
+    "mid": 0,
+    "phase": 0,
+    "staticBranchInjected": true,
+    "style": "panels"
+  },
+  {
+    "frames": 2,
+    "mid": 0,
+    "phase": 0,
+    "staticBranchInjected": true,
+    "style": "watermark"
+  }
+]

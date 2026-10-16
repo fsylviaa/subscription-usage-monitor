@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-14",
+  "timezone": "Asia/Shanghai",
+  "device": "iPhone 11 / iOS26.5 (23F77)",
+  "version": "0.1.0 (2)",
+  "installedConfiguration": "Debug isolated native validation",
+  "sameBundle": "com.iceflying.SubscriptionUsage",
+  "installTime": "01:52:24 +08:00",
+  "launchTime": "01:52:27 +08:00",
+  "installed": true,
+  "launched": true,
+  "releaseBuildAndStrictSignature": true,
+  "debugStrictSignature": true,
+  "productionSelectorAndDesktopHosts": "not connected in stage2",
+  "DebugExecutableSHA256": "eee977db1c08166398a9f2bce3b9d077b286d6fc9247c0e501e524204a616ed8",
+  "ReleaseExecutableSHA256": "4451500cb6d133232e82c9a318235d77bd26afe6f8ef65dded214fa136899817"
+}

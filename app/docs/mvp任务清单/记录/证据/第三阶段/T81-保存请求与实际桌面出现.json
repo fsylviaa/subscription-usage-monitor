@@ -1,0 +1,210 @@
+[
+  {
+    "style": "original",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:34:13Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:33:59Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:34:27Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "skala",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:34:40Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:34:37Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:34:54Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "capsule",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:35:03Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:35:01Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:35:17Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "ticks",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:35:27Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:35:24Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:35:41Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "dials",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:35:54Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:35:52Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:36:08Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "island",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:36:22Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:36:20Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:36:36Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "blocks",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:36:49Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:36:47Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:37:04Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "liquid",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:37:16Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:37:14Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:37:30Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "ticket",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:37:53Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:37:51Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:38:07Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "journal",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:38:24Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:38:22Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:38:38Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "glass",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:38:54Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:38:52Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:39:08Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "panels",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:39:24Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:39:22Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:39:38Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "watermark",
+    "theme": "light",
+    "settingOperationReturnedUTC": "2026-10-14T16:39:57Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:39:54Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:40:11Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "original",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:40:45Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:40:42Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:40:59Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "skala",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:41:11Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:41:08Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:41:25Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "capsule",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:41:34Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:41:32Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:41:48Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "ticks",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:41:58Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:41:56Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:42:12Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "dials",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:42:26Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:42:24Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:42:40Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "island",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:42:54Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:42:51Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:43:08Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "blocks",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:43:21Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:43:18Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:43:35Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "liquid",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:43:48Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:43:46Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:44:02Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "ticket",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:44:25Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:44:23Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:44:39Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "journal",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:44:56Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:44:54Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:45:10Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "glass",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:45:26Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:45:24Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:45:40Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "panels",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:45:56Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:45:54Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:46:10Z",
+    "apiObserved": "actual instrumented API caller"
+  },
+  {
+    "style": "watermark",
+    "theme": "dark",
+    "settingOperationReturnedUTC": "2026-10-14T16:46:29Z",
+    "actualWidgetCenterRequestUTC": "2026-10-14T16:46:26Z",
+    "desktopScreenshotConfirmedUTC": "2026-10-14T16:46:43Z",
+    "apiObserved": "actual instrumented API caller"
+  }
+]

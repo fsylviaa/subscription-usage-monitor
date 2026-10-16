@@ -24,6 +24,7 @@ struct DesignIcon: View {
 
 struct QuotaView: View {
     var accounts: [ConnectedAccount] = []
+    var footerTop: CGFloat?
     var loading = false
     var loadFailed = false
     var canConnect = true
@@ -47,6 +48,11 @@ struct QuotaView: View {
     var canReorder = false
     var savingOrder = false
     var move: (IndexSet, Int) -> Void = { _, _ in }
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.quotaCardStyle) private var cardStyle
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.nativeQuotaStatic) private var staticQuota
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .headline) private var titleSize = 18
 
@@ -103,14 +109,21 @@ struct QuotaView: View {
                                 .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 14))
                             }
                         }
-                    ReorderableQuotaList(accounts: accounts, canMove: canReorder, saving: savingOrder, move: move,
+                    ReorderableQuotaList(accounts: accounts, footerTop: footerTop, canMove: canReorder, saving: savingOrder, move: move,
                                          canRefresh: canRefreshAll, refresh: refreshAll) { account in
                         QuotaAccountCard(account: account, updating: updatingIDs.contains(account.id),
                                          failed: failedAccountIDs.contains(account.id) || quotaFailureID == account.id,
                                          canManage: canManage, canRefresh: canRefresh,
                                          refresh: { refreshAccount(account.id) }, delete: { deleting = account },
-                                         openDetails: { openDetails(account) })
+                                         openDetails: { openDetails(account) },
+                                         position: accounts.firstIndex { $0.id == account.id } ?? 0)
+                            .environment(\.quotaCardStyle, cardStyle)
+                            .environment(\.colorScheme, colorScheme)
+                            .environment(\.scenePhase, scenePhase)
+                            .environment(\.nativeQuotaStatic, reduceMotion || staticQuota)
+                            .environment(\.dynamicTypeSize, dynamicTypeSize)
                     }
+                    .clipped()
                 }
 
             }
@@ -163,109 +176,39 @@ private struct QuotaAccountCard: View {
     var refresh: () -> Void = {}
     var delete: () -> Void = {}
     var openDetails: () -> Void = {}
+    var position = 0
+    @Environment(\.quotaCardStyle) private var cardStyle
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @ScaledMetric(relativeTo: .headline) private var titleSize = 17
-    @ScaledMetric(relativeTo: .caption2) private var emailSize = 11
-    // Larger base sizes with gentler scaling keep the account header secondary
-    // to the quota number, while still growing through every accessibility size.
-    @ScaledMetric(relativeTo: .largeTitle) private var accessibilityTitleSize = 22
-    @ScaledMetric(relativeTo: .title) private var accessibilityMetadataSize = 14
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if dynamicTypeSize.isAccessibilitySize {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        platformIcon
-                        Spacer()
-                        accountMenu
-                    }
-                    planControl
-                    identity
-                }
-            } else {
-                HStack(alignment: .top, spacing: 10) {
-                    platformIcon
-                    VStack(alignment: .leading, spacing: 1) {
-                        planControl
-                        identity
-                    }
-                    Spacer(minLength: 0)
-                    accountMenu
-                }
-            }
-            if let snapshot = account.quotaSnapshot {
+        Group {
+            do {
                 TimelineView(.periodic(from: .now, by: 60)) { context in
-                    VStack(spacing: 10) {
-                        QuotaWindowView(value: snapshot.weekly, title: "每周", id: "weekly", now: context.date)
-                        if snapshot.fiveHours.shouldDisplay {
-                            QuotaWindowView(value: snapshot.fiveHours, title: "5 小时", id: "fiveHours", now: context.date)
-                        }
-                    }
+                    QuotaStyledCard(style: cardStyle,
+                        input: QuotaStyledInput(account: WidgetSnapshot.projecting([account]).account),
+                        now: context.date, accessory: AnyView(HStack(spacing: 2) {
+                            // A fixed small slot: refreshing never reflows the header (D-60).
+                            ZStack {
+                                if updating {
+                                    ProgressView().controlSize(.mini).dynamicTypeSize(.medium)
+                                        .accessibilityLabel("正在刷新")
+                                        .accessibilityIdentifier("quota.refreshProgress")
+                                }
+                            }
+                            .frame(width: 14, height: 14)
+                            accountMenu
+                        }), openDetails: openDetails, variant: position,
+                        spokenIdentity: account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户", failed: failed)
                 }
-            } else if account.quotaState == .notFetched {
-                Text(failed ? "获取失败" : "尚未获取额度")
-                    .font(metadataFont).foregroundStyle(DashboardStyle.secondary)
-                    .accessibilityIdentifier(failed ? "quota.accountStatus" : "quota.notFetched")
+                .fixedSize(horizontal: false, vertical: true)
             }
         }
-        // Keep the content at its natural height while UIKit interpolates the row.
-        // A transient smaller proposal must not compress the header and quota rows.
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.horizontal, 16).padding(.vertical, 14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(DashboardStyle.card, in: RoundedRectangle(cornerRadius: 24))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("quota.card")
+        .accessibilityValue(cardStyle.name)
         .contentShape(RoundedRectangle(cornerRadius: 24))
         .onTapGesture(perform: openDetails)
-        // UIKit animates the self-sizing cell and following rows. Do not also
-        // interpolate SwiftUI text positions through its intermediate proposals.
         .transaction { $0.animation = nil; $0.disablesAnimations = true }
-    }
-
-    private var platformIcon: some View {
-        DesignIcon(name: "Codex", size: 24.48)
-            .frame(width: 34, height: 34)
-            .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 12))
-    }
-
-    private var planControl: some View {
-        HStack(spacing: 6) {
-            Button(action: openDetails) { planTitle }
-                .buttonStyle(.plain)
-                .accessibilityHint("查看账户详情")
-                .accessibilityIdentifier("quota.details")
-            // Reserve the same small slot when idle so refresh never reflows
-            // the plan, chevron or identity. System progress animates independently
-            // of the card's disabled layout animations.
-            ZStack {
-                if updating {
-                    ProgressView().controlSize(.mini)
-                        .dynamicTypeSize(.medium)
-                        .accessibilityLabel("正在刷新")
-                        .accessibilityIdentifier("quota.refreshProgress")
-                }
-            }
-            .frame(width: 14, height: 14)
-        }
-    }
-
-    @ViewBuilder private var identity: some View {
-        if account.isDemo {
-            Text("演示")
-                .font(dynamicTypeSize.isAccessibilitySize ? .system(size: accessibilityMetadataSize) : .caption2)
-                .foregroundStyle(DashboardStyle.secondary)
-        }
-        Text(account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户")
-            .font(.system(size: dynamicTypeSize.isAccessibilitySize ? accessibilityMetadataSize : emailSize))
-            .foregroundStyle(DashboardStyle.secondary)
-            .fixedSize(horizontal: false, vertical: true).privacySensitive()
-            .accessibilityIdentifier("quota.accountIdentity")
-    }
-
-    private var metadataFont: Font {
-        dynamicTypeSize.isAccessibilitySize ? .system(size: accessibilityMetadataSize) : .caption
     }
 
     private var accountMenu: some View {
@@ -281,126 +224,6 @@ private struct QuotaAccountCard: View {
         }
         .disabled(!canManage)
         .accessibilityLabel("账户操作").accessibilityIdentifier("quota.menu")
-    }
-
-    private var planTitle: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 6) {
-            Text(account.subscription.map { "Codex · \($0.planType)" } ?? "Codex")
-                .font(.system(size: dynamicTypeSize.isAccessibilitySize ? accessibilityTitleSize : titleSize, weight: .semibold))
-                .fixedSize(horizontal: false, vertical: true)
-                .accessibilityIdentifier("quota.plan")
-            if account.quotaSnapshot != nil {
-                DesignIcon(name: "Down", size: 14)
-            }
-        }
-    }
-}
-
-struct QuotaWindowView: View {
-    let value: QuotaWindowSnapshot
-    let title: String
-    let id: String
-    let now: Date
-    var detail = false
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @ScaledMetric(relativeTo: .caption) private var labelSize = 12
-    @ScaledMetric(relativeTo: .caption2) private var resetSize = 11
-    @ScaledMetric(relativeTo: .headline) private var amountSize = 18
-    @ScaledMetric(relativeTo: .title) private var accessibilityMetadataSize = 14
-
-    // Enlarge the dashboard's window as a whole, retaining its visual ratios.
-    private var scale: CGFloat { detail ? 1.25 : 1 }
-
-    private var secondarySize: CGFloat {
-        dynamicTypeSize.isAccessibilitySize ? accessibilityMetadataSize : resetSize
-    }
-
-    var body: some View {
-        if dynamicTypeSize.isAccessibilitySize {
-            VStack(alignment: .leading, spacing: 8 * scale) {
-                ViewThatFits(in: .horizontal) {
-                    HStack(alignment: .firstTextBaseline) {
-                        windowTitle
-                        Spacer(minLength: 12 * scale)
-                        amount
-                    }
-                    VStack(alignment: .leading, spacing: 4 * scale) { windowTitle; amount }
-                }
-                if !detail { progressBar }
-                HStack(alignment: .firstTextBaseline, spacing: 6 * scale) {
-                    DesignIcon(name: "Clock", size: 14 * scale)
-                    resetTime
-                }
-                .foregroundStyle(DashboardStyle.secondary)
-                if detail { progressBar }
-            }
-        } else {
-            VStack(spacing: 4 * scale) {
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 5 * scale) { reset; Spacer(minLength: 6 * scale); amount }
-                    VStack(alignment: .leading, spacing: 6 * scale) {
-                        reset
-                        HStack { Spacer(); amount }
-                    }
-                }
-                progressBar
-            }
-        }
-    }
-
-    @ViewBuilder private var progressBar: some View {
-        if case let .limited(percentage) = value.amount {
-            GeometryReader { geometry in
-                Capsule().fill(DashboardStyle.track)
-                    .overlay(alignment: .leading) {
-                        Capsule().fill(DashboardStyle.text)
-                            .frame(width: geometry.size.width * percentage.used / 100)
-                    }
-            }
-            .frame(height: 6 * scale)
-            .accessibilityElement().accessibilityLabel("\(title)额度条")
-            .accessibilityValue("已用 \(valueUsedText)，\(QuotaView.amountText(value.amount))")
-            .accessibilityIdentifier("\(detail ? "detail" : "quota").\(id).bar")
-        }
-    }
-
-    private var windowTitle: some View {
-        Text(title).font(.system(size: labelSize * scale, weight: .medium)).fixedSize()
-            .foregroundStyle(DashboardStyle.secondary)
-    }
-
-    private var resetTime: some View {
-        Text(QuotaView.resetText(value.resetsAt, now: now))
-            .font(.system(size: secondarySize * scale)).fixedSize(horizontal: false, vertical: true)
-            .accessibilityLabel(value.resetsAt.map { "预计重置于 \(QuotaView.dateText($0))" } ?? "未提供重置时间")
-            .accessibilityValue(QuotaView.resetText(value.resetsAt, now: now))
-            .accessibilityIdentifier("\(detail ? "detail" : "quota").\(id).reset")
-    }
-
-    private var reset: some View {
-        HStack(spacing: 5 * scale) {
-            windowTitle
-            DesignIcon(name: "Clock", size: 11 * scale)
-            resetTime
-        }
-        .foregroundStyle(DashboardStyle.secondary)
-    }
-
-    private var amount: some View {
-        Group {
-            if case let .limited(percentage) = value.amount {
-                (Text("剩余 ").font(.system(size: secondarySize * scale)).foregroundColor(DashboardStyle.secondary)
-                 + Text("\(percentage.remaining.formatted(.number.precision(.fractionLength(0...2))))%")
-                    .font(.system(size: amountSize * scale, weight: .semibold)))
-            } else {
-                Text(QuotaView.amountText(value.amount)).font(.system(size: labelSize * scale, weight: .medium))
-            }
-        }
-        .fixedSize().monospacedDigit().accessibilityIdentifier("\(detail ? "detail" : "quota").\(id).remaining")
-    }
-    private var valueUsedText: String {
-        guard case let .limited(percentage) = value.amount else { return "未知" }
-        return percentage.used.formatted(.number.precision(.fractionLength(0...2))) + "%"
     }
 }
 
@@ -421,6 +244,7 @@ struct DashboardButtonStyle: ButtonStyle {
 /// edge auto-scrolling without a visible reorder accessory or a second edit mode.
 private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
     let accounts: [ConnectedAccount]
+    let footerTop: CGFloat?
     let canMove: Bool
     let saving: Bool
     let move: (IndexSet, Int) -> Void
@@ -437,8 +261,9 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 12
         section.contentInsets = .init(top: 12, leading: 16, bottom: 24, trailing: 16)
-        let view = UICollectionView(frame: .zero, collectionViewLayout: QuotaReorderLayout(section: section))
+        let view = QuotaCollectionView(frame: .zero, collectionViewLayout: QuotaReorderLayout(section: section))
         view.backgroundColor = .clear
+        view.clipsToBounds = true
         view.alwaysBounceVertical = true
         view.selfSizingInvalidation = .enabledIncludingConstraints
         view.register(QuotaCollectionCell.self, forCellWithReuseIdentifier: "quota")
@@ -457,12 +282,19 @@ private struct ReorderableQuotaList<Content: View>: UIViewRepresentable {
     func updateUIView(_ view: UICollectionView, context: Context) {
         let coordinator = context.coordinator
         coordinator.parent = self
+        if let collection = view as? QuotaCollectionView {
+            collection.footerTop = footerTop
+            collection.updateFooterInset()
+        }
         if !canRefresh || saving { coordinator.pull.cancelGesture() }
         guard !coordinator.dragging, !saving else { return }
-        if coordinator.displayed != accounts {
+        if coordinator.displayed.map(\.id) != accounts.map(\.id) {
             coordinator.displayed = accounts
             view.reloadData()
         } else {
+            // Keep a stable host for measured changes. Replacing every cell can
+            // discard interpolation even though the account identity is unchanged.
+            coordinator.displayed = accounts
             for index in view.indexPathsForVisibleItems {
                 (view.cellForItem(at: index) as? QuotaCollectionCell)?.configure(UIHostingConfiguration {
                     content(accounts[index.item]).id(accounts[index.item].id).frame(maxHeight: .infinity, alignment: .top)
@@ -655,6 +487,22 @@ final class QuotaPullIndicator: UIView {
     }
 }
 
+/// A tab change can update SwiftUI before UIKit gets its final frame. Resolve
+/// the actual overlap again after layout, rather than keeping that earlier size.
+private final class QuotaCollectionView: UICollectionView {
+    var footerTop: CGFloat?
+    func updateFooterInset() {
+        guard let window, let footerTop else { return }
+        let covered = max(0, convert(bounds, to: window).maxY - footerTop)
+        if contentInset.bottom != covered {
+            contentInset.bottom = covered
+            verticalScrollIndicatorInsets.bottom = covered
+        }
+    }
+    override func didMoveToWindow() { super.didMoveToWindow(); updateFooterInset() }
+    override func layoutSubviews() { super.layoutSubviews(); updateFooterInset() }
+}
+
 /// The hosted view keeps its intrinsic height and is pinned only to the top.
 /// Pinning it to both vertical edges lets intermediate cell sizes compress or
 /// recenter SwiftUI content while UICollectionView animates a self-sizing row.
@@ -815,6 +663,7 @@ struct CodexDetailPanel: View {
     var closeFeedback: () -> Void = {}
     var delete: () -> Void = {}
     var close: () -> Void = {}
+    @Environment(\.quotaCardStyle) private var cardStyle
     @State private var confirmingDeletion = false
     private var content: CodexDetailContent { CodexDetailContent(account: account) }
 
@@ -862,6 +711,7 @@ struct CodexDetailPanel: View {
                 .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 14))
                 .padding(.horizontal, 16)
             }
+            GeometryReader { viewport in
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     if account.isDemo {
@@ -910,9 +760,11 @@ struct CodexDetailPanel: View {
                         .background(DashboardStyle.card, in: RoundedRectangle(cornerRadius: 22))
                     }
                 }
+                .frame(width: max(0, viewport.size.width - 32), alignment: .leading)
                 .padding(16).padding(.bottom, 20)
             }
             .clipped()
+            }
         }
         .foregroundStyle(DashboardStyle.text)
         .background(DashboardStyle.background)
@@ -924,12 +776,13 @@ struct CodexDetailPanel: View {
         } message: { Text("仅断开本 App 的连接，不会取消订阅。") }
     }
 
+    @ViewBuilder
     private func detailWindow(_ value: QuotaWindowSnapshot, title: String, id: String, now: Date) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            QuotaWindowView(value: value, title: title, id: id, now: now, detail: true)
+        do {
+            QuotaStyledCard(style: cardStyle,
+                input: QuotaStyledInput(account: WidgetSnapshot.projecting([account]).account).singleWindow(id),
+                surface: .detail, now: now)
+                .accessibilityIdentifier("detail.style.\(id).\(cardStyle.rawValue)")
         }
-        .padding(.horizontal, 20).padding(.vertical, 17.5)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(DashboardStyle.card, in: RoundedRectangle(cornerRadius: 30))
     }
 }

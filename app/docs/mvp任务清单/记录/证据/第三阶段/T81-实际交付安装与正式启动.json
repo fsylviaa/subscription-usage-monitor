@@ -1,0 +1,16 @@
+{
+  "installation": "same Bundle overlay",
+  "installOutcome": "success",
+  "launchOutcome": "success",
+  "launchArguments": "none",
+  "device": "本人iPhone 11",
+  "os": "iOS26.5 (23F77)",
+  "environment": "Xcode26.6 (17F113), Release 0.1.0 (3)",
+  "formalUIChainTest": "passed 105.674s",
+  "actualBothDesktopSizesConfirmedUTC": "2026-10-14T17:25:24Z",
+  "reopenAndPriorStyleRestoredUTC": "2026-10-14T17:26:09Z",
+  "personalAcceptance": "not yet reported",
+  "recordedUTC": "2026-10-14T17:29:56.299812+00:00",
+  "appAccountAndDetailChecksCompletedUTC": "2026-10-14T17:24:50Z",
+  "observationBoundary": "Timestamp taken after selected style was visible in the real account and detail and detail was closed, immediately before returning Home; 34 seconds includes navigation/observation, not exact setting-save/API-to-widget latency."
+}

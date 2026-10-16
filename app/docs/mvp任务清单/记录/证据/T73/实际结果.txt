@@ -1,0 +1,10 @@
+T73 | ticket | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT73Ticket]' passed (0.807 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.807 (0.807) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.807 (0.808) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.807 (0.809) seconds
+T73 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT73NativeTicketUI]' passed (18.004 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.004 (18.006) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.004 (18.008) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.004 (18.015) seconds

@@ -1,0 +1,462 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791995630.604,
+  "finishTime": 1791996648.355,
+  "passedTests": 2,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 2,
+  "testFailures": [],
+  "source": "T81-ui.xcresult",
+  "images": [
+    {
+      "name": "T81-点击对应详情-dark-default",
+      "path": "T81实际桌面明暗及受控-T81-点击对应详情-dark-default.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-共享变更小号回归-dark-watermark-1",
+      "path": "T81实际桌面明暗及受控-T81-共享变更小号回归-dark-watermark-1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T81-共享变更小号回归-dark-watermark-0",
+      "path": "T81实际桌面明暗及受控-T81-共享变更小号回归-dark-watermark-0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-watermark-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-watermark-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T81实际桌面明暗及受控-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-panels-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-panels-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-glass-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-glass-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-journal-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-journal-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-ticket-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-ticket-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-实际静态复照-dark",
+      "path": "T81实际桌面明暗及受控-T81-实际静态复照-dark.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-liquid-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-liquid-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-blocks-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-blocks-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-blocks",
+      "path": "T81实际桌面明暗及受控-T78-选择页-blocks.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-island-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-island-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-dials-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-dials-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-ticks-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-ticks-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-capsule-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-capsule-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-skala-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-skala-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-共享变更小号回归-dark-original-1",
+      "path": "T81实际桌面明暗及受控-T81-共享变更小号回归-dark-original-1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T81-共享变更小号回归-dark-original-0",
+      "path": "T81实际桌面明暗及受控-T81-共享变更小号回归-dark-original-0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-dark-original-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-dark-original-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-original",
+      "path": "T81实际桌面明暗及受控-T78-选择页-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-点击对应详情-light-default",
+      "path": "T81实际桌面明暗及受控-T81-点击对应详情-light-default.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-共享变更小号回归-light-watermark-1",
+      "path": "T81实际桌面明暗及受控-T81-共享变更小号回归-light-watermark-1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T81-共享变更小号回归-light-watermark-0",
+      "path": "T81实际桌面明暗及受控-T81-共享变更小号回归-light-watermark-0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-light-watermark-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-watermark-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T81实际桌面明暗及受控-T78-选择页-watermark-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-桌面-light-panels-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-panels-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-light-glass-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-glass-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-light-journal-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-journal-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-light-ticket-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-ticket-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-实际静态复照-light",
+      "path": "T81实际桌面明暗及受控-T81-实际静态复照-light.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-light-liquid-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-liquid-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-light-blocks-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-blocks-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-blocks",
+      "path": "T81实际桌面明暗及受控-T78-选择页-blocks-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-桌面-light-island-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-island-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-light-dials-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-dials-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-light-ticks-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-ticks-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-light-capsule-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-capsule-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-light-skala-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-skala-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T81-共享变更小号回归-light-original-1",
+      "path": "T81实际桌面明暗及受控-T81-共享变更小号回归-light-original-1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T81-共享变更小号回归-light-original-0",
+      "path": "T81实际桌面明暗及受控-T81-共享变更小号回归-light-original-0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面-light-original-实例2",
+      "path": "T81实际桌面明暗及受控-T81-桌面-light-original-实例2.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-original",
+      "path": "T81实际桌面明暗及受控-T78-选择页-original-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-桌面受控-long-实例0",
+      "path": "T81实际桌面明暗及受控-T81-桌面受控-long-实例0.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T81实际桌面明暗及受控-T78-选择页-watermark-3.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-桌面受控-failure-实例0",
+      "path": "T81实际桌面明暗及受控-T81-桌面受控-failure-实例0.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T81实际桌面明暗及受控-T78-选择页-watermark-4.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-桌面受控-unlimited-实例0",
+      "path": "T81实际桌面明暗及受控-T81-桌面受控-unlimited-实例0.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T81实际桌面明暗及受控-T78-选择页-watermark-5.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-桌面受控-unknown-实例0",
+      "path": "T81实际桌面明暗及受控-T81-桌面受控-unknown-实例0.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T81实际桌面明暗及受控-T78-选择页-watermark-6.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-桌面受控-weekly-实例0",
+      "path": "T81实际桌面明暗及受控-T81-桌面受控-weekly-实例0.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T81实际桌面明暗及受控-T78-选择页-watermark-7.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-桌面受控-endpoints-实例0",
+      "path": "T81实际桌面明暗及受控-T81-桌面受控-endpoints-实例0.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T81实际桌面明暗及受控-T78-选择页-watermark-8.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

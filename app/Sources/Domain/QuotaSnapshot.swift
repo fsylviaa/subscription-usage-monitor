@@ -46,7 +46,7 @@ enum QuotaAmount: Codable, Equatable, Sendable {
         return value.remaining
     }
 
-    /// Future UI: left is used, right is remaining. No bar for unknown/unlimited.
+    /// Both fractions retain their data meaning; renderers emphasize remaining.
     var progress: QuotaProgress? {
         guard case let .limited(value) = self else { return nil }
         return QuotaProgress(usedFraction: value.used / 100, remainingFraction: value.remaining / 100)

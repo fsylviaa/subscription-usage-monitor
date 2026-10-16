@@ -1,0 +1,8 @@
+{
+  "result": "Failed",
+  "totalTestCount": 1,
+  "failedTests": 1,
+  "passedTests": 0,
+  "skippedTests": 0,
+  "实际原因": "错误采用合并无障碍联合框作真实卡背景宽度；断言失败，临时布局已撤除。"
+}

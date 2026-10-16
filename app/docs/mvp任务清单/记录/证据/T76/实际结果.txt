@@ -1,0 +1,10 @@
+T76 | panels | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT76Panels]' passed (1.101 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.101 (1.103) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.101 (1.104) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.101 (1.106) seconds
+T76 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT76NativePanelsUI]' passed (18.150 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.150 (18.155) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.150 (18.160) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.150 (18.164) seconds

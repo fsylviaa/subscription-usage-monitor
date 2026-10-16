@@ -1,0 +1,62 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791985483.131,
+  "finishTime": 1791985537.273,
+  "passedTests": 1,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [],
+  "source": "T79-viewport-regression.xcresult",
+  "images": [
+    {
+      "name": "T79-正式详情-dark-watermark",
+      "path": "T79-最终代表回归-T79-正式详情-dark-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-正式详情-dark-dials",
+      "path": "T79-最终代表回归-T79-正式详情-dark-dials.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-正式详情-dark-original",
+      "path": "T79-最终代表回归-T79-正式详情-dark-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-正式详情-light-watermark",
+      "path": "T79-最终代表回归-T79-正式详情-light-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-正式详情-light-dials",
+      "path": "T79-最终代表回归-T79-正式详情-light-dials.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-正式详情-light-original",
+      "path": "T79-最终代表回归-T79-正式详情-light-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

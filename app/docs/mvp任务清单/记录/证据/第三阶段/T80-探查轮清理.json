@@ -1,0 +1,80 @@
+{
+  "scope": "本项目已结束的两轮探查和前置失败构建；矩阵及共用DerivedData在用未动",
+  "processCheck": "两轮xcodebuild已退出，后续矩阵只用共用products和独立T80-matrix.xcresult",
+  "items": [
+    {
+      "path": "build/T78-stage3/T80-probe.xcresult",
+      "beforeFileBytes": 16250409,
+      "existsAfter": false,
+      "afterFileBytes": 0
+    },
+    {
+      "path": "build/T78-stage3/T80-probe2.xcresult",
+      "beforeFileBytes": 948324,
+      "existsAfter": false,
+      "afterFileBytes": 0
+    },
+    {
+      "path": "build/T78-stage3/export80probe",
+      "beforeFileBytes": 421847,
+      "existsAfter": false,
+      "afterFileBytes": 0
+    },
+    {
+      "path": "build/T78-stage3/export80failed",
+      "beforeFileBytes": 16613290,
+      "existsAfter": false,
+      "afterFileBytes": 0
+    },
+    {
+      "path": "build/T78-stage3/T80-probe.log",
+      "beforeFileBytes": 234153,
+      "existsAfter": false,
+      "afterFileBytes": 0
+    },
+    {
+      "path": "build/T78-stage3/T80-probe2.log",
+      "beforeFileBytes": 28462,
+      "existsAfter": false,
+      "afterFileBytes": 0
+    },
+    {
+      "path": "build/T78-stage3/export80probe.log",
+      "beforeFileBytes": 752,
+      "existsAfter": false,
+      "afterFileBytes": 0
+    },
+    {
+      "path": "build/T78-stage3/export80failed.log",
+      "beforeFileBytes": 47323,
+      "existsAfter": false,
+      "afterFileBytes": 0
+    },
+    {
+      "path": "build/T78-stage3/T80-build.log",
+      "beforeFileBytes": 63028,
+      "existsAfter": false,
+      "afterFileBytes": 0
+    },
+    {
+      "path": "build/T78-stage3/T80-probe-build.log",
+      "beforeFileBytes": 27454,
+      "existsAfter": false,
+      "afterFileBytes": 0
+    },
+    {
+      "path": "build/T78-stage3/T80-probe-ready.log",
+      "beforeFileBytes": 112083,
+      "existsAfter": false,
+      "afterFileBytes": 0
+    },
+    {
+      "path": "build/T78-stage3/T80-ready2.log",
+      "beforeFileBytes": 44839,
+      "existsAfter": false,
+      "afterFileBytes": 0
+    }
+  ],
+  "totalBefore": 34791964,
+  "totalAfter": 0
+}

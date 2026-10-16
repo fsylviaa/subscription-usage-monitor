@@ -1,0 +1,20 @@
+T70 | island | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT70Island]' passed (0.732 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.732 (0.732) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.732 (0.733) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.732 (0.734) seconds
+T70 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT70NativeIslandUI]' passed (18.042 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.042 (18.046) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.042 (18.050) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.042 (18.054) seconds
+T70 | island | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT70Island]' passed (0.769 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.769 (0.769) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.769 (0.770) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.769 (0.771) seconds
+T70 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT70NativeIslandUI]' passed (17.081 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 17.081 (17.082) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 17.081 (17.083) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 17.081 (17.086) seconds

@@ -1,0 +1,146 @@
+{
+  "processCheck": "xcodebuild／xcresulttool／devicectl进程已全部退出；测试和导出已结束",
+  "preserved": "共用DerivedData及归档辅助继续供授权T81；阶段末清除",
+  "items": [
+    {
+      "path": "build/T78-stage3/T80-config-restored-copy.log",
+      "beforeFileBytes": 248,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-api-copy.json",
+      "beforeFileBytes": 1060,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-config-restored-copy.json",
+      "beforeFileBytes": 1088,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-restored.xcresult",
+      "beforeFileBytes": 777166,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin6.xcresult",
+      "beforeFileBytes": 126394234,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin6.log",
+      "beforeFileBytes": 260553,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-remove2.xcresult",
+      "beforeFileBytes": 1011206,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin6-build.log",
+      "beforeFileBytes": 46452,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-config-restored.json",
+      "beforeFileBytes": 3081,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80pin6",
+      "beforeFileBytes": 127586953,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-protection-end.json",
+      "beforeFileBytes": 831,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80restored.log",
+      "beforeFileBytes": 349,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-api-requests.json",
+      "beforeFileBytes": 1950,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80remove2.log",
+      "beforeFileBytes": 451,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-protection-copy.log",
+      "beforeFileBytes": 247,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-remove2.log",
+      "beforeFileBytes": 74534,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-protection-copy.json",
+      "beforeFileBytes": 1067,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80restored",
+      "beforeFileBytes": 228022,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-restored.log",
+      "beforeFileBytes": 53401,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-api-copy.log",
+      "beforeFileBytes": 245,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-remove2-build.log",
+      "beforeFileBytes": 46885,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80pin6.log",
+      "beforeFileBytes": 12656,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80remove2",
+      "beforeFileBytes": 227829,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    }
+  ],
+  "totalBefore": 256730508,
+  "totalAfter": 0
+}

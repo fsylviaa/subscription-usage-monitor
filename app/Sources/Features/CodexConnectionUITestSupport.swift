@@ -1,5 +1,6 @@
 #if DEBUG
 import Foundation
+import CryptoKit
 import WidgetKit
 import UserNotifications
 
@@ -50,24 +51,38 @@ enum CodexConnectionUITestSupport {
     private struct RouteValidationSession: Codable {
         let id: UUID
         let expiresAt: Date
+        var stage3Scenario: String? = nil
     }
     private static var routeValidationMarker: URL? {
         try? WidgetSnapshotStore.sharedDirectory().appendingPathComponent("T36-route-session.json")
     }
-    private static var routeValidationSession: UUID? {
+    private static var routeValidationDetails: RouteValidationSession? {
         guard let marker = routeValidationMarker, let data = try? Data(contentsOf: marker),
               let session = try? JSONDecoder().decode(RouteValidationSession.self, from: data),
               session.expiresAt > Date(), session.expiresAt.timeIntervalSinceNow <= 1_200,
               (try? WidgetSnapshotStore.displayStore().resolvedURL()) == (try? WidgetSnapshotStore.validationStore(session: session.id).resolvedURL())
         else { return nil }
-        return session.id
+        return session
     }
+    private static var routeValidationSession: UUID? { routeValidationDetails?.id }
     static var isWidgetRouteValidationActive: Bool { routeValidationSession != nil }
 
     static var preferences: UserDefaults {
         let args = ProcessInfo.processInfo.arguments
+        // Choose the private preferences synchronously, before asynchronous
+        // seeding enables the display session. Never fall through to .standard.
+        if let marker = args.firstIndex(of: "--t78-desktop-fixture"), args.indices.contains(marker + 3),
+           let session = UUID(uuidString: args[marker + 2]) {
+            let prefs = UserDefaults(suiteName: "T36-route-\(session)")!
+            if args[marker + 1] != "cleanup" { prefs.set(args[marker + 3], forKey: "appearance") }
+            return prefs
+        }
         if let session = routeValidationSession {
-            return UserDefaults(suiteName: "T36-route-\(session)")!
+            let preferences = UserDefaults(suiteName: "T36-route-\(session)")!
+            if let marker = args.firstIndex(of: "--t78-desktop-fixture"), args.indices.contains(marker + 3) {
+                preferences.set(args[marker + 3], forKey: "appearance")
+            }
+            return preferences
         }
         if args.contains("--t26-isolated-ui") {
             let preferences = UserDefaults(suiteName: "T26-feedback-fixture")!
@@ -102,6 +117,29 @@ enum CodexConnectionUITestSupport {
         if NSClassFromString("XCTestCase") != nil {
             return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) },
                 authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+        }
+        if let marker = arguments.firstIndex(of: "--t78-desktop-fixture") {
+            guard arguments.indices.contains(marker + 3), let session = UUID(uuidString: arguments[marker + 2]), let file = routeValidationMarker else {
+                return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) }, authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+            }
+            let scenario = arguments[marker + 1]
+            if scenario == "cleanup" {
+                stage3ProtectedAudit(session: session, finish: true)
+                if arguments.contains("--t78-audit-cleanup") {
+                    let file = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent("T78-stage3-audit.json")
+                    try? FileManager.default.removeItem(at: file)
+                    try? FileManager.default.removeItem(at: file.deletingLastPathComponent().appendingPathComponent("T78-stage3-config-audit.json"))
+                    try? FileManager.default.removeItem(at: file.deletingLastPathComponent().appendingPathComponent("T78-stage3-reloads.json"))
+                }
+                try? FileManager.default.removeItem(at: file)
+                UserDefaults.standard.removePersistentDomain(forName: "T36-route-\(session)")
+                UserDefaults.standard.removePersistentDomain(forName: "T26-feedback-fixture")
+                return widgetValidationFlow(scenario: "cleanup", session: session, useConfiguredAccount: false)
+            }
+            do {
+                try JSONEncoder().encode(RouteValidationSession(id: session, expiresAt: Date().addingTimeInterval(1_200), stage3Scenario: scenario)).write(to: file, options: .atomic)
+            } catch { return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) }, authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions()) }
+            return stage3WidgetValidationFlow(scenario: scenario, session: session)
         }
         if let marker = arguments.firstIndex(of: "--t37-widget-fixture") {
             guard arguments.indices.contains(marker + 3), let session = UUID(uuidString: arguments[marker + 2]) else {
@@ -142,8 +180,9 @@ enum CodexConnectionUITestSupport {
         }
         // Explicit, time-bounded developer session also survives a real widget
         // cold launch, whose process receives no test launch arguments.
-        if let session = routeValidationSession {
-            return widgetValidationFlow(scenario: "baseline", session: session, useConfiguredAccount: true)
+        if let details = routeValidationDetails {
+            if let scenario = details.stage3Scenario { return stage3WidgetValidationFlow(scenario: scenario, session: details.id) }
+            return widgetValidationFlow(scenario: "baseline", session: details.id, useConfiguredAccount: true)
         }
         if let marker = arguments.firstIndex(of: "--t35-widget-fixture") {
             guard arguments.indices.contains(marker + 2), let session = UUID(uuidString: arguments[marker + 2]) else {
@@ -249,6 +288,94 @@ enum CodexConnectionUITestSupport {
     }
 
     /// Reuses the T35 namespace and actual AccountStore failure publication. No real data or settings writes.
+    static func recordStage3Configurations(_ configurations: [WidgetInfo]? = nil, baseline: Bool = false) async {
+        guard let session = routeValidationDetails?.id ?? {
+            let a = ProcessInfo.processInfo.arguments
+            guard let i = a.firstIndex(of:"--t78-desktop-fixture"),a.indices.contains(i+2) else { return nil }
+            return UUID(uuidString:a[i+2])
+        }(), let dir = try? WidgetSnapshotStore.validationStore(session:session).resolvedURL().deletingLastPathComponent() else { return }
+        do {
+            let all: [WidgetInfo]
+            if let configurations { all = configurations }
+            else { all = try await withCheckedThrowingContinuation { c in WidgetCenter.shared.getCurrentConfigurations { c.resume(with:$0) } } }
+            let ours = all.filter { $0.kind == WidgetAppearance.kind }
+            let choices = ours.map { "\($0.family)|\($0.widgetConfigurationIntent(of:QuotaWidgetConfiguration.self)?.account?.id ?? WidgetAccountEntity.firstID)" }.sorted()
+            let base = dir.appendingPathComponent("configuration-baseline.json")
+            if baseline && !FileManager.default.fileExists(atPath:base.path) {
+                try FileManager.default.createDirectory(at:dir,withIntermediateDirectories:true)
+                try JSONEncoder().encode(choices).write(to:base,options:.atomic)
+            }
+            let old = try JSONDecoder().decode([String].self,from:Data(contentsOf:base))
+            var remaining = choices
+            let preserved = old.allSatisfy { choice in
+                guard let i = remaining.firstIndex(of:choice) else { return false }
+                remaining.remove(at:i); return true
+            }
+            let record:[String:Int] = ["totalInstances":ours.count,"originalChoicesPreserved":preserved ? 1 : 0,
+                "exactConfigurationMultisetUnchanged":choices == old ? 1 : 0,
+                "pinnedInstances":ours.filter { let id = $0.widgetConfigurationIntent(of:QuotaWidgetConfiguration.self)?.account?.id; return id != nil && id != WidgetAccountEntity.firstID }.count]
+            let file = FileManager.default.urls(for:.cachesDirectory,in:.userDomainMask)[0].appendingPathComponent("T78-stage3-config-audit.json")
+            var records = (try? JSONDecoder().decode([[String:Int]].self,from:Data(contentsOf:file))) ?? []
+            records.append(record); try JSONEncoder().encode(records).write(to:file,options:.atomic)
+        } catch { print("T78 widget configuration audit unavailable") }
+    }
+
+    private static func stage3ProtectedAudit(session: UUID, finish: Bool) {
+        guard let directory = try? WidgetSnapshotStore.validationStore(session: session).resolvedURL().deletingLastPathComponent() else { return }
+        let encoder = JSONEncoder(); encoder.outputFormatting = .sortedKeys
+        func hash(_ data: Data?) -> String { data.map { SHA256.hash(data:$0).map { String(format:"%02x",$0) }.joined() } ?? "absent" }
+        let keys = ["card.style", "appearance", WidgetAppearance.key, ResetReminderSettings.preferenceKey]
+        let local = keys.map { UserDefaults.standard.object(forKey:$0).map { String(describing:$0) } ?? "absent" }
+        let shared = keys.map { WidgetAppearance.defaults()?.object(forKey:$0).map { String(describing:$0) } ?? "absent" }
+        let state: [String:String] = [
+            "accounts":hash((try? AccountStore.sharedFileURL()).flatMap { try? Data(contentsOf:$0) }),
+            "snapshot":hash((try? WidgetSnapshotStore.appGroupStore().resolvedURL()).flatMap { try? Data(contentsOf:$0) }),
+            "localPreferences":hash(try? encoder.encode(local)), "sharedPreferences":hash(try? encoder.encode(shared))]
+        let baseline = directory.appendingPathComponent("protected-baseline.json")
+        do {
+            try FileManager.default.createDirectory(at:directory,withIntermediateDirectories:true)
+            if !finish {
+                if !FileManager.default.fileExists(atPath:baseline.path) { try encoder.encode(state).write(to:baseline,options:.atomic) }
+            } else {
+                let before = try JSONDecoder().decode([String:String].self,from:Data(contentsOf:baseline))
+                let result = state.mapValues { _ in false }.merging(Dictionary(uniqueKeysWithValues:state.map { ($0.key,before[$0.key] == $0.value) })) { _,new in new }
+                let file = FileManager.default.urls(for:.cachesDirectory,in:.userDomainMask)[0].appendingPathComponent("T78-stage3-audit.json")
+                var records = (try? JSONDecoder().decode([[String:Bool]].self,from:Data(contentsOf:file))) ?? []
+                records.append(result)
+                try encoder.encode(records).write(to:file,options:.atomic)
+            }
+        } catch { print("T78 protected audit unavailable") }
+    }
+
+    private static func stage3WidgetValidationFlow(scenario: String, session: UUID) -> CodexConnectionFlow {
+        guard let shared = try? WidgetSnapshotStore.validationStore(session: session) else {
+            return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) }, authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
+        }
+        stage3ProtectedAudit(session: session, finish: false)
+        let fixture = T26BatchFixture(scenario: "t78-" + scenario, count: 3, widgetAccountIDs: [session], useConfiguredAccount: true, widgetStore: shared)
+        let flow = CodexConnectionFlow(transactions: FixtureTransactions(), bindings: fixture, quotaUpdater: fixture, foregroundRefreshEnabled: false)
+        Task {
+            do {
+                let original = try await fixture.load()
+                try WidgetSnapshotStore.setValidationSession(session)
+                let prefs = preferences
+                _ = QuotaCardStylePreferences.publishValidation(filename: "T78-style", value: QuotaCardStylePreferences.read(from:prefs).rawValue)
+                _ = QuotaCardStylePreferences.publishValidation(filename: "T37-appearance", value:prefs.string(forKey:"appearance") ?? "light")
+                let before = try shared.read()
+                await flow.loadAccounts()
+                if scenario == "failure" {
+                    flow.refreshAllQuota(); await flow.waitForInitialQuota()
+                    let after = try shared.read()
+                    guard before?.allAccounts.map(\.weekly) == after?.allAccounts.map(\.weekly), before?.allAccounts.map(\.quotaObservedAt) == after?.allAccounts.map(\.quotaObservedAt) else { throw CodexQuotaError.failed }
+                }
+                guard !original.isEmpty else { throw CodexQuotaError.failed }
+                QuotaCardStylePreferences.requestWidgetUpdate()
+                print("T78 | isolated desktop ready | scenario=\(scenario) accounts=\(original.count) | \(Date().ISO8601Format())")
+            } catch { print("T78 isolated desktop preparation failed") }
+        }
+        return flow
+    }
+
     private static func t37WidgetValidationFlow(scenario: String, session: UUID, appearance: String) -> CodexConnectionFlow {
         guard let shared = try? WidgetSnapshotStore.validationStore(session: session) else {
             return CodexConnectionFlow(checkNetwork: { .unavailable(.transport) }, authorizer: FixtureAuthorizer(fails: true), transactions: FixtureTransactions())
@@ -394,8 +521,9 @@ enum CodexConnectionUITestSupport {
         func load() async throws -> [ConnectedAccount] {
             let now = Date(timeIntervalSince1970: 1_791_590_400)
             let reference = Date()
+            let measuredTimes = scenario == "times" || scenario == "long"
             func account(_ index: Int, plan: String, weekly: QuotaAmount?, fiveHours: QuotaAmount?) -> ConnectedAccount {
-                let observation = scenario == "times" ? now.addingTimeInterval(Double(index - 1) * 3600) : now
+                let observation = measuredTimes ? now.addingTimeInterval(Double(index - 1) * 3600) : now
                 var result = ConnectedAccount(verifiedEmail: "card-\(index)@example.invalid",
                     scope: .init(remoteAccountID: "t23-\(index)", kind: .personal), credentialRef: UUID(),
                     quotaState: weekly == nil ? .notApplicable : .available,
@@ -406,9 +534,9 @@ enum CodexConnectionUITestSupport {
                         product: result.product, scope: result.scope, generation: result.generation,
                         planType: plan, observedAt: observation,
                         weekly: .init(window: .weekly, amount: weekly,
-                            resetsAt: scenario == "times" ? (index == 1 ? reference.addingTimeInterval(6 * 86400) : now) : nil, observedAt: observation),
+                            resetsAt: measuredTimes ? (index == 1 ? reference.addingTimeInterval(6 * 86400) : now) : nil, observedAt: observation),
                         fiveHours: .init(window: .fiveHours, amount: fiveHours,
-                            resetsAt: scenario == "times" && index == 1 ? reference.addingTimeInterval(5640) : nil, observedAt: observation))
+                            resetsAt: measuredTimes && index == 1 ? reference.addingTimeInterval(5640) : nil, observedAt: observation))
                 }
                 return result
             }
@@ -423,6 +551,12 @@ enum CodexConnectionUITestSupport {
             if scenario == "states" {
                 return [account(1, plan: "Pro", weekly: .unknown, fiveHours: .unlimited),
                         account(2, plan: "Free", weekly: nil, fiveHours: nil)]
+            }
+            if scenario == "unlimited" {
+                return [account(1, plan: "Pro", weekly: .unlimited, fiveHours: .unknown)]
+            }
+            if scenario == "long" {
+                return [account(1, plan: "Enterprise 超长套餐名称 · 团队专属订阅", weekly: .limited(try .init(used: 29.875)), fiveHours: .limited(try .init(used: 66.67)))]
             }
             return [account(1, plan: "Plus", weekly: .limited(try .init(used: 0)), fiveHours: .limited(try .init(used: 100))),
                     account(2, plan: "Future Official Plan", weekly: .limited(try .init(used: 30)), fiveHours: .limited(try .init(used: 80)))]
@@ -979,7 +1113,7 @@ private final class T17OrderFailureBindings: CodexAccountBinding, AccountOrderin
 }
 /// T26 uses synthetic credentials, a temporary file and a fake HTTP transport.
 /// Its production service still executes the real network-gate/parse/store path.
-actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAuthorizationTransport, AccountRemoving {
+actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAuthorizationTransport, AccountRemoving, AccountOrdering {
     nonisolated let directory: URL
     let store: AccountStore
     let scenario: String
@@ -1021,7 +1155,12 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
                         .compactMap { $0.widgetConfigurationIntent(of: QuotaWidgetConfiguration.self)?.account?.id }
                         .compactMap(UUID.init(uuidString:)).sorted { $0.uuidString < $1.uuidString }
                     let unique = Array(Set(configured)).sorted { $0.uuidString < $1.uuidString }
-                    if scenario == "widget-background" {
+                    if scenario.hasPrefix("t78-") {
+                        await CodexConnectionUITestSupport.recordStage3Configurations(configurations, baseline: true)
+                        guard unique.count < count else { throw CodexQuotaError.failed }
+                        while ids.count < count { ids.append(UUID()) }
+                        for (index,id) in unique.enumerated() { ids[index + 1] = id }
+                    } else if scenario == "widget-background" {
                         guard unique.count <= ids.count else { throw CodexQuotaError.failed }
                         for (index, id) in unique.enumerated() { ids[index] = id }
                     } else if let pinned = unique.first { ids[0] = pinned }
@@ -1048,6 +1187,26 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
                         if name == "free" { account.subscription = .init(planType: "Free", observedAt: Self.oldTime); account.quotaState = .notApplicable; account.quotaSnapshot = nil }
                         if name == "notFetched" { account.subscription = nil; account.quotaState = .notFetched; account.quotaSnapshot = nil }
                     }
+                    if scenario.hasPrefix("t78-") {
+                        let name = String(scenario.dropFirst(4))
+                        let sample = await QuotaStyleLabView.fixtureAccount(scenario: name == "normal" ? "normal" : name)
+                        func amount(_ value: WidgetSnapshot.Amount) throws -> QuotaAmount {
+                            switch value { case .unknown: return .unknown; case .unlimited: return .unlimited; case let .limited(used): return .limited(try .init(used: used)) }
+                        }
+                        let at = await QuotaStyleLabView.referenceTime
+                        let displayPlan = sample.plan ?? "Pro"
+                        account.subscription = .init(planType: displayPlan, observedAt: at)
+                        account.verifiedEmail = "stage3-\(index + 1)@example.invalid"
+                        account.quotaState = .available
+                        account.quotaSnapshot = .init(accountID: account.id, provider: account.provider, product: account.product, scope: account.scope, generation: account.generation, planType: displayPlan, observedAt: at,
+                            weekly: .init(window: .weekly, amount: try amount(sample.weekly?.amount ?? .unknown), resetsAt: sample.weekly?.resetsAt, observedAt: at),
+                            fiveHours: .init(window: .fiveHours, amount: try amount(sample.fiveHours?.amount ?? .unknown), resetsAt: sample.fiveHours?.resetsAt, observedAt: at, isApplicable: sample.fiveHours?.isApplicable ?? true))
+                        if name == "normal", index > 0 {
+                            account.quotaSnapshot = .init(accountID: account.id, provider: account.provider, product: account.product, scope: account.scope, generation: account.generation, planType: displayPlan, observedAt: at,
+                                weekly: .init(window: .weekly, amount: .limited(try .init(used: 100 - Double(20 + index * 10))), resetsAt: sample.weekly?.resetsAt, observedAt: at),
+                                fiveHours: .init(window: .fiveHours, amount: .limited(try .init(used: 100 - Double(40 + index * 10))), resetsAt: sample.fiveHours?.resetsAt, observedAt: at))
+                        }
+                    }
                     try await store.append(account)
                 }
             }
@@ -1057,6 +1216,7 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
         return try await store.load()
     }
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount { throw CodexQuotaError.failed }
+    func reorder(_ ids: [UUID]) async throws { try await store.reorder(ids) }
     func removeAccount(_ id: UUID) async throws {
         _ = try await store.markForDeletion(id)
         try await store.finishDeletion(id)
@@ -1112,7 +1272,7 @@ actor T26BatchFixture: CodexAccountBinding, CodexQuotaUpdating, CodexDeviceAutho
         let id = request.value(forHTTPHeaderField: "ChatGPT-Account-Id")!
         requests[id, default: 0] += 1
         let attempt = requests[id]!
-        let fails = scenario == "t37-failure" || ((scenario == "partial" || scenario == "ui-auto-failure") && id == "t26-account-1" && attempt == 1)
+        let fails = scenario == "t78-failure" || scenario == "t37-failure" || ((scenario == "partial" || scenario == "ui-auto-failure") && id == "t26-account-1" && attempt == 1)
         let body = Self.body(id, used: 40 + attempt * 5)
         return (body, HTTPURLResponse(url: request.url!, statusCode: fails ? 500 : 200, httpVersion: nil,
             headerFields: ["Content-Type": "application/json"])!)

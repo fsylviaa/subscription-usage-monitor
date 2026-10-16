@@ -1,0 +1,359 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Failed",
+  "startTime": 1791988193.132,
+  "finishTime": 1791988486.403,
+  "passedTests": 1,
+  "failedTests": 2,
+  "skippedTests": 0,
+  "totalTestCount": 3,
+  "testFailures": [
+    {
+      "failureText": "Failed to get matching snapshot: No matches found for Element at index 15 from input {(\n    StaticText,\n    StaticText,\n    StaticText,\n    StaticText,\n    StaticText,\n    StaticText,\n    StaticText,\n    StaticText,\n    StaticText,\n    StaticText,\n    StaticText,\n    StaticText,\n    StaticText,\n    StaticText,\n    StaticText\n)}",
+      "targetName": "SubscriptionUsageUITests",
+      "testIdentifier": 2,
+      "testIdentifierString": "CodexQuotaUITests/testT80ReadExistingWidgetChoices()",
+      "testIdentifierURL": "test://com.apple.xcode/SubscriptionUsage/SubscriptionUsageUITests/CodexQuotaUITests/testT80ReadExistingWidgetChoices",
+      "testName": "testT80ReadExistingWidgetChoices()"
+    },
+    {
+      "failureText": "XCTAssertTrue failed",
+      "targetName": "SubscriptionUsageUITests",
+      "testIdentifier": 3,
+      "testIdentifierString": "CodexQuotaUITests/testT80SmallDesktopControlledInputs()",
+      "testIdentifierURL": "test://com.apple.xcode/SubscriptionUsage/SubscriptionUsageUITests/CodexQuotaUITests/testT80SmallDesktopControlledInputs",
+      "testName": "testT80SmallDesktopControlledInputs()"
+    }
+  ],
+  "source": "T80-extra.xcresult",
+  "images": [
+    {
+      "name": "T80-正式组件宿主渲染-dark-watermark-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-watermark-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-first",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-watermark-first.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-empty",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-watermark-empty.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-long",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-watermark-long.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-failure",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-watermark-failure.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-unlimited",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-watermark-unlimited.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-unknown",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-watermark-unknown.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-weekly",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-watermark-weekly.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-endpoints",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-watermark-endpoints.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-watermark-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-panels-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-panels-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-panels-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-panels-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-glass-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-glass-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-glass-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-glass-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-journal-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-journal-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-journal-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-journal-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-ticket-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-ticket-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-ticket-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-ticket-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-liquid-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-liquid-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-liquid-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-liquid-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-blocks-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-blocks-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-blocks-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-blocks-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-island-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-island-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-island-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-island-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-dials-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-dials-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-dials-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-dials-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-ticks-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-ticks-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-ticks-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-ticks-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-capsule-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-capsule-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-capsule-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-capsule-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-skala-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-skala-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-skala-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-skala-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-original-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-dark-original-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-original-normal",
+      "path": "T80补验首次-T80-正式组件宿主渲染-light-original-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80补验首次-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-桌面受控-weekly-实例1",
+      "path": "T80补验首次-T80-桌面受控-weekly-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面受控-weekly-实例0",
+      "path": "T80补验首次-T80-桌面受控-weekly-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80补验首次-T78-选择页-watermark-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-桌面受控-endpoints-实例1",
+      "path": "T80补验首次-T80-桌面受控-endpoints-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面受控-endpoints-实例0",
+      "path": "T80补验首次-T80-桌面受控-endpoints-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80补验首次-T78-选择页-watermark-3.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

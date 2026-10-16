@@ -1,0 +1,158 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791981063.412,
+  "finishTime": 1791981284.81,
+  "passedTests": 1,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [],
+  "source": "T78-dark.xcresult",
+  "images": [
+    {
+      "name": "T78-选择页-original",
+      "path": "T78-实际暗版-T78-选择页-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-watermark",
+      "path": "T78-实际暗版-T78-正式账户-dark-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T78-实际暗版-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-panels",
+      "path": "T78-实际暗版-T78-正式账户-dark-panels.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-glass",
+      "path": "T78-实际暗版-T78-正式账户-dark-glass.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-journal",
+      "path": "T78-实际暗版-T78-正式账户-dark-journal.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-ticket",
+      "path": "T78-实际暗版-T78-正式账户-dark-ticket.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-liquid",
+      "path": "T78-实际暗版-T78-正式账户-dark-liquid.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-blocks",
+      "path": "T78-实际暗版-T78-正式账户-dark-blocks.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-blocks",
+      "path": "T78-实际暗版-T78-选择页-blocks.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-island",
+      "path": "T78-实际暗版-T78-正式账户-dark-island.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-dials",
+      "path": "T78-实际暗版-T78-正式账户-dark-dials.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-ticks",
+      "path": "T78-实际暗版-T78-正式账户-dark-ticks.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-capsule",
+      "path": "T78-实际暗版-T78-正式账户-dark-capsule.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-skala",
+      "path": "T78-实际暗版-T78-正式账户-dark-skala.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-original",
+      "path": "T78-实际暗版-T78-正式账户-dark-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-original",
+      "path": "T78-实际暗版-T78-选择页-original-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-设置-dark",
+      "path": "T78-实际暗版-T78-设置-dark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

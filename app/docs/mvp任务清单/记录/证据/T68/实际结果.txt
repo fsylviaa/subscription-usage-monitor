@@ -1,0 +1,10 @@
+T68 | ticks | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT68Ticks]' passed (0.768 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.768 (0.769) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.768 (0.769) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.768 (0.771) seconds
+T68 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT68NativeTicksUI]' passed (17.981 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 17.981 (17.985) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 17.981 (17.988) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 17.981 (17.992) seconds

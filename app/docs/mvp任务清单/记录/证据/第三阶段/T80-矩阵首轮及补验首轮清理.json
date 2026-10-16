@@ -1,0 +1,97 @@
+{
+  "processCheck": "两轮测试已返回exit65；新构建只用共用DerivedData及T80-final-build.log",
+  "items": [
+    {
+      "path": "build/T78-stage3/T80-matrix.xcresult",
+      "beforeFileBytes": 251758038,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80matrix",
+      "beforeFileBytes": 256792427,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-matrix.log",
+      "beforeFileBytes": 597074,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-matrix-build.log",
+      "beforeFileBytes": 107030,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80matrix.log",
+      "beforeFileBytes": 51031,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-extra.xcresult",
+      "beforeFileBytes": 39899919,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80extra",
+      "beforeFileBytes": 40303937,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-extra.log",
+      "beforeFileBytes": 102780,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-extra-build.log",
+      "beforeFileBytes": 123012,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80extra.log",
+      "beforeFileBytes": 22485,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/protected-copy.json",
+      "beforeFileBytes": 1056,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/protected-copy.log",
+      "beforeFileBytes": 244,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/protected-copy2.json",
+      "beforeFileBytes": 1057,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/protected-copy2.log",
+      "beforeFileBytes": 244,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/protected-audit.json",
+      "beforeFileBytes": 167,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    }
+  ],
+  "totalBefore": 589760501,
+  "totalAfter": 0
+}

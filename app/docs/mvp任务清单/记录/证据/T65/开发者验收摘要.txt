@@ -1,0 +1,34 @@
+T65-phase-one.log
+T65 | defaults, all 13 IDs, fallback, repeated save, independent protected keys | passed requests=14
+Test Case '-[SubscriptionUsageTests.QuotaWidgetTests testT65PreferencesDefaultUnknownChangeAndProtectedKeys]' passed (0.019 seconds).
+T65 | process one | persisted watermark reloads=1 pid=3021
+Test Case '-[SubscriptionUsageTests.QuotaWidgetTests testT65ProcessOneWritesIsolatedPreference]' passed (0.006 seconds).
+T65 | production read path restored, no validation directory, global original | passed
+Test Case '-[SubscriptionUsageTests.QuotaWidgetTests testT65ProductionDisplaySourceHasNoValidationOverride]' passed (0.003 seconds).
+
+T65-phase-two.log
+T65 | new process read | watermark retained, pinned retained, duplicate reloads=0 pid=3026
+Test Case '-[SubscriptionUsageTests.QuotaWidgetTests testT65ProcessTwoReadsAndCleansIsolatedPreference]' passed (0.004 seconds).
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT65ProductionAppAndConfiguredDesktopRestore]' failed (3.451 seconds).
+
+T65-write-final.log
+T65 | process one | persisted watermark reloads=1 pid=3034
+Test Case '-[SubscriptionUsageTests.QuotaWidgetTests testT65ProcessOneWritesIsolatedPreference]' passed (0.005 seconds).
+
+T65-read-ui-final.log
+T65 | new process read | watermark retained, pinned retained, duplicate reloads=0 pid=3037
+Test Case '-[SubscriptionUsageTests.QuotaWidgetTests testT65ProcessTwoReadsAndCleansIsolatedPreference]' passed (0.005 seconds).
+T65 | normal saved-account App and existing desktop small/medium restored | 2026-10-13T15:48:28Z
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT65ProductionAppAndConfiguredDesktopRestore]' passed (60.726 seconds).
+
+T65-cleanup-check.log
+T65 | production read path restored, no validation directory, global original | passed
+T65 | cleanup readonly | T37/T65 isolated preferences empty, original production source | passed
+Test Case '-[SubscriptionUsageTests.QuotaWidgetTests testT65ValidationPreferencesAreCleaned]' passed (0.017 seconds).
+
+final-install: success 23:53:34
+
+final-launch: success 23:53:37
+
+Release BUILD SUCCEEDED; codesign --verify --deep --strict exit success (empty diagnostic).
+首轮正常App检查错误地拒绝已有演示账户；仅测试判断修正后针对性通过。图片为正常保存的演示账户；没有重测真实平台账户。

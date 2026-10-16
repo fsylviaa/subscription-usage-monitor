@@ -1,0 +1,46 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791987025.519,
+  "finishTime": 1791987067.647,
+  "passedTests": 1,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [],
+  "source": "T80-probe2.xcresult",
+  "images": [
+    {
+      "name": "T80-探查-实例2-中",
+      "path": "T80探查-T80-探查-实例2-中.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T80-探查-实例1-小",
+      "path": "T80探查-T80-探查-实例1-小.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-探查-实例0-小",
+      "path": "T80探查-T80-探查-实例0-小.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80探查-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

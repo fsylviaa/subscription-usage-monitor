@@ -1,0 +1,43 @@
+{
+  "processCheck": "宿主／启动失败轮已退出且去敏归档；当前独立T81-ui及共用Products在用",
+  "items": [
+    {
+      "path": "build/T78-stage3/T81-matrix.xcresult",
+      "beforeFileBytes": 6045817,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export81hosts",
+      "beforeFileBytes": 5775486,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T81-matrix.log",
+      "beforeFileBytes": 10124,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export81hosts.log",
+      "beforeFileBytes": 11300,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T81-build.log",
+      "beforeFileBytes": 144746,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T81-ready.log",
+      "beforeFileBytes": 48065,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    }
+  ],
+  "totalBefore": 12035538,
+  "totalAfter": 0
+}

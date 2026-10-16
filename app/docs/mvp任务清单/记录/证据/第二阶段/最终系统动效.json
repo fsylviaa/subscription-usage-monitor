@@ -1,0 +1,223 @@
+{
+  "parentDisablesAnimations": true,
+  "tests": [
+    {
+      "task": "T66",
+      "reduced": false,
+      "frames": 21,
+      "intermediate": 17,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T67",
+      "reduced": false,
+      "frames": 30,
+      "intermediate": 26,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T68",
+      "reduced": false,
+      "frames": 16,
+      "intermediate": 13,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T69",
+      "reduced": false,
+      "frames": 45,
+      "intermediate": 41,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T70",
+      "reduced": false,
+      "frames": 35,
+      "intermediate": 32,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T71",
+      "reduced": false,
+      "frames": 28,
+      "intermediate": 25,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T72",
+      "reduced": false,
+      "frames": 139,
+      "intermediate": 45,
+      "idlePhases": 115,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T73",
+      "reduced": false,
+      "frames": 19,
+      "intermediate": 16,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T74",
+      "reduced": false,
+      "frames": 42,
+      "intermediate": 38,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T75",
+      "reduced": false,
+      "frames": 48,
+      "intermediate": 44,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T76",
+      "reduced": false,
+      "frames": 31,
+      "intermediate": 28,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T77",
+      "reduced": false,
+      "frames": 25,
+      "intermediate": 22,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T66",
+      "reduced": true,
+      "frames": 3,
+      "intermediate": 0,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T67",
+      "reduced": true,
+      "frames": 3,
+      "intermediate": 0,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T68",
+      "reduced": true,
+      "frames": 3,
+      "intermediate": 0,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T69",
+      "reduced": true,
+      "frames": 3,
+      "intermediate": 0,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T70",
+      "reduced": true,
+      "frames": 3,
+      "intermediate": 0,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T71",
+      "reduced": true,
+      "frames": 3,
+      "intermediate": 0,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T72",
+      "reduced": true,
+      "frames": 3,
+      "intermediate": 0,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T73",
+      "reduced": true,
+      "frames": 3,
+      "intermediate": 0,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T74",
+      "reduced": true,
+      "frames": 3,
+      "intermediate": 0,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T75",
+      "reduced": true,
+      "frames": 3,
+      "intermediate": 0,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T76",
+      "reduced": true,
+      "frames": 3,
+      "intermediate": 0,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    },
+    {
+      "task": "T77",
+      "reduced": true,
+      "frames": 3,
+      "intermediate": 0,
+      "idlePhases": 0,
+      "offscreenExtra": 0,
+      "backgroundExtra": 0
+    }
+  ],
+  "originalSystemPreference": 0,
+  "restored": true
+}

@@ -1,0 +1,102 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791984966.179,
+  "finishTime": 1791985034.416,
+  "passedTests": 2,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 2,
+  "testFailures": [],
+  "source": "T79-final.xcresult",
+  "images": [
+    {
+      "name": "T79-正式详情-dark-watermark",
+      "path": "T79-原布局最终复验-T79-正式详情-dark-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-正式详情-dark-dials",
+      "path": "T79-原布局最终复验-T79-正式详情-dark-dials.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-正式详情-dark-original",
+      "path": "T79-原布局最终复验-T79-正式详情-dark-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-正式详情-light-watermark",
+      "path": "T79-原布局最终复验-T79-正式详情-light-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-正式详情-light-dials",
+      "path": "T79-原布局最终复验-T79-正式详情-light-dials.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-正式详情-light-original",
+      "path": "T79-原布局最终复验-T79-正式详情-light-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-长内容-物理屏幕滚动",
+      "path": "T79-原布局最终复验-T79-长内容-物理屏幕滚动.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-长内容-顶栏复核-滚动",
+      "path": "T79-原布局最终复验-T79-长内容-顶栏复核-滚动.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-关闭按钮实际像素",
+      "path": "T79-原布局最终复验-T79-关闭按钮实际像素.jpg",
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "name": "T79-长内容-物理屏幕进入",
+      "path": "T79-原布局最终复验-T79-长内容-物理屏幕进入.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-长内容-顶栏复核-进入",
+      "path": "T79-原布局最终复验-T79-长内容-顶栏复核-进入.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

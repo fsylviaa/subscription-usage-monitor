@@ -1,0 +1,20 @@
+T72 | liquid | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT72Liquid]' passed (1.538 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.538 (1.539) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.538 (1.540) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.538 (1.541) seconds
+T72 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT72NativeLiquidUI]' passed (18.126 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.126 (18.128) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.126 (18.135) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.126 (18.143) seconds
+T72 | liquid | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT72Liquid]' passed (1.574 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.574 (1.575) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.574 (1.575) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.574 (1.576) seconds
+T72 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT72NativeLiquidUI]' passed (18.260 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.260 (18.265) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.260 (18.268) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.260 (18.274) seconds

@@ -7,12 +7,24 @@ struct SettingsView: View {
     var setDemoMode: (Bool) -> Void = { _ in }
     var darkAppearance = false
     var setDarkAppearance: (Bool) -> Void = { _ in }
+    var cardStyle: QuotaCardStyle = .defaultStyle
+    var setCardStyle: (QuotaCardStyle) -> Void = { _ in }
     @ObservedObject var reminders: ResetReminderSettings
     var openNotificationSettings: () -> Void = {}
     var openWidgetTutorial: () -> Void = {}
     var body: some View {
         Form {
             Section("通用") {
+                NavigationLink {
+                    CardStyleSelectionView(selection: cardStyle, select: setCardStyle, bottomInset: supportBottomInset)
+                } label: {
+                    HStack {
+                        Text("卡片样式")
+                        Spacer()
+                        Text(cardStyle.name).foregroundStyle(.secondary)
+                    }
+                }
+                .accessibilityIdentifier("settings.cardStyle")
                 Toggle("深色模式", isOn: Binding(get: { darkAppearance }, set: setDarkAppearance))
                     .accessibilityIdentifier("settings.darkAppearance")
                 Toggle(isOn: Binding(get: { reminders.isEnabled }, set: { enabled in
@@ -200,5 +212,87 @@ private struct CodexBarLicenseView: View {
         .background(DashboardStyle.background)
         .navigationTitle("CodexBar 许可")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+/// Samples belong only to static previews, never to account projection.
+private struct CardStyleSelectionView: View {
+    let selection: QuotaCardStyle
+    let select: (QuotaCardStyle) -> Void
+    let bottomInset: CGFloat
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                ForEach(QuotaCardStyle.allCases, id: \.self) { style in
+                    Button { select(style) } label: {
+                        CardStyleMediumPreview(style: style, selected: selection == style)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(style.name)
+                    .accessibilityValue(selection == style ? "已选择" : "")
+                    .accessibilityAddTraits(selection == style ? .isSelected : [])
+                    .accessibilityIdentifier("style.option.\(style.rawValue)")
+                }
+            }
+            .padding(16)
+        }
+        .safeAreaPadding(.bottom, bottomInset)
+        .background(DashboardStyle.background)
+        .navigationTitle("卡片样式")
+        .navigationBarTitleDisplayMode(.inline)
+        .accessibilityIdentifier("style.selection")
+    }
+}
+
+/// The real medium widget surface, rendered at its native size and scaled to the row.
+private struct CardStyleMediumPreview: View {
+    let style: QuotaCardStyle
+    let selected: Bool
+    @Environment(\.colorScheme) private var scheme
+    private static let size = CGSize(width: 360, height: 169)
+    private static let sample = WidgetSnapshot(schemaVersion: 1, account: .init(
+        id: UUID(), identity: "", plan: nil, isDemo: false, state: .available,
+        subscriptionObservedAt: nil, quotaObservedAt: nil,
+        weekly: .init(amount: .limited(usedPercent: 30), resetsAt: nil, observedAt: .distantPast),
+        fiveHours: .init(amount: .limited(usedPercent: 67), resetsAt: nil, observedAt: .distantPast, isApplicable: true)))
+
+    var body: some View {
+        Color.clear
+            .aspectRatio(Self.size.width / Self.size.height, contentMode: .fit)
+            .overlay {
+                GeometryReader { proxy in
+                    SmallQuotaWidgetView(content: .snapshot(Self.sample), medium: true)
+                        .frame(width: Self.size.width, height: Self.size.height)
+                        .background { background }
+                        .modifier(CompactWidgetChrome(style: style, shape: RoundedRectangle(cornerRadius: 22, style: .continuous)))
+                        .environment(\.quotaCardStyle, style)
+                        .environment(\.nativeQuotaStatic, true)
+                        .environment(\.dynamicTypeSize, .medium)
+                        .scaleEffect(proxy.size.width / Self.size.width, anchor: .topLeading)
+                        .accessibilityHidden(true)
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .overlay {
+                if selected {
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .strokeBorder(Color.accentColor, lineWidth: 3)
+                }
+            }
+            .overlay(alignment: .topTrailing) {
+                if selected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title2)
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(DashboardStyle.background, Color.accentColor)
+                        .padding(10)
+                }
+            }
+            .contentShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .accessibilityHidden(true)
+    }
+
+    @ViewBuilder private var background: some View {
+        CompactQuotaBackground(style: style, widget: true)
     }
 }

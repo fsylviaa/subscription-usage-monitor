@@ -1,0 +1,55 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Failed",
+  "startTime": 1791981562.431,
+  "finishTime": 1791981671.287,
+  "passedTests": 0,
+  "failedTests": 1,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [
+    {
+      "failureText": "XCTAssertLessThan failed: (\"814.0\") is not less than (\"657.5\") - 全部末户窗口须实际进入列表可见范围",
+      "targetName": "SubscriptionUsageUITests",
+      "testIdentifier": 1,
+      "testIdentifierString": "CodexQuotaUITests/testT78FormalSelectionLargestType()",
+      "testIdentifierURL": "test://com.apple.xcode/SubscriptionUsage/SubscriptionUsageUITests/CodexQuotaUITests/testT78FormalSelectionLargestType",
+      "testName": "testT78FormalSelectionLargestType()"
+    }
+  ],
+  "source": "T78-largest-readable.xcresult",
+  "images": [
+    {
+      "name": "T78-选择页-最大字号",
+      "path": "T78-大字号可见区首轮-T78-选择页-最大字号.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-最大字号-底部读数",
+      "path": "T78-大字号可见区首轮-T78-正式账户-最大字号-底部读数.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-最大字号",
+      "path": "T78-大字号可见区首轮-T78-正式账户-最大字号.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T78-大字号可见区首轮-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

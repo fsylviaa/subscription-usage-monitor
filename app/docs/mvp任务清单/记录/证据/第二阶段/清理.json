@@ -1,0 +1,131 @@
+{
+  "scope": "this stage only; no historical or global caches",
+  "processCheckPassed": true,
+  "openFileCheckPassed": true,
+  "paths": [
+    {
+      "path": "/Users/iceflying/codex/订阅用量监控/app/build/T66-stage2",
+      "fileBytesBefore": 2064894084,
+      "diskBytesBefore": 2105573376,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-project.py",
+      "fileBytesBefore": 1586,
+      "diskBytesBefore": 4096,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-record.py",
+      "fileBytesBefore": 5928,
+      "diskBytesBefore": 8192,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-review.py",
+      "fileBytesBefore": 713,
+      "diskBytesBefore": 4096,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-finish.sh",
+      "fileBytesBefore": 424,
+      "diskBytesBefore": 4096,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-next.py",
+      "fileBytesBefore": 1148,
+      "diskBytesBefore": 4096,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-commit.sh",
+      "fileBytesBefore": 685,
+      "diskBytesBefore": 4096,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-export-fixed.sh",
+      "fileBytesBefore": 740,
+      "diskBytesBefore": 4096,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-panels.py",
+      "fileBytesBefore": 3127,
+      "diskBytesBefore": 4096,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-audit.py",
+      "fileBytesBefore": 4229,
+      "diskBytesBefore": 8192,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-pending.txt",
+      "fileBytesBefore": 235,
+      "diskBytesBefore": 4096,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-geometry-test.swift",
+      "fileBytesBefore": 3753,
+      "diskBytesBefore": 4096,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-system-test.swift",
+      "fileBytesBefore": 4726,
+      "diskBytesBefore": 8192,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-gallery.py",
+      "fileBytesBefore": 1354,
+      "diskBytesBefore": 4096,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    },
+    {
+      "path": "/private/tmp/quota-stage2-final-evidence.py",
+      "fileBytesBefore": 1200,
+      "diskBytesBefore": 4096,
+      "fileBytesAfter": 0,
+      "diskBytesAfter": 0
+    }
+  ],
+  "fileBytesBefore": 2064923932,
+  "fileBytesAfter": 0,
+  "diskBytesBefore": 2105643008,
+  "diskBytesAfter": 0,
+  "preserved": [
+    "source",
+    "approved references",
+    "archived evidence",
+    "installed iPhone app",
+    "formal accounts/credentials/shared snapshots",
+    "widget configuration",
+    "other projects/caches"
+  ],
+  "postCommitTemporary": {
+    "path": "/private/tmp/quota-stage2-final-commit.txt",
+    "purpose": "local commit summary only",
+    "fileBytesBefore": 11936,
+    "fileBytesAfter": 0
+  }
+}

@@ -1,0 +1,10 @@
+T71 | blocks | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT71Blocks]' passed (1.009 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.009 (1.010) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.009 (1.010) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.009 (1.012) seconds
+T71 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT71NativeBlocksUI]' passed (18.173 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.173 (18.179) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.173 (18.185) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.173 (18.190) seconds

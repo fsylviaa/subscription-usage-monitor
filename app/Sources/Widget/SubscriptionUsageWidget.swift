@@ -5,6 +5,7 @@ struct QuotaWidgetEntry: TimelineEntry {
     let date: Date
     let content: QuotaWidgetContent
     var appearance: String = "system"
+    var cardStyle: QuotaCardStyle = .defaultStyle
 }
 
 struct QuotaWidgetProvider: AppIntentTimelineProvider {
@@ -33,7 +34,8 @@ struct QuotaWidgetProvider: AppIntentTimelineProvider {
         WidgetSnapshotStore.traceValidation("provider.read", detail: "remaining=\(content.account?.weekly?.amount.remainingPercent ?? -1) unavailable=\(content == .unavailable)")
         #endif
         return .init(date: .now, content: content,
-                     appearance: WidgetAppearance.effectiveValue())
+                     appearance: WidgetAppearance.effectiveValue(),
+                     cardStyle: QuotaCardStylePreferences.effectiveValue())
     }
 }
 
@@ -58,8 +60,10 @@ private struct QuotaWidgetSurface: View {
     var body: some View {
         SmallQuotaWidgetView(content: entry.content, medium: family == .systemMedium)
             .environment(\.colorScheme, scheme)
+            .environment(\.quotaCardStyle, entry.cardStyle)
+            .modifier(CompactWidgetChrome(style: entry.cardStyle, shape: ContainerRelativeShape()))
             .containerBackground(for: .widget) {
-                Color("DesignCard").environment(\.colorScheme, scheme)
+                CompactQuotaBackground(style: entry.cardStyle, widget: true).environment(\.colorScheme, scheme)
             }
             .widgetURL(entry.content.destinationURL)
     }

@@ -1,0 +1,236 @@
+[
+  {
+    "style": "original",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:14:33Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:14:25Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "skala",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:14:49Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:14:41Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "capsule",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:15:04Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:14:56Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "ticks",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:15:20Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:15:12Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "dials",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:15:39Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:15:31Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "island",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:15:59Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:15:51Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "blocks",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:16:18Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:16:10Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "liquid",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:16:37Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:16:29Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "ticket",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:16:59Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:16:52Z",
+    "delayAfterControlReturnSeconds": 7.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "journal",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:17:22Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:17:14Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "glass",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:17:44Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:17:36Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "panels",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:18:05Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:17:58Z",
+    "delayAfterControlReturnSeconds": 7.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "watermark",
+    "theme": "light",
+    "observedUTC": "2026-10-14T14:18:30Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:18:22Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "original",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:19:14Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:19:06Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "skala",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:19:30Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:19:22Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "capsule",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:19:45Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:19:37Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "ticks",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:20:01Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:19:53Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "dials",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:20:20Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:20:12Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "island",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:20:40Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:20:32Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "blocks",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:20:59Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:20:51Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "liquid",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:21:18Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:21:10Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "ticket",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:21:41Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:21:33Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "journal",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:22:03Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:21:56Z",
+    "delayAfterControlReturnSeconds": 7.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "glass",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:22:25Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:22:17Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "panels",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:22:47Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:22:39Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  },
+  {
+    "style": "watermark",
+    "theme": "dark",
+    "observedUTC": "2026-10-14T14:23:11Z",
+    "surface": "actual SpringBoard two small widgets",
+    "settingOperationReturnedUTC": "2026-10-14T14:23:03Z",
+    "delayAfterControlReturnSeconds": 8.0,
+    "note": "已选择且更新已请求的UI确认时刻；非API调用时钟，实际API时刻见独立记录"
+  }
+]

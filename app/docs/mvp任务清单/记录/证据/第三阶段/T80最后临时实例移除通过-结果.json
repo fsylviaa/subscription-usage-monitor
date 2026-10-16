@@ -1,0 +1,22 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791994550.326,
+  "finishTime": 1791994738.599,
+  "passedTests": 2,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 2,
+  "testFailures": [],
+  "source": "T80-remove2.xcresult",
+  "images": [
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80最后临时实例移除通过-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

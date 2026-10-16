@@ -1,0 +1,38 @@
+{
+  "check": "只读实际SpringBoard层级",
+  "visibleProjectWidgets": [
+    {
+      "label": "订阅用量",
+      "frame": [
+        27,
+        68,
+        170.5,
+        194
+      ],
+      "family": "small"
+    },
+    {
+      "label": "订阅用量",
+      "frame": [
+        216.5,
+        68,
+        170.5,
+        194
+      ],
+      "family": "small"
+    },
+    {
+      "label": "订阅用量",
+      "frame": [
+        27,
+        273,
+        360,
+        194
+      ],
+      "family": "medium"
+    }
+  ],
+  "systemConfiguredInstances": 4,
+  "result": "62.163秒通过；原三可见均存在，另一个既有实例不在此页；没有删改原配置",
+  "locatorFix": "按项目名称及实际尺寸区分，等待小中均可见；外层值不是产品数据断言"
+}

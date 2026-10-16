@@ -1,0 +1,318 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791988691.117,
+  "finishTime": 1791989190.336,
+  "passedTests": 3,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 3,
+  "testFailures": [],
+  "source": "T80-final.xcresult",
+  "images": [
+    {
+      "name": "T80-点击对应详情-dark-default",
+      "path": "T80补验通过-T80-点击对应详情-dark-default.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-点击对应详情-dark-default",
+      "path": "T80补验通过-T80-点击对应详情-dark-default-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-桌面-dark-watermark-实例1",
+      "path": "T80补验通过-T80-桌面-dark-watermark-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-dark-watermark-实例0",
+      "path": "T80补验通过-T80-桌面-dark-watermark-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80补验通过-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-实际静态复照-dark",
+      "path": "T80补验通过-T80-实际静态复照-dark.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-dark-liquid-实例1",
+      "path": "T80补验通过-T80-桌面-dark-liquid-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-dark-liquid-实例0",
+      "path": "T80补验通过-T80-桌面-dark-liquid-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-dark-dials-实例1",
+      "path": "T80补验通过-T80-桌面-dark-dials-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-dark-dials-实例0",
+      "path": "T80补验通过-T80-桌面-dark-dials-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-dark-original-实例1",
+      "path": "T80补验通过-T80-桌面-dark-original-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-dark-original-实例0",
+      "path": "T80补验通过-T80-桌面-dark-original-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-original",
+      "path": "T80补验通过-T78-选择页-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-点击对应详情-light-default",
+      "path": "T80补验通过-T80-点击对应详情-light-default.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-点击对应详情-light-default",
+      "path": "T80补验通过-T80-点击对应详情-light-default-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-桌面-light-watermark-实例1",
+      "path": "T80补验通过-T80-桌面-light-watermark-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-light-watermark-实例0",
+      "path": "T80补验通过-T80-桌面-light-watermark-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80补验通过-T78-选择页-watermark-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-实际静态复照-light",
+      "path": "T80补验通过-T80-实际静态复照-light.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-light-liquid-实例1",
+      "path": "T80补验通过-T80-桌面-light-liquid-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-light-liquid-实例0",
+      "path": "T80补验通过-T80-桌面-light-liquid-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-light-dials-实例1",
+      "path": "T80补验通过-T80-桌面-light-dials-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-light-dials-实例0",
+      "path": "T80补验通过-T80-桌面-light-dials-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-light-original-实例1",
+      "path": "T80补验通过-T80-桌面-light-original-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面-light-original-实例0",
+      "path": "T80补验通过-T80-桌面-light-original-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-original",
+      "path": "T80补验通过-T78-选择页-original-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-桌面受控-long-实例1",
+      "path": "T80补验通过-T80-桌面受控-long-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面受控-long-实例0",
+      "path": "T80补验通过-T80-桌面受控-long-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80补验通过-T78-选择页-watermark-3.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-桌面受控-failure-实例1",
+      "path": "T80补验通过-T80-桌面受控-failure-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面受控-failure-实例0",
+      "path": "T80补验通过-T80-桌面受控-failure-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80补验通过-T78-选择页-watermark-4.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-桌面受控-unlimited-实例1",
+      "path": "T80补验通过-T80-桌面受控-unlimited-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面受控-unlimited-实例0",
+      "path": "T80补验通过-T80-桌面受控-unlimited-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80补验通过-T78-选择页-watermark-5.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T80-桌面受控-unknown-实例1",
+      "path": "T80补验通过-T80-桌面受控-unknown-实例1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T80-桌面受控-unknown-实例0",
+      "path": "T80补验通过-T80-桌面受控-unknown-实例0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80补验通过-T78-选择页-watermark-6.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

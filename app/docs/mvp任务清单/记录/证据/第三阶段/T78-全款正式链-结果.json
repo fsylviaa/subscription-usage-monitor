@@ -1,0 +1,278 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791980049.198,
+  "finishTime": 1791980556.099,
+  "passedTests": 1,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [],
+  "source": "T78-full.xcresult",
+  "images": [
+    {
+      "name": "T78-选择页-original",
+      "path": "T78-全款正式链-T78-选择页-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-watermark",
+      "path": "T78-全款正式链-T78-正式账户-dark-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T78-全款正式链-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-panels",
+      "path": "T78-全款正式链-T78-正式账户-dark-panels.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-glass",
+      "path": "T78-全款正式链-T78-正式账户-dark-glass.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-journal",
+      "path": "T78-全款正式链-T78-正式账户-dark-journal.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-ticket",
+      "path": "T78-全款正式链-T78-正式账户-dark-ticket.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-liquid",
+      "path": "T78-全款正式链-T78-正式账户-dark-liquid.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-blocks",
+      "path": "T78-全款正式链-T78-正式账户-dark-blocks.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-blocks",
+      "path": "T78-全款正式链-T78-选择页-blocks.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-island",
+      "path": "T78-全款正式链-T78-正式账户-dark-island.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-dials",
+      "path": "T78-全款正式链-T78-正式账户-dark-dials.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-ticks",
+      "path": "T78-全款正式链-T78-正式账户-dark-ticks.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-capsule",
+      "path": "T78-全款正式链-T78-正式账户-dark-capsule.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-skala",
+      "path": "T78-全款正式链-T78-正式账户-dark-skala.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-dark-original",
+      "path": "T78-全款正式链-T78-正式账户-dark-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-original",
+      "path": "T78-全款正式链-T78-选择页-original-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-watermark",
+      "path": "T78-全款正式链-T78-正式账户-light-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T78-全款正式链-T78-选择页-watermark-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-panels",
+      "path": "T78-全款正式链-T78-正式账户-light-panels.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-glass",
+      "path": "T78-全款正式链-T78-正式账户-light-glass.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-journal",
+      "path": "T78-全款正式链-T78-正式账户-light-journal.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-ticket",
+      "path": "T78-全款正式链-T78-正式账户-light-ticket.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-liquid",
+      "path": "T78-全款正式链-T78-正式账户-light-liquid.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-blocks",
+      "path": "T78-全款正式链-T78-正式账户-light-blocks.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-blocks",
+      "path": "T78-全款正式链-T78-选择页-blocks-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-island",
+      "path": "T78-全款正式链-T78-正式账户-light-island.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-dials",
+      "path": "T78-全款正式链-T78-正式账户-light-dials.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-ticks",
+      "path": "T78-全款正式链-T78-正式账户-light-ticks.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-capsule",
+      "path": "T78-全款正式链-T78-正式账户-light-capsule.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-skala",
+      "path": "T78-全款正式链-T78-正式账户-light-skala.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-light-original",
+      "path": "T78-全款正式链-T78-正式账户-light-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-original",
+      "path": "T78-全款正式链-T78-选择页-original-3.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

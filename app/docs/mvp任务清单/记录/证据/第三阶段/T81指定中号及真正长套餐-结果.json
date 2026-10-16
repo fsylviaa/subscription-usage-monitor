@@ -1,0 +1,86 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791997105.635,
+  "finishTime": 1791997759.528,
+  "passedTests": 2,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 2,
+  "testFailures": [],
+  "source": "T81-final-native.xcresult",
+  "images": [
+    {
+      "name": "T81-补T80实际长套餐小号-1",
+      "path": "T81指定中号及真正长套餐-T81-补T80实际长套餐小号-1.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T81-补T80实际长套餐小号-0",
+      "path": "T81指定中号及真正长套餐-T81-补T80实际长套餐小号-0.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "T81-桌面受控-long-实例0",
+      "path": "T81指定中号及真正长套餐-T81-桌面受控-long-实例0.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T81指定中号及真正长套餐-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-临时指定户-original",
+      "path": "T81指定中号及真正长套餐-T81-临时指定户-original.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-original",
+      "path": "T81指定中号及真正长套餐-T78-选择页-original.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T81-临时指定户-watermark",
+      "path": "T81指定中号及真正长套餐-T81-临时指定户-watermark.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T81指定中号及真正长套餐-T78-选择页-watermark-2.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T81指定中号及真正长套餐-T78-选择页-watermark-3.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "范围": "已结束失败轮；当前T78-hosts验证的DerivedData及结果保留使用中",
+  "先归档": "T78-初轮失败摘要.json和两张实际UI图",
+  "文件总字节前": 34823408,
+  "文件总字节后": 0,
+  "targets": [
+    {
+      "路径": "build/T78-stage3/T78.xcresult",
+      "清理前文件字节": 318185,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/T78-retry.xcresult",
+      "清理前文件字节": 42558,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/T78-verify.xcresult",
+      "清理前文件字节": 39676,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/T78-ui.xcresult",
+      "清理前文件字节": 16965422,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/export-all",
+      "清理前文件字节": 17013562,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/export-failure",
+      "清理前文件字节": 4,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/T78.log",
+      "清理前文件字节": 367493,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/T78-retry.log",
+      "清理前文件字节": 24322,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/T78-verify.log",
+      "清理前文件字节": 13608,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/T78-ui.log",
+      "清理前文件字节": 31548,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/device-apps.json",
+      "清理前文件字节": 1671,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/runner-reinstall.txt",
+      "清理前文件字节": 497,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/export-all.txt",
+      "清理前文件字节": 4519,
+      "清理后": 0,
+      "不存在": true
+    },
+    {
+      "路径": "build/T78-stage3/export-failure.txt",
+      "清理前文件字节": 343,
+      "清理后": 0,
+      "不存在": true
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "result": "Failed",
+  "startTime": 1791993286.578,
+  "finishTime": 1791993324.183,
+  "passedTests": 0,
+  "failedTests": 1,
+  "totalTestCount": 1,
+  "testFailures": [
+    {
+      "failureText": "XCTAssertEqual failed: (\"2\") is not equal to (\"3\")",
+      "targetName": "SubscriptionUsageUITests",
+      "testIdentifier": 1,
+      "testIdentifierString": "CodexQuotaUITests/testT80TemporaryPinnedInstanceSurvivesStyleAndRestart()",
+      "testIdentifierURL": "test://com.apple.xcode/SubscriptionUsage/SubscriptionUsageUITests/CodexQuotaUITests/testT80TemporaryPinnedInstanceSurvivesStyleAndRestart",
+      "testName": "testT80TemporaryPinnedInstanceSurvivesStyleAndRestart()"
+    }
+  ]
+}

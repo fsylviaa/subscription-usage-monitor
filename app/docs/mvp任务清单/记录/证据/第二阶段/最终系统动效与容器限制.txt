@@ -1,0 +1,31 @@
+STAGE2 | T66 | systemReduced=false | frames=21 mid=17 phase=0 off=0 bg=0
+STAGE2 | T67 | systemReduced=false | frames=30 mid=26 phase=0 off=0 bg=0
+STAGE2 | T68 | systemReduced=false | frames=16 mid=13 phase=0 off=0 bg=0
+STAGE2 | T69 | systemReduced=false | frames=45 mid=41 phase=0 off=0 bg=0
+STAGE2 | T70 | systemReduced=false | frames=35 mid=32 phase=0 off=0 bg=0
+STAGE2 | T71 | systemReduced=false | frames=28 mid=25 phase=0 off=0 bg=0
+STAGE2 | T72 | systemReduced=false | frames=139 mid=45 phase=115 off=0 bg=0
+STAGE2 | liquid actual offscreen/background pause | frames=304 mid=45 phase=277 off=0 bg=0
+STAGE2 | T73 | systemReduced=false | frames=19 mid=16 phase=0 off=0 bg=0
+STAGE2 | T74 | systemReduced=false | frames=42 mid=38 phase=0 off=0 bg=0
+STAGE2 | T75 | systemReduced=false | frames=48 mid=44 phase=0 off=0 bg=0
+STAGE2 | T76 | systemReduced=false | frames=31 mid=28 phase=0 off=0 bg=0
+STAGE2 | T77 | systemReduced=false | frames=25 mid=22 phase=0 off=0 bg=0
+STAGE2 | T66 | systemReduced=true | frames=3 mid=0 phase=0 off=0 bg=0
+STAGE2 | T67 | systemReduced=true | frames=3 mid=0 phase=0 off=0 bg=0
+STAGE2 | T68 | systemReduced=true | frames=3 mid=0 phase=0 off=0 bg=0
+STAGE2 | T69 | systemReduced=true | frames=3 mid=0 phase=0 off=0 bg=0
+STAGE2 | T70 | systemReduced=true | frames=3 mid=0 phase=0 off=0 bg=0
+STAGE2 | T71 | systemReduced=true | frames=3 mid=0 phase=0 off=0 bg=0
+STAGE2 | T72 | systemReduced=true | frames=3 mid=0 phase=0 off=0 bg=0
+STAGE2 | T73 | systemReduced=true | frames=3 mid=0 phase=0 off=0 bg=0
+STAGE2 | T74 | systemReduced=true | frames=3 mid=0 phase=0 off=0 bg=0
+STAGE2 | T75 | systemReduced=true | frames=3 mid=0 phase=0 off=0 bg=0
+STAGE2 | T76 | systemReduced=true | frames=3 mid=0 phase=0 off=0 bg=0
+STAGE2 | T77 | systemReduced=true | frames=3 mid=0 phase=0 off=0 bg=0
+STAGE2 | actual system Reduce Motion restored original=0
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testStage2MotionAndActualSystemReduceMotion]' passed (166.405 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 166.405 (166.406) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 166.405 (166.408) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 166.405 (166.411) seconds
+** TEST EXECUTE SUCCEEDED **

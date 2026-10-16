@@ -1,0 +1,79 @@
+{
+  "processCheck": "三个已结束轮次已归档；当前pin6独立结果仍在用",
+  "items": [
+    {
+      "path": "build/T78-stage3/T80-pin4.xcresult",
+      "beforeFileBytes": 259947,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin4.log",
+      "beforeFileBytes": 2870,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin4-build.log",
+      "beforeFileBytes": 46452,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin5.xcresult",
+      "beforeFileBytes": 9910320,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin5.log",
+      "beforeFileBytes": 22141,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-inventory.xcresult",
+      "beforeFileBytes": 1164635,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-inventory.log",
+      "beforeFileBytes": 80755,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-inventory-build.log",
+      "beforeFileBytes": 45717,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/lock-state.json",
+      "beforeFileBytes": 573,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/lock-state.log",
+      "beforeFileBytes": 226,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/processes.json",
+      "beforeFileBytes": 49465,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/processes.log",
+      "beforeFileBytes": 66996,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    }
+  ],
+  "totalBefore": 11650097,
+  "totalAfter": 0
+}

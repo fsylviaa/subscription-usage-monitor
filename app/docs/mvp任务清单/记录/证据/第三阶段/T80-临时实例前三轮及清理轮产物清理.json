@@ -1,0 +1,169 @@
+{
+  "processCheck": "以上测试及导出已结束，现用独立pin4结果与共用Products；已归档失败与首轮局部通过",
+  "items": [
+    {
+      "path": "build/T78-stage3/T80-pin.xcresult",
+      "beforeFileBytes": 63710423,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80pinfailed",
+      "beforeFileBytes": 63128544,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin.log",
+      "beforeFileBytes": 120880,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin-build.log",
+      "beforeFileBytes": 109899,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin-ready.log",
+      "beforeFileBytes": 46391,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80pinfailed.log",
+      "beforeFileBytes": 4549,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin2.xcresult",
+      "beforeFileBytes": 75577996,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80pin2",
+      "beforeFileBytes": 75899064,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin2.log",
+      "beforeFileBytes": 130330,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin2-build.log",
+      "beforeFileBytes": 46452,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80pin2.log",
+      "beforeFileBytes": 5693,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-remove.xcresult",
+      "beforeFileBytes": 438045,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80remove",
+      "beforeFileBytes": 4,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-remove.log",
+      "beforeFileBytes": 18867,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-remove-build.log",
+      "beforeFileBytes": 121468,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80remove.log",
+      "beforeFileBytes": 244,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin3.xcresult",
+      "beforeFileBytes": 110386075,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80pin3",
+      "beforeFileBytes": 111775131,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin3.log",
+      "beforeFileBytes": 202100,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-pin3-build.log",
+      "beforeFileBytes": 44665,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80pin3.log",
+      "beforeFileBytes": 10668,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/config-audit-before.json",
+      "beforeFileBytes": 441,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/config-copy-before.json",
+      "beforeFileBytes": 1082,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/config-copy-before.log",
+      "beforeFileBytes": 248,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-config-final.json",
+      "beforeFileBytes": 1321,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-config-final-copy.json",
+      "beforeFileBytes": 1079,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-config-final-copy.log",
+      "beforeFileBytes": 245,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    }
+  ],
+  "totalBefore": 501781904,
+  "totalAfter": 0
+}

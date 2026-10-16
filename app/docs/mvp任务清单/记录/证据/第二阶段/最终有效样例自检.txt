@@ -1,0 +1,30 @@
+STAGE2 | native geometry raw images=594, 12 styles x 2 themes x 2 artwork densities x 2 windows x 6 exact fractions; all four surfaces also rendered | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testStage2NativeGeometryAndSurfacePrecision]' passed (8.361 seconds).
+T66 | skala | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT66Skala]' passed (0.779 seconds).
+T67 | capsule | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT67Capsule]' passed (1.394 seconds).
+T68 | ticks | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT68Ticks]' passed (0.689 seconds).
+T69 | dials | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT69Dials]' passed (1.615 seconds).
+T70 | island | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT70Island]' passed (0.686 seconds).
+T71 | blocks | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT71Blocks]' passed (0.894 seconds).
+T72 | liquid | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT72Liquid]' passed (1.442 seconds).
+T73 | ticket | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT73Ticket]' passed (0.721 seconds).
+T74 | journal | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT74Journal]' passed (0.747 seconds).
+T75 | glass | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT75Glass]' passed (1.207 seconds).
+T76 | panels | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT76Panels]' passed (1.014 seconds).
+T77 | watermark | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT77Watermark]' passed (0.612 seconds).
+	 Executed 13 tests, with 0 failures (0 unexpected) in 20.160 (20.164) seconds
+	 Executed 13 tests, with 0 failures (0 unexpected) in 20.160 (20.165) seconds
+	 Executed 13 tests, with 0 failures (0 unexpected) in 20.160 (20.167) seconds
+** TEST SUCCEEDED **

@@ -65,9 +65,8 @@ enum QuotaWidgetContent: Equatable, Sendable {
         }
     }
 
-    static func usedFraction(_ amount: WidgetSnapshot.Amount) -> Double? {
-        guard case let .limited(used) = amount else { return nil }
-        return used / 100
+    static func remainingFraction(_ amount: WidgetSnapshot.Amount) -> Double? {
+        QuotaCardAmount(amount).remainingFraction
     }
 }
 
@@ -172,88 +171,22 @@ extension QuotaWidgetContent {
 struct SmallQuotaWidgetView: View {
     let content: QuotaWidgetContent
     var medium = false
+    @Environment(\.quotaCardStyle) private var cardStyle
+    @Environment(\.colorScheme) private var scheme
 
     var body: some View {
         Group {
-            if content.showsAddAccount {
-                Text("添加账户")
-                    .font(.system(size: 16, weight: .medium))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            if let account = content.account {
+                QuotaStyledCard(style: cardStyle, input: QuotaStyledInput(account: account), surface: medium ? .mediumWidget : .smallWidget)
             } else {
-                VStack(alignment: .leading, spacing: medium ? 12 : (content.account?.failure == nil ? 10 : 5)) {
-                    if let account = content.account {
-                        HStack(spacing: 7) {
-                            Image("DesignCodex").resizable().renderingMode(.template)
-                                .frame(width: medium ? 23 : 20, height: medium ? 23 : 20)
-                                .frame(width: medium ? 32 : 28, height: medium ? 32 : 28)
-                                .background(Color("DesignElevated"), in: RoundedRectangle(cornerRadius: 10))
-                                .accessibilityHidden(true)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(account.plan.map { "Codex · \($0)" } ?? "Codex")
-                                    .font(.system(size: medium ? 16 : 14, weight: .semibold))
-                                HStack(spacing: 2) {
-                                    Text((account.isDemo ? "演示 · " : "") + QuotaWidgetContent.compactIdentity(account.identity))
-                                        .font(.system(size: 11)).foregroundStyle(Color("DesignSecondary"))
-                                        .truncationMode(.tail).privacySensitive()
-                                    Spacer(minLength: 0)
-
-                                }
-                            }
-                        }
-                        if account.state == .available {
-                            VStack(spacing: medium ? 12 : (account.failure == nil ? 10 : 6)) {
-                                window("每周", value: account.weekly)
-                                if account.fiveHours?.showsFiveHourLimit == true {
-                                    window("5 小时", value: account.fiveHours)
-                                }
-                            }
-                        }
-                    }
-                    if let message = content.message {
-                        Text(message).font(.system(size: 12)).foregroundStyle(Color("DesignSecondary"))
-                            .lineLimit(2).fixedSize(horizontal: false, vertical: true)
-                    }
-                    Spacer(minLength: 0)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                // No published account: the single add entry, or a short failure.
+                Text(content.showsAddAccount ? "添加账户" : (content.message ?? "刷新失败"))
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(cardStyle.compactTheme(dark: scheme == .dark).ink)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .lineLimit(1)
-        .minimumScaleFactor(0.8)
-        .foregroundStyle(Color("DesignText"))
-        .padding(medium ? 16 : 12)
-    }
-
-    private func window(_ title: String, value: WidgetSnapshot.Window?) -> some View {
-        VStack(spacing: 4) {
-            HStack(alignment: .firstTextBaseline, spacing: 3) {
-                Text(title).font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(Color("DesignSecondary")).fixedSize()
-                Spacer(minLength: 0)
-                if case let .limited(used) = value?.amount {
-                    (Text("剩余 ").font(.system(size: 11)).foregroundColor(Color("DesignSecondary"))
-                     + Text("\((100 - used).formatted(.number.precision(.fractionLength(0...2))))%")
-                        .font(.system(size: medium ? 18 : 16, weight: .semibold)))
-                        .monospacedDigit().layoutPriority(1)
-                } else {
-                    Text(QuotaWidgetContent.amountText(value?.amount ?? .unknown))
-                        .font(.system(size: 12, weight: .medium))
-                }
-            }
-            if let fraction = QuotaWidgetContent.usedFraction(value?.amount ?? .unknown) {
-                GeometryReader { geometry in
-                    Capsule().fill(Color("DesignTrack"))
-                        .overlay(alignment: .leading) {
-                            Capsule().fill(Color("DesignText"))
-                                .frame(width: geometry.size.width * fraction)
-                        }
-                }
-                .frame(height: 6)
-                .accessibilityLabel("\(title)额度条")
-                .accessibilityValue("已用 \((fraction * 100).formatted(.number.precision(.fractionLength(0...2))))%，\(QuotaWidgetContent.amountText(value?.amount ?? .unknown))")
-            }
-        }
-        .accessibilityElement(children: .combine)
+        .accessibilityValue(cardStyle.name)
     }
 }
 

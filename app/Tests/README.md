@@ -223,3 +223,20 @@ T43弹窗布局修订：`testT43ContentSizedSheetsAndMatchingAnimationRegions`�
 `CodexQuotaUITests/testT37PhoneWidgetLightDarkStateMatrix`仅在UI Runner显式`T37_WIDGET_DESKTOP=1`时运行，复用已有小号／中号，不添加、移除、改选或改尺寸。Debug入口`--t37-widget-fixture <状态> <UUID> <light|dark>`复用T35合法UUID隔离目录和T26临时账户服务；正常70／85、在途更新、普通／网络失败、0／100、Free、未获取、未知／不限量、长身份、无账户各有两种外观桌面图。更新实际启动等待中的刷新；失败通过正式网络门控／查询／持久化保护，夹具核对同户旧值及原成功时间保持。
 
 App使用T37独立偏好；扩展只在Debug合法隔离会话读取该目录`T37-appearance`，不覆盖正式外观偏好。Release沿用正式外观读取且不包含该标记或入口。实际App明暗联动、账户选择及真实额度／重置／两尺寸对照沿用既有通过；边界输入仍是人工样例，不等于真实平台异常。XCTest teardown等待cleanup空页，清理独立偏好、T35会话和T26临时目录并请求普通换图，之后`RootViewTests/testT37ValidationFilesAndAppearanceWereRestored`显式`T37_CLEANUP_CHECK=1`只读核对隔离目录、偏好及正常外观读取，再恢复正式Release。手机图片按实际尺寸目视复核，不能凭UI返回成功当视觉通过。
+
+## T64／T65 第一阶段
+
+T64共用剩余输入／目录与原生条精度在QuotaWidgetTests/testT64SharedRemainingInputPrecisionAndCatalogue检查；UI testT64OriginalAppAndExistingDesktopBothSizes以T64_WIDGET_DESKTOP=1显式启用，复用T37隔离目录及原桌面两尺寸，保留配置并teardown清理。画像移除邮箱后桌面断言改为比例及实际点击目标，不用旧邮箱文字判断换图。实际测试与像素核对见T64记录，不重跑旧业务。
+
+T65默认／未知／全部有效标识／重复请求及独立保护键使用随机隔离suites；跨进程两方法须分两次运行testT65ProcessOneWritesIsolatedPreference与testT65ProcessTwoReadsAndCleansIsolatedPreference，分别向Runner注入T65_RESTART_PHASE=write／read，后一方法验证PID不同并清理；普通测试默认跳过。testT65ProductionAppAndConfiguredDesktopRestore仅在T65_NORMAL_APP_CHECK=1时检查普通保存账户及实际桌面，允许用户已有演示账户；不添加登录／删除／改选，截图只截额度或组件区域。testT65ValidationPreferencesAreCleaned以T65_CLEANUP_CHECK=1只读核对隔离偏好及正式显示源。Shell使用TEST_RUNNER_前缀已在本轮验证。
+
+T65各项实际结果、失败及最终Release恢复见验收；本轮生成物已删除，不以构建目录代替去敏归档。
+
+
+## 第二阶段 T66—T77
+
+`NativeQuotaStyleTests`每款独立用例检查两外观、四上下文、9种状态、accessibility5与长套餐及6个精确比例，并保存隔离手机ImageRenderer输出。`testStage2NativeGeometryAndSurfacePrecision`生成594张原生Canvas几何图，同时检查四上下文端点小数可渲染；`Tools/check_native_quota_geometry.py`对导出图独立量化连续裁切、胶囊轴线、270度弧线及液体面积。使用桌面附带Python/Pillow/NumPy，不接触设备或账户；结果见阶段证据。
+
+`CodexQuotaUITests/testT66…testT77Native…UI`检查实际iPhone隔离App的明暗、变化、静态注入、最大字号及滚动。实际系统专项`testStage2MotionAndActualSystemReduceMotion`必须显式向UI Runner注入`T66_SYSTEM_MOTION=1`，读取并最终恢复原减少动态状态；默认跳过，避免普通全套测试擅改系统。用`build-for-testing`生成xctestrun后，在本轮副本的UITests.EnvironmentVariables设置该键，再只运行此项。该专项还以`--lab-parent-animation disabled`模拟旧容器事务，实际Canvas中间帧计数证明局部图形动画没有被禁；液体离屏／后台新增动态帧为0。没有正式选择页或桌面宿主的通过声明。
+
+已准备的Debug启动参数：`--t66-native-lab`，可选`--style-index 0…11`、`--lab-theme dark`、`--lab-size large`、`--lab-scenario normal/endpoints/weekly/empty/unknown/unlimited/first/failure/long`。场景只在内存；无参数仍原功能。相同Bundle覆盖安装，不卸载、不清空正式账户／授权／共享快照／组件选户，结束清理本轮构建物。已认可网页／Figma只读。

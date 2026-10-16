@@ -1,0 +1,566 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Failed",
+  "startTime": 1791995358.121,
+  "finishTime": 1791995373.929,
+  "passedTests": 2,
+  "failedTests": 1,
+  "skippedTests": 0,
+  "totalTestCount": 3,
+  "testFailures": [
+    {
+      "failureText": "Failed to install or launch the test runner. (Underlying Error: The application could not be launched because the Developer App Certificate is not trusted. Verify that the Developer App certificate for your account is trusted on your device. Open Settings on the device and navigate to General -> VPN & Device Management, then select your Developer App certificate to trust it. (Underlying Error: The application failed to launch. (Underlying Error: The request to open \"com.iceflying.SubscriptionUsageUITests.xctrunner\" failed. The request was denied by service delegate (SBMainWorkspace) for reason: Security (\"Unable to launch com.iceflying.SubscriptionUsageUITests.xctrunner because it has an invalid code signature, inadequate entitlements or its profile has not been explicitly trusted by the user\"). (Underlying Error: The operation couldn’t be completed. Unable to launch com.iceflying.SubscriptionUsageUITests.xctrunner because it has an invalid code signature, inadequate entitlements or its profile has not been explicitly trusted by the user.))))",
+      "targetName": "SubscriptionUsageUITests",
+      "testIdentifier": 3,
+      "testIdentifierString": "SubscriptionUsageUITests-Runner encountered an error",
+      "testName": "SubscriptionUsageUITests-Runner encountered an error"
+    }
+  ],
+  "source": "T81-matrix.xcresult",
+  "images": [
+    {
+      "name": "T80-正式组件宿主渲染-dark-watermark-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-watermark-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-first",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-watermark-first.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-empty",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-watermark-empty.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-long",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-watermark-long.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-failure",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-watermark-failure.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-unlimited",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-watermark-unlimited.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-unknown",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-watermark-unknown.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-weekly",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-watermark-weekly.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-endpoints",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-watermark-endpoints.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-watermark-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-watermark-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-panels-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-panels-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-panels-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-panels-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-glass-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-glass-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-glass-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-glass-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-journal-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-journal-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-journal-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-journal-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-ticket-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-ticket-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-ticket-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-ticket-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-liquid-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-liquid-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-liquid-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-liquid-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-blocks-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-blocks-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-blocks-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-blocks-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-island-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-island-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-island-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-island-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-dials-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-dials-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-dials-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-dials-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-ticks-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-ticks-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-ticks-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-ticks-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-capsule-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-capsule-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-capsule-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-capsule-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-skala-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-skala-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-skala-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-skala-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-dark-original-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-dark-original-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T80-正式组件宿主渲染-light-original-normal",
+      "path": "T81正式宿主与启动失败-T80-正式组件宿主渲染-light-original-normal.jpg",
+      "size": [
+        341,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-watermark-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-watermark-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-watermark-first",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-watermark-first.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-watermark-empty",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-watermark-empty.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-watermark-long",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-watermark-long.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-watermark-failure",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-watermark-failure.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-watermark-unlimited",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-watermark-unlimited.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-watermark-unknown",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-watermark-unknown.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-watermark-weekly",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-watermark-weekly.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-watermark-endpoints",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-watermark-endpoints.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-watermark-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-watermark-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-panels-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-panels-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-panels-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-panels-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-glass-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-glass-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-glass-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-glass-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-journal-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-journal-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-journal-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-journal-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-ticket-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-ticket-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-ticket-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-ticket-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-liquid-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-liquid-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-liquid-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-liquid-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-blocks-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-blocks-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-blocks-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-blocks-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-island-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-island-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-island-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-island-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-dials-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-dials-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-dials-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-dials-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-ticks-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-ticks-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-ticks-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-ticks-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-capsule-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-capsule-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-capsule-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-capsule-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-skala-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-skala-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-skala-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-skala-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-dark-original-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-dark-original-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    },
+    {
+      "name": "T81-正式组件宿主渲染-light-original-normal",
+      "path": "T81正式宿主与启动失败-T81-正式组件宿主渲染-light-original-normal.jpg",
+      "size": [
+        720,
+        341
+      ]
+    }
+  ]
+}

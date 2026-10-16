@@ -1,0 +1,16 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Failed",
+  "passedTests": 4,
+  "failedTests": 1,
+  "skippedTests": 0,
+  "testFailures": [
+    {
+      "failureText": "The test runner failed to initialize for UI testing. (Underlying Error: Timed out while enabling automation mode.)",
+      "targetName": "SubscriptionUsageUITests",
+      "testIdentifier": 5,
+      "testIdentifierString": "SubscriptionUsageUITests-Runner (3000) encountered an error",
+      "testName": "SubscriptionUsageUITests-Runner (3000) encountered an error"
+    }
+  ]
+}

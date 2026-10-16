@@ -1,0 +1,10 @@
+T75 | glass | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT75Glass]' passed (1.299 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.299 (1.300) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.299 (1.301) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.299 (1.302) seconds
+T75 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT75NativeGlassUI]' passed (18.241 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.241 (18.243) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.241 (18.247) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.241 (18.254) seconds

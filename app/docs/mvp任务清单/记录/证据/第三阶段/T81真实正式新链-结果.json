@@ -1,0 +1,54 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791998659.9,
+  "finishTime": 1791998770.41,
+  "passedTests": 1,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [],
+  "source": "T81-production.xcresult",
+  "images": [
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T81真实正式新链-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "Stage3-真实正式桌面-中",
+      "path": "T81真实正式新链-Stage3-真实正式桌面-中.jpg",
+      "size": [
+        720,
+        388
+      ]
+    },
+    {
+      "name": "Stage3-真实正式桌面-小",
+      "path": "T81真实正式新链-Stage3-真实正式桌面-小.jpg",
+      "size": [
+        341,
+        388
+      ]
+    },
+    {
+      "name": "Stage3-真实正式详情额度卡",
+      "path": "T81真实正式新链-Stage3-真实正式详情额度卡.jpg",
+      "size": [
+        851,
+        564
+      ]
+    },
+    {
+      "name": "Stage3-真实正式账户新卡",
+      "path": "T81真实正式新链-Stage3-真实正式账户新卡.jpg",
+      "size": [
+        764,
+        644
+      ]
+    }
+  ]
+}

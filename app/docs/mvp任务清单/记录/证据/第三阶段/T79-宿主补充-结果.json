@@ -1,0 +1,70 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791983373.883,
+  "finishTime": 1791983434.767,
+  "passedTests": 1,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [],
+  "source": "T79-extra.xcresult",
+  "images": [
+    {
+      "name": "T79-补充-long-详情字段",
+      "path": "T79-宿主补充-T79-补充-long-详情字段.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-补充-long-额度",
+      "path": "T79-宿主补充-T79-补充-long-额度.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-补充-unlimited-详情字段",
+      "path": "T79-宿主补充-T79-补充-unlimited-详情字段.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-补充-unlimited-额度",
+      "path": "T79-宿主补充-T79-补充-unlimited-额度.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-补充-gold-详情字段",
+      "path": "T79-宿主补充-T79-补充-gold-详情字段.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-补充-金色仪表第二窗口完整",
+      "path": "T79-宿主补充-T79-补充-金色仪表第二窗口完整.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-补充-gold-额度",
+      "path": "T79-宿主补充-T79-补充-gold-额度.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

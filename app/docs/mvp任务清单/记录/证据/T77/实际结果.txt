@@ -1,0 +1,10 @@
+T77 | watermark | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT77Watermark]' passed (0.661 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.661 (0.662) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.661 (0.662) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.661 (0.663) seconds
+T77 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT77NativeWatermarkUI]' passed (17.845 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 17.845 (17.849) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 17.845 (17.856) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 17.845 (17.862) seconds

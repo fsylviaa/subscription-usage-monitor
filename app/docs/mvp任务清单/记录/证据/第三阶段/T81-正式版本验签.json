@@ -1,0 +1,13 @@
+{
+  "configuration": "Release",
+  "name": "Token 仪表盘",
+  "version": "0.1.0",
+  "build": "3",
+  "bundle": "com.iceflying.SubscriptionUsage",
+  "widgetBundle": "com.iceflying.SubscriptionUsage.Widget",
+  "widgetBuild": "3",
+  "codeSignatureStrictVerification": "passed main and widget",
+  "appExecutableSHA256": "88b70b55d70b8ee2a110efa9ba87dc0389c638af86ce7f9f4b4e1fa807cccaab",
+  "widgetExecutableSHA256": "8de6910e398aa7f2553427ff46d1cbee1b795489fad823ba341cc9ee3d82c345",
+  "recordedUTC": "2026-10-14T17:24:14.962819+00:00"
+}

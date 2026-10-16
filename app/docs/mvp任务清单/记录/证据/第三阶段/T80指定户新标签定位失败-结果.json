@@ -1,0 +1,31 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Failed",
+  "startTime": 1791989947.197,
+  "finishTime": 1791990156.965,
+  "passedTests": 0,
+  "failedTests": 1,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [
+    {
+      "failureText": "XCTAssertEqual failed: (\"0\") is not equal to (\"1\")",
+      "targetName": "SubscriptionUsageUITests",
+      "testIdentifier": 1,
+      "testIdentifierString": "CodexQuotaUITests/testT80TemporaryPinnedInstanceSurvivesStyleAndRestart()",
+      "testIdentifierURL": "test://com.apple.xcode/SubscriptionUsage/SubscriptionUsageUITests/CodexQuotaUITests/testT80TemporaryPinnedInstanceSurvivesStyleAndRestart",
+      "testName": "testT80TemporaryPinnedInstanceSurvivesStyleAndRestart()"
+    }
+  ],
+  "source": "T80-pin2.xcresult",
+  "images": [
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80指定户新标签定位失败-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

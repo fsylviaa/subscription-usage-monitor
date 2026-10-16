@@ -1,0 +1,20 @@
+T69 | dials | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT69Dials]' passed (1.700 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.700 (1.701) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.700 (1.702) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.700 (1.703) seconds
+T69 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT69NativeDialsUI]' passed (18.908 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.908 (18.916) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.908 (18.921) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.908 (18.927) seconds
+T69 | dials | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT69Dials]' passed (1.706 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.706 (1.707) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.706 (1.708) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.706 (1.709) seconds
+T69 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT69NativeDialsUI]' passed (18.829 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.829 (18.833) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.829 (18.840) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.829 (18.847) seconds

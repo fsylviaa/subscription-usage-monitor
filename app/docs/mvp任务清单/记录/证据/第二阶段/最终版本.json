@@ -1,0 +1,14 @@
+{
+  "debug": {
+    "CFBundleDisplayName": "Token 仪表盘",
+    "CFBundleIdentifier": "com.iceflying.SubscriptionUsage",
+    "CFBundleShortVersionString": "0.1.0",
+    "CFBundleVersion": "2"
+  },
+  "release": {
+    "CFBundleDisplayName": "Token 仪表盘",
+    "CFBundleIdentifier": "com.iceflying.SubscriptionUsage",
+    "CFBundleShortVersionString": "0.1.0",
+    "CFBundleVersion": "2"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791982487.921,
+  "finishTime": 1791982535.137,
+  "passedTests": 1,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [],
+  "source": "T78-clipped-final.xcresult",
+  "images": [
+    {
+      "name": "T78-选择页-最大字号",
+      "path": "T78-正式滚动最终通过-T78-选择页-最大字号.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-最大字号-底部读数",
+      "path": "T78-正式滚动最终通过-T78-正式账户-最大字号-底部读数.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-最大字号",
+      "path": "T78-正式滚动最终通过-T78-正式账户-最大字号.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T78-正式滚动最终通过-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

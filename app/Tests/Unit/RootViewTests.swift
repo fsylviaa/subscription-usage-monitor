@@ -4,6 +4,18 @@ import XCTest
 @testable import SubscriptionUsage
 
 final class RootViewTests: XCTestCase {
+    @MainActor
+    private func stage3HostAccount(alternate: Bool) throws -> ConnectedAccount {
+        let id = UUID(uuidString: "00000000-0078-0000-0000-000000000001")!
+        let at = QuotaStyleLabView.referenceTime
+        var a = ConnectedAccount(id: id, verifiedEmail: "stage3@example.invalid", scope: .init(remoteAccountID: "stage3", kind: .personal), credentialRef: id,
+            quotaState: .available, subscription: .init(planType: "Pro", observedAt: at))
+        a.quotaSnapshot = .init(accountID: id, provider: a.provider, product: a.product, scope: a.scope, generation: a.generation, planType: "Pro", observedAt: at,
+            weekly: .init(window: .weekly, amount: .limited(try .init(used: alternate ? 5.75 : 29.875)), resetsAt: at.addingTimeInterval(86400), observedAt: at),
+            fiveHours: .init(window: .fiveHours, amount: .limited(try .init(used: alternate ? 87.2 : 66.67)), resetsAt: at.addingTimeInterval(3600), observedAt: at))
+        return a
+    }
+
     func testT37ValidationFilesAndAppearanceWereRestored() throws {
         guard ProcessInfo.processInfo.environment["T37_CLEANUP_CHECK"] == "1" else { throw XCTSkip("仅T37手机会话结束后显式只读核对") }
         #if DEBUG
@@ -614,4 +626,13 @@ private final class T47AuthorizationService: ResetReminderAuthorizationServing {
         requestCount += 1
         XCTFail("T47隔离外观检查不应请求系统通知权限")
     }
+}
+
+@MainActor
+private final class Stage3QuotaHostModel: ObservableObject {
+    @Published var accounts: [ConnectedAccount] = []
+}
+private struct Stage3QuotaHost: View {
+    @ObservedObject var model: Stage3QuotaHostModel
+    var body: some View { QuotaView(accounts: model.accounts) }
 }

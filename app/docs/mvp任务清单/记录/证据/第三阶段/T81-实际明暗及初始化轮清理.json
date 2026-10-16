@@ -1,0 +1,67 @@
+{
+  "processCheck": "两轮测试和导出均已结束；当前long及指定中号使用独立final-native结果及共用Products",
+  "items": [
+    {
+      "path": "build/T78-stage3/T81-ui.xcresult",
+      "beforeFileBytes": 18136616,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export81ui",
+      "beforeFileBytes": 8548372,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T81-ui.log",
+      "beforeFileBytes": 877396,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export81ui.log",
+      "beforeFileBytes": 8221,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T81-pin-build.log",
+      "beforeFileBytes": 82627,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T81-pinned.xcresult",
+      "beforeFileBytes": 259937,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T81-pinned.log",
+      "beforeFileBytes": 3172,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T81-api.json",
+      "beforeFileBytes": 6439,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T81-api-copy.json",
+      "beforeFileBytes": 1042,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T81-api-copy.log",
+      "beforeFileBytes": 236,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    }
+  ],
+  "totalBefore": 27924058,
+  "totalAfter": 0
+}

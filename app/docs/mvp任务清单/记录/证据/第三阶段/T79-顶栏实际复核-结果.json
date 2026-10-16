@@ -1,0 +1,30 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791983805.911,
+  "finishTime": 1791983828.849,
+  "passedTests": 1,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [],
+  "source": "T79-header.xcresult",
+  "images": [
+    {
+      "name": "T79-长内容-顶栏复核-滚动",
+      "path": "T79-顶栏实际复核-T79-长内容-顶栏复核-滚动.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-长内容-顶栏复核-进入",
+      "path": "T79-顶栏实际复核-T79-长内容-顶栏复核-进入.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "result": "Failed",
+  "startTime": 1791992644.001,
+  "finishTime": 1791992714.16,
+  "passedTests": 0,
+  "failedTests": 1,
+  "totalTestCount": 1,
+  "testFailures": [
+    {
+      "failureText": "The test runner failed to initialize for UI testing. (Underlying Error: Timed out while enabling automation mode.)",
+      "targetName": "SubscriptionUsageUITests",
+      "testIdentifier": 1,
+      "testIdentifierString": "SubscriptionUsageUITests-Runner (4135) encountered an error",
+      "testName": "SubscriptionUsageUITests-Runner (4135) encountered an error"
+    }
+  ]
+}

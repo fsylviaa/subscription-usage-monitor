@@ -1,0 +1,19 @@
+{
+  "scope": [
+    "app/build/T64-attachments",
+    "app/build/T64-stage-DD",
+    "app/build/T64-stage-tests.xcresult",
+    "app/build/T64-ui-attachments",
+    "app/build/T64-stage-device.log",
+    "app/build/T64-stage-tests.log",
+    "app/build/T64-export.log",
+    "app/build/T64-stage-ui-retry.log",
+    "app/build/T64-ui-summary.json",
+    "app/build/T64-stage-summary.json",
+    "app/build/T64-stage-device.xcresult",
+    "app/build/T64-stage-ui-retry.xcresult"
+  ],
+  "beforeBytes": 345956550,
+  "afterBytes": 0,
+  "allAbsent": true
+}

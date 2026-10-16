@@ -4,6 +4,7 @@ import WidgetKit
 
 struct RootView: View {
     @AppStorage private var appearance: String
+    @AppStorage private var cardStyle: String
     @Environment(\.colorScheme) private var systemColorScheme
     @StateObject private var connection: CodexConnectionFlow
     @StateObject private var reminders: ResetReminderSettings
@@ -28,6 +29,7 @@ struct RootView: View {
     @State private var connectionDetent: PresentationDetent = .height(250)
     @State private var appearanceTransition = AppearanceTransition()
     @State private var supportBottomInset: CGFloat = 60
+    @State private var footerTop: CGFloat?
 
     init(connection: CodexConnectionFlow = CodexConnectionFlow.live(), preferences: UserDefaults = .standard, onBackground: @escaping () -> Void = {}, reminders: ResetReminderSettings? = nil, reminderScheduler: ResetReminderScheduler? = nil, notificationNavigation: ResetReminderNavigation = .shared) {
         self.notificationNavigation = notificationNavigation
@@ -36,6 +38,7 @@ struct RootView: View {
         self.publishesWidgetAppearance = preferences === UserDefaults.standard
             && NSClassFromString("XCTestCase") == nil
             && !ProcessInfo.processInfo.arguments.contains(where: { $0.hasPrefix("--t") || $0 == "--management-ui" })
+        _cardStyle = AppStorage(wrappedValue: QuotaCardStyle.defaultStyle.rawValue, QuotaCardStylePreferences.key, store: preferences)
         _appearance = AppStorage(wrappedValue: "system", "appearance", store: preferences)
         _connection = StateObject(wrappedValue: connection)
         _reminders = StateObject(wrappedValue: reminders ?? ResetReminderSettings(
@@ -53,7 +56,7 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $selection) {
             NavigationStack {
-                QuotaView(accounts: connection.accounts, loading: connection.loadingAccounts,
+                QuotaView(accounts: connection.accounts, footerTop: footerTop, loading: connection.loadingAccounts,
                           loadFailed: connection.accountLoadFailed, canConnect: connection.canConnect,
                           updatingID: connection.quotaUpdatingID, updatingIDs: connection.visibleQuotaUpdatingIDs,
                           canRefreshAll: connection.canRefreshAll, refreshAll: { connection.refreshAllQuota() }, quotaFailure: connection.quotaFailure,
@@ -79,7 +82,8 @@ struct RootView: View {
                                  appearanceTransition.perform {
                                      appearance = dark ? "dark" : "light"
                                  }
-                             }, reminders: reminders, openNotificationSettings: {
+                             }, cardStyle: QuotaCardStyle.resolve(cardStyle),
+                             setCardStyle: { cardStyle = $0.rawValue }, reminders: reminders, openNotificationSettings: {
                                  guard let url = URL(string: UIApplication.openNotificationSettingsURLString) else { return }
                                  UIApplication.shared.open(url)
                              }, openWidgetTutorial: { tutorialSource = .settings })
@@ -105,6 +109,7 @@ struct RootView: View {
                 .padding(.top, 6).padding(.bottom, 4)
             }
             .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { supportBottomInset = $0 }
+            .onGeometryChange(for: CGFloat.self, of: { $0.frame(in: .global).minY }) { footerTop = $0 }
             .background(DashboardStyle.background.ignoresSafeArea(edges: .bottom))
         }
         .alert("排序未保存，请重试", isPresented: Binding(get: { connection.accountOrderFailed },
@@ -118,7 +123,22 @@ struct RootView: View {
         .background(AppearanceWindowReader(transition: appearanceTransition))
         .preferredColorScheme(appearance == "dark" ? .dark : appearance == "light" ? .light : nil)
         .tint(DashboardStyle.text)
+        .environment(\.quotaCardStyle, QuotaCardStyle.resolve(cardStyle))
+        .onChange(of: cardStyle, initial: true) { _, value in
+            #if DEBUG
+            if QuotaCardStylePreferences.publishValidation(filename: "T78-style", value: QuotaCardStyle.resolve(value).rawValue) {
+                Task { await CodexConnectionUITestSupport.recordStage3Configurations() }
+                return
+            }
+            #endif
+            guard publishesWidgetAppearance else { return }
+            QuotaCardStylePreferences.publish(QuotaCardStyle.resolve(value), to: QuotaCardStylePreferences.sharedDefaults(),
+                                              reload: QuotaCardStylePreferences.requestWidgetUpdate)
+        }
         .onChange(of: appearance, initial: true) { _, value in
+            #if DEBUG
+            if QuotaCardStylePreferences.publishValidation(filename: "T37-appearance", value: value) { return }
+            #endif
             guard publishesWidgetAppearance else { return }
             WidgetAppearance.publish(value, to: WidgetAppearance.defaults()) {
                 WidgetCenter.shared.reloadTimelines(ofKind: WidgetAppearance.kind)
@@ -195,6 +215,7 @@ struct RootView: View {
                     closeFeedback: { connection.hideQuotaFeedback() },
                     delete: { connection.deleteAccount(account.id) },
                     close: { detailTarget = nil })
+                    .environment(\.quotaCardStyle, QuotaCardStyle.resolve(cardStyle))
                     .presentationDetents([.large])
                     .presentationDragIndicator(.hidden)
                     .presentationCornerRadius(28)

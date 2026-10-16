@@ -1,0 +1,55 @@
+{
+  "processCheck": "通过轮已完成；当前临时实例检查用单独T80-pin结果和共用Products",
+  "items": [
+    {
+      "path": "build/T78-stage3/T80-final.xcresult",
+      "beforeFileBytes": 7646057,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80final",
+      "beforeFileBytes": 4736717,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-final.log",
+      "beforeFileBytes": 388744,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/T80-final-build.log",
+      "beforeFileBytes": 44104,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/export80final.log",
+      "beforeFileBytes": 5734,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/protected-final.json",
+      "beforeFileBytes": 416,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/protected-final-copy.json",
+      "beforeFileBytes": 1062,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    },
+    {
+      "path": "build/T78-stage3/protected-final-copy.log",
+      "beforeFileBytes": 244,
+      "afterFileBytes": 0,
+      "existsAfter": false
+    }
+  ],
+  "totalBefore": 12823078,
+  "totalAfter": 0
+}

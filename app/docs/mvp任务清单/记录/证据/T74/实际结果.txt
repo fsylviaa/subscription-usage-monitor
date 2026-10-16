@@ -1,0 +1,10 @@
+T74 | journal | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+Test Case '-[SubscriptionUsageTests.NativeQuotaStyleTests testT74Journal]' passed (0.866 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.866 (0.867) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.866 (0.868) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.866 (0.869) seconds
+T74 | actual isolated native App | light/dark, changed data, static injection, accessibility5 scroll | passed
+Test Case '-[SubscriptionUsageUITests.CodexQuotaUITests testT74NativeJournalUI]' passed (18.190 seconds).
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.190 (18.196) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.190 (18.200) seconds
+	 Executed 1 test, with 0 failures (0 unexpected) in 18.190 (18.205) seconds

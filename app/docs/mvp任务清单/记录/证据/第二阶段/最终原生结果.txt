@@ -1,0 +1,17 @@
+STAGE2 | native geometry raw images=594, 12 styles x 2 themes x 2 artwork densities x 2 windows x 6 exact fractions; all four surfaces also rendered | passed
+T66 | skala | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+T67 | capsule | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+T68 | ticks | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+T69 | dials | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+T70 | island | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+T71 | blocks | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+T72 | liquid | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+T73 | ticket | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+T74 | journal | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+T75 | glass | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+T76 | panels | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+T77 | watermark | native ImageRenderer 92 renders | 2 themes, 4 surfaces, 9 states, accessibility5, 6 precision values | passed
+	 Executed 13 tests, with 0 failures (0 unexpected) in 20.334 (20.339) seconds
+	 Executed 13 tests, with 0 failures (0 unexpected) in 20.334 (20.339) seconds
+	 Executed 13 tests, with 0 failures (0 unexpected) in 20.334 (20.340) seconds
+** TEST SUCCEEDED **

@@ -1,0 +1,54 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791980804.635,
+  "finishTime": 1791980941.441,
+  "passedTests": 3,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 3,
+  "testFailures": [],
+  "source": "T78-extra.xcresult",
+  "images": [
+    {
+      "name": "T78-选择页-最大字号",
+      "path": "T78-正式宿主专项-T78-选择页-最大字号.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-最大字号-底部读数",
+      "path": "T78-正式宿主专项-T78-正式账户-最大字号-底部读数.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-正式账户-最大字号",
+      "path": "T78-正式宿主专项-T78-正式账户-最大字号.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T78-正式宿主专项-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T78-新卡菜单下拉拖动删除取消",
+      "path": "T78-正式宿主专项-T78-新卡菜单下拉拖动删除取消.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

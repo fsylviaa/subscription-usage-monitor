@@ -1,0 +1,54 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Passed",
+  "startTime": 1791985335.448,
+  "finishTime": 1791985360.529,
+  "passedTests": 1,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [],
+  "source": "T79-viewport.xcresult",
+  "images": [
+    {
+      "name": "T79-长内容-物理屏幕滚动",
+      "path": "T79-视口实际复核-T79-长内容-物理屏幕滚动.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-长内容-顶栏复核-滚动",
+      "path": "T79-视口实际复核-T79-长内容-顶栏复核-滚动.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-关闭按钮实际像素",
+      "path": "T79-视口实际复核-T79-关闭按钮实际像素.jpg",
+      "size": [
+        32,
+        32
+      ]
+    },
+    {
+      "name": "T79-长内容-物理屏幕进入",
+      "path": "T79-视口实际复核-T79-长内容-物理屏幕进入.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    },
+    {
+      "name": "T79-长内容-顶栏复核-进入",
+      "path": "T79-视口实际复核-T79-长内容-顶栏复核-进入.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}

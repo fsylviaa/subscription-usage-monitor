@@ -1,0 +1,31 @@
+{
+  "title": "Test - SubscriptionUsage",
+  "result": "Failed",
+  "startTime": 1791986395,
+  "finishTime": 1791986653.561,
+  "passedTests": 0,
+  "failedTests": 1,
+  "skippedTests": 0,
+  "totalTestCount": 1,
+  "testFailures": [
+    {
+      "failureText": "Failed to determine whether continuity display is enabled: Timed out while checking for continuity enablement.",
+      "targetName": "SubscriptionUsageUITests",
+      "testIdentifier": 1,
+      "testIdentifierString": "CodexQuotaUITests/testT80ExistingDesktopStyleProbe()",
+      "testIdentifierURL": "test://com.apple.xcode/SubscriptionUsage/SubscriptionUsageUITests/CodexQuotaUITests/testT80ExistingDesktopStyleProbe",
+      "testName": "testT80ExistingDesktopStyleProbe()"
+    }
+  ],
+  "source": "T80-probe.xcresult",
+  "images": [
+    {
+      "name": "T78-选择页-watermark",
+      "path": "T80首次失败-T78-选择页-watermark.jpg",
+      "size": [
+        828,
+        1792
+      ]
+    }
+  ]
+}
