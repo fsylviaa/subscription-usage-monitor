@@ -125,7 +125,7 @@ struct WidgetAccountEntity: AppEntity {
     init(account: WidgetSnapshot.Account) {
         id = account.id.uuidString
         identity = (account.isDemo ? "演示 · " : "") + account.identity
-        detail = account.plan.map { "Codex · \($0)" } ?? "Codex"
+        detail = "Codex"
     }
 }
 

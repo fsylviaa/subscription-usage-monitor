@@ -429,7 +429,8 @@ final class CodexQuotaUITests: XCTestCase {
             }
             for _ in 0..<5 { scroll.swipeUp(velocity: .slow) }
             XCTAssertTrue(app.staticTexts["detail.identity"].isHittable)
-            if scenario == "long" { XCTAssertTrue(app.staticTexts["detail.plan"].label.contains("Enterprise 超长套餐名称")) }
+            XCTAssertFalse(app.staticTexts["detail.plan"].exists, "D-77：详情不显示套餐行")
+            XCTAssertFalse(app.staticTexts["套餐"].exists)
             screenshot(app, "T79-补充-\(scenario)-详情字段")
             XCTAssertTrue(app.buttons["detail.close"].isHittable)
             app.buttons["detail.close"].tap(); app.terminate()
@@ -2488,8 +2489,8 @@ final class CodexQuotaUITests: XCTestCase {
             let first = cards.element(boundBy: 0), second = cards.element(boundBy: 1)
             XCTAssertEqual(first.staticTexts["quota.accountIdentity"].label, "card-1@example.invalid")
             XCTAssertEqual(second.staticTexts["quota.accountIdentity"].label, "card-2@example.invalid")
-            XCTAssertEqual(first.staticTexts["quota.plan"].label, "Codex · Plus")
-            XCTAssertEqual(second.staticTexts["quota.plan"].label, "Codex · Future Official Plan")
+            XCTAssertEqual(first.staticTexts["quota.plan"].label, "Codex", "D-77：不显示套餐名")
+            XCTAssertEqual(second.staticTexts["quota.plan"].label, "Codex")
             for (card, weekly, fiveHours) in [(first, 100, 0), (second, 70, 20)] {
                 for (id, remaining) in [("weekly", weekly), ("fiveHours", fiveHours)] {
                     XCTAssertEqual(card.staticTexts["quota.\(id).remaining"].label, "剩余 \(remaining)%")
@@ -2546,7 +2547,7 @@ final class CodexQuotaUITests: XCTestCase {
             XCTAssertFalse(first.staticTexts["quota.fiveHours.remaining"].exists, "无5小时限额不展示")
             XCTAssertFalse(app.otherElements["quota.weekly.bar"].exists)
             XCTAssertFalse(app.otherElements["quota.fiveHours.bar"].exists)
-            XCTAssertEqual(second.staticTexts["quota.plan"].label, "Codex · Free")
+            XCTAssertEqual(second.staticTexts["quota.plan"].label, "Codex")
             XCTAssertEqual(second.staticTexts["quota.accountIdentity"].label, "card-2@example.invalid")
             for id in ["quota.weekly.remaining", "quota.fiveHours.remaining", "quota.weekly.reset",
                        "quota.fiveHours.reset", "quota.notFetched", "quota.accountStatus", "quota.updatedAt"] {
@@ -2571,7 +2572,7 @@ final class CodexQuotaUITests: XCTestCase {
         app.buttons["刷新额度"].tap()
         XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.staticTexts["quota.failure"].label, "刷新失败")
-        XCTAssertEqual(planLabel(app), "Codex · Plus")
+        XCTAssertEqual(planLabel(app), "Codex")
         XCTAssertEqual(app.staticTexts["quota.weekly.remaining"].label, "剩余 70%")
         XCTAssertEqual(app.staticTexts["quota.fiveHours.remaining"].label, "剩余 20%")
         // Reconfiguration can collapse details; reopen only if needed.
@@ -2878,12 +2879,14 @@ final class CodexQuotaUITests: XCTestCase {
         let app = launch("free")
         defer { app.terminate() }
         completeFixtureLogin(app)
-        XCTAssertTrue(app.staticTexts["Codex · Free"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["quota.notApplicable"].waitForExistence(timeout: 10))
+        XCTAssertEqual(planLabel(app), "Codex")
         assertNoQuotaOrFailure(app)
         screenshot(app, "T13-样式-Free")
         app.terminate()
         app.launch()
-        XCTAssertTrue(app.staticTexts["Codex · Free"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["quota.notApplicable"].waitForExistence(timeout: 10))
+        XCTAssertEqual(planLabel(app), "Codex")
         assertNoQuotaOrFailure(app)
     }
 
@@ -2902,7 +2905,7 @@ final class CodexQuotaUITests: XCTestCase {
         assertSuccessfulCard(app)
         XCTAssertFalse(app.staticTexts["connection.title"].exists)
         XCTAssertEqual(app.staticTexts["quota.accountIdentity"].label, identity)
-        XCTAssertEqual(planLabel(app), "Codex · Future Official Plan")
+        XCTAssertEqual(planLabel(app), "Codex")
         XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").count, 1)
         screenshot(app, "T13-样式-弹层恢复")
     }
@@ -2958,7 +2961,8 @@ final class CodexQuotaUITests: XCTestCase {
         completeFixtureLogin(app)
         XCTAssertTrue(app.buttons["connection.quotaRetry"].waitForExistence(timeout: 10))
         app.buttons["connection.quotaRetry"].tap()
-        XCTAssertTrue(app.staticTexts["Codex · Free"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["quota.notApplicable"].waitForExistence(timeout: 10))
+        XCTAssertEqual(planLabel(app), "Codex")
         assertNoQuotaOrFailure(app)
     }
 
@@ -2973,7 +2977,7 @@ final class CodexQuotaUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.staticTexts["connection.title"].exists)
-        XCTAssertEqual(planLabel(app), "Codex · Future Official Plan")
+        XCTAssertEqual(planLabel(app), "Codex")
         XCTAssertEqual(app.staticTexts["quota.accountIdentity"].label, identity)
         XCTAssertFalse(app.staticTexts["quota.updatedAt"].exists)
         XCTAssertFalse(app.staticTexts["quota.weekly.remaining"].exists)
@@ -3015,7 +3019,7 @@ final class CodexQuotaUITests: XCTestCase {
         let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
                                                  object: app.staticTexts["connection.title"])
         XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed)
-        XCTAssertEqual(planLabel(app), "Codex · Future Official Plan")
+        XCTAssertEqual(planLabel(app), "Codex")
         XCTAssertTrue(app.buttons["quota.details"].isHittable)
         XCTAssertTrue(app.buttons["tab.settings"].isHittable)
         XCTAssertLessThanOrEqual(app.otherElements["quota.card"].frame.maxX, app.frame.width)
@@ -3034,8 +3038,8 @@ final class CodexQuotaUITests: XCTestCase {
         XCTAssertTrue(app.otherElements["quota.card"].waitForExistence(timeout: 30))
         let identity = app.staticTexts["quota.accountIdentity"].label
         let plan = planLabel(app)
-        XCTAssertTrue(plan.hasPrefix("Codex · "))
-        let free = plan.lowercased() == "codex · free"
+        XCTAssertEqual(plan, "Codex", "D-77：不显示套餐名")
+        let free = app.staticTexts["quota.notApplicable"].exists
         if free { assertNoQuotaOrFailure(app) } else { openDetails(app) }
         let ids = ["quota.weekly.remaining", "quota.weekly.reset", "quota.fiveHours.remaining", "quota.fiveHours.reset", "quota.updatedAt"]
         let labels = free ? [] : ids.map { app.staticTexts[$0].label }
@@ -3063,7 +3067,10 @@ final class CodexQuotaUITests: XCTestCase {
             app.launch()
             XCTAssertTrue(app.otherElements["quota.card"].waitForExistence(timeout: 5), "不等待60秒登录恢复")
             XCTAssertEqual(app.staticTexts["quota.accountIdentity"].label, identity)
-            XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+            // Since T27 opening the App refreshes automatically; offline that refresh fails and,
+            // per D-60, shows "刷新失败" while the saved values and original success time stay.
+            XCTAssertTrue(app.staticTexts["quota.failure"].waitForExistence(timeout: 5))
+            XCTAssertEqual(app.staticTexts["quota.failure"].label, "刷新失败")
             XCTAssertFalse(app.otherElements["quota.updating"].exists)
             openDetails(app)
             XCTAssertEqual(ids.map { app.staticTexts[$0].label }, savedLabels)
@@ -3096,7 +3103,7 @@ final class CodexQuotaUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["quota.notFetched"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["quota.notFetched"].label, "尚未获取额度")
         XCTAssertEqual(app.staticTexts["quota.accountIdentity"].label, identity)
-        XCTAssertEqual(planLabel(app), "Codex · Future Official Plan")
+        XCTAssertEqual(planLabel(app), "Codex")
         for id in ["quota.weekly.remaining", "quota.fiveHours.remaining", "quota.updatedAt", "quota.failure"] {
             XCTAssertFalse(app.staticTexts[id].exists)
         }

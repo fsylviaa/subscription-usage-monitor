@@ -219,7 +219,11 @@ final class LaunchTests: XCTestCase {
         for dark in [false, true] {
             if dark { app.switches["settings.darkAppearance"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap() }
             let entry = app.buttons["settings.help"]
-            for _ in 0..<6 { if entry.isHittable { break }; app.swipeUp() }
+            // At the largest text the row can sit under the tab bar while still reported hittable.
+            for _ in 0..<6 {
+                if entry.isHittable, entry.frame.maxY < app.buttons["tab.settings"].frame.minY { break }
+                app.swipeUp()
+            }
             XCTAssertTrue(entry.isHittable); entry.tap()
             XCTAssertTrue(app.navigationBars["帮助与说明"].waitForExistence(timeout: 5))
             for identifier in ["quota", "refresh", "reminders", "widgets"] {

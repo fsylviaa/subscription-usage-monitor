@@ -11,6 +11,8 @@ struct SubscriptionUsageApp: App {
             #if DEBUG
             if QuotaStyleLabView.requested {
                 QuotaStyleLabView()
+            } else if CursorLoginProbeView.requested {
+                CursorLoginProbeView()
             } else {
                 productionRoot
             }
@@ -31,7 +33,7 @@ struct SubscriptionUsageApp: App {
 final class SubscriptionAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions options: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         #if DEBUG
-        if QuotaStyleLabView.requested { return true }
+        if QuotaStyleLabView.requested || CursorLoginProbeView.requested { return true }
         #endif
         // Install before launch finishes so cold-start notification responses survive.
         UNUserNotificationCenter.current().delegate = self

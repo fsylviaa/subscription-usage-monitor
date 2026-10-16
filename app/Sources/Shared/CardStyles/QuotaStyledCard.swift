@@ -9,12 +9,12 @@ struct QuotaStyledCard: View {
     var surface: QuotaCardSurface = .account
     var now: Date = .now
     var accessory: AnyView? = nil
-    /// The plan title opens the account details (account surface only).
+    /// The platform title opens the account details (account surface only).
     var openDetails: (() -> Void)? = nil
     /// Alternates decorative back-layer words between neighbouring cards.
     var variant = 0
     /// Never drawn (D-72: no e-mail on the card); read by VoiceOver only, so
-    /// several accounts with the same plan can still be told apart.
+    /// several accounts on the same platform can still be told apart.
     var spokenIdentity: String? = nil
     /// The App's own latest attempt failed for an account that never had quota.
     var failed = false
@@ -96,7 +96,7 @@ struct QuotaStyledCard: View {
         HStack(alignment: .center, spacing: 8) {
             if style == .watermark { QuotaWatermarkShape().fill(theme.ink).frame(width: 24, height: 24).accessibilityHidden(true) }
             Button { openDetails?() } label: {
-                // Two children keep the plan title exposed as its own text.
+                // Two children keep the platform title exposed as its own text.
                 ZStack(alignment: .bottomLeading) {
                     headerTitle.multilineTextAlignment(.leading).fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("quota.plan")
@@ -119,12 +119,12 @@ struct QuotaStyledCard: View {
         }
     }
 
+    /// Platform name only; plan names are never shown (D-77).
     private var headerTitle: Text {
-        let plan = input.plan.map { " · " + $0 } ?? ""
         if style == .rave {
-            return Text("Codex").font(.system(size: headerSize + 2, weight: .black)) + Text(plan).font(.system(size: headerSize)).foregroundColor(theme.muted)
+            return Text("Codex").font(.system(size: headerSize + 2, weight: .black))
         }
-        return Text("Codex").font(.system(size: headerSize, weight: .semibold)) + Text(plan).font(.system(size: headerSize)).foregroundColor(theme.muted)
+        return Text("Codex").font(.system(size: headerSize, weight: .semibold))
     }
 
     // MARK: Per-style window layouts

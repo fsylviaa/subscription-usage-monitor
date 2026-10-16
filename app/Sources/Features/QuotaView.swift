@@ -639,9 +639,6 @@ struct CodexDetailContent {
         }
         var values: [Row] = [Row(id: "identity", title: "账号",
             value: account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户")]
-        if let subscription = account.subscription, subscription.isValid {
-            values.append(Row(id: "plan", title: "套餐", value: subscription.planType))
-        }
         let count = account.subscription.flatMap { subscription -> Int64? in
             guard subscription.isValid, let count = subscription.resetCardCount, count >= 0 else { return nil }
             return count

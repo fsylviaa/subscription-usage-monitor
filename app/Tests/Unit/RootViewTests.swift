@@ -118,7 +118,7 @@ final class RootViewTests: XCTestCase {
         var account = ConnectedAccount(verifiedEmail: "first@example.invalid", scope: .init(remoteAccountID: "first", kind: .personal), credentialRef: UUID(),
             quotaState: .notApplicable, subscription: .init(planType: "Actual Plan", observedAt: now, resetCardCount: 2))
         var rows = CodexDetailContent(account: account).rows
-        XCTAssertEqual(rows.map(\.id), ["identity", "plan", "resetCards"])
+        XCTAssertEqual(rows.map(\.id), ["identity", "resetCards"], "D-77：详情不显示套餐行")
         XCTAssertEqual(rows.first?.value, "first@example.invalid")
         XCTAssertEqual(rows.first { $0.id == "resetCards" }?.value, "2")
         account.verifiedEmail = "second@example.invalid"
@@ -151,7 +151,7 @@ final class RootViewTests: XCTestCase {
         XCTAssertNil(CodexDetailTarget(second))
         XCTAssertNil(target.resolve(in: []))
         var content = CodexDetailContent(account: first)
-        XCTAssertEqual(content.rows.map(\.id), ["identity", "plan", "resetCards", "updatedAt"])
+        XCTAssertEqual(content.rows.map(\.id), ["identity", "resetCards", "updatedAt"])
         XCTAssertEqual(content.snapshot?.weekly.amount.remainingPercent, 100)
         XCTAssertEqual(content.snapshot?.fiveHours.amount.remainingPercent, 0)
         XCTAssertEqual(content.snapshot?.weekly.amount.progress?.usedFraction, 0)
@@ -159,7 +159,7 @@ final class RootViewTests: XCTestCase {
         first.scope = .init(remoteAccountID: "new-scope", kind: .personal)
         content = CodexDetailContent(account: first)
         XCTAssertNil(content.snapshot)
-        XCTAssertEqual(content.rows.map(\.id), ["identity", "plan", "resetCards"])
+        XCTAssertEqual(content.rows.map(\.id), ["identity", "resetCards"])
         first.subscription = nil; first.quotaSnapshot = nil; first.quotaState = .notApplicable
         XCTAssertEqual(CodexDetailContent(account: first).rows.map(\.id), ["identity", "resetCards"])
     }

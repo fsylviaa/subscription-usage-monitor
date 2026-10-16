@@ -404,7 +404,7 @@ private struct WidgetAddingSystemPage: View {
                 Image("DesignCodex").resizable().renderingMode(.template).frame(width: 22, height: 22)
                     .padding(4).background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 10))
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Codex · Plus").font(.system(size: 14, weight: .semibold))
+                    Text("Codex").font(.system(size: 14, weight: .semibold))
                     Text("账号 A").font(.system(size: 11)).foregroundStyle(DashboardStyle.secondary)
                 }
             }

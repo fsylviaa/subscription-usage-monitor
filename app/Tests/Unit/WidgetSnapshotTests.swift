@@ -281,7 +281,7 @@ final class WidgetSnapshotTests: XCTestCase {
         let options = try await query.suggestedEntities()
         XCTAssertEqual(options.map(\.id), [WidgetAccountEntity.firstID, a.id.uuidString, b.id.uuidString])
         XCTAssertEqual(options[1].identity, "same@example.invalid")
-        XCTAssertEqual(options[1].detail, "Codex · Plus")
+        XCTAssertEqual(options[1].detail, "Codex", "D-77：系统账户选项不显示套餐名")
         let defaultOption = await query.defaultResult()
         XCTAssertEqual(defaultOption?.id, WidgetAccountEntity.firstID)
         _ = try await store.markForDeletion(b.id); try await store.finishDeletion(b.id)

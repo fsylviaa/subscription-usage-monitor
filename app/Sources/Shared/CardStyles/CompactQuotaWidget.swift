@@ -49,9 +49,6 @@ struct CompactWidgetBody: View {
             } else {
                 Text("Codex").font(.system(size: medium ? 14 : 13, weight: .bold))
             }
-            if let plan = input.plan {
-                Text(" · " + plan).font(.system(size: medium ? 14 : 13)).foregroundStyle(theme.muted)
-            }
             if style == .rave { RaveSpark().frame(width: 12, height: 12).padding(.leading, 6) }
         }
         .lineLimit(1).minimumScaleFactor(0.7)
