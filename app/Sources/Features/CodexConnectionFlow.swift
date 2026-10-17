@@ -7,9 +7,26 @@ import UIKit
 enum ConnectionPlatform: CaseIterable {
     case codex
     case cursor
+    /// API balance platforms (D-82): connected by pasting an existing key.
+    case openRouter
+    case deepSeek
 
-    var iconName: String { switch self { case .codex: "Codex"; case .cursor: "Cursor" } }
-    var accessibilityName: String { switch self { case .codex: "Codex"; case .cursor: "Cursor" } }
+    var iconName: String { accessibilityName }
+    var accessibilityName: String {
+        switch self {
+        case .codex: "Codex"
+        case .cursor: "Cursor"
+        case .openRouter: "OpenRouter"
+        case .deepSeek: "DeepSeek"
+        }
+    }
+    var balanceProvider: ProviderID? {
+        switch self {
+        case .openRouter: .openRouter
+        case .deepSeek: .deepSeek
+        case .codex, .cursor: nil
+        }
+    }
 }
 
 @MainActor
@@ -25,6 +42,8 @@ final class CodexConnectionFlow: ObservableObject {
         case code(CodexDeviceAuthorization)
         /// Cursor: the official page is open in the browser; waiting for confirmation.
         case browser
+        /// OpenRouter / DeepSeek: the key input page (D-82).
+        case keyEntry
         case failure(String)
     }
 
@@ -37,6 +56,10 @@ final class CodexConnectionFlow: ObservableObject {
     private let cursorPoller: (any CursorLoginPolling)?
     private let cursorAPI: CursorAPIClient?
     private var cursorRequest: CursorLoginRequest?
+    private let balanceClient: APIBalanceClient?
+    /// Key input page: a short result after 连接 failed; verifying while the query runs.
+    @Published private(set) var keyFailure: String?
+    @Published private(set) var keyVerifying = false
 
     @Published private(set) var accounts: [ConnectedAccount] = []
     @Published private(set) var loadingAccounts = false
@@ -173,7 +196,8 @@ final class CodexConnectionFlow: ObservableObject {
             let flow = CodexConnectionFlow(completer: CodexLoginClient(), verifier: CodexIdentityVerifier(),
                                            bindings: CodexAccountBindingStore(accountStore: accounts, vault: vault),
                                            pending: CodexPendingLoginStore(), quotaUpdater: updater,
-                                           cursorPoller: CursorLoginClient(), cursorAPI: CursorAPIClient())
+                                           cursorPoller: CursorLoginClient(), cursorAPI: CursorAPIClient(),
+                                           balanceClient: APIBalanceClient())
             flow.loadingAccounts = true
             return flow
         } catch {
@@ -398,6 +422,7 @@ final class CodexConnectionFlow: ObservableObject {
         quotaUpdater: (any CodexQuotaUpdating)? = nil,
         cursorPoller: (any CursorLoginPolling)? = nil,
         cursorAPI: CursorAPIClient? = nil,
+        balanceClient: APIBalanceClient? = nil,
         foregroundRefreshEnabled: Bool = true,
         now: @escaping @Sendable () -> Date = { Date() },
         copyCode: @escaping @MainActor (String, Date) -> Void = { code, deadline in
@@ -416,6 +441,7 @@ final class CodexConnectionFlow: ObservableObject {
         self.quotaUpdater = quotaUpdater
         self.cursorPoller = cursorPoller
         self.cursorAPI = cursorAPI
+        self.balanceClient = balanceClient
         self.checkNetwork = checkNetwork
         self.authorizer = authorizer
         self.transactions = transactions
@@ -438,12 +464,14 @@ final class CodexConnectionFlow: ObservableObject {
         switch platform {
         case .codex: return begin()
         case .cursor: return beginCursor()
+        case .openRouter, .deepSeek: return beginAPIKey()
         }
     }
 
     @discardableResult
     func begin() -> Task<Void, Never>? {
         if connectingPlatform == .cursor { return beginCursor() }
+        if connectingPlatform.balanceProvider != nil { return beginAPIKey() }
         guard !loadingAccounts, !accountLoadFailed, !restoringLogin, !reorderingAccounts, !managingAccounts,
               (quotaUpdatingID == nil || recovery != nil), state == .idle || state == .choosingPlatform || isFailure else { return nil }
         let previousWork = work
@@ -580,6 +608,8 @@ final class CodexConnectionFlow: ObservableObject {
     private func invalidate() {
         generation = UUID()
         cursorRequest = nil
+        keyFailure = nil
+        keyVerifying = false
         completionWork?.cancel()
         work?.cancel()
         expiryWork?.cancel()
@@ -828,6 +858,98 @@ final class CodexConnectionFlow: ObservableObject {
                 guard isCurrent(attempt) else { return }
                 cursorRequest = nil
                 state = .failure("登录未完成，请重试")
+            }
+        }
+        return work
+    }
+
+    // MARK: API key connection (D-82)
+
+    /// Network gate → key input page. Nothing is stored until 连接 verified the key.
+    @discardableResult
+    func beginAPIKey() -> Task<Void, Never>? {
+        guard connectingPlatform.balanceProvider != nil, !loadingAccounts, !accountLoadFailed, !restoringLogin, !reorderingAccounts, !managingAccounts,
+              quotaUpdatingID == nil, state == .choosingPlatform || isFailure else { return nil }
+        let previousWork = work
+        work?.cancel()
+        generation = UUID()
+        let attempt = generation
+        keyFailure = nil
+        keyVerifying = false
+        isPresented = true
+        state = .checking
+        work = Task { [weak self] in
+            guard let self else { return }
+            await previousWork?.value
+            guard isCurrent(attempt) else { return }
+            switch await checkNetwork() {
+            case let .allowed(value) where value.isFinite && value > 50:
+                guard isCurrent(attempt) else { return }
+                state = .keyEntry
+            case .blocked:
+                guard isCurrent(attempt) else { return }
+                state = .failure("网络不达标，无法连接")
+            case .cancelled:
+                guard isCurrent(attempt) else { return }
+                cancel()
+            default:
+                guard isCurrent(attempt) else { return }
+                state = .failure("连接未完成，请重试")
+            }
+        }
+        return work
+    }
+
+    /// Queries the balance with the pasted key held in memory only; success alone creates
+    /// (or, for the same key, updates in place) the account and closes the sheet.
+    @discardableResult
+    func connectAPIKey(_ pasted: String) -> Task<Void, Never>? {
+        guard state == .keyEntry, !keyVerifying, let provider = connectingPlatform.balanceProvider,
+              let balanceClient, let binding = bindings as? any APIBalanceAccountBinding else { return nil }
+        guard let key = APIKeyCredential(pasted: pasted) else {
+            keyFailure = "请粘贴完整的 key"
+            return nil
+        }
+        let attempt = generation
+        keyFailure = nil
+        keyVerifying = true
+        work = Task { [weak self] in
+            guard let self else { return }
+            do {
+                switch await checkNetwork() {
+                case let .allowed(value) where value.isFinite && value > 50: break
+                case .blocked:
+                    guard isCurrent(attempt) else { return }
+                    keyVerifying = false
+                    keyFailure = "网络不达标，无法连接"
+                    return
+                default:
+                    throw APIBalanceQueryError.failed
+                }
+                guard isCurrent(attempt) else { return }
+                let balance = try await balanceClient.balance(provider, key: key, observedAt: now())
+                guard isCurrent(attempt) else { return }
+                state = .saving
+                let account = try await binding.save(balance: APIBalanceVerifiedLogin(provider: provider,
+                                                                                      credential: key, balance: balance))
+                if let index = accounts.firstIndex(where: { $0.id == account.id }) {
+                    accounts[index] = account
+                } else {
+                    accounts.append(account)
+                }
+                quotaFailures.removeValue(forKey: account.id)
+                if quotaFailureID == account.id { quotaFailureID = nil; quotaFailure = nil }
+                keyVerifying = false
+                state = .idle
+                isPresented = false
+                connectingPlatform = .codex
+            } catch {
+                guard isCurrent(attempt) else { return }
+                keyVerifying = false
+                if state == .saving { state = .keyEntry }
+                keyFailure = (error as? APIBalanceQueryError) == .rejected
+                    ? (provider == .openRouter ? "key 无效或不是 Management key" : "key 无效，请检查后重试")
+                    : "连接失败，请重试"
             }
         }
         return work

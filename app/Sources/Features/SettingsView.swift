@@ -168,7 +168,7 @@ private struct OpenSourceView: View {
             Section {
                 NavigationLink {
                     BundledLicenseView(bottomInset: bottomInset, title: "Lobe Icons 许可", heading: "Lobe Icons · MIT",
-                                       detail: "采用内容：OpenAI 与 Cursor 平台标志（@lobehub/icons-static-svg 1.95.1）\n来源：github.com/lobehub/lobe-icons",
+                                       detail: "采用内容：OpenAI、Cursor、OpenRouter 与 DeepSeek 平台标志（@lobehub/icons-static-svg 1.95.1）\n来源：github.com/lobehub/lobe-icons",
                                        resource: "LobeIcons-MIT")
                 } label: {
                     VStack(alignment: .leading, spacing: 4) {

@@ -38,8 +38,12 @@ struct CodexConnectionView: View {
                         ConnectionPlatformGrid(select: { flow.selectPlatform($0) })
                     case .quota:
                         quotaContent
+                    case .keyEntry:
+                        // Own view: the pasted key lives only in its state and is gone when it closes.
+                        APIKeyEntryView(flow: flow)
                     case .idle, .checking, .requesting, .verifying, .saving:
-                        ProgressView(flow.state == .verifying || flow.state == .saving ? "正在完成登录…" : "连接中…")
+                        ProgressView(flow.state == .verifying || flow.state == .saving
+                                     ? (flow.connectingPlatform.balanceProvider != nil ? "正在连接…" : "正在完成登录…") : "连接中…")
                             .frame(maxWidth: .infinity, minHeight: 88)
                             .accessibilityIdentifier("connection.progress")
                     case .browser:
@@ -154,5 +158,60 @@ private struct ConnectionPlatformGrid: View {
             }
         }
         .accessibilityIdentifier("platforms.grid")
+    }
+}
+
+
+/// OpenRouter / DeepSeek key input (D-82, BAL-02/03): one secure field, a paste button and
+/// 连接. The key is held only in this view's state and in memory for the one query.
+private struct APIKeyEntryView: View {
+    @ObservedObject var flow: CodexConnectionFlow
+    @State private var key = ""
+    @FocusState private var focused: Bool
+
+    private var platform: ConnectionPlatform { flow.connectingPlatform }
+    private var instruction: String {
+        platform == .openRouter
+            ? "请粘贴 OpenRouter 的 Management key（管理密钥），普通 API key 查不到账户余额。创建路径：openrouter.ai 左上角两条杠菜单 → Account → Management Keys（不是顶部 Settings）。"
+            : "请粘贴你在 DeepSeek 开放平台已有的 API key，App 只用它查询余额。"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            DesignIcon(name: platform.iconName, size: 44).frame(maxWidth: .infinity)
+            Text(instruction).font(.subheadline).foregroundStyle(DashboardStyle.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("connection.keyInstruction")
+            HStack(spacing: 10) {
+                SecureField(platform == .openRouter ? "Management key" : "API key", text: $key)
+                    .textInputAutocapitalization(.never).autocorrectionDisabled()
+                    .privacySensitive().focused($focused).submitLabel(.go)
+                    .onSubmit { flow.connectAPIKey(key) }
+                    .padding(.horizontal, 14).frame(minHeight: 48)
+                    .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 14))
+                    .disabled(flow.keyVerifying)
+                    .accessibilityIdentifier("connection.keyField")
+                PasteButton(payloadType: String.self) { values in
+                    guard let value = values.first else { return }
+                    Task { @MainActor in key = value }
+                }
+                .labelStyle(.titleOnly).buttonBorderShape(.roundedRectangle(radius: 14))
+                .tint(DashboardStyle.accent)
+                .disabled(flow.keyVerifying)
+                .accessibilityIdentifier("connection.keyPaste")
+            }
+            if let failure = flow.keyFailure {
+                Text(failure).font(.subheadline).foregroundStyle(DashboardStyle.secondary)
+                    .accessibilityIdentifier("connection.keyFailure")
+            }
+            Button { flow.connectAPIKey(key) } label: {
+                if flow.keyVerifying { ProgressView().tint(DashboardStyle.accentText) } else { Text("连接") }
+            }
+            .buttonStyle(DashboardButtonStyle())
+            .disabled(flow.keyVerifying || key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            .accessibilityLabel(flow.keyVerifying ? "正在连接" : "连接")
+            .accessibilityIdentifier("connection.keyConnect")
+        }
+        .onDisappear { key = "" }
     }
 }

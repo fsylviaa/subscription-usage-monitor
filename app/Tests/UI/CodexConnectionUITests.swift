@@ -49,6 +49,60 @@ final class CodexConnectionUITests: XCTestCase {
         }
     }
 
+    /// T114 (D-82): OpenRouter and DeepSeek follow Codex and Cursor; each opens the key page.
+    @MainActor
+    func testT114PickerShowsFourAndKeyPages() throws {
+        let app = launch("51")
+        defer { app.terminate() }
+        app.buttons["quota.toolbarConnect"].tap()
+        let ids = ["platforms.codex", "platforms.cursor", "platforms.openrouter", "platforms.deepseek"]
+        let tiles = ids.map { app.buttons[$0] }
+        XCTAssertTrue(tiles[0].waitForExistence(timeout: 5))
+        XCTAssertEqual(tiles.map(\.label), ["Codex", "Cursor", "OpenRouter", "DeepSeek"])
+        XCTAssertEqual(tiles[2].frame.midY, tiles[0].frame.midY, accuracy: 1, "OpenRouter在第一行第三格")
+        XCTAssertGreaterThan(tiles[3].frame.minY, tiles[0].frame.maxY, "DeepSeek在第二行")
+        XCTAssertTrue(tiles[3].isHittable)
+        saveFixtureScreenshot(app, name: "T114-四格")
+
+        tiles[2].tap()
+        XCTAssertEqual(app.staticTexts["connection.title"].label, "连接 OpenRouter")
+        let instruction = app.staticTexts["connection.keyInstruction"]
+        XCTAssertTrue(instruction.waitForExistence(timeout: 5))
+        XCTAssertTrue(instruction.label.contains("Management key"))
+        XCTAssertTrue(instruction.label.contains("左上角两条杠菜单 → Account → Management Keys"))
+        XCTAssertTrue(instruction.label.contains("不是顶部 Settings"))
+        let field = app.secureTextFields["connection.keyField"]
+        XCTAssertTrue(field.exists)
+        let connect = app.buttons["connection.keyConnect"]
+        XCTAssertFalse(connect.isEnabled, "空输入不能连接")
+        field.tap(); field.typeText("sk-ui-test-only-0000")
+        XCTAssertTrue(connect.isEnabled)
+        saveFixtureScreenshot(app, name: "T114-OpenRouter输入页")
+        app.buttons["connection.cancel"].tap()
+        XCTAssertTrue(app.buttons["quota.toolbarConnect"].waitForExistence(timeout: 5))
+
+        app.buttons["quota.toolbarConnect"].tap()
+        XCTAssertTrue(app.buttons["platforms.deepseek"].waitForExistence(timeout: 5))
+        app.buttons["platforms.deepseek"].tap()
+        XCTAssertEqual(app.staticTexts["connection.title"].label, "连接 DeepSeek")
+        XCTAssertTrue(app.staticTexts["connection.keyInstruction"].label.contains("DeepSeek 开放平台"))
+        XCTAssertFalse(app.buttons["connection.keyConnect"].isEnabled, "重新打开后不残留上次输入")
+        app.buttons["connection.cancel"].tap()
+    }
+
+    /// T114: the network check runs before the key page appears.
+    @MainActor
+    func testT114NetworkBelowThresholdStopsBeforeKeyPage() {
+        let app = launch("50")
+        defer { app.terminate() }
+        app.buttons["quota.toolbarConnect"].tap()
+        XCTAssertTrue(app.buttons["platforms.openrouter"].waitForExistence(timeout: 5))
+        app.buttons["platforms.openrouter"].tap()
+        XCTAssertTrue(app.staticTexts["connection.failure"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["connection.failure"].label, "网络不达标，无法连接")
+        XCTAssertFalse(app.secureTextFields["connection.keyField"].exists)
+    }
+
     @MainActor
     func testT16PlatformPickerStartsCompactExpandsAndReopensCompact() {
         let app = launch("51")

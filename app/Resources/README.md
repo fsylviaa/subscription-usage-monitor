@@ -3,7 +3,7 @@
 `Assets.xcassets` 含黑白灰强调色及 T13 额度页所用的 Figma 资源；正式 App 图标已由T63接入，见[品牌说明](Brand/README.md)。
 
 - `DesignBg/Card/Elevated/Text/Secondary/Muted/Track/Line/Accent/AccentText`：原型 `design/figma-plugin/mono-palette.json` 的浅深配对值，随系统外观切换。
-- `DesignCodex`／`DesignCursor`：T102 起为 Lobe Icons 的 OpenAI／Cursor 平台标志（见下方“T102 Lobe Icons 平台标志”），模板着色；只用于对应平台账户标识。
+- `DesignCodex`／`DesignCursor`：T102 起为 Lobe Icons 的 OpenAI／Cursor 平台标志（见下方“T102 Lobe Icons 平台标志”），模板着色；只用于对应平台账户标识。`DesignOpenRouter`／`DesignDeepSeek`：T114 起为同一图标包的 OpenRouter／DeepSeek 标志（见下方“T114”）。
 - 原 `DesignRefresh/Link/Chart/Settings/Clock/Close/Down/Up`（原型 ICONS 自绘矢量）已于 T100 删除：功能图标按 D-79 改用 Lucide，见下方“T99 Lucide 功能图标”。未使用页面截图充当界面或图标，没有远端临时资源依赖。
 - 原型字号映射到 App 既有系统字体并随 Dynamic Type 缩放；界面布局按安全区自适应，未复制原型的状态栏和设备外框。
 
@@ -37,3 +37,11 @@
 - 原生形状 `OpenAIMarkShape`／`CursorMarkShape`（`Sources/Shared/CardStyles/QuotaWatermarkShape.swift`）：同一路径转换为原生几何（圆弧转三次曲线；512 像素栅格与原 SVG 对比最大差 8/255），24×24 画布铺满框；填充一律用 `PlatformMarkShape.fillStyle`（奇偶规则），镂空不被填满；用于 13 款卡片水印、蓝条水印款卡片与小组件标题小标志。
 - 完整 MIT 许可与上游 `lobehub/lobe-icons` 仓库 `LICENSE` 逐字节相同（SHA-256 `add9d7531d1b21646317a8958e38fc727506fa39d24bdecb44154d943c82753a`；npm 包内不含 LICENSE 文件，`package.json` 声明 MIT），保存在 [LobeIcons-MIT.txt](Licenses/LobeIcons-MIT.txt)，设置“开源许可→Lobe Icons”可离线阅读。
 - 旧 CodexBar 平台标志（Codex、Cursor）已全部替换，产品中不再含 CodexBar 素材或代码，`CodexBar-MIT.txt` 已移出 App 与“开源许可”清单。`Sources/Providers/Codex` 中对 CodexBar 固定版本的引用只是字段契约核对说明，未复制其代码或素材。
+
+## T114 OpenRouter／DeepSeek 平台标志（D-82）
+
+取自同一 npm 包 `@lobehub/icons-static-svg@1.95.1` 的 `icons/openrouter.svg`（SHA-256 `ae671cc83de9bd45db97a47ed5e38a4e1bd9f93a12be495ba4b4f8b284026bca`）与 `icons/deepseek.svg`（SHA-256 `8f9443e351b6dacce71871790201b799d92e8bf96a45ef79aeb5e9bf4db423e2`），处理方式与 T102 相同：路径原样保留，`currentColor` 换成黑色，去掉 `1em` 尺寸与标题，保留 `fill-rule="evenodd"`，模板着色。
+
+- 图片资源 `DesignOpenRouter.imageset/LobeOpenRouter.svg`、`DesignDeepSeek.imageset/LobeDeepSeek.svg`：用于“连接账号”弹层两格与粘贴 key 输入页。
+- 原生形状 `OpenRouterMarkShape`／`DeepSeekMarkShape`（T115，`Sources/Shared/CardStyles/QuotaWatermarkShape.swift`）：由同一路径脚本转换（圆弧转三次曲线），用于卡片水印与蓝条水印款标题小标志。
+- 许可同上 `LobeIcons-MIT.txt`；设置“开源许可→Lobe Icons”的采用内容已改为 OpenAI、Cursor、OpenRouter 与 DeepSeek 平台标志。
