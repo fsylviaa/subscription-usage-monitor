@@ -546,8 +546,8 @@ final class CodexAccountBindingStoreTests: XCTestCase {
         try await f.store.update(demo)
         _ = try await f.bindings.save(login)
         let saved = try await f.store.load()
-        XCTAssertEqual(saved.count, 3, "真实＋Cursor示例＋Codex示例")
-        XCTAssertEqual(saved[2], demo)
+        XCTAssertEqual(saved.count, 5, "真实＋Cursor、OpenRouter、DeepSeek示例＋Codex示例")
+        XCTAssertEqual(saved[4], demo)
     }
 
     func testT18CleanupFailureKeepsNewConnectionAndRetriesOnReopen() async throws {
@@ -683,7 +683,7 @@ final class CodexAccountBindingStoreTests: XCTestCase {
         try await XCTUnwrap(flow.deleteAccount(second.id)).value
         await flow.waitForInitialQuota()
         XCTAssertEqual(flow.accounts.filter { !$0.isDemo }, [real])
-        XCTAssertEqual(flow.accounts.filter(\.isDemo).map(\.platform), [.cursor], "只剩开关自动提供的Cursor示例")
+        XCTAssertEqual(flow.accounts.filter(\.isDemo).map(\.platform), [.cursor, .openRouter, .deepSeek], "只剩开关自动提供的示例")
         saved = try await f.store.load()
         XCTAssertEqual(saved, flow.accounts)
         let requests = await f.server.requests

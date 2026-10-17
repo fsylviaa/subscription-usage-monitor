@@ -581,6 +581,11 @@ final class AccountStore {
         if enabled, !accounts.contains(where: { $0.isDemo && $0.platform == .cursor }) {
             accounts.append(try demoSnapshot(Self.newDemo(platform: .cursor), now: Date(), used: 42))
         }
+        // One sample per API balance platform (D-82, BAL-11), local amounts only.
+        for platform in [QuotaPlatform.openRouter, .deepSeek]
+        where enabled && !accounts.contains(where: { $0.isDemo && $0.platform == platform }) {
+            accounts.append(try demoSnapshot(Self.newDemo(platform: platform), now: Date(), used: 0))
+        }
         // Mode and cleanup commit together: a crash cannot leave disabled samples behind.
         try commit(accounts, demoEnabled: enabled)
         return accounts
@@ -589,6 +594,13 @@ final class AccountStore {
     private static func newDemo(platform: QuotaPlatform) -> ConnectedAccount {
         let id = UUID()
         let suffix = id.uuidString.prefix(6).lowercased()
+        if platform.isBalance {
+            let provider: ProviderID = platform == .openRouter ? .openRouter : .deepSeek
+            return ConnectedAccount(id: id, provider: provider,
+                product: platform == .openRouter ? .openRouterCredits : .deepSeekBalance,
+                displayName: "sk-…" + suffix.suffix(4),
+                scope: .init(remoteAccountID: "demo-\(id)", kind: .personal), credentialRef: UUID(), source: .demo)
+        }
         return ConnectedAccount(id: id, provider: platform == .cursor ? .cursor : .openAI,
             product: platform == .cursor ? .cursorSubscription : .codexSubscription,
             verifiedEmail: "demo-\(suffix)@example.invalid",
@@ -615,13 +627,33 @@ final class AccountStore {
             throw StoreError.accountNotFound
         }
         let used = ((account.quotaSnapshot?.weekly.amount.usedPercent ?? 0) + 7).truncatingRemainder(dividingBy: 95)
-        let updated = try demoSnapshot(account, now: now, used: used)
+        var updated = try demoSnapshot(account, now: now, used: used)
+        if account.isBalance, let old = account.balance?.amounts.first {
+            // Simulated spending: each refresh lowers the sample, then starts over.
+            let spent = old.total - Decimal(string: "1.37")!
+            updated = try demoSnapshot(account, now: now, used: 0, total: spent < 0 ? nil : spent)
+        }
         try update(updated)
         return updated
     }
 
-    private func demoSnapshot(_ account: ConnectedAccount, now: Date, used: Double) throws -> ConnectedAccount {
+    private func demoSnapshot(_ account: ConnectedAccount, now: Date, used: Double,
+                              total: Decimal? = nil) throws -> ConnectedAccount {
         var result = account
+        if account.isBalance {
+            // Local sample amounts only; never a real query or a key.
+            result.quotaState = .available
+            if account.platform == .openRouter {
+                result.balance = APIBalanceSnapshot(amounts: [BalanceAmount(currency: "USD",
+                    total: total ?? Decimal(string: "18.42")!)], observedAt: now)
+            } else {
+                let value = total ?? Decimal(string: "56.80")!
+                let granted = min(value, Decimal(string: "6.80")!)
+                result.balance = APIBalanceSnapshot(amounts: [BalanceAmount(currency: "CNY", total: value,
+                    toppedUp: value - granted, granted: granted)], observedAt: now)
+            }
+            return result
+        }
         if account.platform == .cursor {
             // Local sample only: “本月” plus Grok Bot, no five-hour limit.
             result.subscription = .init(planType: "pro", observedAt: now)
