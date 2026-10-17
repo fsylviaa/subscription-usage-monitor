@@ -407,7 +407,7 @@ Codex 本期仍不展示 30 天窗口、credits 或 API 余额。识别新套餐
 |---|---|---|
 | BAL-01 | 范围 | OpenRouter 为 openrouter.ai 账户 credits 余额，DeepSeek 为开放平台 API 余额；不含聊天会员额度、充值、创建／管理 key、用量明细、费用趋势或低余额提醒 |
 | BAL-02 | 连接 | 弹层在 Codex、Cursor 之后显示 OpenRouter、DeepSeek 两格（平台名与标志同 D-78／D-79）；点击→新增前网络检查→App 内原生输入框粘贴已有 key→用该 key 查询余额成功才添加；不打开浏览器、不导入浏览器存储、无创建 key 或充值步骤 |
-| BAL-03 | OpenRouter 管理密钥 | 只接受管理密钥（Management key），输入页一句话说明；普通 key 查询账户余额被拒时不添加账户，在连接弹层简短提示并可重新输入，不罗列技术原因 |
+| BAL-03 | OpenRouter 管理密钥 | 只接受管理密钥（Management key），输入页简要说明并给出创建路径：openrouter.ai 左上角两条杠菜单 → Account（账户）分组 → Management Keys → 创建（不是顶部 Settings）；普通 key 查询账户余额被拒时不添加账户，在连接弹层简短提示并可重新输入，不罗列技术原因 |
 | BAL-04 | 凭据保存 | 验证成功后 key 只存本机钥匙串，不进日志、截图或仓库；删除账户只删本 App 的 key 与缓存，不撤销平台上的 key |
 | BAL-05 | 金额显示 | 账户卡、详情额度卡、小号与中号组件以“余额”金额为主体，按币种显示符号（OpenRouter 美元；DeepSeek 按返回币种，多币种分行），两位小数；不画进度条、不显示百分比与重置时间；13 款样式与浅深适用 |
 | BAL-06 | 详情 | DeepSeek 详情列表另列“充值余额”“赠送余额”；OpenRouter 不加额外行；更新时间等通用行照常 |

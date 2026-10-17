@@ -37,7 +37,7 @@ T114改连接弹层，T115改卡片与组件文件，同一会话内先后执行
 
 ## 本人需要准备
 
-- 第一阶段前：一把OpenRouter管理密钥（openrouter.ai → Settings → Management Keys），一把DeepSeek API key；可选一把OpenRouter普通key用来确认被拒。key由本人在手机验证页粘贴，不发到聊天里。
+- 第一阶段前：一把OpenRouter管理密钥（openrouter.ai 左上角两条杠菜单 → Account（账户）分组 → Management Keys → 创建；不是顶部Settings），一把DeepSeek API key；可选一把OpenRouter普通key用来确认被拒。key由本人在手机验证页粘贴，不发到聊天里。
 
 ## 不在本轮
 
