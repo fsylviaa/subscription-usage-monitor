@@ -2,6 +2,10 @@ import SwiftUI
 
 struct CodexConnectionView: View {
     @ObservedObject var flow: CodexConnectionFlow
+    /// Reports the picker's full natural height so the sheet opens showing every platform.
+    var platformPickerHeight: (CGFloat) -> Void = { _ in }
+    @State private var headerHeight: CGFloat = 0
+    @State private var contentHeight: CGFloat = 0
     @Environment(\.scenePhase) private var scenePhase
     @ScaledMetric(relativeTo: .headline) private var titleSize = 18
     @ScaledMetric(relativeTo: .largeTitle) private var keySize: CGFloat = 40
@@ -31,6 +35,7 @@ struct CodexConnectionView: View {
                 }
             }
             .frame(minHeight: 52).padding(.top, 18).padding(.horizontal, 8)
+            .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { headerHeight = $0 }
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     switch flow.state {
@@ -87,7 +92,11 @@ struct CodexConnectionView: View {
                     }
                 }
                 .padding(.horizontal, 20).padding(.top, 20).padding(.bottom, 24)
+                .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { contentHeight = $0 }
             }
+        }
+        .onChange(of: flow.state == .choosingPlatform ? (headerHeight + contentHeight).rounded(.up) : 0, initial: true) { _, height in
+            if height > 0, contentHeight > 0 { platformPickerHeight(height) }
         }
         .foregroundStyle(DashboardStyle.text)
         .background(DashboardStyle.card)

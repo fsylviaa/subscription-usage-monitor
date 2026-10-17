@@ -27,6 +27,8 @@ struct RootView: View {
     }
     @State private var tutorialSource: TutorialSource?
     @State private var connectionDetent: PresentationDetent = .height(250)
+    // Grows with the platform grid; taller than the screen is clamped to full height by the system.
+    @State private var platformPickerHeight: CGFloat = 250
     @State private var appearanceTransition = AppearanceTransition()
     @State private var supportBottomInset: CGFloat = 60
     @State private var footerTop: CGFloat?
@@ -47,7 +49,7 @@ struct RootView: View {
 
     private var connectionDetents: Set<PresentationDetent> {
         if dynamicTypeSize.isAccessibilitySize { return [.large] }
-        if connection.state == .choosingPlatform { return [.height(250), .large] }
+        if connection.state == .choosingPlatform { return [.height(platformPickerHeight), .large] }
         if case .code = connection.state { return [.large] }
         if case .quota = connection.state { return [.height(310), .large] }
         return [.medium, .large]
@@ -224,7 +226,11 @@ struct RootView: View {
             }
         }
         .sheet(isPresented: $connection.isPresented, onDismiss: { connection.cancel() }) {
-            CodexConnectionView(flow: connection)
+            CodexConnectionView(flow: connection, platformPickerHeight: { height in
+                guard height != platformPickerHeight else { return }
+                platformPickerHeight = height
+                if connection.state == .choosingPlatform { connectionDetent = initialConnectionDetent }
+            })
                 .presentationDetents(connectionDetents, selection: $connectionDetent)
                 .presentationContentInteraction(.resizes)
                 .presentationDragIndicator(.visible)
@@ -303,7 +309,7 @@ struct RootView: View {
     private var initialConnectionDetent: PresentationDetent {
         if dynamicTypeSize.isAccessibilitySize { return .large }
         switch connection.state {
-        case .choosingPlatform: return .height(250)
+        case .choosingPlatform: return .height(platformPickerHeight)
         case .code: return .large
         case .quota: return .height(310)
         default: return .medium
