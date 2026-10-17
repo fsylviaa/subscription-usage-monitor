@@ -391,7 +391,7 @@ extension WidgetQuotaRoute {
     func detailTarget(in accounts: [ConnectedAccount]) -> CodexDetailTarget? {
         guard case let .quota(id?, key?) = self,
               let account = accounts.first(where: { $0.id == id && $0.deletionPending != true }),
-              key == Self.identityKey(account.verifiedEmail ?? account.remoteUserID ?? "\(account.platform.displayName) 账户",
+              key == Self.identityKey(account.identityText,
                                       isDemo: account.isDemo, platform: account.platform)
         else { return nil }
         return CodexDetailTarget(account)

@@ -95,7 +95,7 @@ struct CodexConnectionView: View {
     @ViewBuilder private var quotaContent: some View {
         let account = flow.accounts.first { $0.id == (flow.quotaUpdatingID ?? flow.quotaFailureID) }
         if let account {
-            Text(account.verifiedEmail ?? account.remoteUserID ?? "\(account.platform.displayName) 账户")
+            Text(account.identityText)
                 .font(.subheadline).privacySensitive().foregroundStyle(DashboardStyle.secondary)
                 .accessibilityIdentifier("connection.accountIdentity")
         }

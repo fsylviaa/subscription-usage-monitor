@@ -22,6 +22,12 @@ protocol CursorAccountBinding: Sendable {
     func save(cursor login: CursorVerifiedLogin) async throws -> ConnectedAccount
 }
 
+/// Saves a key connection whose balance query already succeeded (D-82). The same key on
+/// the same platform updates the existing account in place; nothing is removed before success.
+protocol APIBalanceAccountBinding: Sendable {
+    func save(balance login: APIBalanceVerifiedLogin) async throws -> ConnectedAccount
+}
+
 protocol CodexAccountBinding: Sendable {
     func load() async throws -> [ConnectedAccount]
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount
@@ -37,7 +43,7 @@ extension CodexAccountBinding {
 /// Accepts the verifier's result type only. Raw tokens and decoded claims never
 /// enter the account store through this boundary.
 @MainActor
-final class CodexAccountBindingStore: CodexAccountBinding, CursorAccountBinding, AccountOrdering, DemoAccountManaging, AccountRemoving {
+final class CodexAccountBindingStore: CodexAccountBinding, CursorAccountBinding, APIBalanceAccountBinding, AccountOrdering, DemoAccountManaging, AccountRemoving {
     enum BindingError: Error, Equatable {
         case credentialCleanupFailed
     }
@@ -128,16 +134,32 @@ final class CodexAccountBindingStore: CodexAccountBinding, CursorAccountBinding,
         return (try? await accountStore.load().first { $0.id == committed.id }) ?? committed
     }
 
+    func save(balance login: APIBalanceVerifiedLogin) async throws -> ConnectedAccount {
+        try Task.checkCancellation()
+        _ = try await load()
+        let fingerprint = login.credential.fingerprint(for: login.provider)
+        var account = ConnectedAccount(provider: login.provider,
+            product: login.provider == .openRouter ? .openRouterCredits : .deepSeekBalance,
+            remoteUserID: fingerprint, displayName: login.credential.masked,
+            scope: AccountScope(remoteAccountID: fingerprint, kind: .personal), credentialRef: UUID(),
+            quotaState: .available)
+        account.balance = login.balance
+        let committed = try await commitCredential(login.credential.payload, for: account, balance: true)
+        await cleanupRetiredCredentials(committed)
+        return (try? await accountStore.load().first { $0.id == committed.id }) ?? committed
+    }
+
     /// Credential first, then the account in one atomic write; a failed write
     /// removes only this attempt's new random Keychain entry.
     @AccountPersistenceActor
-    private func commitCredential(_ credentials: CredentialPayload, for account: ConnectedAccount) throws -> ConnectedAccount {
+    private func commitCredential(_ credentials: CredentialPayload, for account: ConnectedAccount,
+                                  balance: Bool = false) throws -> ConnectedAccount {
         try Task.checkCancellation()
         let entry = CredentialVault.Entry.credential(account.credentialRef)
         try vault.save(credentials, for: entry)
         do {
             try Task.checkCancellation()
-            return try accountStore.commitLogin(account)
+            return try balance ? accountStore.commitBalanceLogin(account) : accountStore.commitLogin(account)
         } catch {
             do { try vault.remove(ifMatching: credentials, for: entry) } catch { throw BindingError.credentialCleanupFailed }
             throw error

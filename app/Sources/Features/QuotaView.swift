@@ -242,7 +242,7 @@ private struct QuotaAccountCard: View {
                             .frame(width: 14, height: 14)
                             accountMenu
                         }), openDetails: openDetails, variant: position,
-                        spokenIdentity: account.verifiedEmail ?? account.remoteUserID ?? "\(account.platform.displayName) 账户", failed: failed)
+                        spokenIdentity: account.identityText, failed: failed)
                 }
                 .fixedSize(horizontal: false, vertical: true)
             }
@@ -681,7 +681,7 @@ struct CodexDetailContent {
             return $0
         }
         var values: [Row] = [Row(id: "identity", title: "账号",
-            value: account.verifiedEmail ?? account.remoteUserID ?? "\(account.platform.displayName) 账户")]
+            value: account.identityText)]
         // Reset cards are a Codex inventory; Cursor has no such field (D-77).
         if account.platform == .codex {
         let count = account.subscription.flatMap { subscription -> Int64? in

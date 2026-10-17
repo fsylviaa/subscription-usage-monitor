@@ -18,6 +18,8 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
     var quotaSnapshot: CodexQuotaSnapshot?
     /// Cursor only (D-80); nil until the first Grok Bot query succeeds.
     var grokBot: GrokBotQuota?
+    /// OpenRouter / DeepSeek only (D-82): the trusted balance; nil until the first success.
+    var balance: APIBalanceSnapshot?
     var deletionPending: Bool?
     var source: Source?
     enum Source: String, Codable, Sendable { case demo }
@@ -90,21 +92,42 @@ enum ProviderID: String, Codable, Sendable {
     case openAI = "openai"
     /// Cursor personal subscription (D-77).
     case cursor
+    /// API balance platforms (D-82), connected with a pasted existing key.
+    case openRouter = "openrouter"
+    case deepSeek = "deepseek"
 }
 
 enum ProductID: String, Codable, Sendable {
     case codexSubscription
     case cursorSubscription
+    case openRouterCredits
+    case deepSeekBalance
 }
 
 extension ConnectedAccount {
     /// Display platform. Unknown pairs never occur: storage validates the pair.
-    var platform: QuotaPlatform { provider == .cursor ? .cursor : .codex }
+    var platform: QuotaPlatform {
+        switch provider {
+        case .openAI: .codex
+        case .cursor: .cursor
+        case .openRouter: .openRouter
+        case .deepSeek: .deepSeek
+        }
+    }
+    /// Balance accounts have no quota window (D-82).
+    var isBalance: Bool { platform.isBalance }
     /// The single primary window: weekly for Codex, the billing month for Cursor.
     var primaryWindow: QuotaWindow { platform == .cursor ? .monthly : .weekly }
     var hasKnownProductPair: Bool {
-        (provider == .openAI && product == .codexSubscription) || (provider == .cursor && product == .cursorSubscription)
+        switch (provider, product) {
+        case (.openAI, .codexSubscription), (.cursor, .cursorSubscription),
+             (.openRouter, .openRouterCredits), (.deepSeek, .deepSeekBalance): true
+        default: false
+        }
     }
+    /// What stands where an e-mail would: the e-mail for subscriptions, the masked key
+    /// (“sk-…a1b2”) for balance accounts, which have no e-mail (BAL-07).
+    var identityText: String { verifiedEmail ?? displayName ?? remoteUserID ?? "\(platform.displayName) 账户" }
 }
 
 struct AccountScope: Codable, Equatable, Sendable {

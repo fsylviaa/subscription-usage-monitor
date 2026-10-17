@@ -4,8 +4,18 @@ import Foundation
 /// primary window's label differ; layouts and colours are shared.
 enum QuotaPlatform: String, Codable, Equatable, Sendable {
     case codex, cursor
+    /// API balance platforms (D-82): a money amount instead of quota windows.
+    case openRouter = "openrouter", deepSeek = "deepseek"
 
-    var displayName: String { self == .cursor ? "Cursor" : "Codex" }
+    var displayName: String {
+        switch self {
+        case .codex: "Codex"
+        case .cursor: "Cursor"
+        case .openRouter: "OpenRouter"
+        case .deepSeek: "DeepSeek"
+        }
+    }
+    var isBalance: Bool { self == .openRouter || self == .deepSeek }
     /// Codex's primary window is weekly; Cursor's is the billing month.
     var primaryWindowID: String { self == .cursor ? "monthly" : "weekly" }
     var primaryWindowTitle: String { self == .cursor ? "本月" : "每周" }
@@ -30,7 +40,7 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
                 && lhs.isDemo == rhs.isDemo && lhs.state == rhs.state && lhs.failure == rhs.failure
                 && lhs.weekly?.amount == rhs.weekly?.amount && lhs.fiveHours?.amount == rhs.fiveHours?.amount
                 && lhs.fiveHours?.isApplicable == rhs.fiveHours?.isApplicable
-                && lhs.grokBot?.amount == rhs.grokBot?.amount
+                && lhs.grokBot?.amount == rhs.grokBot?.amount && lhs.balance == rhs.balance
         }
     }
 
@@ -49,6 +59,8 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
         var platform: QuotaPlatform? = nil
         /// Cursor's Grok Bot weekly row (D-80); nil hides the row.
         var grokBot: Window? = nil
+        /// OpenRouter / DeepSeek (D-82): total balance per currency only; never a key.
+        var balance: [BalanceAmount]? = nil
 
         var resolvedPlatform: QuotaPlatform { platform ?? .codex }
     }
@@ -128,6 +140,24 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
               account.subscriptionObservedAt.map(validDate) ?? true else {
             throw WidgetSnapshotStore.StoreError.invalidSnapshot
         }
+        if account.resolvedPlatform.isBalance {
+            // A balance has no window, plan or Grok Bot row (D-82).
+            guard account.weekly == nil, account.fiveHours == nil, account.grokBot == nil, account.plan == nil,
+                  account.state != .notApplicable else { throw WidgetSnapshotStore.StoreError.invalidSnapshot }
+            if account.state == .available {
+                guard let balance = account.balance, let time = account.quotaObservedAt,
+                      APIBalanceSnapshot(amounts: balance, observedAt: time).isValid,
+                      balance.allSatisfy({ $0.toppedUp == nil && $0.granted == nil }) else {
+                    throw WidgetSnapshotStore.StoreError.invalidSnapshot
+                }
+            } else {
+                guard account.balance == nil, account.quotaObservedAt == nil else {
+                    throw WidgetSnapshotStore.StoreError.invalidSnapshot
+                }
+            }
+            return
+        }
+        guard account.balance == nil else { throw WidgetSnapshotStore.StoreError.invalidSnapshot }
         switch account.state {
         case .notFetched, .notApplicable:
             guard account.weekly == nil, account.fiveHours == nil, account.quotaObservedAt == nil,

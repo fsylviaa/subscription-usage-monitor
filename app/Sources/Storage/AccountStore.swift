@@ -302,7 +302,8 @@ final class AccountStore {
         guard let current = document.accounts.first(where: { $0.id == expected.id }),
               Self.isCurrentBinding(current, expected),
               current.quotaSnapshot == expected.quotaSnapshot,
-              current.subscription == expected.subscription else { throw StoreError.staleQuotaContext }
+              current.subscription == expected.subscription,
+              current.balance == expected.balance else { throw StoreError.staleQuotaContext }
         var failures = document.quotaFailures ?? [:]
         failures[expected.id] = failure
         try Task.checkCancellation()
@@ -422,6 +423,72 @@ final class AccountStore {
         return value
     }
 
+    /// A verified key connection (D-82): the same key on the same platform (fingerprint)
+    /// updates that account in place with the fresh balance; a different key appends.
+    /// Called only after the key was saved under `incoming.credentialRef`.
+    func commitBalanceLogin(_ incoming: ConnectedAccount) throws -> ConnectedAccount {
+        try beginTransaction()
+        defer { endTransaction() }
+        try Task.checkCancellation()
+        guard incoming.isBalance, !incoming.isDemo, incoming.balance != nil else { throw StoreError.invalidQuotaSnapshot }
+        var accounts = try load()
+        let matches = accounts.filter { Self.sameKey($0, incoming) }
+        guard let previous = matches.first else {
+            accounts.append(incoming)
+            try Task.checkCancellation()
+            try commit(accounts, clearingFailures: [incoming.id])
+            return incoming
+        }
+        guard matches.allSatisfy({ $0.deletionPending != true }), previous.generation < UInt64.max else {
+            throw StoreError.staleQuotaContext
+        }
+        var replacement = previous
+        replacement.displayName = incoming.displayName
+        replacement.credentialRef = incoming.credentialRef
+        replacement.generation += 1
+        replacement.retiredCredentialRefs = Array(Set(matches.flatMap {
+            ($0.retiredCredentialRefs ?? []) + [$0.credentialRef]
+        })).filter { $0 != incoming.credentialRef }
+        replacement.balance = incoming.balance
+        replacement.quotaState = .available
+        accounts = accounts.compactMap { account in
+            if account.id == previous.id { return replacement }
+            return Self.sameKey(account, incoming) ? nil : account
+        }
+        try Task.checkCancellation()
+        try commit(accounts, clearingFailures: [previous.id])
+        return replacement
+    }
+
+    private static func sameKey(_ account: ConnectedAccount, _ incoming: ConnectedAccount) -> Bool {
+        !account.isDemo && account.provider == incoming.provider && account.product == incoming.product
+            && account.remoteUserID != nil && account.remoteUserID == incoming.remoteUserID
+    }
+
+    /// Commits a balance only to the binding that began the request; an older result
+    /// arriving late never replaces a newer one.
+    func saveBalance(_ balance: APIBalanceSnapshot, for expected: ConnectedAccount,
+                     validateRequest: @Sendable () throws -> Void = {}) throws -> ConnectedAccount {
+        try beginTransaction()
+        defer { endTransaction() }
+        try validateRequest()
+        try Task.checkCancellation()
+        var accounts = try load()
+        guard let index = accounts.firstIndex(where: { $0.id == expected.id }) else {
+            throw StoreError.accountNotFound
+        }
+        let current = accounts[index]
+        guard current.isBalance, balance.isValid, Self.isCurrentBinding(current, expected),
+              current.balance.map({ $0.observedAt <= balance.observedAt }) ?? true else {
+            throw StoreError.staleQuotaContext
+        }
+        accounts[index].balance = balance
+        accounts[index].quotaState = .available
+        try Task.checkCancellation()
+        try commit(accounts, clearingFailures: [expected.id])
+        return accounts[index]
+    }
+
     /// Requires an exact permutation: sorting cannot silently add, remove or duplicate accounts.
     func reorder(_ ids: [UUID]) throws {
         try beginTransaction()
@@ -440,6 +507,18 @@ final class AccountStore {
         }
         for account in accounts {
             guard account.hasKnownProductPair else { throw StoreError.invalidQuotaSnapshot }
+            // Balance accounts (D-82) carry only a balance; subscriptions never carry one.
+            if account.isBalance {
+                guard account.quotaSnapshot == nil, account.subscription == nil, account.grokBot == nil,
+                      account.verifiedEmail == nil, account.displayName.map({ !$0.isEmpty && $0.utf8.count <= 64 }) == true,
+                      account.isDemo || account.remoteUserID?.hasPrefix("keyfp:") == true,
+                      account.balance.map(\.isValid) ?? true,
+                      account.quotaState == (account.balance == nil ? .notFetched : .available) else {
+                    throw StoreError.invalidQuotaSnapshot
+                }
+                continue
+            }
+            guard account.balance == nil else { throw StoreError.invalidQuotaSnapshot }
             guard account.subscription?.isValid ?? true else { throw StoreError.invalidQuotaSnapshot }
             if let grokBot = account.grokBot, account.platform != .cursor || !grokBot.isValid {
                 throw StoreError.invalidQuotaSnapshot
@@ -580,7 +659,8 @@ final class AccountStore {
                   let current = accounts.first(where: { $0.id == id && $0.deletionPending != true }),
                   let old = previous.accounts.first(where: { $0.id == id }),
                   Self.isCurrentBinding(current, old) else { return false }
-            return failures != nil || (current.quotaSnapshot == old.quotaSnapshot && current.subscription == old.subscription)
+            return failures != nil || (current.quotaSnapshot == old.quotaSnapshot && current.subscription == old.subscription
+                && current.balance == old.balance)
         }
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
