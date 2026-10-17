@@ -11,6 +11,8 @@ struct CoordinatedQuotaUpdater: CodexQuotaUpdating {
     /// Cursor accounts use their own query (D-77); the same lease, interval and
     /// stale-binding checks apply to both platforms.
     var cursorService: (any CodexQuotaUpdating)? = nil
+    /// OpenRouter / DeepSeek balance accounts (D-82): same lease, interval and checks.
+    var balanceService: (any CodexQuotaUpdating)? = nil
     var opportunistic = false
     var now: @Sendable () -> Date = { Date() }
     static let interval: TimeInterval = 30 * 60
@@ -40,13 +42,14 @@ struct CoordinatedQuotaUpdater: CodexQuotaUpdating {
               current.credentialRef == expected.credentialRef, current.scope == expected.scope else {
             throw AccountStore.StoreError.staleQuotaContext
         }
-        if waited, current.subscription != expected.subscription || current.quotaSnapshot != expected.quotaSnapshot,
+        if waited, current.subscription != expected.subscription || current.quotaSnapshot != expected.quotaSnapshot
+            || current.balance != expected.balance,
            try await store.quotaFailure(for: current.id) == nil {
             return current
         }
         let attemptURL = lockURL.appendingPathExtension("attempt")
         if opportunistic {
-            if let observed = current.subscription?.observedAt, now().timeIntervalSince(observed) >= 0,
+            if let observed = current.subscription?.observedAt ?? current.balance?.observedAt, now().timeIntervalSince(observed) >= 0,
                now().timeIntervalSince(observed) < Self.interval { return current }
             if let data = try? Data(contentsOf: attemptURL), let attempt = try? JSONDecoder().decode(Attempt.self, from: data),
                attempt.generation == current.generation, attempt.credentialRef == current.credentialRef,
@@ -56,6 +59,13 @@ struct CoordinatedQuotaUpdater: CodexQuotaUpdating {
         // a success timestamp or a displayed observation, including after a crash.
         try JSONEncoder().encode(Attempt(generation: current.generation, credentialRef: current.credentialRef, date: now()))
             .write(to: attemptURL, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        if current.isBalance {
+            guard let balanceService else { throw CodexQuotaError.failed }
+            if let query = balanceService as? APIBalanceService {
+                return try await query.validatingWrites { try lease.validate(at: now()) }.update(current)
+            }
+            return try await balanceService.update(current)
+        }
         if current.platform == .cursor {
             guard let cursorService else { throw CodexQuotaError.failed }
             if let query = cursorService as? CursorQuotaService {
@@ -75,6 +85,7 @@ struct CoordinatedQuotaUpdater: CodexQuotaUpdating {
             loadCredential: { try await vault.load(for: .credential($0)) },
             renewal: CodexCredentialRenewal(vault: vault, store: store)),
             cursorService: CursorQuotaService(store: store, loadCredential: { try await vault.load(for: .credential($0)) }),
+            balanceService: APIBalanceService(store: store, loadCredential: { try await vault.load(for: .credential($0)) }),
             opportunistic: opportunistic)
     }
 }
