@@ -48,6 +48,8 @@ enum QuotaCardMotion: Sendable { case staticContent, measuredChanges }
 enum QuotaCardAmount: Equatable, Sendable {
     case unknown, unlimited
     case remaining(Double)
+    /// API balance (D-82): a formatted money amount; no ratio, no bar.
+    case money(String)
 
     init(_ amount: QuotaAmount) {
         switch amount {

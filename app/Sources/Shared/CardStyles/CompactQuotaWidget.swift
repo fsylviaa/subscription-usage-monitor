@@ -105,7 +105,7 @@ struct CompactWidgetBody: View {
                 ForEach(ws) { w in
                     VStack(spacing: 0) {
                         Text(w.title).font(.system(size: 11, weight: .semibold))
-                        gauge(w).frame(width: 68, height: 62).padding(.top, 3)
+                        if !w.isBalance { gauge(w).frame(width: 68, height: 62).padding(.top, 3) }
                         number(w, size: 22, weight: .bold).padding(.top, 2)
                     }
                     .frame(maxWidth: .infinity)
@@ -176,7 +176,7 @@ struct CompactWidgetBody: View {
             VStack(alignment: .leading, spacing: 4) {
                 mediumLabel(w)
                 HStack(spacing: 8) {
-                    gauge(w).frame(width: 68, height: 62)
+                    if !w.isBalance { gauge(w).frame(width: 68, height: 62) }
                     number(w, size: 30, weight: .bold)
                 }
             }
@@ -255,7 +255,7 @@ struct CompactWidgetBody: View {
     }
 
     private func mediumLabel(_ w: QuotaStyledInput.Window, color: Color? = nil) -> some View {
-        Text(w.title + "额度").font(.system(size: 12, weight: .semibold)).foregroundStyle(color ?? theme.ink).lineLimit(1)
+        Text(w.longTitle).font(.system(size: 12, weight: .semibold)).foregroundStyle(color ?? theme.ink).lineLimit(1)
     }
 
     private func number(_ w: QuotaStyledInput.Window, size: CGFloat, weight: Font.Weight, color: Color? = nil) -> some View {
@@ -273,13 +273,14 @@ struct CompactWidgetBody: View {
     @ViewBuilder private func bar(_ w: QuotaStyledInput.Window, height: CGFloat, secondary: Bool = false) -> some View {
         if let f = w.amount.remainingFraction {
             CompactQuotaBar(style: style, fraction: f, mini: true, secondary: secondary, phase: nil).frame(height: height)
-        } else {
+        } else if !w.isBalance {
             Color.clear.frame(height: height)
         }
     }
 
+    /// A balance has no ratio, so no gauge and no reserved gauge space.
     @ViewBuilder private func gauge(_ w: QuotaStyledInput.Window) -> some View {
-        if let f = w.amount.remainingFraction { CompactMiniGauge(fraction: f) } else { Color.clear }
+        if let f = w.amount.remainingFraction { CompactMiniGauge(fraction: f) } else if !w.isBalance { Color.clear }
     }
 }
 
@@ -288,7 +289,7 @@ private struct WindowLabel: ViewModifier {
     let window: QuotaStyledInput.Window
     func body(content: Content) -> some View {
         content.accessibilityElement(children: .ignore)
-            .accessibilityLabel("\(window.title)额度，" + (window.amount.remainingFraction == nil ? window.amount.nativeText : "剩余 " + window.amount.nativeText))
+            .accessibilityLabel("\(window.longTitle)，" + (window.amount.remainingFraction == nil ? window.amount.nativeText : "剩余 " + window.amount.nativeText))
     }
 }
 

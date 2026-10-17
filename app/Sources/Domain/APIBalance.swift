@@ -50,6 +50,21 @@ struct BalanceAmount: Codable, Equatable, Sendable {
         return NSDecimalString(&copy, posix)
     }
 
+    /// “$12.34”, “¥0.00”, other codes as “EUR 5.00”: half-up to two decimals, no grouping (BAL-05).
+    static func money(_ value: Decimal, currency: String) -> String {
+        var input = value, rounded = Decimal()
+        NSDecimalRound(&rounded, &input, 2, .plain)
+        let negative = rounded < 0
+        var plain = Self.text(negative ? -rounded : rounded)
+        if !plain.contains(".") { plain += "." }
+        let parts = plain.split(separator: ".", omittingEmptySubsequences: false)
+        let digits = String(parts[0]) + "." + String(parts[1]).padding(toLength: 2, withPad: "0", startingAt: 0)
+        let symbol = ["USD": "$", "CNY": "¥"][currency] ?? currency + " "
+        return (negative ? "-" : "") + symbol + digits
+    }
+
+    var totalText: String { Self.money(total, currency: currency) }
+
     var isValid: Bool {
         currency.utf8.count == 3 && currency.unicodeScalars.allSatisfy({ ("A"..."Z").contains($0) })
             && [total, toppedUp, granted].allSatisfy { $0.map { !$0.isNaN } ?? true }

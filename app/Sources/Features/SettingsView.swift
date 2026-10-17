@@ -109,7 +109,7 @@ private struct HelpView: View {
     var body: some View {
         Form {
             Section("额度与重置") {
-                Text("显示 Codex 和 Cursor 个人订阅的剩余额度：Codex 为每周和5小时窗口，Cursor 为本月额度和 Grok Bot 每周额度；只显示账户适用的窗口。预计重置时间来自平台，到点后仍以实际查询结果为准，不会自行变满。")
+                Text("显示 Codex 和 Cursor 个人订阅的剩余额度：Codex 为每周和5小时窗口，Cursor 为本月额度和 Grok Bot 每周额度；只显示账户适用的窗口。预计重置时间来自平台，到点后仍以实际查询结果为准，不会自行变满。OpenRouter 和 DeepSeek 显示 API 账户余额金额，没有重置时间，也没有重置提醒。")
                     .accessibilityIdentifier("help.quota")
             }
             Section("刷新与旧数据") {
@@ -122,7 +122,7 @@ private struct HelpView: View {
                     .accessibilityIdentifier("help.reminders")
             }
             Section("小组件") {
-                Text("小号和中号显示所选账户适用的额度（Codex 每周和5小时，Cursor 本月）。默认跟随列表首个账户；长按小组件，在“编辑小组件”的“显示账户”中可为每个组件选择账户，选定后不随排序改变。")
+                Text("小号和中号显示所选账户适用的额度（Codex 每周和5小时，Cursor 本月，OpenRouter、DeepSeek 余额）。默认跟随列表首个账户；长按小组件，在“编辑小组件”的“显示账户”中可为每个组件选择账户，选定后不随排序改变。")
                 Text("小组件会自动尝试更新，也会接收 App 的更新结果；系统可能延后显示，不保证固定更新间隔。")
                     .accessibilityIdentifier("help.widgets")
             }

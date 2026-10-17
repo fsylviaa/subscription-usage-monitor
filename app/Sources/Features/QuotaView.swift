@@ -181,7 +181,12 @@ struct QuotaView: View {
                 if let account = deleting { deleteAccount(account.id) }
                 deleting = nil
             }
-        } message: { Text("仅断开本 App 的连接，不会取消订阅。") }
+        } message: { Text(QuotaView.deletionMessage(for: deleting)) }
+    }
+
+    /// Balance accounts (BAL-04): only this App's copy of the key goes away.
+    static func deletionMessage(for account: ConnectedAccount?) -> String {
+        account?.isBalance == true ? "仅删除本 App 保存的 key，不会撤销平台上的 key。" : "仅断开本 App 的连接，不会取消订阅。"
     }
 
     static func amountText(_ amount: QuotaAmount) -> String {
@@ -257,7 +262,7 @@ private struct QuotaAccountCard: View {
 
     private var accountMenu: some View {
         Menu {
-            Button(action: refresh) { Label { Text("刷新额度") } icon: { AppIcon.refresh.image } }.disabled(!canRefresh)
+            Button(action: refresh) { Label { Text(account.isBalance ? "刷新余额" : "刷新额度") } icon: { AppIcon.refresh.image } }.disabled(!canRefresh)
             Button(role: .destructive, action: delete) { Label { Text("删除账户") } icon: { AppIcon.delete.destructiveImage } }
         } label: {
             AppIconView(.more, size: dynamicTypeSize.isAccessibilitySize ? 26 : 22)
@@ -693,6 +698,24 @@ struct CodexDetailContent {
         if let snapshot {
             values.append(Row(id: "updatedAt", title: "更新时间", value: QuotaView.dateText(snapshot.observedAt)))
         }
+        // Balance accounts (D-82): update time, and DeepSeek's two parts per currency (BAL-06).
+        if account.isBalance, account.quotaState == .available, let balance = account.balance, balance.isValid {
+            values.append(Row(id: "updatedAt", title: "更新时间", value: QuotaView.dateText(balance.observedAt)))
+            if account.platform == .deepSeek {
+                let several = balance.amounts.count > 1
+                for amount in balance.amounts {
+                    let suffix = several ? "（\(amount.currency)）" : ""
+                    if let value = amount.toppedUp {
+                        values.append(Row(id: "toppedUp.\(amount.currency)", title: "充值余额" + suffix,
+                                          value: BalanceAmount.money(value, currency: amount.currency)))
+                    }
+                    if let value = amount.granted {
+                        values.append(Row(id: "granted.\(amount.currency)", title: "赠送余额" + suffix,
+                                          value: BalanceAmount.money(value, currency: amount.currency)))
+                    }
+                }
+            }
+        }
         // Only when a failed Grok Bot query left it at its own older success time (D-80).
         if account.platform == .cursor, let grokBot = account.grokBot?.displayed,
            grokBot.observedAt != snapshot?.observedAt {
@@ -742,7 +765,7 @@ struct CodexDetailPanel: View {
                 .accessibilityLabel(updating ? "正在刷新" : "刷新当前账户")
                 .accessibilityIdentifier("detail.refresh")
                 Menu {
-                    Button(action: refresh) { Label { Text("刷新额度") } icon: { AppIcon.refresh.image } }.disabled(updating)
+                    Button(action: refresh) { Label { Text(account.isBalance ? "刷新余额" : "刷新额度") } icon: { AppIcon.refresh.image } }.disabled(updating)
                     Button(role: .destructive) { confirmingDeletion = true } label: {
                         Label { Text("删除账户") } icon: { AppIcon.delete.destructiveImage }
                     }
@@ -776,7 +799,18 @@ struct CodexDetailPanel: View {
                     if account.isDemo {
                         Text("演示").font(.caption).foregroundStyle(DashboardStyle.secondary)
                     }
-                    if let snapshot = content.snapshot {
+                    if account.isBalance {
+                        if account.quotaState == .available, account.balance != nil {
+                            // One detail card holding every currency, styled like the list card.
+                            QuotaStyledCard(style: cardStyle,
+                                input: QuotaStyledInput(account: WidgetSnapshot.projecting([account]).account), surface: .detail)
+                                .accessibilityIdentifier("detail.style.balance.\(cardStyle.rawValue)")
+                        } else {
+                            Text(failure == nil ? "尚未获取余额" : "获取失败")
+                                .foregroundStyle(DashboardStyle.secondary)
+                                .accessibilityIdentifier("detail.status")
+                        }
+                    } else if let snapshot = content.snapshot {
                         TimelineView(.periodic(from: .now, by: 60)) { context in
                             VStack(alignment: .leading, spacing: 16) {
                                 if snapshot.fiveHours.shouldDisplay {
@@ -837,7 +871,7 @@ struct CodexDetailPanel: View {
         .alert("删除账户？", isPresented: $confirmingDeletion) {
             Button("取消", role: .cancel) { }
             Button("删除账户", role: .destructive, action: delete)
-        } message: { Text("仅断开本 App 的连接，不会取消订阅。") }
+        } message: { Text(QuotaView.deletionMessage(for: account)) }
     }
 
     @ViewBuilder

@@ -4,19 +4,26 @@ import Foundation
 struct QuotaStyledInput: Equatable {
     struct Window: Identifiable, Equatable {
         /// `grokBot` is Cursor's second row (D-80), drawn exactly like Codex's five-hour row.
-        enum Kind: String, Equatable { case weekly, fiveHours, monthly, grokBot }
+        /// `balance` is an API balance row (D-82): one per currency, no bar or reset time.
+        enum Kind: String, Equatable { case weekly, fiveHours, monthly, grokBot, balance }
         let kind: Kind
         let amount: QuotaCardAmount
         let resetsAt: Date?
+        var currency: String? = nil
         /// The primary window (weekly / monthly) uses the main colour scheme (D-77).
         var weekly: Bool { kind != .fiveHours && kind != .grokBot }
-        var id: String { kind.rawValue }
+        var isBalance: Bool { kind == .balance }
+        var id: String { kind == .balance ? "balance.\(currency ?? "")" : kind.rawValue }
         var title: String {
-            switch kind { case .weekly: "每周"; case .fiveHours: "5 小时"; case .monthly: "本月"; case .grokBot: "Grok Bot" }
+            switch kind {
+            case .weekly: "每周"; case .fiveHours: "5 小时"; case .monthly: "本月"; case .grokBot: "Grok Bot"; case .balance: "余额"
+            }
         }
+        /// “每周额度” for quota windows; a balance is just “余额”.
+        var longTitle: String { isBalance ? title : title + "额度" }
 
-        init(kind: Kind, amount: QuotaCardAmount, resetsAt: Date?) {
-            self.kind = kind; self.amount = amount; self.resetsAt = resetsAt
+        init(kind: Kind, amount: QuotaCardAmount, resetsAt: Date?, currency: String? = nil) {
+            self.kind = kind; self.amount = amount; self.resetsAt = resetsAt; self.currency = currency
         }
         init(weekly: Bool, amount: QuotaCardAmount, resetsAt: Date?) {
             self.init(kind: weekly ? .weekly : .fiveHours, amount: amount, resetsAt: resetsAt)
@@ -33,6 +40,16 @@ struct QuotaStyledInput: Equatable {
             plan = nil; windows = []; message = "添加账户"; lastSuccess = nil; return
         }
         plan = account.plan; lastSuccess = account.quotaObservedAt; platform = account.resolvedPlatform
+        if platform.isBalance {
+            // Money amounts only (D-82); a failure keeps the trusted old amounts.
+            if account.state == .available, let balance = account.balance {
+                windows = balance.map { .init(kind: .balance, amount: .money($0.totalText), resetsAt: nil, currency: $0.currency) }
+                message = account.failure.map { $0 == .networkBlocked ? "网络不达标，无法更新" : "刷新失败" }
+            } else {
+                windows = []; message = account.failure == nil ? "尚未获取余额" : "刷新失败"
+            }
+            return
+        }
         if account.state == .notApplicable {
             windows = []; message = "无适用额度"
         } else if account.state == .notFetched {
@@ -68,6 +85,7 @@ extension QuotaCardAmount {
         switch self {
         case .unknown: return "未知"
         case .unlimited: return "不限量"
+        case let .money(text): return text
         case .remaining:
             // Formatting never feeds geometry: bars keep the exact value (D-81).
             guard let wholeRemaining else { return "未知" }

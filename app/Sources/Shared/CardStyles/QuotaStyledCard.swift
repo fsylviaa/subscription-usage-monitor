@@ -64,10 +64,11 @@ struct QuotaStyledCard: View {
                 .padding(.bottom, style == .journal ? 12 : 0)
             }
             if input.windows.isEmpty {
-                let message = failed && input.message == "尚未获取额度" ? "刷新失败" : (input.message ?? "尚未获取额度")
+                let notFetched = input.message == "尚未获取额度" || input.message == "尚未获取余额"
+                let message = failed && notFetched ? "刷新失败" : (input.message ?? "尚未获取额度")
                 Text(message).font(.system(size: titleSize)).foregroundStyle(theme.muted)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .accessibilityIdentifier(detail ? "detail.styleStatus" : message == "尚未获取额度" ? "quota.notFetched"
+                    .accessibilityIdentifier(detail ? "detail.styleStatus" : message.hasPrefix("尚未获取") ? "quota.notFetched"
                         : message == "无适用额度" ? "quota.notApplicable" : "quota.accountStatus")
             } else {
                 windows
@@ -151,6 +152,8 @@ struct QuotaStyledCard: View {
                         topLine(w, title: .quotaHex("f4fff1"), reset: .quotaHex("a9bca8"), number: .quotaHex("f4fff1"))
                         bar(w, height: 10)
                     }
+                    // A balance has no full-width bar; keep rows full width and leading.
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.vertical, 12)
                     .overlay(alignment: .bottom) {
                         if index < ws.count - 1 { Rectangle().fill(Color.quotaHex("2a2f2b")).frame(height: 1) }
@@ -172,6 +175,7 @@ struct QuotaStyledCard: View {
                         }
                         numberRow(w, height: style == .liquid ? 44 : style == .ticket ? 34 : style == .glass ? 32 : 36)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .modifier(InsetPanel(style: style, dark: dark))
                 }
             }
@@ -205,11 +209,16 @@ struct QuotaStyledCard: View {
     // MARK: Building blocks
 
     private func title(_ w: QuotaStyledInput.Window, color: Color? = nil) -> some View {
-        Text(w.title + "额度").font(.system(size: titleSize, weight: .semibold)).foregroundStyle(color ?? theme.ink)
+        Text(w.longTitle).font(.system(size: titleSize, weight: .semibold)).foregroundStyle(color ?? theme.ink)
             .fixedSize(horizontal: false, vertical: true)
     }
 
-    private func reset(_ w: QuotaStyledInput.Window, twoLines: Bool = false, color: Color? = nil) -> some View {
+    /// Balances have no reset time (BAL-05): nothing is drawn.
+    @ViewBuilder private func reset(_ w: QuotaStyledInput.Window, twoLines: Bool = false, color: Color? = nil) -> some View {
+        if !w.isBalance { resetText(w, twoLines: twoLines, color: color) }
+    }
+
+    private func resetText(_ w: QuotaStyledInput.Window, twoLines: Bool, color: Color?) -> some View {
         let text = NativeQuotaReset.text(w.resetsAt, now: now)
         return Text(twoLines ? text.replacingOccurrences(of: " · ", with: "\n") : text)
             .font(.system(size: resetSize)).foregroundStyle(color ?? theme.muted)
@@ -229,7 +238,8 @@ struct QuotaStyledCard: View {
             .foregroundStyle(color ?? theme.ink)
             .shadow(color: rave ? RavePalette.shadow : .clear, radius: 0, x: rave ? 3 : 0, y: rave ? 3 : 0)
             .lineLimit(1).minimumScaleFactor(0.5)
-            .accessibilityLabel(w.amount.remainingFraction == nil ? w.amount.nativeText : "剩余 " + w.amount.nativeText)
+            .accessibilityLabel(w.isBalance ? "余额 " + w.amount.nativeText
+                : w.amount.remainingFraction == nil ? w.amount.nativeText : "剩余 " + w.amount.nativeText)
             .accessibilityIdentifier("\(idPrefix).\(w.id).remaining")
     }
 
@@ -278,7 +288,7 @@ struct QuotaStyledCard: View {
                 .accessibilityLabel("\(w.title)额度条")
                 .accessibilityValue("已用 \(100 - (w.amount.wholeRemaining ?? 0))%，剩余 \(w.amount.nativeText)")
                 .accessibilityIdentifier("\(idPrefix).\(w.id).bar")
-        } else {
+        } else if !w.isBalance {
             Color.clear.frame(height: height).accessibilityHidden(true)
         }
     }
@@ -324,6 +334,7 @@ struct QuotaStyledCard: View {
             topLine(w, title: .quotaHex("26180f"), reset: .quotaHex("5a3a22"), number: .quotaHex("26180f"))
             bar(w, height: 26)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 14).padding(.vertical, 12)
         .background(LinearGradient(colors: [.quotaHex("eb782f"), .quotaHex("f2a265")], startPoint: .topLeading, endPoint: .bottomTrailing),
                     in: RoundedRectangle(cornerRadius: 16, style: .continuous))
@@ -342,6 +353,7 @@ struct QuotaStyledCard: View {
             }
             bar(w, height: 16, secondary: true)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 14).padding(.vertical, 10)
         .background(c("eeeae4", "242629"), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(c("d5cdc3", "4b4e52"), lineWidth: 1) }
