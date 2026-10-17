@@ -242,7 +242,7 @@ final class ResetReminderUITests: XCTestCase {
     private func verifyDemoQuota(in app: XCUIApplication) {
         app.buttons["tab.quota"].tap()
         XCTAssertTrue(app.staticTexts["quota.accountIdentity"].firstMatch.waitForExistence(timeout: 5))
-        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").count, 1)
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").count, 2, "Cursor示例＋Codex示例")
         XCTAssertTrue(app.staticTexts["quota.weekly.remaining"].firstMatch.waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["quota.details"].firstMatch.isEnabled)
         XCTAssertFalse(app.staticTexts["quota.failure"].exists)

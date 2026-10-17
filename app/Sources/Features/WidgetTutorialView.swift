@@ -14,7 +14,7 @@ struct WidgetTutorialView: View {
         VStack(spacing: 0) {
             HStack {
                 Button(action: close) {
-                    DesignIcon(name: "Close", size: 18).frame(width: 44, height: 44)
+                    AppIconView(.close, size: 18).frame(width: 44, height: 44)
                 }
                 .accessibilityLabel("关闭教程")
                 .accessibilityIdentifier("tutorial.close")

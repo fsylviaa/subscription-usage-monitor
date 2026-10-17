@@ -151,7 +151,7 @@ final class RootViewTests: XCTestCase {
         XCTAssertNil(CodexDetailTarget(second))
         XCTAssertNil(target.resolve(in: []))
         var content = CodexDetailContent(account: first)
-        XCTAssertEqual(content.rows.map(\.id), ["identity", "resetCards", "updatedAt"])
+        XCTAssertEqual(content.rows.map(\.id), ["identity", "resetCards", "updatedAt", "remaining.fiveHours", "remaining.weekly"])
         XCTAssertEqual(content.snapshot?.weekly.amount.remainingPercent, 100)
         XCTAssertEqual(content.snapshot?.fiveHours.amount.remainingPercent, 0)
         XCTAssertEqual(content.snapshot?.weekly.amount.progress?.usedFraction, 0)
@@ -200,7 +200,7 @@ final class RootViewTests: XCTestCase {
         let store = AccountStore(fileURL: root.appendingPathComponent("accounts.json"))
         _ = try await store.setDemoMode(true)
         for _ in 0..<2 { _ = try await store.addDemo(now: Date()) }
-        let accounts = try await store.load()
+        let accounts = try await store.load().filter { $0.platform == .codex }
         defer { try? FileManager.default.removeItem(at: root) }
         var refreshes = 0
         let host = UIHostingController(rootView: QuotaView(accounts: accounts, canRefreshAll: true,
@@ -395,7 +395,7 @@ final class RootViewTests: XCTestCase {
         let store = AccountStore(fileURL: root.appendingPathComponent("accounts.json"))
         _ = try await store.setDemoMode(true)
         for _ in 0..<3 { _ = try await store.addDemo(now: Date()) }
-        var accounts = try await store.load()
+        var accounts = try await store.load().filter { $0.platform == .codex }
         accounts[0].source = nil
         accounts[0].quotaSnapshot = nil
         accounts[0].quotaState = .notApplicable

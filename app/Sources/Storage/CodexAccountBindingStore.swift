@@ -16,6 +16,12 @@ protocol DemoAccountManaging: Sendable {
     func refreshDemo(_ account: ConnectedAccount, now: Date) async throws -> ConnectedAccount
 }
 
+/// Saves a Cursor login confirmed by cursor.com (D-77). Same e-mail on the same
+/// platform updates the existing account in place; nothing is removed before success.
+protocol CursorAccountBinding: Sendable {
+    func save(cursor login: CursorVerifiedLogin) async throws -> ConnectedAccount
+}
+
 protocol CodexAccountBinding: Sendable {
     func load() async throws -> [ConnectedAccount]
     func save(_ login: CodexVerifiedLogin) async throws -> ConnectedAccount
@@ -31,7 +37,7 @@ extension CodexAccountBinding {
 /// Accepts the verifier's result type only. Raw tokens and decoded claims never
 /// enter the account store through this boundary.
 @MainActor
-final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, DemoAccountManaging, AccountRemoving {
+final class CodexAccountBindingStore: CodexAccountBinding, CursorAccountBinding, AccountOrdering, DemoAccountManaging, AccountRemoving {
     enum BindingError: Error, Equatable {
         case credentialCleanupFailed
     }
@@ -109,6 +115,33 @@ final class CodexAccountBindingStore: CodexAccountBinding, AccountOrdering, Demo
         let committed = try await commit(login, transactionID: transactionID)
         await cleanupRetiredCredentials(committed)
         return (try? await accountStore.load().first { $0.id == committed.id }) ?? committed
+    }
+
+    func save(cursor login: CursorVerifiedLogin) async throws -> ConnectedAccount {
+        try Task.checkCancellation()
+        _ = try await load()
+        let account = ConnectedAccount(provider: .cursor, product: .cursorSubscription,
+            remoteUserID: login.subject, verifiedEmail: login.email,
+            scope: AccountScope(remoteAccountID: login.subject, kind: .personal), credentialRef: UUID())
+        let committed = try await commitCredential(login.credentials, for: account)
+        await cleanupRetiredCredentials(committed)
+        return (try? await accountStore.load().first { $0.id == committed.id }) ?? committed
+    }
+
+    /// Credential first, then the account in one atomic write; a failed write
+    /// removes only this attempt's new random Keychain entry.
+    @AccountPersistenceActor
+    private func commitCredential(_ credentials: CredentialPayload, for account: ConnectedAccount) throws -> ConnectedAccount {
+        try Task.checkCancellation()
+        let entry = CredentialVault.Entry.credential(account.credentialRef)
+        try vault.save(credentials, for: entry)
+        do {
+            try Task.checkCancellation()
+            return try accountStore.commitLogin(account)
+        } catch {
+            do { try vault.remove(ifMatching: credentials, for: entry) } catch { throw BindingError.credentialCleanupFailed }
+            throw error
+        }
     }
 
     /// Commit verified identity and its credential in one persistence turn.

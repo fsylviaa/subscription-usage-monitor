@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>主界面图标放大</title>
+<style>
+  :root { --bg:#F5F5F5; --text:#141414; --sec:#525252; --card:#FFFFFF; --page:#E9E9EC; --ui:#141414; --muted:#6b6b70; }
+  body.dark { --bg:#0A0A0A; --text:#FAFAFA; --sec:#C7C7C7; --card:#1C1C1E; --page:#202024; --ui:#f2f2f2; --muted:#a0a0a8; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system, "PingFang SC", "Helvetica Neue", sans-serif; background:var(--page); color:var(--ui); }
+  header { padding:16px; max-width:1000px; margin:0 auto; }
+  h1 { font-size:20px; margin:0 0 6px; }
+  p.note { margin:0 0 12px; color:var(--muted); font-size:13px; line-height:1.6; }
+  .controls { display:grid; gap:12px; background:var(--card); border-radius:14px; padding:14px 16px; }
+  .row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .row label { min-width:150px; font-weight:600; font-size:14px; }
+  .row input[type=range] { flex:1; min-width:180px; }
+  .val { font-variant-numeric:tabular-nums; font-weight:700; min-width:150px; font-size:14px; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; }
+  button { border:1px solid rgba(127,127,127,.35); background:transparent; color:var(--ui); border-radius:999px; padding:5px 12px; font-size:13px; cursor:pointer; }
+  button.on { background:var(--ui); color:var(--page); }
+  .stage { display:flex; gap:24px; justify-content:center; flex-wrap:wrap; padding:16px; }
+  .col { display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .col h2 { font-size:15px; margin:0; }
+  .zoomwrap { overflow:hidden; }
+  .phone { width:390px; height:520px; background:var(--bg); color:var(--text); border-radius:36px; overflow:hidden; display:flex; flex-direction:column;
+           box-shadow:0 0 0 8px #111, 0 10px 30px rgba(0,0,0,.25); transform-origin:top left; }
+  .status { height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 30px; font-size:15px; font-weight:600; }
+  .top { display:flex; align-items:center; min-height:48px; padding:0 12px 0 16px; }
+  .top .title { font-size:18px; font-weight:600; flex:1; }
+  .tap { width:44px; height:44px; display:flex; align-items:center; justify-content:center; }
+  .card { margin:8px 16px; height:120px; border-radius:22px; background:var(--card); opacity:.8; }
+  .spacer { flex:1; }
+  .widgetrow { display:flex; align-items:center; justify-content:center; gap:6px; min-height:44px; font-size:15px; font-weight:500; }
+  .tabs { display:flex; padding:6px 0 4px; }
+  .tab { flex:1; min-height:50px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:11px; font-weight:500; }
+  .tab.off { color:var(--sec); opacity:.7; }
+  .home { height:30px; display:flex; justify-content:center; align-items:center; }
+  .home i { width:134px; height:5px; border-radius:3px; background:var(--text); opacity:.85; }
+  svg { display:block; }
+  @media (max-width:840px) { .stage { gap:12px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>主界面三个图标放大对比</h1>
+  <p class="note">左：现在（0.1.0（10）实际尺寸：右上加号 20 点，底部两个 23 点）。右：对比版，拖动滑块放大。图标是 App 里同一份 Lucide 矢量，线条随尺寸一起变粗，和真机缩放方式一致；点按区域保持不变。网页 1 像素≈手机 1 点，可用“显示倍数”放大查看，不影响数值。这是网页示意，不是真机截图。</p>
+  <div class="controls">
+    <div class="row"><label>右上“连接账号”加号</label><input id="conn" type="range" min="100" max="180" step="5" value="100"><span class="val" id="connV"></span></div>
+    <div class="row"><label>底部“额度”“设置”</label><input id="tab" type="range" min="100" max="180" step="5" value="100"><span class="val" id="tabV"></span></div>
+    <div class="row"><label>两组同步</label><div class="chips"><button id="link" class="on">同步拖动：开</button></div>
+      <label style="min-width:auto">预设</label><div class="chips" id="presets"></div></div>
+    <div class="row"><label>外观</label><div class="chips"><button id="light" class="on">浅色</button><button id="dark">深色</button></div>
+      <label style="min-width:auto">显示倍数</label><div class="chips" id="zooms"></div></div>
+  </div>
+</header>
+<div class="stage">
+  <div class="col"><h2>现在</h2><div class="zoomwrap"><div class="phone" id="p0"></div></div></div>
+  <div class="col"><h2>对比版</h2><div class="zoomwrap"><div class="phone" id="p1"></div></div></div>
+</div>
+<script>
+// lucide-static 0.460.0 (ISC), identical paths to the App assets.
+const ICON = {
+  plus: '<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/>',
+  gauge: '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+  settings: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+  grid: '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>'
+};
+const svg = (name, size) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[name]}</svg>`;
+const BASE = { conn: 20, tab: 23 };
+function phone(conn, tab) {
+  return `<div class="status"><span>9:41</span><span>●●●</span></div>
+    <div class="top"><span class="title">订阅额度</span><span class="tap">${svg('plus', conn)}</span></div>
+    <div class="card"></div><div class="card" style="height:90px"></div>
+    <div class="spacer"></div>
+    <div class="widgetrow">${svg('grid', 19)}<span>如何添加小组件</span></div>
+    <div class="tabs"><div class="tab">${svg('gauge', tab)}<span>额度</span></div><div class="tab off">${svg('settings', tab)}<span>设置</span></div></div>
+    <div class="home"><i></i></div>`;
+}
+const $ = id => document.getElementById(id);
+let linked = true, zoom = 1;
+function fmt(p, base) { const s = Math.round(base * p) / 100; return `${p}%（${s % 1 ? s.toFixed(1) : s} 点）`; }
+function render() {
+  const c = +$('conn').value, t = +$('tab').value;
+  $('connV').textContent = fmt(c, BASE.conn); $('tabV').textContent = fmt(t, BASE.tab);
+  $('p0').innerHTML = phone(BASE.conn, BASE.tab);
+  $('p1').innerHTML = phone(BASE.conn * c / 100, BASE.tab * t / 100);
+  document.querySelectorAll('.phone').forEach(p => { p.style.transform = `scale(${zoom})`; p.parentElement.style.width = 390 * zoom + 16 + 'px'; p.parentElement.style.height = 520 * zoom + 16 + 'px'; p.parentElement.style.padding = '8px'; });
+  try { localStorage.setItem('iconScale', JSON.stringify({ c, t, linked, zoom, dark: document.body.classList.contains('dark') })); } catch (e) {}
+}
+$('conn').oninput = () => { if (linked) $('tab').value = $('conn').value; render(); };
+$('tab').oninput = () => { if (linked) $('conn').value = $('tab').value; render(); };
+$('link').onclick = () => { linked = !linked; $('link').classList.toggle('on', linked); $('link').textContent = '同步拖动：' + (linked ? '开' : '关'); render(); };
+[110, 120, 130, 140, 150].forEach(p => { const b = document.createElement('button'); b.textContent = p + '%'; b.onclick = () => { $('conn').value = p; $('tab').value = p; render(); }; $('presets').appendChild(b); });
+[1, 1.5, 2].forEach(z => { const b = document.createElement('button'); b.textContent = z + '×'; b.dataset.z = z; b.onclick = () => { zoom = z; document.querySelectorAll('#zooms button').forEach(x => x.classList.toggle('on', +x.dataset.z === z)); render(); }; $('zooms').appendChild(b); });
+function setDark(d) { document.body.classList.toggle('dark', d); $('dark').classList.toggle('on', d); $('light').classList.toggle('on', !d); render(); }
+$('light').onclick = () => setDark(false); $('dark').onclick = () => setDark(true);
+try { const s = JSON.parse(localStorage.getItem('iconScale') || 'null'); if (s) { $('conn').value = s.c; $('tab').value = s.t; linked = s.linked; zoom = s.zoom; $('link').classList.toggle('on', linked); $('link').textContent = '同步拖动：' + (linked ? '开' : '关'); document.body.classList.toggle('dark', !!s.dark); $('dark').classList.toggle('on', !!s.dark); $('light').classList.toggle('on', !s.dark); } } catch (e) {}
+document.querySelectorAll('#zooms button').forEach(x => x.classList.toggle('on', +x.dataset.z === zoom));
+render();
+</script>
+</body>
+</html>

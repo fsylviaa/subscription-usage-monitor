@@ -6,9 +6,10 @@ import UIKit
 /// explicit connection route below. No unavailable products are advertised.
 enum ConnectionPlatform: CaseIterable {
     case codex
+    case cursor
 
-    var iconName: String { switch self { case .codex: "Codex" } }
-    var accessibilityName: String { switch self { case .codex: "Codex" } }
+    var iconName: String { switch self { case .codex: "Codex"; case .cursor: "Cursor" } }
+    var accessibilityName: String { switch self { case .codex: "Codex"; case .cursor: "Cursor" } }
 }
 
 @MainActor
@@ -22,6 +23,8 @@ final class CodexConnectionFlow: ObservableObject {
         case saving
         case quota
         case code(CodexDeviceAuthorization)
+        /// Cursor: the official page is open in the browser; waiting for confirmation.
+        case browser
         case failure(String)
     }
 
@@ -29,6 +32,11 @@ final class CodexConnectionFlow: ObservableObject {
     @Published var isPresented = false
     @Published private(set) var copied = false
     @Published private(set) var browserFailed = false
+    /// The platform of the connection in progress; Codex unless Cursor was chosen.
+    @Published private(set) var connectingPlatform: ConnectionPlatform = .codex
+    private let cursorPoller: (any CursorLoginPolling)?
+    private let cursorAPI: CursorAPIClient?
+    private var cursorRequest: CursorLoginRequest?
 
     @Published private(set) var accounts: [ConnectedAccount] = []
     @Published private(set) var loadingAccounts = false
@@ -164,7 +172,8 @@ final class CodexConnectionFlow: ObservableObject {
             let updater = CoordinatedQuotaUpdater.live(store: accounts)
             let flow = CodexConnectionFlow(completer: CodexLoginClient(), verifier: CodexIdentityVerifier(),
                                            bindings: CodexAccountBindingStore(accountStore: accounts, vault: vault),
-                                           pending: CodexPendingLoginStore(), quotaUpdater: updater)
+                                           pending: CodexPendingLoginStore(), quotaUpdater: updater,
+                                           cursorPoller: CursorLoginClient(), cursorAPI: CursorAPIClient())
             flow.loadingAccounts = true
             return flow
         } catch {
@@ -257,6 +266,7 @@ final class CodexConnectionFlow: ObservableObject {
             guard generation == attempt, !Task.isCancelled else { return }
             loadingAccounts = false
             restoringLogin = false
+            connectingPlatform = .codex
             await begin()?.value
         } catch {
             guard generation == attempt, !Task.isCancelled else { return }
@@ -386,6 +396,8 @@ final class CodexConnectionFlow: ObservableObject {
         bindings: (any CodexAccountBinding)? = nil,
         pending: (any CodexPendingLoginStoring)? = nil,
         quotaUpdater: (any CodexQuotaUpdating)? = nil,
+        cursorPoller: (any CursorLoginPolling)? = nil,
+        cursorAPI: CursorAPIClient? = nil,
         foregroundRefreshEnabled: Bool = true,
         now: @escaping @Sendable () -> Date = { Date() },
         copyCode: @escaping @MainActor (String, Date) -> Void = { code, deadline in
@@ -402,6 +414,8 @@ final class CodexConnectionFlow: ObservableObject {
         self.bindings = bindings
         self.pending = pending
         self.quotaUpdater = quotaUpdater
+        self.cursorPoller = cursorPoller
+        self.cursorAPI = cursorAPI
         self.checkNetwork = checkNetwork
         self.authorizer = authorizer
         self.transactions = transactions
@@ -420,13 +434,16 @@ final class CodexConnectionFlow: ObservableObject {
     @discardableResult
     func selectPlatform(_ platform: ConnectionPlatform) -> Task<Void, Never>? {
         guard isPresented, state == .choosingPlatform else { return nil }
+        connectingPlatform = platform
         switch platform {
         case .codex: return begin()
+        case .cursor: return beginCursor()
         }
     }
 
     @discardableResult
     func begin() -> Task<Void, Never>? {
+        if connectingPlatform == .cursor { return beginCursor() }
         guard !loadingAccounts, !accountLoadFailed, !restoringLogin, !reorderingAccounts, !managingAccounts,
               (quotaUpdatingID == nil || recovery != nil), state == .idle || state == .choosingPlatform || isFailure else { return nil }
         let previousWork = work
@@ -516,6 +533,7 @@ final class CodexConnectionFlow: ObservableObject {
         invalidate()
         state = .idle
         isPresented = false
+        connectingPlatform = .codex
     }
 
     /// A failed Keychain read may hide the ID of an existing transaction. Resolve
@@ -561,6 +579,7 @@ final class CodexConnectionFlow: ObservableObject {
     /// A failed cleanup retains pendingID so the next attempt can retry it.
     private func invalidate() {
         generation = UUID()
+        cursorRequest = nil
         completionWork?.cancel()
         work?.cancel()
         expiryWork?.cancel()
@@ -740,6 +759,115 @@ final class CodexConnectionFlow: ObservableObject {
             }
         }
     }
+
+    // MARK: Cursor login (D-77, T89 conclusion ①: official browser polling)
+
+    /// Network gate → official page in the default browser → poll until the
+    /// person confirms → cursor.com identity → save → first quota query.
+    /// Nothing is stored before identity is confirmed; cancel or failure leaves
+    /// no partial account, and the person can simply start again.
+    @discardableResult
+    func beginCursor() -> Task<Void, Never>? {
+        guard let cursorPoller, let cursorAPI, let binding = bindings as? any CursorAccountBinding,
+              !loadingAccounts, !accountLoadFailed, !restoringLogin, !reorderingAccounts, !managingAccounts,
+              quotaUpdatingID == nil, state == .choosingPlatform || isFailure else { return nil }
+        let previousWork = work
+        work?.cancel()
+        completionWork?.cancel()
+        generation = UUID()
+        let attempt = generation
+        connectingPlatform = .cursor
+        cursorRequest = nil
+        browserFailed = false
+        isPresented = true
+        state = .checking
+        work = Task { [weak self] in
+            guard let self else { return }
+            await previousWork?.value
+            guard isCurrent(attempt) else { return }
+            do {
+                switch await checkNetwork() {
+                case let .allowed(value) where value.isFinite && value > 50: break
+                case .blocked:
+                    guard isCurrent(attempt) else { return }
+                    state = .failure("网络不达标，无法连接"); return
+                case .cancelled:
+                    guard isCurrent(attempt) else { return }
+                    cancel(); return
+                default:
+                    throw CodexLoginError.failed
+                }
+                guard isCurrent(attempt) else { return }
+                let request = try CursorLoginRequest.make()
+                cursorRequest = request
+                state = .browser
+                browserFailed = !(await openURL(request.browserURL))
+                guard isCurrent(attempt) else { return }
+                let credential = try await pollCursor(request, poller: cursorPoller, attempt: attempt)
+                state = .verifying
+                let identity = try await cursorAPI.identity(credential)
+                guard isCurrent(attempt) else { return }
+                state = .saving
+                let account = try await binding.save(cursor: CursorVerifiedLogin(
+                    email: identity.email, subject: identity.subject, credentials: try credential.payload))
+                cursorRequest = nil
+                accounts.removeAll { $0.id != account.id && $0.hasSameConnectionEmail(as: account) }
+                if let index = accounts.firstIndex(where: { $0.id == account.id }) {
+                    accounts[index] = account
+                } else {
+                    accounts.append(account)
+                }
+                if quotaUpdater != nil {
+                    state = .quota
+                    startInitialQuota(for: account, location: .connection)
+                } else {
+                    state = .idle
+                    isPresented = false
+                }
+            } catch {
+                guard isCurrent(attempt) else { return }
+                cursorRequest = nil
+                state = .failure("登录未完成，请重试")
+            }
+        }
+        return work
+    }
+
+    /// Reopen the same official page (the person closed the browser or it failed to open).
+    func openCursorBrowser() async {
+        guard state == .browser, let request = cursorRequest else { return }
+        let attempt = generation
+        let opened = await openURL(request.browserURL)
+        guard isCurrent(attempt) else { return }
+        browserFailed = !opened
+    }
+
+    private func pollCursor(_ request: CursorLoginRequest, poller: any CursorLoginPolling,
+                            attempt: UUID) async throws -> CursorCredential {
+        var errors = 0
+        for index in 0..<CursorLoginClient.maxPolls {
+            // Polling pauses while the App is in the background, as in the official CLI.
+            while !isActive {
+                guard isCurrent(attempt) else { throw CancellationError() }
+                try await Task.sleep(for: .seconds(1))
+            }
+            guard isCurrent(attempt) else { throw CancellationError() }
+            switch await poller.poll(request) {
+            case .waiting: errors = 0
+            case let .confirmed(credential):
+                guard isCurrent(attempt) else { throw CancellationError() }
+                return credential
+            case .failed:
+                errors += 1
+                if errors >= CursorLoginClient.maxConsecutiveErrors { throw CodexLoginError.failed }
+            }
+            try await Task.sleep(for: .seconds(cursorPollDelay(index)))
+        }
+        throw CodexLoginError.failed
+    }
+
+    /// Overridable in isolated tests; production follows the official CLI back-off.
+    var cursorPollDelay: (Int) -> Double = { CursorLoginClient.delay(afterPoll: $0) }
 
     func refreshQuota(for id: UUID) {
         guard canManageAccounts,

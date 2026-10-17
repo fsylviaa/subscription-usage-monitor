@@ -142,9 +142,9 @@ final class LaunchTests: XCTestCase {
                 XCTAssertTrue(app.navigationBars[title].waitForExistence(timeout: 5))
             }
             if entry == "licenses" {
-                app.buttons["licenses.codexBar"].tap()
-                XCTAssertTrue(app.navigationBars["CodexBar 许可"].waitForExistence(timeout: 5))
-                app.navigationBars["CodexBar 许可"].buttons.firstMatch.tap()
+                app.buttons["licenses.lobeIcons"].tap()
+                XCTAssertTrue(app.navigationBars["Lobe Icons 许可"].waitForExistence(timeout: 5))
+                app.navigationBars["Lobe Icons 许可"].buttons.firstMatch.tap()
                 XCTAssertTrue(app.navigationBars[title].waitForExistence(timeout: 5))
             }
             app.navigationBars[title].buttons.firstMatch.tap()
@@ -165,7 +165,7 @@ final class LaunchTests: XCTestCase {
         for count in 1...2 {
             app.buttons["quota.toolbarConnect"].tap()
             let ready = NSPredicate { _, _ in MainActor.assumeIsolated {
-                app.staticTexts.matching(identifier: "quota.accountIdentity").count == count
+                app.staticTexts.matching(identifier: "quota.accountIdentity").count == count + 1 // + T96 Cursor sample
             }}
             XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: nil)], timeout: 5), .completed)
         }
@@ -290,14 +290,14 @@ final class LaunchTests: XCTestCase {
             app.navigationBars["隐私说明"].buttons.firstMatch.tap()
             XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
             openT45Entry("licenses", in: app)
-            let license = app.buttons["licenses.codexBar"]
+            let license = app.buttons["licenses.lobeIcons"]
             XCTAssertTrue(license.waitForExistence(timeout: 5)); XCTAssertTrue(license.label.contains("MIT"))
             saveScreenshot(of: app, name: "T45-\(mode)-\(dark ? "深" : "浅")-清单")
             license.tap()
-            XCTAssertTrue(app.navigationBars["CodexBar 许可"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.navigationBars["Lobe Icons 许可"].waitForExistence(timeout: 5))
             XCTAssertFalse(app.staticTexts["license.unavailable"].exists)
             XCTAssertEqual(app.staticTexts["license.paragraph.0"].label, "MIT License")
-            XCTAssertEqual(app.staticTexts["license.paragraph.1"].label, "Copyright (c) 2026 Peter Steinberger")
+            XCTAssertEqual(app.staticTexts["license.paragraph.1"].label, "Copyright (c) 2023 LobeHub")
             saveScreenshot(of: app, name: "T45-\(mode)-\(dark ? "深" : "浅")-许可开头")
             let end = app.staticTexts["license.paragraph.4"]
             for _ in 0..<40 {
@@ -309,7 +309,25 @@ final class LaunchTests: XCTestCase {
             XCTAssertTrue(end.label.hasSuffix("SOFTWARE.\n"))
             XCTAssertLessThan(end.frame.maxY, app.buttons["tab.settings"].frame.minY)
             saveScreenshot(of: app, name: "T45-\(mode)-\(dark ? "深" : "浅")-许可末尾")
-            app.navigationBars["CodexBar 许可"].buttons.firstMatch.tap()
+            app.navigationBars["Lobe Icons 许可"].buttons.firstMatch.tap()
+            XCTAssertTrue(app.navigationBars["开源许可"].waitForExistence(timeout: 5))
+            let lucide = app.buttons["licenses.lucide"]
+            XCTAssertTrue(lucide.waitForExistence(timeout: 5)); XCTAssertTrue(lucide.label.contains("ISC"))
+            lucide.tap()
+            XCTAssertTrue(app.navigationBars["Lucide 许可"].waitForExistence(timeout: 5))
+            XCTAssertFalse(app.staticTexts["license.unavailable"].exists)
+            XCTAssertEqual(app.staticTexts["license.paragraph.0"].label, "ISC License")
+            XCTAssertTrue(app.staticTexts["license.paragraph.1"].label.contains("Lucide Contributors 2022"))
+            let lucideEnd = app.staticTexts["license.paragraph.3"]
+            for _ in 0..<40 {
+                if lucideEnd.exists && lucideEnd.isHittable && lucideEnd.frame.maxY < app.buttons["tab.settings"].frame.minY { break }
+                app.swipeUp()
+            }
+            XCTAssertTrue(lucideEnd.isHittable)
+            XCTAssertTrue(lucideEnd.label.contains("THE SOFTWARE IS PROVIDED"))
+            XCTAssertTrue(lucideEnd.label.hasSuffix("SOFTWARE.\n"))
+            saveScreenshot(of: app, name: "T99-\(mode)-\(dark ? "深" : "浅")-Lucide许可末尾")
+            app.navigationBars["Lucide 许可"].buttons.firstMatch.tap()
             XCTAssertTrue(app.navigationBars["开源许可"].waitForExistence(timeout: 5))
             app.navigationBars["开源许可"].buttons.firstMatch.tap()
             XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
@@ -946,7 +964,7 @@ final class LaunchTests: XCTestCase {
         for count in 1...2 {
             app.buttons["quota.toolbarConnect"].tap()
             let ready = NSPredicate { _, _ in MainActor.assumeIsolated {
-                app.staticTexts.matching(identifier: "quota.accountIdentity").count == count
+                app.staticTexts.matching(identifier: "quota.accountIdentity").count == count + 1 // + T96 Cursor sample
             }}
             XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: nil)], timeout: 5), .completed)
         }
@@ -989,14 +1007,14 @@ final class LaunchTests: XCTestCase {
         for count in 1...3 {
             app.buttons["quota.toolbarConnect"].tap()
             let countMatches = NSPredicate { _, _ in MainActor.assumeIsolated {
-                app.staticTexts.matching(identifier: "quota.accountIdentity").count == count
+                app.staticTexts.matching(identifier: "quota.accountIdentity").count == count + 1 // + T96 Cursor sample
             }}
             XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: countMatches, object: nil)], timeout: 5), .completed)
         }
         XCTAssertFalse(app.staticTexts["connection.code"].exists)
         let original = app.staticTexts.matching(identifier: "quota.accountIdentity").allElementsBoundByIndex.map(\.label)
         let amounts = app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label)
-        app.buttons.matching(identifier: "quota.menu").element(boundBy: 1).tap()
+        app.buttons.matching(identifier: "quota.menu").element(boundBy: 2).tap()
         XCTAssertTrue(app.buttons["刷新额度"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["删除账户"].exists)
         app.buttons["刷新额度"].tap()
@@ -1006,19 +1024,20 @@ final class LaunchTests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: changed, object: nil)], timeout: 5), .completed)
         let after = app.staticTexts.matching(identifier: "quota.weekly.remaining").allElementsBoundByIndex.map(\.label)
         XCTAssertEqual(after[0], amounts[0]); XCTAssertEqual(after[2], amounts[2]); XCTAssertNotEqual(after[1], amounts[1])
-        app.buttons.matching(identifier: "quota.menu").element(boundBy: 1).tap()
+        app.buttons.matching(identifier: "quota.menu").element(boundBy: 2).tap()
         app.buttons["删除账户"].tap()
         XCTAssertTrue(app.alerts["删除账户？"].waitForExistence(timeout: 3))
         app.alerts.buttons["取消"].tap()
         XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").allElementsBoundByIndex.map(\.label), original)
-        app.buttons.matching(identifier: "quota.menu").element(boundBy: 1).tap()
+        app.buttons.matching(identifier: "quota.menu").element(boundBy: 2).tap()
         app.buttons["删除账户"].tap()
         app.alerts.buttons["删除账户"].tap()
-        XCTAssertTrue(app.staticTexts[original[0]].waitForExistence(timeout: 3))
-        XCTAssertFalse(app.staticTexts[original[1]].exists)
+        XCTAssertTrue(app.staticTexts[original[1]].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts[original[2]].exists)
         app.terminate(); app.launch()
-        XCTAssertTrue(app.staticTexts[original[2]].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.staticTexts[original[1]].exists)
+        XCTAssertTrue(app.staticTexts[original[3]].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts[original[0]].exists, "Cursor示例保留")
+        XCTAssertFalse(app.staticTexts[original[2]].exists)
         saveScreenshot(of: app, name: "新版-删除后重开")
         app.buttons["tab.settings"].tap()
         XCTAssertEqual(demo.value as? String, "1")
@@ -1031,6 +1050,49 @@ final class LaunchTests: XCTestCase {
         app.buttons["quota.toolbarConnect"].tap()
         XCTAssertTrue(app.buttons["platforms.codex"].waitForExistence(timeout: 5))
         app.buttons["connection.cancel"].tap()
+    }
+
+    @MainActor
+    func testT96DemoSwitchShowsCursorMonthlySampleAndClears() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        app.launch()
+        defer { app.terminate() }
+        app.buttons["tab.settings"].tap()
+        for _ in 0..<8 { if app.switches["settings.demo"].isHittable { break }; app.swipeUp() }
+        app.switches["settings.demo"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        app.buttons["tab.quota"].tap()
+        let monthly = app.staticTexts["quota.monthly.remaining"]
+        XCTAssertTrue(monthly.waitForExistence(timeout: 5), "打开演示即出现Cursor示例的“本月”")
+        XCTAssertEqual(app.staticTexts.matching(identifier: "quota.accountIdentity").count, 1)
+        XCTAssertFalse(app.staticTexts["quota.weekly.remaining"].exists)
+        XCTAssertFalse(app.staticTexts["quota.fiveHours.remaining"].exists, "Cursor示例没有5小时")
+        XCTAssertTrue(app.staticTexts["quota.grokBot.remaining"].exists, "Cursor示例第二行Grok Bot（D-80）")
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "本月")).firstMatch.exists)
+        XCTAssertFalse(app.staticTexts["quota.failure"].exists)
+        saveScreenshot(of: app, name: "T96-演示Cursor示例")
+        app.buttons["quota.toolbarConnect"].tap()
+        let mixed = NSPredicate { _, _ in MainActor.assumeIsolated {
+            app.staticTexts.matching(identifier: "quota.accountIdentity").count == 2
+        }}
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: mixed, object: nil)], timeout: 5), .completed)
+        XCTAssertTrue(app.staticTexts["quota.weekly.remaining"].exists, "连接入口仍添加Codex示例")
+        let before = monthly.label
+        app.buttons.matching(identifier: "quota.menu").element(boundBy: 0).tap()
+        app.buttons["刷新额度"].tap()
+        let changed = NSPredicate { _, _ in MainActor.assumeIsolated { monthly.label != before } }
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: changed, object: nil)], timeout: 5), .completed,
+                       "演示刷新为本地模拟更新")
+        app.terminate(); app.launch()
+        XCTAssertTrue(app.staticTexts["quota.monthly.remaining"].waitForExistence(timeout: 5), "重开后保持")
+        app.buttons["tab.settings"].tap()
+        for _ in 0..<8 { if app.switches["settings.demo"].isHittable { break }; app.swipeUp() }
+        app.switches["settings.demo"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        app.buttons["tab.quota"].tap()
+        XCTAssertTrue(app.staticTexts["未连接账户"].waitForExistence(timeout: 5), "关闭清除全部演示账户")
+        XCTAssertFalse(app.staticTexts["quota.monthly.remaining"].exists)
+        saveScreenshot(of: app, name: "T96-关闭后清除")
     }
 
     @MainActor
@@ -1099,14 +1161,60 @@ final class LaunchTests: XCTestCase {
         app.switches["settings.demo"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
         app.buttons["tab.quota"].tap()
         app.buttons["quota.toolbarConnect"].tap()
-        XCTAssertTrue(app.buttons["quota.details"].waitForExistence(timeout: 5))
-        app.buttons["quota.details"].tap()
+        XCTAssertTrue(app.buttons["quota.details"].firstMatch.waitForExistence(timeout: 5))
+        app.buttons.matching(identifier: "quota.details").element(boundBy: 1).tap()
         XCTAssertTrue(app.staticTexts["quota.updatedAt"].waitForExistence(timeout: 5))
         saveScreenshot(of: app, name: "新版-手动深色额度详情")
         app.buttons["detail.menu"].tap()
         XCTAssertTrue(app.buttons["刷新额度"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["删除账户"].exists)
         saveScreenshot(of: app, name: "新版-手动深色账户菜单")
+    }
+
+    @MainActor
+    func testT100LucideDetailAndMenusLightDark() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--management-ui", UUID().uuidString]
+        app.launch()
+        defer { app.terminate() }
+        app.buttons["tab.settings"].tap()
+        app.switches["settings.demo"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        let appearance = app.switches["settings.darkAppearance"]
+        for pass in 0..<2 {
+            let dark = appearance.value as? String == "1"
+            let mode = dark ? "深" : "浅"
+            app.buttons["tab.quota"].tap()
+            if pass == 0 { app.buttons["quota.toolbarConnect"].tap() }
+            XCTAssertTrue(app.buttons["quota.details"].firstMatch.waitForExistence(timeout: 5))
+            app.buttons["quota.menu"].firstMatch.tap()
+            XCTAssertTrue(app.buttons["刷新额度"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.buttons["删除账户"].exists)
+            saveScreenshot(of: app, name: "T100-\(mode)-卡片菜单")
+            app.buttons["刷新额度"].tap()
+            app.buttons.matching(identifier: "quota.details").firstMatch.tap()
+            XCTAssertTrue(app.buttons["detail.close"].waitForExistence(timeout: 5))
+            XCTAssertEqual(app.buttons["detail.close"].label, "关闭详情")
+            XCTAssertTrue(app.buttons["detail.refresh"].isHittable)
+            XCTAssertEqual(app.buttons["detail.menu"].label, "账户操作")
+            saveScreenshot(of: app, name: "T100-\(mode)-详情")
+            app.buttons["detail.menu"].tap()
+            XCTAssertTrue(app.buttons["删除账户"].waitForExistence(timeout: 5))
+            saveScreenshot(of: app, name: "T100-\(mode)-详情菜单")
+            app.buttons["删除账户"].tap()
+            XCTAssertTrue(app.alerts["删除账户？"].waitForExistence(timeout: 5))
+            app.alerts["删除账户？"].buttons["取消"].tap()
+            app.buttons["detail.close"].tap()
+            XCTAssertFalse(app.buttons["detail.close"].waitForExistence(timeout: 2))
+            app.buttons["tab.settings"].tap()
+            app.buttons["settings.cardStyle"].tap()
+            XCTAssertTrue(app.otherElements["style.selection"].firstMatch.waitForExistence(timeout: 5)
+                          || app.navigationBars["卡片样式"].waitForExistence(timeout: 5))
+            saveScreenshot(of: app, name: "T100-\(mode)-卡片样式选中")
+            app.navigationBars["卡片样式"].buttons.firstMatch.tap()
+            for _ in 0..<12 { if appearance.isHittable { break }; app.swipeDown() }
+            appearance.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        }
     }
 
     @MainActor
@@ -1148,6 +1256,48 @@ final class LaunchTests: XCTestCase {
         app.launch()
         assertEmptyQuota(in: app)
         XCTAssertEqual(app.state, .runningForeground)
+    }
+
+    @MainActor
+    func testT99LucideIconsAlignedLightDarkAndMaximumText() {
+        for maximumText in [false, true] {
+            let app = XCUIApplication()
+            app.launchArguments = ["--management-ui", UUID().uuidString]
+            if maximumText {
+                app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+            }
+            app.launch()
+            let mode = maximumText ? "最大字号" : "常规"
+            for pass in 0..<2 {
+                assertEmptyQuota(in: app)
+                XCTAssertTrue(app.buttons["quota.widgetTutorial"].isHittable)
+                saveScreenshot(of: app, name: "T99-\(mode)-第\(pass + 1)轮-额度")
+                app.buttons["tab.settings"].tap()
+                XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 5))
+                let darkSwitch = app.switches["settings.darkAppearance"]
+                let dark = darkSwitch.value as? String == "1"
+                // Switch rows expose their title frame: both start after the same icon slot.
+                // Link rows report the whole row frame, so their icons are checked by screenshot.
+                var starts: [CGFloat] = []
+                for title in ["卡片样式", "深色模式", "重置提醒", "如何添加小组件", "帮助与说明", "隐私说明", "开源许可"] {
+                    let text = app.staticTexts[title].firstMatch
+                    for _ in 0..<12 {
+                        if text.isHittable && text.frame.maxY < app.buttons["tab.settings"].frame.minY { break }
+                        app.swipeUp()
+                    }
+                    XCTAssertTrue(text.isHittable, title)
+                    if title == "深色模式" || title == "重置提醒" { starts.append(text.frame.minX) }
+                    if title == "深色模式" || title == "开源许可" { saveScreenshot(of: app, name: "T99-\(mode)-\(dark ? "深" : "浅")-设置-\(title)") }
+                }
+                XCTAssertLessThan((starts.max() ?? 0) - (starts.min() ?? 0), 1.5, "\(starts)")
+                XCTAssertGreaterThan(starts.min() ?? 0, maximumText ? 70 : 52)
+                for _ in 0..<12 { if darkSwitch.isHittable { break }; app.swipeDown() }
+                darkSwitch.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+                XCTAssertEqual(darkSwitch.value as? String, dark ? "0" : "1")
+                app.buttons["tab.quota"].tap()
+            }
+            app.terminate()
+        }
     }
 
     @MainActor

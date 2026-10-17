@@ -16,6 +16,8 @@ struct ConnectedAccount: Codable, Equatable, Sendable, Identifiable {
     var generation: UInt64
     var subscription: AccountSubscription?
     var quotaSnapshot: CodexQuotaSnapshot?
+    /// Cursor only (D-80); nil until the first Grok Bot query succeeds.
+    var grokBot: GrokBotQuota?
     var deletionPending: Bool?
     var source: Source?
     enum Source: String, Codable, Sendable { case demo }
@@ -83,13 +85,26 @@ struct AccountSubscription: Codable, Equatable, Sendable {
     }
 }
 
-// Only the current MVP product is implemented; platform identity is not a UI setting.
+// Platform identity comes from the connection that created the account; it is not a UI setting.
 enum ProviderID: String, Codable, Sendable {
     case openAI = "openai"
+    /// Cursor personal subscription (D-77).
+    case cursor
 }
 
 enum ProductID: String, Codable, Sendable {
     case codexSubscription
+    case cursorSubscription
+}
+
+extension ConnectedAccount {
+    /// Display platform. Unknown pairs never occur: storage validates the pair.
+    var platform: QuotaPlatform { provider == .cursor ? .cursor : .codex }
+    /// The single primary window: weekly for Codex, the billing month for Cursor.
+    var primaryWindow: QuotaWindow { platform == .cursor ? .monthly : .weekly }
+    var hasKnownProductPair: Bool {
+        (provider == .openAI && product == .codexSubscription) || (provider == .cursor && product == .cursorSubscription)
+    }
 }
 
 struct AccountScope: Codable, Equatable, Sendable {

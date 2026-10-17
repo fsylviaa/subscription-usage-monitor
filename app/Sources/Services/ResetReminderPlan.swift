@@ -19,38 +19,67 @@ enum ResetReminderPlan {
         guard wantsReminders, authorization.permitsReminders,
               now.timeIntervalSince1970.isFinite else { return [] }
 
-        return accounts.flatMap { account -> [ResetReminderRequest] in
-            guard !account.isDemo, account.deletionPending != true,
-                  account.quotaState == .available,
-                  let snapshot = account.quotaSnapshot,
-                  snapshot.accountID == account.id,
-                  snapshot.provider == account.provider,
-                  snapshot.product == account.product,
-                  snapshot.scope == account.scope,
-                  snapshot.generation == account.generation,
-                  snapshot.observedAt.timeIntervalSince1970.isFinite,
-                  let identity = identity(for: account) else { return [] }
-            if let subscription = account.subscription {
-                guard subscription.isValid,
-                      subscription.planType == snapshot.planType,
-                      subscription.observedAt >= snapshot.observedAt else { return [] }
-            }
-
-            return [(QuotaWindow.weekly, snapshot.weekly), (.fiveHours, snapshot.fiveHours)]
-                .compactMap { expected, window in
-                    guard window.window == expected, window.shouldDisplay, window.amount != .unknown,
-                          window.observedAt == snapshot.observedAt,
-                          let reset = window.resetsAt else { return nil }
-                    let seconds = reset.timeIntervalSince1970
-                    guard seconds.isFinite, (1...253_402_300_799).contains(seconds),
-                          reset > now, reset > window.observedAt else { return nil }
-                    let label = expected == .weekly ? "周额度" : "5 小时额度"
-                    return ResetReminderRequest(
-                        identifier: "quota-reset.v1.\(account.id.uuidString.lowercased()).\(bindingKey(account)).\(expected.rawValue).\(seconds)",
-                        accountID: account.id, window: expected, resetsAt: reset,
-                        title: "Codex · \(identity)", body: "\(label)预计重置，打开查看")
-                }
+        return accounts.flatMap { account in
+            quotaRequests(account, now: now) + [grokBotRequest(account, now: now)].compactMap { $0 }
         }
+    }
+
+    /// Cursor's Grok Bot weekly pool (D-80): its own reminder, own trusted reset time.
+    /// Cursor has no other weekly window, so the weekly tag keeps the identifier unique
+    /// and the notification tap opens the account like every other reminder.
+    private static func grokBotRequest(_ account: ConnectedAccount, now: Date) -> ResetReminderRequest? {
+        guard !account.isDemo, account.deletionPending != true, account.hasKnownProductPair,
+              account.platform == .cursor, let grokBot = account.grokBot, grokBot.isValid,
+              let window = grokBot.displayed, let reset = window.resetsAt,
+              let identity = identity(for: account) else { return nil }
+        let seconds = reset.timeIntervalSince1970
+        guard seconds.isFinite, (1...253_402_300_799).contains(seconds),
+              reset > now, reset > window.observedAt else { return nil }
+        return ResetReminderRequest(
+            identifier: "quota-reset.v1.\(account.id.uuidString.lowercased()).\(bindingKey(account)).\(QuotaWindow.weekly.rawValue).\(seconds)",
+            accountID: account.id, window: .weekly, resetsAt: reset,
+            title: "\(account.platform.displayName) · \(identity)", body: "Grok Bot 本周额度预计重置，打开查看")
+    }
+
+    private static func quotaRequests(_ account: ConnectedAccount, now: Date) -> [ResetReminderRequest] {
+        guard !account.isDemo, account.deletionPending != true, account.hasKnownProductPair,
+              account.quotaState == .available,
+              let snapshot = account.quotaSnapshot,
+              snapshot.accountID == account.id,
+              snapshot.provider == account.provider,
+              snapshot.product == account.product,
+              snapshot.scope == account.scope,
+              snapshot.generation == account.generation,
+              snapshot.observedAt.timeIntervalSince1970.isFinite,
+              let identity = identity(for: account) else { return [] }
+        if let subscription = account.subscription {
+            guard subscription.isValid,
+                  subscription.planType == snapshot.planType,
+                  subscription.observedAt >= snapshot.observedAt else { return [] }
+        }
+
+        // Cursor has a single billing-month window in the primary slot (D-77).
+        let windows: [(QuotaWindow, QuotaWindowSnapshot)] = account.platform == .cursor
+            ? [(.monthly, snapshot.weekly)]
+            : [(.weekly, snapshot.weekly), (.fiveHours, snapshot.fiveHours)]
+        return windows
+            .compactMap { expected, window in
+                guard window.window == expected, window.shouldDisplay, window.amount != .unknown,
+                      window.observedAt == snapshot.observedAt,
+                      let reset = window.resetsAt else { return nil }
+                let seconds = reset.timeIntervalSince1970
+                guard seconds.isFinite, (1...253_402_300_799).contains(seconds),
+                      reset > now, reset > window.observedAt else { return nil }
+                let label = switch expected {
+                case .weekly: "周额度"
+                case .fiveHours: "5 小时额度"
+                case .monthly: "本月额度"
+                }
+                return ResetReminderRequest(
+                    identifier: "quota-reset.v1.\(account.id.uuidString.lowercased()).\(bindingKey(account)).\(expected.rawValue).\(seconds)",
+                    accountID: account.id, window: expected, resetsAt: reset,
+                    title: "\(account.platform.displayName) · \(identity)", body: "\(label)预计重置，打开查看")
+            }
     }
 
     /// Connection renewal/generation and list position are not reminder identity.

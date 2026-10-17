@@ -115,7 +115,7 @@ final class NativeQuotaStyleTests: XCTestCase {
                 XCTAssertNotNil(r.uiImage)
             }
         }
-        XCTAssertEqual(QuotaCardAmount.remaining(70.125).nativeText, "70.125%")
+        XCTAssertEqual(QuotaCardAmount.remaining(70.125).nativeText, "70%")
     }
 
     private func verify(_ style: QuotaCardStyle, task: Int) throws {
@@ -183,7 +183,7 @@ final class NativeQuotaStyleTests: XCTestCase {
         let old = QuotaStyleLabView.fixture(scenario: "normal")
         let expired = old.windows.map { NativeQuotaReset.text($0.resetsAt, now: time.addingTimeInterval(86400 * 7)) }
         XCTAssertTrue(expired.allSatisfy { $0 == "已到预计时间" })
-        XCTAssertEqual(old.windows.first?.amount.nativeText, "70.125%")
+        XCTAssertEqual(old.windows.first?.amount.nativeText, "70%")
         XCTAssertEqual(QuotaCardSurface.smallWidget.motion(reduceMotion: false), .staticContent)
         XCTAssertEqual(QuotaCardSurface.mediumWidget.motion(reduceMotion: false), .staticContent)
         XCTAssertEqual(QuotaCardSurface.account.motion(reduceMotion: true), .staticContent)

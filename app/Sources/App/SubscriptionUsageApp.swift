@@ -13,6 +13,8 @@ struct SubscriptionUsageApp: App {
                 QuotaStyleLabView()
             } else if CursorLoginProbeView.requested {
                 CursorLoginProbeView()
+            } else if GrokBotUsageProbeView.requested {
+                GrokBotUsageProbeView()
             } else {
                 productionRoot
             }
@@ -33,7 +35,7 @@ struct SubscriptionUsageApp: App {
 final class SubscriptionAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions options: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         #if DEBUG
-        if QuotaStyleLabView.requested || CursorLoginProbeView.requested { return true }
+        if QuotaStyleLabView.requested || CursorLoginProbeView.requested || GrokBotUsageProbeView.requested { return true }
         #endif
         // Install before launch finishes so cold-start notification responses survive.
         UNUserNotificationCenter.current().delegate = self
@@ -85,7 +87,7 @@ struct ResetReminderTarget: Equatable, Sendable {
     func detailTarget(in accounts: [ConnectedAccount]) -> CodexDetailTarget? {
         guard let account = accounts.first(where: { $0.id == accountID }),
               !account.isDemo, account.deletionPending != true,
-              account.provider == .openAI, account.product == .codexSubscription,
+              account.hasKnownProductPair,
               bindingKey == ResetReminderPlan.bindingKey(account) else { return nil }
         return CodexDetailTarget(account)
     }

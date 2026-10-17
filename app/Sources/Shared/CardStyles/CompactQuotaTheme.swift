@@ -136,24 +136,41 @@ struct CompactQuotaBackground: View {
 /// with contrast and never animates.
 struct CompactQuotaWatermark: View {
     let style: QuotaCardStyle
-    let size: CGFloat
+    let base: CGFloat
     let right: CGFloat
     let bottom: CGFloat
     @Environment(\.colorScheme) private var scheme
+    @Environment(\.quotaPlatform) private var platform
+
+    /// D-79: callers keep the original layout values; the Lobe mark is drawn at 75% of them
+    /// (corner offsets scale with it) and 2.4× each style's original opacity.
+    static let sizeScale: CGFloat = 0.75
+    static let opacityScale = 2.4
+
+    init(style: QuotaCardStyle, size: CGFloat, right: CGFloat, bottom: CGFloat) {
+        self.style = style
+        base = size
+        self.right = right * Self.sizeScale
+        self.bottom = bottom * Self.sizeScale
+    }
+
+    private var size: CGFloat { base * Self.sizeScale }
 
     var body: some View {
         let theme = style.compactTheme(dark: scheme == .dark)
         GeometryReader { g in
             Group {
                 if theme.watermarkOutline {
-                    QuotaWatermarkShape()
+                    PlatformMarkShape(platform: platform)
                         .stroke(theme.watermark[0], style: StrokeStyle(lineWidth: 1.3 * size / 80, lineJoin: .round))
                 } else {
-                    QuotaWatermarkShape().fill(LinearGradient(colors: theme.watermark, startPoint: .topLeading, endPoint: .bottomTrailing))
+                    PlatformMarkShape(platform: platform)
+                        .fill(LinearGradient(colors: theme.watermark, startPoint: .topLeading, endPoint: .bottomTrailing), style: PlatformMarkShape.fillStyle)
                 }
             }
             .frame(width: size, height: size)
-            .opacity(theme.watermarkOpacity)
+            // The solid Cursor cube covers more area than the OpenAI line mark; keep it equally faint.
+            .opacity(min(1, theme.watermarkOpacity * Self.opacityScale * (platform == .cursor ? 0.6 : 1)))
             .position(x: g.size.width - right - size / 2, y: g.size.height - bottom - size / 2)
         }
         .allowsHitTesting(false)

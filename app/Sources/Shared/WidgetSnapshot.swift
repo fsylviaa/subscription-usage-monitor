@@ -1,5 +1,16 @@
 import Foundation
 
+/// Display platform shared by App and widget (D-77). Only the name and the
+/// primary window's label differ; layouts and colours are shared.
+enum QuotaPlatform: String, Codable, Equatable, Sendable {
+    case codex, cursor
+
+    var displayName: String { self == .cursor ? "Cursor" : "Codex" }
+    /// Codex's primary window is weekly; Cursor's is the billing month.
+    var primaryWindowID: String { self == .cursor ? "monthly" : "weekly" }
+    var primaryWindowTitle: String { self == .cursor ? "本月" : "每周" }
+}
+
 /// Display-only contract for the App and future Widget Extension. No account-store
 /// record, remote scope, credential reference, or authentication payload crosses it.
 struct WidgetSnapshot: Codable, Equatable, Sendable {
@@ -15,9 +26,11 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
     func hasSameVisibleContent(as other: Self) -> Bool {
         schemaVersion == other.schemaVersion && allAccounts.elementsEqual(other.allAccounts) { lhs, rhs in
             lhs.id == rhs.id && lhs.identity == rhs.identity && lhs.plan == rhs.plan
+                && lhs.resolvedPlatform == rhs.resolvedPlatform
                 && lhs.isDemo == rhs.isDemo && lhs.state == rhs.state && lhs.failure == rhs.failure
                 && lhs.weekly?.amount == rhs.weekly?.amount && lhs.fiveHours?.amount == rhs.fiveHours?.amount
                 && lhs.fiveHours?.isApplicable == rhs.fiveHours?.isApplicable
+                && lhs.grokBot?.amount == rhs.grokBot?.amount
         }
     }
 
@@ -32,6 +45,12 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
         let weekly: Window?
         let fiveHours: Window?
         var failure: Failure? = nil
+        /// Nil in publications written before D-77, which were all Codex.
+        var platform: QuotaPlatform? = nil
+        /// Cursor's Grok Bot weekly row (D-80); nil hides the row.
+        var grokBot: Window? = nil
+
+        var resolvedPlatform: QuotaPlatform { platform ?? .codex }
     }
 
     enum Failure: String, Codable, Sendable {
@@ -72,7 +91,8 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
     /// The fingerprint prevents an old link from attaching to a different person.
     var clickTarget: URL {
         guard let account else { return URL(string: "subscriptionusage://quota")! }
-        return WidgetQuotaRoute.url(accountID: account.id, identity: account.identity, isDemo: account.isDemo)
+        return WidgetQuotaRoute.url(accountID: account.id, identity: account.identity, isDemo: account.isDemo,
+                                    platform: account.resolvedPlatform)
     }
 
     var emptyMessage: String? {
@@ -97,6 +117,13 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
                 && !text.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) })
         }
         func validDate(_ date: Date) -> Bool { date.timeIntervalSince1970.isFinite }
+        if let grokBot = account.grokBot {
+            guard account.resolvedPlatform == .cursor, case let .limited(used) = grokBot.amount,
+                  used.isFinite, (0...100).contains(used), validDate(grokBot.observedAt),
+                  grokBot.resetsAt.map({ (1...253_402_300_799).contains($0.timeIntervalSince1970) }) ?? true else {
+                throw WidgetSnapshotStore.StoreError.invalidSnapshot
+            }
+        }
         guard validText(account.identity), account.plan.map(validText) ?? true,
               account.subscriptionObservedAt.map(validDate) ?? true else {
             throw WidgetSnapshotStore.StoreError.invalidSnapshot

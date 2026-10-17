@@ -41,11 +41,14 @@ struct QuotaStyledCard: View {
     private func c(_ light: String, _ dark: String) -> Color { .quotaHex(self.dark ? dark : light) }
 
     var body: some View {
-        if widget {
-            CompactWidgetBody(style: style, input: input, medium: surface == .mediumWidget)
-        } else {
-            card
+        Group {
+            if widget {
+                CompactWidgetBody(style: style, input: input, medium: surface == .mediumWidget)
+            } else {
+                card
+            }
         }
+        .environment(\.quotaPlatform, input.platform)
     }
 
     // MARK: Card chrome
@@ -94,7 +97,7 @@ struct QuotaStyledCard: View {
 
     private var header: some View {
         HStack(alignment: .center, spacing: 8) {
-            if style == .watermark { QuotaWatermarkShape().fill(theme.ink).frame(width: 24, height: 24).accessibilityHidden(true) }
+            if style == .watermark { PlatformMarkShape(platform: input.platform).fill(theme.ink, style: PlatformMarkShape.fillStyle).frame(width: 24, height: 24).accessibilityHidden(true) }
             Button { openDetails?() } label: {
                 // Two children keep the platform title exposed as its own text.
                 ZStack(alignment: .bottomLeading) {
@@ -122,9 +125,9 @@ struct QuotaStyledCard: View {
     /// Platform name only; plan names are never shown (D-77).
     private var headerTitle: Text {
         if style == .rave {
-            return Text("Codex").font(.system(size: headerSize + 2, weight: .black))
+            return Text(input.platform.displayName).font(.system(size: headerSize + 2, weight: .black))
         }
-        return Text("Codex").font(.system(size: headerSize, weight: .semibold))
+        return Text(input.platform.displayName).font(.system(size: headerSize, weight: .semibold))
     }
 
     // MARK: Per-style window layouts
@@ -273,7 +276,7 @@ struct QuotaStyledCard: View {
                 .frame(maxWidth: .infinity)
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("\(w.title)额度条")
-                .accessibilityValue("已用 \(((1 - f) * 100).formatted(.number.precision(.fractionLength(0...2))))%，剩余 \(w.amount.nativeText)")
+                .accessibilityValue("已用 \(100 - (w.amount.wholeRemaining ?? 0))%，剩余 \(w.amount.nativeText)")
                 .accessibilityIdentifier("\(idPrefix).\(w.id).bar")
         } else {
             Color.clear.frame(height: height).accessibilityHidden(true)

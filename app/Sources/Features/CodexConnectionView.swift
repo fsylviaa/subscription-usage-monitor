@@ -4,13 +4,15 @@ struct CodexConnectionView: View {
     @ObservedObject var flow: CodexConnectionFlow
     @Environment(\.scenePhase) private var scenePhase
     @ScaledMetric(relativeTo: .headline) private var titleSize = 18
+    @ScaledMetric(relativeTo: .largeTitle) private var keySize: CGFloat = 40
+    @ScaledMetric(relativeTo: .body) private var copySize: CGFloat = 19
 
     private var title: String {
         if flow.state == .choosingPlatform { return "连接账号" }
         if flow.state == .quota {
             return flow.quotaFailure == nil ? "正在获取额度" : "首次额度查询失败"
         }
-        return "连接 Codex"
+        return "连接 \(flow.connectingPlatform.accessibilityName)"
     }
 
     var body: some View {
@@ -21,7 +23,7 @@ struct CodexConnectionView: View {
                     .accessibilityIdentifier("connection.title")
                 HStack {
                     Button(action: flow.cancel) {
-                        DesignIcon(name: "Close").frame(width: 44, height: 44)
+                        AppIconView(.close).frame(width: 44, height: 44)
                     }
                     .buttonStyle(.plain).accessibilityLabel(flow.state == .quota || flow.state == .choosingPlatform ? "关闭" : "取消")
                     .accessibilityIdentifier("connection.cancel").disabled(flow.state == .saving)
@@ -40,6 +42,19 @@ struct CodexConnectionView: View {
                         ProgressView(flow.state == .verifying || flow.state == .saving ? "正在完成登录…" : "连接中…")
                             .frame(maxWidth: .infinity, minHeight: 88)
                             .accessibilityIdentifier("connection.progress")
+                    case .browser:
+                        VStack(spacing: 24) {
+                            DesignIcon(name: "Cursor", size: 44)
+                            Text("在浏览器中登录 Cursor").font(.title2.bold()).multilineTextAlignment(.center)
+                                .accessibilityIdentifier("connection.cursorTitle")
+                            Text("在打开的 Cursor 页面登录并确认，完成后回到 App，会自动继续。")
+                                .foregroundStyle(DashboardStyle.secondary).multilineTextAlignment(.center)
+                            Button("重新打开登录页") { Task { await flow.openCursorBrowser() } }
+                                .buttonStyle(DashboardButtonStyle(secondary: true)).accessibilityIdentifier("connection.cursorOpen")
+                            if flow.browserFailed { Text("无法打开浏览器，请重试").foregroundStyle(DashboardStyle.secondary) }
+                            ProgressView().accessibilityLabel("等待登录确认")
+                        }
+                        .frame(maxWidth: .infinity)
                     case let .failure(message):
                         Text(message).font(.subheadline).foregroundStyle(DashboardStyle.secondary)
                             .accessibilityIdentifier("connection.failure")
@@ -48,12 +63,14 @@ struct CodexConnectionView: View {
                         Button("关闭", action: flow.cancel).buttonStyle(DashboardButtonStyle(secondary: true))
                     case let .code(authorization):
                         VStack(spacing: 24) {
-                            Image(systemName: "key.horizontal").font(.largeTitle).accessibilityHidden(true)
+                            AppIconView(.key, size: keySize)
                             Text("在官网输入一次性代码").font(.title2.bold()).multilineTextAlignment(.center)
                             Text(authorization.userCode).font(.title.monospaced().bold())
                                 .multilineTextAlignment(.center).privacySensitive()
                                 .accessibilityIdentifier("connection.code")
-                            Button(flow.copied ? "已复制" : "复制代码", systemImage: "doc.on.doc", action: flow.copy)
+                            Button(action: flow.copy) {
+                                Label { Text(flow.copied ? "已复制" : "复制代码") } icon: { AppIconView(.copy, size: copySize) }
+                            }
                                 .buttonStyle(DashboardButtonStyle(secondary: true))
                                 .accessibilityIdentifier("connection.copy")
                             Button("打开官网") { Task { await flow.openWebsite() } }
@@ -78,7 +95,7 @@ struct CodexConnectionView: View {
     @ViewBuilder private var quotaContent: some View {
         let account = flow.accounts.first { $0.id == (flow.quotaUpdatingID ?? flow.quotaFailureID) }
         if let account {
-            Text(account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户")
+            Text(account.verifiedEmail ?? account.remoteUserID ?? "\(account.platform.displayName) 账户")
                 .font(.subheadline).privacySensitive().foregroundStyle(DashboardStyle.secondary)
                 .accessibilityIdentifier("connection.accountIdentity")
         }
@@ -102,7 +119,7 @@ struct CodexConnectionView: View {
 
 private struct ConnectionPlatformGrid: View {
     let select: (ConnectionPlatform) -> Void
-    @ScaledMetric(relativeTo: .title) private var iconSize = 36
+    @ScaledMetric(relativeTo: .title) private var iconSize = 48
 
     private var platforms: [ConnectionPlatform] {
         #if DEBUG
@@ -119,14 +136,21 @@ private struct ConnectionPlatformGrid: View {
             ForEach(platforms.indices, id: \.self) { index in
                 let platform = platforms[index]
                 Button { select(platform) } label: {
-                    DesignIcon(name: platform.iconName, size: min(iconSize, 56))
-                        .frame(maxWidth: .infinity, minHeight: max(88, min(iconSize, 56) + 32))
-                        .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 24))
-                        .contentShape(RoundedRectangle(cornerRadius: 24))
+                    // D-78: icon with the platform name below, both inside the grey tile.
+                    VStack(spacing: 6) {
+                        DesignIcon(name: platform.iconName, size: min(iconSize, 64))
+                        Text(platform.accessibilityName).font(.subheadline.weight(.medium))
+                            .lineLimit(1).minimumScaleFactor(0.5)
+                    }
+                    .padding(.horizontal, 6).padding(.vertical, 12)
+                    .frame(maxWidth: .infinity, minHeight: 96)
+                    .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 24))
+                    .contentShape(RoundedRectangle(cornerRadius: 24))
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(platform.accessibilityName)
-                .accessibilityIdentifier(index == 0 ? "platforms.codex" : "platforms.fixture.\(index)")
+                .accessibilityIdentifier(index < ConnectionPlatform.allCases.count
+                    ? "platforms.\(platform.iconName.lowercased())" : "platforms.fixture.\(index)")
             }
         }
         .accessibilityIdentifier("platforms.grid")

@@ -634,3 +634,110 @@ private final class SchedulerInputBox {
     var value: ResetReminderScheduler.Input
     init(_ value: ResetReminderScheduler.Input) { self.value = value }
 }
+
+/// T95: Cursor's billing-month reset joins the same global switch and scheduler.
+final class CursorResetReminderTests: XCTestCase {
+    private let now = Date(timeIntervalSince1970: 1_791_700_000)
+
+    func testCursorPlansOneMonthlyReminderWithItsOwnTitleAndBody() throws {
+        let cursor = try cursorAccount(reset: now.addingTimeInterval(86_400 * 12.5))
+        let result = ResetReminderPlan.requests(accounts: [cursor], wantsReminders: true, authorization: .authorized, now: now)
+        XCTAssertEqual(result.count, 1, "Cursor只有“本月”一条，没有5小时")
+        let request = try XCTUnwrap(result.first)
+        XCTAssertEqual(request.window, .monthly)
+        XCTAssertEqual(request.resetsAt, cursor.quotaSnapshot?.weekly.resetsAt)
+        XCTAssertEqual(request.title, "Cursor · cursor@example.invalid")
+        XCTAssertEqual(request.body, "本月额度预计重置，打开查看")
+        XCTAssertTrue(request.identifier.hasPrefix("quota-reset.v1.\(cursor.id.uuidString.lowercased())."))
+    }
+
+    func testMixedAccountsKeepCodexRemindersUnchanged() throws {
+        let codex = try codexAccount()
+        let cursor = try cursorAccount(reset: now.addingTimeInterval(3_600))
+        let alone = ResetReminderPlan.requests(accounts: [codex], wantsReminders: true, authorization: .authorized, now: now)
+        let mixed = ResetReminderPlan.requests(accounts: [codex, cursor], wantsReminders: true, authorization: .authorized, now: now)
+        XCTAssertEqual(alone.map(\.body), ["周额度预计重置，打开查看", "5 小时额度预计重置，打开查看"])
+        XCTAssertEqual(Array(mixed.prefix(2)), alone, "Codex提醒标识、时间、文字都不变")
+        XCTAssertEqual(mixed.last?.window, .monthly)
+    }
+
+    func testCursorWithoutTrustedFutureResetOrApplicableQuotaIsNotPlanned() throws {
+        var unknownTime = try cursorAccount(reset: nil)
+        let past = try cursorAccount(reset: now.addingTimeInterval(-1))
+        var inapplicable = try cursorAccount(reset: now.addingTimeInterval(600)); inapplicable.quotaState = .notApplicable
+        var demo = try cursorAccount(reset: now.addingTimeInterval(600)); demo.source = .demo
+        unknownTime.quotaState = .available
+        for input in [unknownTime, past, inapplicable, demo] {
+            XCTAssertTrue(ResetReminderPlan.requests(accounts: [input], wantsReminders: true, authorization: .authorized, now: now).isEmpty)
+        }
+        let cursor = try cursorAccount(reset: now.addingTimeInterval(600))
+        XCTAssertTrue(ResetReminderPlan.requests(accounts: [cursor], wantsReminders: false, authorization: .authorized, now: now).isEmpty,
+                      "共用总开关：关闭时Cursor也不安排")
+    }
+
+    @MainActor
+    func testSchedulerAddsCursorReminderAndCancelsItAfterDeletion() async throws {
+        let codex = try codexAccount()
+        let cursor = try cursorAccount(reset: now.addingTimeInterval(86_400 * 3))
+        let center = SchedulerNotificationCenterDouble()
+        let scheduler = ResetReminderScheduler(center: center, now: { self.now })
+
+        await scheduler.update(accounts: [codex, cursor], wantsReminders: true, authorization: .authorized)
+        let accepted = try XCTUnwrap(scheduler.lastResult).accepted
+        XCTAssertEqual(accepted.count, 3)
+        let monthly = try XCTUnwrap(accepted.first { $0.accountID == cursor.id })
+        XCTAssertEqual(monthly.title, "Cursor · cursor@example.invalid")
+        XCTAssertEqual(monthly.body, "本月额度预计重置，打开查看")
+
+        await scheduler.update(accounts: [codex], wantsReminders: true, authorization: .authorized)
+        XCTAssertTrue(center.removedIdentifiers.contains(monthly.identifier), "删除Cursor账户取消其待发提醒")
+        XCTAssertFalse(center.pending.contains { $0.accountID == cursor.id })
+        XCTAssertEqual(center.pending.filter { $0.accountID == codex.id }.count, 2, "Codex提醒保留")
+    }
+
+    @MainActor
+    func testSystemRequestRoundTripsAndTapOpensCursorDetail() throws {
+        let cursor = try cursorAccount(reset: Date(timeIntervalSince1970: 1_793_000_000.5))
+        let request = try XCTUnwrap(ResetReminderPlan.requests(accounts: [cursor], wantsReminders: true,
+            authorization: .authorized, now: now).first)
+        let native = SystemResetReminderNotificationCenter.makeRequest(request)
+        let decoded = try XCTUnwrap(SystemResetReminderNotificationCenter.decode(native))
+        XCTAssertEqual(decoded.window, .monthly)
+        XCTAssertEqual(decoded.body, "本月额度预计重置，打开查看")
+        let target = try XCTUnwrap(ResetReminderTarget(request: native))
+        XCTAssertEqual(target.window, .monthly)
+        let other = try codexAccount()
+        XCTAssertEqual(target.detailTarget(in: [other, cursor])?.id, cursor.id, "点通知进入对应Cursor账户详情")
+        var deleted = cursor; deleted.deletionPending = true
+        XCTAssertNil(target.detailTarget(in: [other, deleted]))
+        var demo = cursor; demo.source = .demo
+        XCTAssertNil(target.detailTarget(in: [demo]))
+    }
+
+    private func cursorAccount(reset: Date?) throws -> ConnectedAccount {
+        var result = ConnectedAccount(id: UUID(), provider: .cursor, product: .cursorSubscription,
+            remoteUserID: "google-oauth2|t95", verifiedEmail: "cursor@example.invalid",
+            scope: .init(remoteAccountID: "google-oauth2|t95", kind: .personal), credentialRef: UUID(),
+            generation: 3, quotaState: .available)
+        let observed = now.addingTimeInterval(-60)
+        result.subscription = .init(planType: "pro", observedAt: observed)
+        result.quotaSnapshot = .init(accountID: result.id, provider: .cursor, product: .cursorSubscription,
+            scope: result.scope, generation: result.generation, planType: "pro", observedAt: observed,
+            weekly: .init(window: .monthly, amount: .limited(try QuotaPercentage(used: 42)), resetsAt: reset, observedAt: observed),
+            fiveHours: CodexQuotaSnapshot.absentFiveHours(observedAt: observed))
+        return result
+    }
+
+    private func codexAccount() throws -> ConnectedAccount {
+        var result = ConnectedAccount(id: UUID(), remoteUserID: "verified-user", verifiedEmail: "codex@example.invalid",
+            scope: .init(remoteAccountID: "verified-scope", kind: .personal), credentialRef: UUID(),
+            generation: 7, quotaState: .available)
+        let observed = now.addingTimeInterval(-60)
+        result.subscription = .init(planType: "plus", observedAt: observed)
+        result.quotaSnapshot = .init(accountID: result.id, provider: result.provider, product: result.product,
+            scope: result.scope, generation: result.generation, planType: "plus", observedAt: observed,
+            weekly: .init(window: .weekly, amount: .limited(try QuotaPercentage(used: 30)), resetsAt: now.addingTimeInterval(600), observedAt: observed),
+            fiveHours: .init(window: .fiveHours, amount: .limited(try QuotaPercentage(used: 30)), resetsAt: now.addingTimeInterval(300), observedAt: observed))
+        return result
+    }
+}

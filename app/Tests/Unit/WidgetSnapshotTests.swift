@@ -445,7 +445,8 @@ final class WidgetSnapshotTests: XCTestCase {
         let object = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
         XCTAssertEqual(Set(object.keys), ["schemaVersion", "account", "accounts", "listRevision"])
         let account = try XCTUnwrap(object["account"] as? [String: Any])
-        XCTAssertEqual(Set(account.keys), ["id", "identity", "plan", "isDemo", "state", "subscriptionObservedAt", "quotaObservedAt", "weekly", "fiveHours"])
+        XCTAssertEqual(Set(account.keys), ["id", "identity", "plan", "isDemo", "state", "subscriptionObservedAt", "quotaObservedAt", "weekly", "fiveHours", "platform"])
+        XCTAssertEqual(account["platform"] as? String, "codex", "T91：平台名只是显示数据")
         let raw = String(decoding: data, as: UTF8.self)
         for forbidden in ["credential", "token", "authorization", "cookie", "remoteAccountID", "remoteUserID", "generation", "private-scope-a", "private-user-a", a.credentialRef.uuidString] {
             XCTAssertFalse(raw.contains(forbidden), forbidden)
@@ -499,8 +500,10 @@ final class WidgetSnapshotTests: XCTestCase {
 
     func testDemoDisableRemovesSharedSampleAndUsesRealFirstAccount() async throws {
         let (store, shared, _) = try stores()
-        _ = try await store.setDemoMode(true)
-        let demo = try await store.addDemo(now: time)
+        let enabled = try await store.setDemoMode(true)
+        let demo = try XCTUnwrap(enabled.first)
+        XCTAssertEqual(demo.platform, .cursor)
+        _ = try await store.addDemo(now: time)
         let real = try fixture("real")
         try await store.append(real)
         XCTAssertEqual(try shared.read()?.account?.id, demo.id)

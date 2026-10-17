@@ -1,5 +1,7 @@
+import CryptoKit
 import Foundation
 import UserNotifications
+import WidgetKit
 import XCTest
 @testable import SubscriptionUsage
 
@@ -63,9 +65,9 @@ final class ResetReminderNotificationTests: XCTestCase {
                 let nextMatches = trigger.nextTriggerDate() == read.resetsAt
                 XCTAssertTrue(dateMatches && contentMatches && identityMatches && nextMatches && !trigger.repeats,
                               "实际身份、文案、未来触发时间须与保存快照一致")
-                let window = read.window == .weekly ? "周" : "5小时"
+                let window = [QuotaWindow.weekly: "周", .fiveHours: "5小时", .monthly: "本月"][read.window] ?? "?"
                 // Never print the actual email, internal ID, raw content, or quota.
-                let safeContent = contentMatches ? "Codex · [账户\(index + 1)] / \(planned.body)" : "内容不匹配"
+                let safeContent = contentMatches ? "\(account.platform.displayName) · [账户\(index + 1)] / \(planned.body)" : "内容不匹配"
                 print("T39 REAL | account=\(index + 1) | window=\(window) | savedReset=\(Self.time(planned.resetsAt)) | systemTrigger=\(Self.time(read.resetsAt)) | identity=\(identityMatches) | time=\(dateMatches && nextMatches) | content=\(safeContent)")
             }
         }
@@ -75,6 +77,45 @@ final class ResetReminderNotificationTests: XCTestCase {
         XCTAssertTrue(unchanged, "核对期间成功快照改变时应另次重读，不能沿用混合证据")
         XCTAssertTrue(preferenceUnchanged && permissionUnchanged)
         print("T39 REAL | snapshotUnchanged=\(unchanged) | preferenceUnchanged=\(preferenceUnchanged) | permissionUnchanged=\(permissionUnchanged) | completed=\(Self.time(Date())) | delivery=notObserved")
+        #endif
+    }
+
+    /// T97: opt-in, read-only summary of the formal data before/after an
+    /// install. Prints counts, list positions and short fingerprints only; never
+    /// emails, internal IDs, credentials or quota values.
+    @MainActor
+    func testT97ReadOnlyFormalDataSummary() async throws {
+        #if targetEnvironment(simulator)
+        throw XCTSkip("仅在本人iPhone显式启用")
+        #else
+        guard ProcessInfo.processInfo.environment["T97_LIVE_SUMMARY"] == "1" else {
+            throw XCTSkip("正式数据只读摘要需显式启用")
+        }
+        let url = try AccountStore.sharedFileURL()
+        let before = try Data(contentsOf: url)
+        let accounts = try JSONDecoder().decode(LiveReminderDocument.self, from: before).accounts
+        func short(_ text: String) -> String {
+            SHA256.hash(data: Data(text.utf8)).prefix(4).map { String(format: "%02x", $0) }.joined()
+        }
+        let vault = CredentialVault.applicationVault()
+        for (index, account) in accounts.enumerated() {
+            let binding = [account.id.uuidString, account.provider.rawValue, account.remoteUserID ?? "",
+                           account.verifiedEmail?.lowercased() ?? "", account.scope.remoteAccountID,
+                           account.credentialRef.uuidString, String(account.generation)].joined(separator: "|")
+            let credential = try await vault.load(for: .credential(account.credentialRef)) != nil
+            print("T97 SUMMARY | account=\(index + 1) | platform=\(account.platform.displayName) | demo=\(account.isDemo) | state=\(account.quotaState) | binding=\(short(binding)) | credential=\(credential)")
+        }
+        let configurations = try await withCheckedThrowingContinuation { c in
+            WidgetCenter.shared.getCurrentConfigurations { c.resume(with: $0) }
+        }.filter { $0.kind == WidgetAppearance.kind }
+        for widget in configurations {
+            let chosen = widget.widgetConfigurationIntent(of: QuotaWidgetConfiguration.self)?.account?.id
+            let position = chosen.flatMap { id in accounts.firstIndex { $0.id.uuidString == id }.map { "账户\($0 + 1)" } } ?? "跟随首项"
+            print("T97 SUMMARY | widget | family=\(widget.family) | account=\(position)")
+        }
+        let reminders = (SharedResetReminderRuntime.preferences ?? .standard).object(forKey: ResetReminderSettings.preferenceKey) as? Bool
+        let style = UserDefaults.standard.string(forKey: QuotaCardStylePreferences.key) ?? "-"
+        print("T97 SUMMARY | accounts=\(accounts.count) | widgets=\(configurations.count) | reminderSwitch=\(reminders.map(String.init) ?? "未设置") | style=\(style) | fileUnchanged=\(before == (try Data(contentsOf: url)))")
         #endif
     }
 

@@ -544,7 +544,7 @@ final class CodexQuotaUITests: XCTestCase {
             chooseStage3Style("watermark", app: app)
             print("T80 controlled request \(scenario) | \(Date().ISO8601Format())")
             XCUIDevice.shared.press(.home); showT35Desktop(board)
-            let expected = ["endpoints":"每周，剩余0%", "weekly":"每周，剩余70.125%", "unknown":"每周，剩余未知", "unlimited":"每周，剩余不限量", "failure":"每周，剩余70.125%", "long":"每周，剩余70.125%"][scenario]!
+            let expected = ["endpoints":"每周，剩余0%", "weekly":"每周，剩余70%", "unknown":"每周，剩余未知", "unlimited":"每周，剩余不限量", "failure":"每周，剩余70%", "long":"每周，剩余70%"][scenario]!
             XCTAssertTrue(board.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", expected)).firstMatch.waitForExistence(timeout: 60))
             let widgets = board.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "Token 仪表盘", "小组件")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 && $0.frame.width < 230 }
             XCTAssertEqual(widgets.count, 2)
@@ -641,7 +641,7 @@ final class CodexQuotaUITests: XCTestCase {
             XCTAssertTrue(board.staticTexts.matching(NSPredicate(format:"label CONTAINS %@", "30%")).firstMatch.waitForExistence(timeout:60))
             // Previous page: unchanged original two defaults and medium.
             board.swipeRight();XCTAssertEqual(visibleWidgets().count,3)
-            XCTAssertTrue(board.staticTexts.matching(NSPredicate(format:"label CONTAINS %@", "70.125%")).firstMatch.waitForExistence(timeout:30))
+            XCTAssertTrue(board.staticTexts.matching(NSPredicate(format:"label CONTAINS %@", "70%")).firstMatch.waitForExistence(timeout:30))
             let original = try XCTUnwrap(visibleWidgets().first { $0.frame.width < 230 })
             original.tap();XCTAssertTrue(app.staticTexts["detail.identity"].waitForExistence(timeout:10))
             XCTAssertEqual(app.staticTexts["detail.identity"].label,"stage3-1@example.invalid")
@@ -823,7 +823,7 @@ final class CodexQuotaUITests: XCTestCase {
             chooseStage3Style("watermark", app: app)
             print("T81 controlled request \(scenario) | \(Date().ISO8601Format())")
             XCUIDevice.shared.press(.home); showT35Desktop(board)
-            let expected = ["endpoints":"每周，剩余0%", "weekly":"每周，剩余70.125%", "unknown":"每周，剩余未知", "unlimited":"每周，剩余不限量", "failure":"每周，剩余70.125%", "long":"每周，剩余70.125%"][scenario]!
+            let expected = ["endpoints":"每周，剩余0%", "weekly":"每周，剩余70%", "unknown":"每周，剩余未知", "unlimited":"每周，剩余不限量", "failure":"每周，剩余70%", "long":"每周，剩余70%"][scenario]!
             XCTAssertTrue(board.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", expected)).firstMatch.waitForExistence(timeout: 60))
             let widgets = board.icons.matching(NSPredicate(format: "label == %@ OR label == %@", "订阅用量", "Token 仪表盘")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 && $0.frame.width > 230 }
             XCTAssertEqual(widgets.count, 1)
@@ -927,7 +927,7 @@ final class CodexQuotaUITests: XCTestCase {
             XCTAssertTrue(board.staticTexts.matching(NSPredicate(format:"label CONTAINS %@", "30%")).firstMatch.waitForExistence(timeout:60))
             // Previous page: unchanged original two defaults and medium.
             board.swipeRight();XCTAssertEqual(visibleWidgets().count,3)
-            XCTAssertTrue(board.staticTexts.matching(NSPredicate(format:"label CONTAINS %@", "70.125%")).firstMatch.waitForExistence(timeout:30))
+            XCTAssertTrue(board.staticTexts.matching(NSPredicate(format:"label CONTAINS %@", "70%")).firstMatch.waitForExistence(timeout:30))
             let original = try XCTUnwrap(visibleWidgets().first { $0.frame.width < 230 })
             original.tap();XCTAssertTrue(app.staticTexts["detail.identity"].waitForExistence(timeout:10))
             XCTAssertEqual(app.staticTexts["detail.identity"].label,"stage3-1@example.invalid")
@@ -1109,7 +1109,7 @@ final class CodexQuotaUITests: XCTestCase {
         screenshot(app, "T\(task)-App隔离-light-normal")
         app.buttons["lab.change"].tap()
         screenshot(app, "T\(task)-App隔离-change")
-        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "94.25%")).firstMatch.waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "94%")).firstMatch.waitForExistence(timeout: 3))
         app.buttons["lab.theme"].tap()
         screenshot(app, "T\(task)-App隔离-dark-normal")
         app.buttons["lab.motion"].tap()
@@ -1692,7 +1692,7 @@ final class CodexQuotaUITests: XCTestCase {
         app.buttons["tab.settings"].tap()
         app.switches["settings.demo"].coordinate(withNormalizedOffset: .init(dx: 0.9, dy: 0.5)).tap()
         app.buttons["tab.quota"].tap()
-        app.buttons["quota.toolbarConnect"].tap()
+        // T96: the switch itself provides the single Cursor sample.
         XCTAssertTrue(app.buttons["quota.details"].waitForExistence(timeout: 5))
         app.buttons["quota.details"].tap()
         app.buttons["detail.menu"].tap()

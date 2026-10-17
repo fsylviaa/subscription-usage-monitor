@@ -234,6 +234,7 @@ final class AccountStore {
         } else if !sameIdentity {
             replacement.subscription = nil
             replacement.quotaSnapshot = nil
+            replacement.grokBot = nil
             replacement.quotaState = .notFetched
         }
         accounts = accounts.compactMap { account in
@@ -335,7 +336,10 @@ final class AccountStore {
 
     /// Commit reliable subscription metadata even when quota interpretation fails.
     /// A plan change invalidates old quota; an ordinary same-plan failure preserves it.
+    /// `grokBot`: nil leaves Grok Bot untouched (Codex); `.some(nil)` is a failed Grok Bot
+    /// query that keeps its trusted old value and marks the account “刷新失败” (D-80).
     func saveObservation(_ subscription: AccountSubscription, quota: QuotaObservation,
+                         grokBot: GrokBotQuota?? = nil,
                          for expected: ConnectedAccount,
                          validateRequest: @Sendable () throws -> Void = {}) throws -> ConnectedAccount {
         try beginTransaction()
@@ -370,9 +374,15 @@ final class AccountStore {
             current.quotaState = .notApplicable
         case .failed: break
         }
+        if case let .some(.some(value)) = grokBot { current.grokBot = Self.newer(value, than: current.grokBot) }
+        let grokBotFailed = grokBot.map { $0 == nil } ?? false
         accounts[index] = current
         try Task.checkCancellation()
         if case .failed = quota {
+            var failures = try readDocument().quotaFailures ?? [:]
+            failures[expected.id] = .refresh
+            try commit(accounts, failures: failures)
+        } else if grokBotFailed {
             var failures = try readDocument().quotaFailures ?? [:]
             failures[expected.id] = .refresh
             try commit(accounts, failures: failures)
@@ -380,6 +390,36 @@ final class AccountStore {
             try commit(accounts, clearingFailures: [expected.id])
         }
         return current
+    }
+
+    /// The monthly query failed but Grok Bot succeeded: save Grok Bot only and keep
+    /// the account marked “刷新失败”; the monthly trusted value stays untouched (D-80).
+    func saveGrokBot(_ value: GrokBotQuota, for expected: ConnectedAccount,
+                     validateRequest: @Sendable () throws -> Void = {}) throws -> ConnectedAccount {
+        try beginTransaction()
+        defer { endTransaction() }
+        try validateRequest()
+        try Task.checkCancellation()
+        let document = try readDocument()
+        var accounts = document.accounts
+        guard let index = accounts.firstIndex(where: { $0.id == expected.id }) else {
+            throw StoreError.accountNotFound
+        }
+        guard Self.isCurrentBinding(accounts[index], expected), accounts[index].platform == .cursor,
+              accounts[index].quotaSnapshot == expected.quotaSnapshot,
+              accounts[index].subscription == expected.subscription else { throw StoreError.staleQuotaContext }
+        accounts[index].grokBot = Self.newer(value, than: accounts[index].grokBot)
+        var failures = document.quotaFailures ?? [:]
+        failures[expected.id] = .refresh
+        try Task.checkCancellation()
+        try commit(accounts, failures: failures)
+        return accounts[index]
+    }
+
+    /// An older Grok Bot result arriving late never replaces a newer success.
+    private static func newer(_ value: GrokBotQuota, than current: GrokBotQuota?) -> GrokBotQuota {
+        if let current, let old = current.window?.observedAt, let new = value.window?.observedAt, old > new { return current }
+        return value
     }
 
     /// Requires an exact permutation: sorting cannot silently add, remove or duplicate accounts.
@@ -399,7 +439,11 @@ final class AccountStore {
             throw StoreError.duplicateLocalID
         }
         for account in accounts {
+            guard account.hasKnownProductPair else { throw StoreError.invalidQuotaSnapshot }
             guard account.subscription?.isValid ?? true else { throw StoreError.invalidQuotaSnapshot }
+            if let grokBot = account.grokBot, account.platform != .cursor || !grokBot.isValid {
+                throw StoreError.invalidQuotaSnapshot
+            }
             guard let quota = account.quotaSnapshot else {
                 guard account.quotaState == .notFetched
                     || (account.quotaState == .notApplicable && account.subscription != nil) else {
@@ -414,7 +458,8 @@ final class AccountStore {
                   quota.product == account.product, quota.scope == account.scope,
                   quota.generation == account.generation,
                   quota.observedAt.timeIntervalSince1970.isFinite,
-                  quota.weekly.window == .weekly, quota.fiveHours.window == .fiveHours,
+                  quota.weekly.window == account.primaryWindow, quota.fiveHours.window == .fiveHours,
+                  account.platform == .codex || quota.fiveHours.isApplicable == false,
                   [quota.weekly, quota.fiveHours].allSatisfy({
                       $0.observedAt == quota.observedAt && ($0.resetsAt.map {
                           $0.timeIntervalSince1970.isFinite && (1...253_402_300_799).contains($0.timeIntervalSince1970)
@@ -451,21 +496,32 @@ final class AccountStore {
     func setDemoMode(_ enabled: Bool) throws -> [ConnectedAccount] {
         try beginTransaction()
         defer { endTransaction() }
-        let accounts = try load().filter { enabled || !$0.isDemo }
+        var accounts = try load().filter { enabled || !$0.isDemo }
+        // Turning the switch on provides one Cursor sample (D-77) besides the
+        // Codex samples added from the connection entry; it never duplicates.
+        if enabled, !accounts.contains(where: { $0.isDemo && $0.platform == .cursor }) {
+            accounts.append(try demoSnapshot(Self.newDemo(platform: .cursor), now: Date(), used: 42))
+        }
         // Mode and cleanup commit together: a crash cannot leave disabled samples behind.
         try commit(accounts, demoEnabled: enabled)
         return accounts
+    }
+
+    private static func newDemo(platform: QuotaPlatform) -> ConnectedAccount {
+        let id = UUID()
+        let suffix = id.uuidString.prefix(6).lowercased()
+        return ConnectedAccount(id: id, provider: platform == .cursor ? .cursor : .openAI,
+            product: platform == .cursor ? .cursorSubscription : .codexSubscription,
+            verifiedEmail: "demo-\(suffix)@example.invalid",
+            scope: .init(remoteAccountID: "demo-\(id)", kind: .personal), credentialRef: UUID(), source: .demo)
     }
 
     func addDemo(now: Date) throws -> ConnectedAccount {
         try beginTransaction()
         defer { endTransaction() }
         guard try demoModeEnabled() else { throw StoreError.accountNotFound }
-        let id = UUID()
-        let suffix = id.uuidString.prefix(6).lowercased()
-        var account = ConnectedAccount(id: id, verifiedEmail: "demo-\(suffix)@example.invalid",
-            scope: .init(remoteAccountID: "demo-\(id)", kind: .personal), credentialRef: UUID(), source: .demo)
-        let count = try load().filter(\.isDemo).count
+        var account = Self.newDemo(platform: .codex)
+        let count = try load().filter { $0.isDemo && $0.platform == .codex }.count
         account = try demoSnapshot(account, now: now, used: Double((count * 17 + 13) % 80))
         try append(account)
         return account
@@ -487,6 +543,21 @@ final class AccountStore {
 
     private func demoSnapshot(_ account: ConnectedAccount, now: Date, used: Double) throws -> ConnectedAccount {
         var result = account
+        if account.platform == .cursor {
+            // Local sample only: “本月” plus Grok Bot, no five-hour limit.
+            result.subscription = .init(planType: "pro", observedAt: now)
+            result.quotaState = .available
+            result.quotaSnapshot = CodexQuotaSnapshot(accountID: account.id, provider: account.provider,
+                product: account.product, scope: account.scope, generation: account.generation,
+                planType: "pro", observedAt: now,
+                weekly: .init(window: .monthly, amount: .limited(try .init(used: used)),
+                    resetsAt: now.addingTimeInterval(18 * 86400), observedAt: now),
+                fiveHours: CodexQuotaSnapshot.absentFiveHours(observedAt: now))
+            // Local sample of the Grok Bot weekly row (D-80); no real query or notification.
+            result.grokBot = try .available(used: (used + 33).truncatingRemainder(dividingBy: 100),
+                                            resetsAt: now.addingTimeInterval(3 * 86400), observedAt: now)
+            return result
+        }
         result.subscription = .init(planType: "Plus", observedAt: now)
         result.quotaState = .available
         result.quotaSnapshot = CodexQuotaSnapshot(accountID: account.id, provider: account.provider,

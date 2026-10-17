@@ -18,4 +18,4 @@ T16 额度页与“设置 → 账户管理”共用同一账户数组和添加�
 
 ## T44／T45支持页
 
-SettingsView接入原生NavigationLink，提供四类简短帮助、真实实现核对后的隐私说明、实际采用的CodexBar平台标志MIT清单与完整许可详情。许可从主App Bundle中的CodexBar-MIT.txt读取，无网络依赖；RootView测量现有底部区域高度，只为新支持页保留完整末尾滚动空间。页面不读取真实账户或授权，不新增设置／故障排查／重登入口。
+SettingsView接入原生NavigationLink，提供四类简短帮助、真实实现核对后的隐私说明、实际采用的开源素材清单（T102起为Lobe Icons平台标志MIT、Lucide功能图标ISC）与完整许可详情。许可从主App Bundle中的LobeIcons-MIT.txt／Lucide-ISC.txt读取，无网络依赖；RootView测量现有底部区域高度，只为新支持页保留完整末尾滚动空间。页面不读取真实账户或授权，不新增设置／故障排查／重登入口。

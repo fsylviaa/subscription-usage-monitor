@@ -8,6 +8,9 @@ import Security
 struct CoordinatedQuotaUpdater: CodexQuotaUpdating {
     let store: AccountStore
     let service: any CodexQuotaUpdating
+    /// Cursor accounts use their own query (D-77); the same lease, interval and
+    /// stale-binding checks apply to both platforms.
+    var cursorService: (any CodexQuotaUpdating)? = nil
     var opportunistic = false
     var now: @Sendable () -> Date = { Date() }
     static let interval: TimeInterval = 30 * 60
@@ -53,6 +56,13 @@ struct CoordinatedQuotaUpdater: CodexQuotaUpdating {
         // a success timestamp or a displayed observation, including after a crash.
         try JSONEncoder().encode(Attempt(generation: current.generation, credentialRef: current.credentialRef, date: now()))
             .write(to: attemptURL, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        if current.platform == .cursor {
+            guard let cursorService else { throw CodexQuotaError.failed }
+            if let query = cursorService as? CursorQuotaService {
+                return try await query.validatingWrites { try lease.validate(at: now()) }.update(current)
+            }
+            return try await cursorService.update(current)
+        }
         if let query = service as? CodexQuotaService {
             return try await query.validatingWrites { try lease.validate(at: now()) }.update(current)
         }
@@ -63,7 +73,9 @@ struct CoordinatedQuotaUpdater: CodexQuotaUpdating {
         let vault = CredentialVault.applicationVault()
         return Self(store: store, service: CodexQuotaService(store: store,
             loadCredential: { try await vault.load(for: .credential($0)) },
-            renewal: CodexCredentialRenewal(vault: vault, store: store)), opportunistic: opportunistic)
+            renewal: CodexCredentialRenewal(vault: vault, store: store)),
+            cursorService: CursorQuotaService(store: store, loadCredential: { try await vault.load(for: .credential($0)) }),
+            opportunistic: opportunistic)
     }
 }
 

@@ -94,7 +94,7 @@ struct RootView: View {
             VStack(spacing: 0) {
                 if selection == .quota {
                     Button { tutorialSource = .quota } label: {
-                        Label("如何添加小组件", systemImage: "square.grid.2x2")
+                        IconLabel("如何添加小组件", icon: .widgets, size: 19, relativeTo: .subheadline)
                             .font(.subheadline.weight(.medium))
                             .frame(maxWidth: .infinity, minHeight: 44)
                     }
@@ -103,8 +103,8 @@ struct RootView: View {
                     .padding(.horizontal, 16)
                 }
                 HStack(spacing: 0) {
-                    tab("额度", icon: "Chart", value: .quota, id: "quota")
-                    tab("设置", icon: "Settings", value: .settings, id: "settings")
+                    tab("额度", icon: .quota, value: .quota, id: "quota")
+                    tab("设置", icon: .settings, value: .settings, id: "settings")
                 }
                 .padding(.top, 6).padding(.bottom, 4)
             }
@@ -310,11 +310,11 @@ struct RootView: View {
         }
     }
 
-    private func tab(_ title: String, icon: String, value: Tab, id: String) -> some View {
+    private func tab(_ title: String, icon: AppIcon, value: Tab, id: String) -> some View {
         Button { selection = value } label: {
             VStack(spacing: 3) {
-                DesignIcon(name: icon, size: 23)
-                Text(title).font(.caption2.weight(.medium))
+                AppIconView(icon, size: 37)
+                Text(title).font(.body.weight(.medium))
             }
             .frame(maxWidth: .infinity, minHeight: 50)
             .contentShape(Rectangle())
@@ -391,7 +391,8 @@ extension WidgetQuotaRoute {
     func detailTarget(in accounts: [ConnectedAccount]) -> CodexDetailTarget? {
         guard case let .quota(id?, key?) = self,
               let account = accounts.first(where: { $0.id == id && $0.deletionPending != true }),
-              key == Self.identityKey(account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户", isDemo: account.isDemo)
+              key == Self.identityKey(account.verifiedEmail ?? account.remoteUserID ?? "\(account.platform.displayName) 账户",
+                                      isDemo: account.isDemo, platform: account.platform)
         else { return nil }
         return CodexDetailTarget(account)
     }

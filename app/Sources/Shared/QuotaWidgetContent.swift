@@ -61,7 +61,7 @@ enum QuotaWidgetContent: Equatable, Sendable {
         switch amount {
         case .unknown: "未知"
         case .unlimited: "不限量"
-        case let .limited(used): "剩余 \((100 - used).formatted(.number.precision(.fractionLength(0...2))))%"
+        case .limited: "剩余 " + QuotaCardAmount(amount).nativeText
         }
     }
 
@@ -125,7 +125,7 @@ struct WidgetAccountEntity: AppEntity {
     init(account: WidgetSnapshot.Account) {
         id = account.id.uuidString
         identity = (account.isDemo ? "演示 · " : "") + account.identity
-        detail = "Codex"
+        detail = account.resolvedPlatform.displayName
     }
 }
 
@@ -216,17 +216,18 @@ enum WidgetQuotaRoute: Equatable {
         self = .quota(accountID: id, identityKey: key)
     }
 
-    static func identityKey(_ identity: String, isDemo: Bool) -> String {
+    /// Codex keeps its original prefix so links of existing widgets still resolve.
+    static func identityKey(_ identity: String, isDemo: Bool, platform: QuotaPlatform = .codex) -> String {
         let normalized = identity.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        return SHA256.hash(data: Data("codex:\(isDemo):\(normalized)".utf8))
+        return SHA256.hash(data: Data("\(platform.rawValue):\(isDemo):\(normalized)".utf8))
             .map { String(format: "%02x", $0) }.joined()
     }
 
-    static func url(accountID: UUID, identity: String, isDemo: Bool) -> URL {
+    static func url(accountID: UUID, identity: String, isDemo: Bool, platform: QuotaPlatform = .codex) -> URL {
         var url = URLComponents()
         url.scheme = "subscriptionusage"; url.host = "quota"
         url.queryItems = [URLQueryItem(name: "account", value: accountID.uuidString),
-                          URLQueryItem(name: "identity", value: identityKey(identity, isDemo: isDemo))]
+                          URLQueryItem(name: "identity", value: identityKey(identity, isDemo: isDemo, platform: platform))]
         return url.url!
     }
 }

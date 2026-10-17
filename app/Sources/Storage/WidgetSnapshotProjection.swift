@@ -32,10 +32,12 @@ extension WidgetSnapshot {
         case .available: state = .available
         }
         return Account(
-            id: first.id, identity: first.verifiedEmail ?? first.remoteUserID ?? "Codex 账户",
+            id: first.id, identity: first.verifiedEmail ?? first.remoteUserID ?? "\(first.platform.displayName) 账户",
             plan: first.subscription?.planType ?? quota?.planType, isDemo: first.isDemo, state: state,
             subscriptionObservedAt: first.subscription?.observedAt,
             quotaObservedAt: quota?.observedAt,
-            weekly: quota.map { window($0.weekly) }, fiveHours: quota.map { window($0.fiveHours) })
+            weekly: quota.map { window($0.weekly) }, fiveHours: quota.map { window($0.fiveHours) },
+            platform: first.platform,
+            grokBot: first.platform == .cursor ? first.grokBot?.displayed.map(window) : nil)
     }
 }

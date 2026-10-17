@@ -40,14 +40,14 @@ struct CompactWidgetBody: View {
     private var header: some View {
         HStack(spacing: 0) {
             if style == .watermark {
-                QuotaWatermarkShape().fill(theme.ink).frame(width: medium ? 16 : 15, height: medium ? 16 : 15)
+                PlatformMarkShape(platform: input.platform).fill(theme.ink, style: PlatformMarkShape.fillStyle).frame(width: medium ? 16 : 15, height: medium ? 16 : 15)
                     .padding(.trailing, 5).accessibilityHidden(true)
             }
             if style == .rave {
-                Text("Codex").font(.system(size: medium ? 14 : 13, weight: .black))
+                Text(input.platform.displayName).font(.system(size: medium ? 14 : 13, weight: .black))
                     .shadow(color: RavePalette.shadow, radius: 0, x: 2, y: 2)
             } else {
-                Text("Codex").font(.system(size: medium ? 14 : 13, weight: .bold))
+                Text(input.platform.displayName).font(.system(size: medium ? 14 : 13, weight: .bold))
             }
             if style == .rave { RaveSpark().frame(width: 12, height: 12).padding(.leading, 6) }
         }

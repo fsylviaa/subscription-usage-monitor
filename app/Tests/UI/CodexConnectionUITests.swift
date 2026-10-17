@@ -25,6 +25,30 @@ final class CodexConnectionUITests: XCTestCase {
         XCTAssertTrue(connect.waitForExistence(timeout: 5))
     }
 
+    /// T93: the picker offers Codex first, then Cursor, with spoken names.
+    /// T98 (D-78): each tile shows its name under the icon and is fully visible at the short detent.
+    @MainActor
+    func testT93PickerShowsCodexThenCursor() throws {
+        let app = launch("51")
+        defer { app.terminate() }
+        app.buttons["quota.toolbarConnect"].tap()
+        let codex = app.buttons["platforms.codex"], cursor = app.buttons["platforms.cursor"]
+        XCTAssertTrue(codex.waitForExistence(timeout: 5)); XCTAssertTrue(cursor.exists)
+        XCTAssertEqual(codex.label, "Codex"); XCTAssertEqual(cursor.label, "Cursor")
+        XCTAssertEqual(codex.frame.midY, cursor.frame.midY, accuracy: 1)
+        XCTAssertLessThan(codex.frame.minX, cursor.frame.minX, "Codex在前")
+        XCTAssertGreaterThanOrEqual(codex.frame.height, 88, "灰框放下图标和名称（矮档位悬浮弹层略缩放）")
+        XCTAssertLessThan(codex.frame.height, 130, "灰框只略增")
+        XCTAssertLessThanOrEqual(cursor.frame.maxY, app.frame.height - 8, "不上拉即可看到整格")
+        XCTAssertTrue(cursor.isHittable)
+        let shot = app.screenshot()
+        saveFixtureScreenshot(app, name: "T93-平台选择")
+        if let out = ProcessInfo.processInfo.environment["T93_OUT"] {
+            try FileManager.default.createDirectory(atPath: out, withIntermediateDirectories: true)
+            try shot.pngRepresentation.write(to: URL(fileURLWithPath: out).appendingPathComponent("T93-picker.png"))
+        }
+    }
+
     @MainActor
     func testT16PlatformPickerStartsCompactExpandsAndReopensCompact() {
         let app = launch("51")
@@ -35,8 +59,8 @@ final class CodexConnectionUITests: XCTestCase {
         XCTAssertTrue(icon.waitForExistence(timeout: 5))
         XCTAssertEqual(title.label, "连接账号")
         XCTAssertGreaterThan(title.frame.minY, app.frame.height * 0.55)
-        XCTAssertEqual(icon.label, "Codex", "纯图标仍应有读屏名称")
-        XCTAssertFalse(app.staticTexts["Codex"].exists)
+        XCTAssertEqual(icon.label, "Codex", "读屏名称不变")
+        XCTAssertLessThanOrEqual(icon.frame.maxY, app.frame.height - 8, "矮档位不上拉即可看到整格")
         XCTAssertFalse(app.staticTexts["GPT"].exists)
         XCTAssertFalse(app.staticTexts["connection.code"].exists)
         XCTAssertFalse(app.otherElements["connection.progress"].exists)
@@ -100,6 +124,34 @@ final class CodexConnectionUITests: XCTestCase {
         }
         app.buttons["tab.quota"].tap()
         XCTAssertTrue(app.staticTexts["未连接账户"].exists)
+    }
+
+    /// T98 (D-78): light / dark at normal and the largest accessibility text. Names stay on one line,
+    /// the short detent shows whole tiles without pulling up, and tapping still starts the same flow.
+    @MainActor
+    func testT98PickerNamesLightDarkAndMaximumText() {
+        continueAfterFailure = false
+        for large in [false, true] {
+            for dark in [false, true] {
+                let app = XCUIApplication()
+                app.launchArguments = ["--t07-isolated-ui", "51", "-appearance", dark ? "dark" : "light"]
+                    + (large ? ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"] : [])
+                app.launch()
+                app.buttons["quota.toolbarConnect"].tap()
+                let codex = app.buttons["platforms.codex"], cursor = app.buttons["platforms.cursor"]
+                XCTAssertTrue(codex.waitForExistence(timeout: 5))
+                XCTAssertEqual(codex.label, "Codex"); XCTAssertEqual(cursor.label, "Cursor")
+                XCTAssertTrue(codex.isHittable); XCTAssertTrue(cursor.isHittable)
+                XCTAssertEqual(codex.frame.midY, cursor.frame.midY, accuracy: 1)
+                XCTAssertLessThanOrEqual(cursor.frame.maxX, app.frame.width, "三列不溢出屏幕")
+                XCTAssertLessThanOrEqual(cursor.frame.maxY, app.frame.height - 8, "不上拉即可看到整格")
+                saveFixtureScreenshot(app, name: "T98-\(large ? "最大字号" : "常规")-\(dark ? "深色" : "浅色")")
+                codex.tap()
+                XCTAssertTrue(app.staticTexts["connection.code"].waitForExistence(timeout: 5), "点击后流程不变")
+                app.buttons["connection.cancel"].tap()
+                app.terminate()
+            }
+        }
     }
 
     @MainActor

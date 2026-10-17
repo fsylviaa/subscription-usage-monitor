@@ -61,6 +61,10 @@ struct QuotaProgress: Equatable, Sendable {
 enum QuotaWindow: Int, Codable, Equatable, Sendable {
     case fiveHours = 18_000
     case weekly = 604_800
+    /// Cursor billing cycle (D-77). A negative tag, never a duration: Codex
+    /// identifies windows by exact positive `limit_window_seconds`, and its
+    /// 30-day free window must keep failing that lookup.
+    case monthly = -1
 }
 
 enum QuotaUnit: Equatable, Sendable {
@@ -96,6 +100,9 @@ struct QuotaWindowSnapshot: Codable, Equatable, Sendable {
 
 /// A quota observation persisted only after a gated, successful query.
 /// Identity comes from the verified request context, not an untrusted response label.
+/// `weekly` is the primary window slot (stored key kept for upgrade compatibility):
+/// a weekly window for Codex, the monthly billing window for Cursor. Cursor has no
+/// five-hour limit, so its `fiveHours` slot is a verified-absent window.
 struct CodexQuotaSnapshot: Codable, Equatable, Sendable {
     let accountID: UUID
     let provider: ProviderID
@@ -112,4 +119,42 @@ struct CodexQuotaSnapshot: Codable, Equatable, Sendable {
     var hasKnownQuota: Bool {
         [weekly, fiveHours].contains { $0.amount != .unknown }
     }
+
+    var primary: QuotaWindowSnapshot { weekly }
+
+    /// Cursor's fiveHours slot is always verified absent.
+    static func absentFiveHours(observedAt: Date) -> QuotaWindowSnapshot {
+        QuotaWindowSnapshot(window: .fiveHours, amount: .unknown, resetsAt: nil, observedAt: observedAt, isApplicable: false)
+    }
+}
+
+/// Grok Bot weekly quota bundled with a Cursor subscription (D-80). Kept apart from
+/// the monthly snapshot: its own applicability and its own last success time, so a
+/// failure of one never overwrites the other. Nil on the account means never fetched.
+struct GrokBotQuota: Codable, Equatable, Sendable {
+    /// `.available` carries `window`; `.notApplicable` (no included quota, trial only) has none.
+    let state: AccountQuotaState
+    /// `observedAt` is this window's own last successful query.
+    let window: QuotaWindowSnapshot?
+
+    static let notApplicable = GrokBotQuota(state: .notApplicable, window: nil)
+
+    static func available(used: Double, resetsAt: Date?, observedAt: Date) throws -> GrokBotQuota {
+        GrokBotQuota(state: .available, window: QuotaWindowSnapshot(window: .weekly,
+            amount: .limited(try QuotaPercentage(used: used)), resetsAt: resetsAt, observedAt: observedAt))
+    }
+
+    var isValid: Bool {
+        switch state {
+        case .notFetched: return false
+        case .notApplicable: return window == nil
+        case .available:
+            guard let window, window.window == .weekly, window.isApplicable != false,
+                  case .limited = window.amount, window.observedAt.timeIntervalSince1970.isFinite else { return false }
+            return window.resetsAt.map { (1...253_402_300_799).contains($0.timeIntervalSince1970) } ?? true
+        }
+    }
+
+    /// The value shown as the second row; nil hides the row.
+    var displayed: QuotaWindowSnapshot? { state == .available ? window : nil }
 }

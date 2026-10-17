@@ -22,6 +22,47 @@ struct DesignIcon: View {
     }
 }
 
+/// Function icons: Lucide 0.460.0 (ISC) SVGs in the asset catalog, template-tinted by foregroundStyle.
+enum AppIcon: String {
+    case connect = "CirclePlus", quota = "Gauge", settings = "Settings"
+    case cardStyle = "Palette", darkMode = "Moon", reminder = "Bell", widgets = "LayoutGrid"
+    case help = "CircleHelp", privacy = "ShieldCheck", licenses = "Info"
+    case close = "X", refresh = "RefreshCw", more = "Ellipsis", delete = "Trash2"
+    case failure = "CircleAlert", key = "KeyRound", copy = "Copy", check = "Check"
+
+    var image: Image { Image("Lucide" + rawValue) }
+    /// Menu rows inside cards are bridged with the card's own foreground, which overrides the
+    /// destructive tint; this copy is already system red so both menus show the same red icon.
+    var destructiveImage: Image {
+        Image(uiImage: (UIImage(named: "Lucide" + rawValue) ?? UIImage())
+            .withTintColor(.systemRed, renderingMode: .alwaysOriginal))
+    }
+}
+
+struct AppIconView: View {
+    let icon: AppIcon
+    var size: CGFloat = 20
+    init(_ icon: AppIcon, size: CGFloat = 20) { self.icon = icon; self.size = size }
+    var body: some View {
+        icon.image.resizable().scaledToFit()
+            .frame(width: size, height: size).accessibilityHidden(true)
+    }
+}
+
+/// A row label whose icon scales with Dynamic Type like a system symbol would.
+struct IconLabel: View {
+    let title: String
+    let icon: AppIcon
+    @ScaledMetric private var size: CGFloat
+    init(_ title: String, icon: AppIcon, size: CGFloat = 22, relativeTo style: Font.TextStyle = .body) {
+        self.title = title; self.icon = icon
+        _size = ScaledMetric(wrappedValue: size, relativeTo: style)
+    }
+    var body: some View {
+        Label { Text(title) } icon: { AppIconView(icon, size: size) }
+    }
+}
+
 struct QuotaView: View {
     var accounts: [ConnectedAccount] = []
     var footerTop: CGFloat?
@@ -54,19 +95,19 @@ struct QuotaView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.nativeQuotaStatic) private var staticQuota
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @ScaledMetric(relativeTo: .headline) private var titleSize = 18
+    @ScaledMetric(relativeTo: .headline) private var titleSize = 28
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                Text("订阅额度").font(.system(size: dynamicTypeSize.isAccessibilitySize ? min(titleSize, 28) : titleSize, weight: .semibold))
+                Text("订阅额度").font(.system(size: dynamicTypeSize.isAccessibilitySize ? min(titleSize, 40) : titleSize, weight: .semibold))
                     .accessibilityAddTraits(.isHeader).accessibilityIdentifier("quota.title")
                     #if DEBUG
                     .accessibilityValue(AppBackgroundRuntime.shared.debugSummary)
                     #endif
                 Spacer(minLength: 12)
                 Button(action: connect) {
-                    DesignIcon(name: "Link").frame(width: 44, height: 44)
+                    AppIconView(.connect, size: 32).frame(width: 44, height: 44)
                 }
                 .disabled(!canConnect).accessibilityLabel("连接账号")
                 .accessibilityIdentifier("quota.toolbarConnect")
@@ -79,10 +120,13 @@ struct QuotaView: View {
                     .accessibilityLabel("正在加载账户")
                     .accessibilityIdentifier("quota.loading")
             } else if loadFailed {
-                ContentUnavailableView("刷新失败", systemImage: "exclamationmark.circle")
+                ContentUnavailableView {
+                    Label { Text("刷新失败") } icon: { AppIconView(.failure, size: 44) }
+                }
             } else if accounts.isEmpty {
                 ContentUnavailableView {
-                    Label("未连接账户", systemImage: "link").accessibilityIdentifier("quota.empty")
+                    Label { Text("未连接账户") } icon: { AppIconView(.connect, size: 44) }
+                        .accessibilityIdentifier("quota.empty")
                 } actions: {
                     Button("连接账号", action: connect)
                         .buttonStyle(DashboardButtonStyle())
@@ -101,7 +145,7 @@ struct QuotaView: View {
                                         .font(.subheadline.weight(.semibold))
                                         .accessibilityIdentifier("quota.retry")
                                     Button(action: closeFeedback) {
-                                        DesignIcon(name: "Close", size: 16).frame(width: 44, height: 44)
+                                        AppIconView(.close, size: 16).frame(width: 44, height: 44)
                                     }
                                     .accessibilityLabel("关闭提示").accessibilityIdentifier("quota.closeFeedback")
                                 }
@@ -144,7 +188,7 @@ struct QuotaView: View {
         switch amount {
         case .unknown: "未知"
         case .unlimited: "不限量"
-        case let .limited(value): "剩余 \(value.remaining.formatted(.number.precision(.fractionLength(0...2))))%"
+        case .limited: "剩余 " + QuotaCardAmount(amount).nativeText
         }
     }
 
@@ -198,7 +242,7 @@ private struct QuotaAccountCard: View {
                             .frame(width: 14, height: 14)
                             accountMenu
                         }), openDetails: openDetails, variant: position,
-                        spokenIdentity: account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户", failed: failed)
+                        spokenIdentity: account.verifiedEmail ?? account.remoteUserID ?? "\(account.platform.displayName) 账户", failed: failed)
                 }
                 .fixedSize(horizontal: false, vertical: true)
             }
@@ -213,11 +257,10 @@ private struct QuotaAccountCard: View {
 
     private var accountMenu: some View {
         Menu {
-            Button("刷新额度", systemImage: "arrow.clockwise", action: refresh).disabled(!canRefresh)
-            Button("删除账户", systemImage: "trash", role: .destructive, action: delete)
+            Button(action: refresh) { Label { Text("刷新额度") } icon: { AppIcon.refresh.image } }.disabled(!canRefresh)
+            Button(role: .destructive, action: delete) { Label { Text("删除账户") } icon: { AppIcon.delete.destructiveImage } }
         } label: {
-            Image(systemName: "ellipsis")
-                .font(dynamicTypeSize.isAccessibilitySize ? .system(size: 20, weight: .semibold) : .body.weight(.semibold))
+            AppIconView(.more, size: dynamicTypeSize.isAccessibilitySize ? 26 : 22)
                 .frame(width: dynamicTypeSize.isAccessibilitySize ? 44 : 36,
                        height: dynamicTypeSize.isAccessibilitySize ? 44 : 36)
                 .contentShape(Rectangle())
@@ -595,21 +638,21 @@ final class QuotaReorderLayout: UICollectionViewCompositionalLayout {
 /// A sheet follows one identity, never a copied row or an array position.
 struct CodexDetailTarget: Identifiable, Equatable {
     let id: UUID
+    private let provider: ProviderID
     private let email: String?
     private let remoteUserID: String?
 
     init?(_ account: ConnectedAccount) {
-        guard account.provider == .openAI, account.product == .codexSubscription,
-              account.deletionPending != true else { return nil }
+        guard account.hasKnownProductPair, account.deletionPending != true else { return nil }
         id = account.id
+        provider = account.provider
         email = account.verifiedEmail?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         remoteUserID = account.remoteUserID
     }
 
     func resolve(in accounts: [ConnectedAccount]) -> ConnectedAccount? {
         accounts.first {
-            $0.id == id && $0.deletionPending != true && $0.provider == .openAI
-                && $0.product == .codexSubscription
+            $0.id == id && $0.deletionPending != true && $0.provider == provider && $0.hasKnownProductPair
                 && $0.verifiedEmail?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == email
                 && $0.remoteUserID == remoteUserID
         }
@@ -638,14 +681,31 @@ struct CodexDetailContent {
             return $0
         }
         var values: [Row] = [Row(id: "identity", title: "账号",
-            value: account.verifiedEmail ?? account.remoteUserID ?? "Codex 账户")]
+            value: account.verifiedEmail ?? account.remoteUserID ?? "\(account.platform.displayName) 账户")]
+        // Reset cards are a Codex inventory; Cursor has no such field (D-77).
+        if account.platform == .codex {
         let count = account.subscription.flatMap { subscription -> Int64? in
             guard subscription.isValid, let count = subscription.resetCardCount, count >= 0 else { return nil }
             return count
         } ?? 0
         values.append(Row(id: "resetCards", title: "重置额度", value: String(count)))
+        }
         if let snapshot {
             values.append(Row(id: "updatedAt", title: "更新时间", value: QuotaView.dateText(snapshot.observedAt)))
+        }
+        // Only when a failed Grok Bot query left it at its own older success time (D-80).
+        if account.platform == .cursor, let grokBot = account.grokBot?.displayed,
+           grokBot.observedAt != snapshot?.observedAt {
+            values.append(Row(id: "grokBotUpdatedAt", title: "Grok Bot 更新时间", value: QuotaView.dateText(grokBot.observedAt)))
+        }
+        // Exact values for the windows whose detail cards are shown, in card order (D-81).
+        if snapshot != nil {
+            let shown = QuotaStyledInput(account: WidgetSnapshot.projecting([account]).account).windows
+            for window in shown.filter({ $0.kind == .fiveHours }) + shown.filter({ $0.kind != .fiveHours }) {
+                guard let precise = window.amount.preciseText else { continue }
+                let title = window.kind == .grokBot ? "Grok Bot 剩余" : window.title + "剩余"
+                values.append(Row(id: "remaining.\(window.id)", title: title, value: precise))
+            }
         }
         rows = values
     }
@@ -668,29 +728,31 @@ struct CodexDetailPanel: View {
         VStack(spacing: 0) {
             HStack(spacing: 8) {
                 Button(action: close) {
-                    Image(systemName: "xmark").frame(width: 44, height: 44)
+                    AppIconView(.close, size: 24).frame(width: 44, height: 44)
                 }
                 .accessibilityLabel("关闭详情").accessibilityIdentifier("detail.close")
                 Spacer(minLength: 0)
                 Button(action: refresh) {
                     ZStack {
                         if updating { ProgressView().controlSize(.small) }
-                        else { Image(systemName: "arrow.clockwise") }
+                        else { AppIconView(.refresh, size: 21) }
                     }.frame(width: 44, height: 44)
                 }
                 .disabled(!canManage || updating)
                 .accessibilityLabel(updating ? "正在刷新" : "刷新当前账户")
                 .accessibilityIdentifier("detail.refresh")
                 Menu {
-                    Button("刷新额度", systemImage: "arrow.clockwise", action: refresh).disabled(updating)
-                    Button("删除账户", systemImage: "trash", role: .destructive) { confirmingDeletion = true }
+                    Button(action: refresh) { Label { Text("刷新额度") } icon: { AppIcon.refresh.image } }.disabled(updating)
+                    Button(role: .destructive) { confirmingDeletion = true } label: {
+                        Label { Text("删除账户") } icon: { AppIcon.delete.destructiveImage }
+                    }
                 } label: {
-                    Image(systemName: "ellipsis").frame(width: 44, height: 44)
+                    AppIconView(.more, size: 24).frame(width: 44, height: 44)
                 }
                 .disabled(!canManage)
                 .accessibilityLabel("账户操作").accessibilityIdentifier("detail.menu")
             }
-            .overlay { Text("Codex").font(.system(size: 20, weight: .semibold)).accessibilityAddTraits(.isHeader).allowsHitTesting(false) }
+            .overlay { Text(account.platform.displayName).font(.system(size: 20, weight: .semibold)).accessibilityAddTraits(.isHeader).allowsHitTesting(false) }
             .font(.system(size: 20))
             .fixedSize(horizontal: false, vertical: true)
             .layoutPriority(1)
@@ -701,7 +763,7 @@ struct CodexDetailPanel: View {
                     Spacer(minLength: 0)
                     Button("重试", action: refresh).disabled(!canManage || updating)
                         .accessibilityIdentifier("detail.retry")
-                    Button(action: closeFeedback) { Image(systemName: "xmark").frame(width: 44, height: 44) }
+                    Button(action: closeFeedback) { AppIconView(.close, size: 20).frame(width: 44, height: 44) }
                         .accessibilityLabel("关闭提示")
                 }
                 .buttonStyle(.plain).padding(.leading, 12)
@@ -720,7 +782,12 @@ struct CodexDetailPanel: View {
                                 if snapshot.fiveHours.shouldDisplay {
                                     detailWindow(snapshot.fiveHours, title: "5 小时", id: "fiveHours", now: context.date)
                                 }
-                                detailWindow(snapshot.weekly, title: "每周", id: "weekly", now: context.date)
+                                detailWindow(snapshot.weekly, title: account.platform.primaryWindowTitle,
+                                             id: account.platform.primaryWindowID, now: context.date)
+                                // Cursor's second row (D-80): after “本月”, styled like the five-hour card.
+                                if account.platform == .cursor, let grokBot = account.grokBot?.displayed {
+                                    detailWindow(grokBot, title: "Grok Bot", id: "grokBot", now: context.date)
+                                }
                             }
                         }
                     } else if account.quotaState != .notApplicable {

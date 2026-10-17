@@ -19,13 +19,15 @@ struct SettingsView: View {
                     CardStyleSelectionView(selection: cardStyle, select: setCardStyle, bottomInset: supportBottomInset)
                 } label: {
                     HStack {
-                        Text("卡片样式")
+                        IconLabel("卡片样式", icon: .cardStyle)
                         Spacer()
                         Text(cardStyle.name).foregroundStyle(.secondary)
                     }
                 }
                 .accessibilityIdentifier("settings.cardStyle")
-                Toggle("深色模式", isOn: Binding(get: { darkAppearance }, set: setDarkAppearance))
+                Toggle(isOn: Binding(get: { darkAppearance }, set: setDarkAppearance)) {
+                    IconLabel("深色模式", icon: .darkMode)
+                }
                     .accessibilityIdentifier("settings.darkAppearance")
                 Toggle(isOn: Binding(get: { reminders.isEnabled }, set: { enabled in
                     if enabled && reminders.showsSystemSettings {
@@ -34,7 +36,7 @@ struct SettingsView: View {
                         Task { await reminders.setEnabled(enabled) }
                     }
                 })) {
-                    Label("重置提醒", systemImage: "bell")
+                    IconLabel("重置提醒", icon: .reminder)
                 }
                 .disabled(reminders.isRefreshing || reminders.isRequestingAuthorization)
                 .accessibilityIdentifier("settings.resetReminder")
@@ -60,25 +62,25 @@ struct SettingsView: View {
 
             Section("支持") {
                 Button(action: openWidgetTutorial) {
-                    Label("如何添加小组件", systemImage: "square.grid.2x2")
+                    IconLabel("如何添加小组件", icon: .widgets)
                 }
                 .accessibilityIdentifier("settings.widgetTutorial")
                 NavigationLink {
                     HelpView(bottomInset: supportBottomInset)
                 } label: {
-                    Label("帮助与说明", systemImage: "questionmark.circle")
+                    IconLabel("帮助与说明", icon: .help)
                 }
                 .accessibilityIdentifier("settings.help")
                 NavigationLink {
                     PrivacyView(bottomInset: supportBottomInset)
                 } label: {
-                    Label("隐私说明", systemImage: "hand.raised")
+                    IconLabel("隐私说明", icon: .privacy)
                 }
                 .accessibilityIdentifier("settings.privacy")
                 NavigationLink {
                     OpenSourceView(bottomInset: supportBottomInset)
                 } label: {
-                    Label("开源许可", systemImage: "info.circle")
+                    IconLabel("开源许可", icon: .licenses)
                 }
                 .accessibilityIdentifier("settings.licenses")
             }
@@ -86,12 +88,16 @@ struct SettingsView: View {
                 Toggle("演示模式", isOn: Binding(get: { demoEnabled }, set: setDemoMode))
                     .disabled(!canManage)
                     .accessibilityIdentifier("settings.demo")
-            } footer: {
-                Text("开启后可添加演示账户，关闭时清除全部演示账户。")
             }
         }
         .navigationTitle("设置")
         .navigationBarTitleDisplayMode(.inline)
+        // Same size and regular weight as the rows below; the title above keeps navigation semantics.
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("设置").font(.body).accessibilityAddTraits(.isHeader)
+            }
+        }
     }
 
 
@@ -103,7 +109,7 @@ private struct HelpView: View {
     var body: some View {
         Form {
             Section("额度与重置") {
-                Text("显示 Codex 订阅的剩余额度，包括每周和5小时窗口；只显示账户适用的窗口。预计重置时间来自平台，到点后仍以实际查询结果为准，不会自行变满。")
+                Text("显示 Codex 和 Cursor 个人订阅的剩余额度：Codex 为每周和5小时窗口，Cursor 为本月额度和 Grok Bot 每周额度；只显示账户适用的窗口。预计重置时间来自平台，到点后仍以实际查询结果为准，不会自行变满。")
                     .accessibilityIdentifier("help.quota")
             }
             Section("刷新与旧数据") {
@@ -116,7 +122,7 @@ private struct HelpView: View {
                     .accessibilityIdentifier("help.reminders")
             }
             Section("小组件") {
-                Text("小号和中号显示所选账户适用的每周和5小时额度。默认跟随列表首个账户；长按小组件，在“编辑小组件”的“显示账户”中可为每个组件选择账户，选定后不随排序改变。")
+                Text("小号和中号显示所选账户适用的额度（Codex 每周和5小时，Cursor 本月）。默认跟随列表首个账户；长按小组件，在“编辑小组件”的“显示账户”中可为每个组件选择账户，选定后不随排序改变。")
                 Text("小组件会自动尝试更新，也会接收 App 的更新结果；系统可能延后显示，不保证固定更新间隔。")
                     .accessibilityIdentifier("help.widgets")
             }
@@ -161,15 +167,29 @@ private struct OpenSourceView: View {
         Form {
             Section {
                 NavigationLink {
-                    CodexBarLicenseView(bottomInset: bottomInset)
+                    BundledLicenseView(bottomInset: bottomInset, title: "Lobe Icons 许可", heading: "Lobe Icons · MIT",
+                                       detail: "采用内容：OpenAI 与 Cursor 平台标志（@lobehub/icons-static-svg 1.95.1）\n来源：github.com/lobehub/lobe-icons",
+                                       resource: "LobeIcons-MIT")
                 } label: {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("CodexBar")
-                        Text("MIT · Codex 平台标志素材")
+                        Text("Lobe Icons")
+                        Text("MIT · 平台标志")
                             .font(.subheadline).foregroundStyle(.secondary)
                     }
                 }
-                .accessibilityIdentifier("licenses.codexBar")
+                .accessibilityIdentifier("licenses.lobeIcons")
+                NavigationLink {
+                    BundledLicenseView(bottomInset: bottomInset, title: "Lucide 许可", heading: "Lucide · ISC",
+                                       detail: "采用内容：App 内功能图标（lucide-static 0.460.0）\n来源：github.com/lucide-icons/lucide",
+                                       resource: "Lucide-ISC")
+                } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Lucide")
+                        Text("ISC · 功能图标")
+                            .font(.subheadline).foregroundStyle(.secondary)
+                    }
+                }
+                .accessibilityIdentifier("licenses.lucide")
             } footer: {
                 Text("仅列出实际采用的开源项目或素材。完整许可随 App 提供，可离线查看。")
             }
@@ -180,18 +200,22 @@ private struct OpenSourceView: View {
     }
 }
 
-private struct CodexBarLicenseView: View {
+private struct BundledLicenseView: View {
     let bottomInset: CGFloat
-    // Read the bundled original; license details never depend on a web request.
-    private let license = Bundle.main.url(forResource: "CodexBar-MIT", withExtension: "txt")
-        .flatMap { try? String(contentsOf: $0, encoding: .utf8) }
+    let title: String
+    let heading: String
+    let detail: String
+    let resource: String
 
     var body: some View {
+        // Read the bundled original; license details never depend on a web request.
+        let license = Bundle.main.url(forResource: resource, withExtension: "txt")
+            .flatMap { try? String(contentsOf: $0, encoding: .utf8) }
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Text("CodexBar · MIT")
+                Text(heading)
                     .font(.headline)
-                Text("采用内容：Codex 平台标志素材\n来源：github.com/steipete/CodexBar")
+                Text(detail)
                     .font(.subheadline).foregroundStyle(.secondary)
                 if let license {
                     ForEach(Array(license.components(separatedBy: "\n\n").enumerated()), id: \.offset) { index, paragraph in
@@ -210,7 +234,7 @@ private struct CodexBarLicenseView: View {
         }
         .safeAreaPadding(.bottom, bottomInset)
         .background(DashboardStyle.background)
-        .navigationTitle("CodexBar 许可")
+        .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -281,10 +305,10 @@ private struct CardStyleMediumPreview: View {
             }
             .overlay(alignment: .topTrailing) {
                 if selected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.title2)
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(DashboardStyle.background, Color.accentColor)
+                    AppIconView(.check, size: 17)
+                        .foregroundStyle(DashboardStyle.background)
+                        .frame(width: 27, height: 27)
+                        .background(Color.accentColor, in: Circle())
                         .padding(10)
                 }
             }
