@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>Square</title>
+<link rel="stylesheet" href="kit.css"><script src="kit.js"></script>
+<style>
+  .stage { background:
+    radial-gradient(55% 50% at 50% 38%, rgba(141,107,255,.36), transparent 65%),
+    radial-gradient(40% 40% at 100% 100%, rgba(69,200,255,.20), transparent 60%),
+    radial-gradient(40% 40% at 0% 100%, rgba(62,230,168,.16), transparent 60%), var(--bg); }
+  .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; z-index: 2; }
+  .mark { filter: drop-shadow(0 40px 80px rgba(0,0,0,.6)) drop-shadow(0 0 60px rgba(141,107,255,.35)); margin-top: -40px; }
+  h1 { font-size: 104px; margin: 64px 0 18px; }
+  .cn { font-size: 30px; color: var(--muted); letter-spacing: .2em; }
+  .row { position: absolute; bottom: 92px; left: 0; right: 0; display: flex; justify-content: center; gap: 14px; z-index: 2; }
+</style></head>
+<body><div class="stage">
+  <div class="center">
+    <div class="mark" id="m"></div>
+    <h1 class="h-display grad">Token Dashboard</h1>
+    <div class="cn">Token 仪表盘</div>
+  </div>
+  <div class="row" id="r"></div>
+</div>
+<script>
+  document.getElementById("m").innerHTML = mark(300);
+  document.getElementById("r").innerHTML = PLATFORMS.map(p => tile(p.id, 50, "box-shadow:none;border-radius:13px")).join("");
+</script>
+</body></html>

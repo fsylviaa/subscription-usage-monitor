@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>iPhone and widgets</title>
+<link rel="stylesheet" href="kit.css"><script src="kit.js"></script>
+<style>
+  .stage { background:
+    radial-gradient(40% 55% at 48% 50%, rgba(141,107,255,.32), transparent 65%),
+    radial-gradient(35% 45% at 85% 30%, rgba(69,200,255,.20), transparent 60%),
+    radial-gradient(35% 45% at 0% 100%, rgba(62,230,168,.14), transparent 60%), var(--bg); }
+  .copy { position: absolute; left: 104px; top: 50%; transform: translateY(-50%); width: 500px; z-index: 3; }
+  .copy .h-section { margin: 26px 0 20px; font-size: 50px; }
+  .feats { list-style: none; padding: 0; margin: 40px 0 0; display: grid; gap: 22px; }
+  .feats li { display: flex; gap: 16px; align-items: flex-start; }
+  .feats .dot { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.08); }
+  .feats b { display: block; font-size: 19px; margin-bottom: 4px; }
+  .feats span { color: var(--muted); font-size: 15.5px; line-height: 1.55; }
+  .widget { position: absolute; border-radius: 34px; padding: 18px; z-index: 3;
+    background: linear-gradient(160deg, rgba(40,42,56,.92), rgba(18,19,26,.92));
+    border: 1px solid rgba(255,255,255,.09);
+    box-shadow: 0 30px 70px rgba(0,0,0,.55); }
+  .w-label { font-size: 12px; color: var(--faint); }
+</style></head>
+<body><div class="stage" id="s">
+  <div class="copy">
+    <span class="eyebrow"><i></i>iPhone · 桌面小组件</span>
+    <h2 class="h-section">剩余多少，<br><span class="grad">一眼就知道</span></h2>
+    <p class="lede">每个账户的周额度、5 小时额度和 API 余额集中在同一屏，桌面小组件直接显示，不必挨个登官网查看。</p>
+    <ul class="feats">
+      <li><div class="dot">↻</div><div><b>自动更新</b><span>打开 App 立即刷新，后台定期同步</span></div></li>
+      <li><div class="dot">◎</div><div><b>多账户</b><span>同一平台可添加多个账户，顺序随手拖动</span></div></li>
+      <li><div class="dot">▦</div><div><b>小组件随心选</b><span>每个小组件可以显示不同账户</span></div></li>
+    </ul>
+  </div>
+</div>
+<script>
+  const s = document.getElementById("s");
+  s.insertAdjacentHTML("beforeend", phone({ left: 660, top: 110, cards: DEFAULT_CARDS }));
+  s.lastElementChild.style.zIndex = 2;
+
+  // small widget: rings
+  s.insertAdjacentHTML("beforeend", `<div class="widget" style="left:1110px;top:178px;width:180px;height:180px;padding:16px">
+    <div style="display:flex;align-items:center;gap:7px">${tile("codex", 22, "border-radius:6px;box-shadow:none")}<span class="w-label">Codex</span></div>
+    <div style="position:absolute;left:50%;top:58%;transform:translate(-50%,-50%)">${rings({ size: 108, stroke: 11, gap: 4, items: [[72, COLOR.mint], [46, COLOR.cyan]] })}</div>
+    <div style="position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);text-align:center;font-size:22px;font-weight:700">72%</div>
+  </div>`);
+  // small widget: balance
+  s.insertAdjacentHTML("beforeend", `<div class="widget" style="left:1310px;top:178px;width:180px;height:180px">
+    <div style="display:flex;align-items:center;gap:7px">${tile("openrouter", 22, "border-radius:6px;box-shadow:none")}<span class="w-label">OpenRouter</span></div>
+    <div style="position:absolute;left:18px;bottom:20px">
+      <div class="w-label" style="margin-bottom:6px">账户余额</div>
+      <div style="font-size:34px;font-weight:700;letter-spacing:-.03em">$38.20</div>
+    </div>
+  </div>`);
+  // medium widget
+  const row = (id, a, b, ca, cb) => `<div style="display:flex;align-items:center;gap:12px;margin-top:22px">
+      ${tile(id, 34, "border-radius:10px;box-shadow:none")}
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><b>${P[id].name}</b><span style="color:var(--muted)">5 小时 ${a}% · 每周 ${b}%</span></div>
+        <div style="display:flex;gap:6px"><div class="bar" style="flex:1"><i style="width:${a}%;background:${GRAD[ca]}"></i></div><div class="bar" style="flex:1"><i style="width:${b}%;background:${GRAD[cb]}"></i></div></div>
+      </div></div>`;
+  s.insertAdjacentHTML("beforeend", `<div class="widget" style="left:1110px;top:384px;width:380px;height:180px">
+    <div class="w-label">剩余额度</div>
+    ${row("codex", 72, 46, "mint", "cyan")}${row("claude", 58, 81, "coral", "amber")}
+  </div>`);
+  // small widget: Cursor ring + small widget DeepSeek
+  s.insertAdjacentHTML("beforeend", `<div class="widget" style="left:1110px;top:590px;width:180px;height:180px;padding:16px">
+    <div style="display:flex;align-items:center;gap:7px">${tile("cursor", 22, "border-radius:6px;box-shadow:none")}<span class="w-label">Cursor</span></div>
+    <div style="position:absolute;left:50%;top:58%;transform:translate(-50%,-50%)">${rings({ size: 108, stroke: 11, gap: 4, items: [[64, COLOR.violet]] })}</div>
+    <div style="position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);text-align:center;font-size:22px;font-weight:700">64%</div>
+  </div>`);
+  s.insertAdjacentHTML("beforeend", `<div class="widget" style="left:1310px;top:590px;width:180px;height:180px">
+    <div style="display:flex;align-items:center;gap:7px">${tile("deepseek", 22, "border-radius:6px;box-shadow:none")}<span class="w-label">DeepSeek</span></div>
+    <div style="position:absolute;left:18px;bottom:20px">
+      <div class="w-label" style="margin-bottom:6px">账户余额</div>
+      <div style="font-size:34px;font-weight:700;letter-spacing:-.03em">¥126.4</div>
+    </div>
+  </div>`);
+</script>
+</body></html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>Cover</title>
+<link rel="stylesheet" href="kit.css"><script src="kit.js"></script>
+<style>
+  .copy { position: absolute; left: 112px; top: 50%; transform: translateY(-50%); width: 600px; z-index: 6; }
+  .copy h1 { font-size: 112px; margin: 30px 0 22px; }
+  .copy .cn { font-size: 26px; color: var(--muted); letter-spacing: .2em; margin-bottom: 40px; }
+  .copy .tag { font-size: 30px; line-height: 1.5; font-weight: 500; margin: 0 0 34px; }
+  .copy .tag em { font-style: normal; color: var(--mint); }
+  .copy .meta { display: flex; gap: 22px; color: var(--faint); font-size: 16px; }
+  .copy .meta span::before { content: ""; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: currentColor; margin-right: 9px; vertical-align: middle; }
+  .orbit-line { position: absolute; inset: 0; z-index: 1; }
+  .orb { position: absolute; transform: translate(-50%, -50%); }
+</style></head>
+<body><div class="stage" id="s">
+  <div class="copy">
+    <span class="eyebrow"><i></i>AI 订阅用量 · 一屏掌握</span>
+    <h1 class="h-display grad">Token<br>Dashboard</h1>
+    <div class="cn">Token 仪表盘</div>
+    <p class="tag">Codex、Claude、Cursor……<br>所有 AI 订阅的剩余额度，<em>抬手即见</em>。</p>
+    <div class="meta"><span>14+ AI 平台</span><span>iPhone 与小组件</span><span>Apple Watch</span></div>
+  </div>
+</div>
+<script>
+  const s = document.getElementById("s");
+  const cx = 1170, cy = 470, rx = 500, ry = 150, tilt = -14 * Math.PI / 180;
+  // orbit rings
+  s.insertAdjacentHTML("beforeend", `<svg class="orbit-line" viewBox="0 0 1600 900" width="1600" height="900">
+    <g transform="rotate(-14 ${cx} ${cy})" fill="none">
+      <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" stroke="rgba(255,255,255,.14)"/>
+      <ellipse cx="${cx}" cy="${cy}" rx="${rx + 70}" ry="${ry + 40}" stroke="rgba(255,255,255,.06)" stroke-dasharray="2 8"/>
+      <ellipse cx="${cx}" cy="${cy}" rx="${rx - 120}" ry="${ry - 40}" stroke="rgba(141,107,255,.18)"/>
+    </g></svg>`);
+  s.insertAdjacentHTML("beforeend", phone({ left: 1000, top: 62, cards: DEFAULT_CARDS }));
+  s.lastElementChild.style.zIndex = 2;
+  s.insertAdjacentHTML("beforeend", watch({ left: 790, top: 548, face: FACE_RINGS }));
+  s.lastElementChild.style.zIndex = 3;
+  // hand-placed constellation around the devices: [x, y, size, depth]
+  const SPOTS = [
+    [905, 118, 66, 1], [800, 222, 52, .7], [948, 318, 74, 1], [826, 420, 58, .8], [712, 468, 50, .65],
+    [760, 600, 60, .85], [742, 760, 50, .6],
+    [1510, 96, 54, .7], [1556, 232, 72, 1], [1488, 372, 56, .8], [1552, 510, 64, .95],
+    [1486, 640, 52, .7], [1548, 776, 70, 1], [1200, 30, 40, .5],
+  ];
+  PLATFORMS.forEach((p, i) => {
+    const [x, y, size, d] = SPOTS[i];
+    s.insertAdjacentHTML("beforeend", `<div class="orb" style="left:${x}px;top:${y}px;z-index:5;opacity:${.55 + .45 * d};filter:${d < .75 ? `blur(${(1 - d) * 2}px)` : "none"}">${tile(p.id, size)}</div>`);
+  });
+</script>
+</body></html>

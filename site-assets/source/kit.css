@@ -1,0 +1,156 @@
+:root {
+  --bg: #05060a;
+  --ink: #f4f5f8;
+  --muted: rgba(232, 236, 245, .62);
+  --faint: rgba(232, 236, 245, .36);
+  --line: rgba(255, 255, 255, .09);
+  --mint: #3ee6a8;
+  --cyan: #45c8ff;
+  --violet: #8d6bff;
+  --amber: #ffb547;
+  --coral: #ff7a8a;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, "SF Pro Display", "PingFang SC", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ---------- stage & atmosphere ---------- */
+.stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(52% 64% at 74% 42%, rgba(141, 107, 255, .34), transparent 62%),
+    radial-gradient(36% 48% at 96% 96%, rgba(69, 200, 255, .26), transparent 62%),
+    radial-gradient(34% 44% at 4% 104%, rgba(62, 230, 168, .16), transparent 62%),
+    radial-gradient(30% 30% at 20% 0%, rgba(255, 122, 138, .08), transparent 70%),
+    var(--bg);
+}
+.stage::before {           /* fine grid, faded toward edges */
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: .35;
+  -webkit-mask-image: radial-gradient(70% 70% at 65% 45%, #000 0%, transparent 75%);
+  pointer-events: none;
+}
+.stage::after {            /* film grain */
+  content: "";
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  opacity: .06;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* ---------- type ---------- */
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .05);
+  color: var(--muted);
+  font-size: 15px; letter-spacing: .04em;
+}
+.eyebrow i { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 12px var(--mint); }
+.grad {
+  background: linear-gradient(100deg, #ffffff 0%, #dfe6ff 38%, #a99bff 70%, #6fd8ff 100%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+.h-display { font-weight: 700; letter-spacing: -.035em; line-height: .95; margin: 0; }
+.h-section { font-size: 54px; font-weight: 700; letter-spacing: -.02em; line-height: 1.12; margin: 0; }
+.lede { color: var(--muted); font-size: 22px; line-height: 1.6; margin: 0; }
+
+/* ---------- logo tiles ---------- */
+.tile {
+  display: grid; place-items: center;
+  border-radius: 24%;
+  background: linear-gradient(160deg, #ffffff 0%, #eef0f6 100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(255, 255, 255, .6);
+}
+.tile img { width: 58%; height: 58%; display: block; }
+
+/* ---------- iPhone ---------- */
+.phone {
+  position: absolute;
+  width: 372px; height: 780px;
+  padding: 11px;
+  border-radius: 62px;
+  background: linear-gradient(145deg, #4a4e5a 0%, #1b1d23 30%, #0c0d11 70%, #3a3e48 100%);
+  box-shadow:
+    0 60px 120px rgba(0, 0, 0, .65),
+    0 0 0 1px rgba(255, 255, 255, .08),
+    inset 0 0 0 2px rgba(255, 255, 255, .06);
+}
+.screen {
+  position: relative;
+  width: 100%; height: 100%;
+  border-radius: 52px;
+  overflow: hidden;
+  background:
+    radial-gradient(90% 40% at 50% 0%, rgba(141, 107, 255, .16), transparent 70%),
+    #0a0b10;
+  padding: 0 18px;
+}
+.island { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 112px; height: 33px; border-radius: 20px; background: #000; z-index: 2; }
+.status { display: flex; justify-content: space-between; align-items: center; height: 54px; padding: 4px 16px 0; font-size: 16px; font-weight: 600; }
+.status .sys { display: flex; gap: 6px; align-items: center; }
+.status .bat { width: 25px; height: 12px; border-radius: 4px; border: 1.5px solid rgba(255,255,255,.55); padding: 1.5px; }
+.status .bat b { display: block; width: 72%; height: 100%; border-radius: 2px; background: #fff; }
+.app-head { display: flex; justify-content: space-between; align-items: flex-end; padding: 14px 4px 14px; }
+.app-head h3 { margin: 0; font-size: 33px; letter-spacing: -.02em; }
+.app-head small { color: var(--faint); font-size: 13px; }
+.app-head .plus { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.1); display: grid; place-items: center; font-size: 22px; color: var(--muted); }
+
+.card {
+  border-radius: 22px;
+  padding: 14px 15px 15px;
+  margin-bottom: 11px;
+  background: linear-gradient(160deg, rgba(255,255,255,.085), rgba(255,255,255,.035));
+  border: 1px solid rgba(255,255,255,.07);
+}
+.card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
+.card-top .tile { width: 30px; height: 30px; box-shadow: none; border-radius: 9px; }
+.card-top .name { font-size: 16px; font-weight: 600; }
+.card-top .who { font-size: 12px; color: var(--faint); margin-top: 1px; }
+.card-top .tail { margin-left: auto; font-size: 12px; color: var(--faint); }
+.meter + .meter { margin-top: 9px; }
+.meter-row { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--muted); margin-bottom: 6px; }
+.meter-row b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.bar { height: 7px; border-radius: 4px; background: rgba(255,255,255,.1); overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 4px; }
+.balance { display: flex; align-items: baseline; gap: 6px; }
+.balance b { font-size: 26px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.balance span { font-size: 12.5px; color: var(--faint); }
+
+/* ---------- Apple Watch ---------- */
+.watch { position: absolute; width: 214px; height: 256px; }
+.watch .band { position: absolute; left: 34px; right: 34px; border-radius: 30px; background: linear-gradient(90deg, #15161b, #23252c 50%, #15161b); }
+.watch .band.top { top: -110px; height: 150px; -webkit-mask-image: linear-gradient(to top, #000 40%, transparent); }
+.watch .band.bottom { bottom: -110px; height: 150px; -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent); }
+.watch .case {
+  position: absolute; inset: 0;
+  border-radius: 64px;
+  padding: 12px;
+  background: linear-gradient(145deg, #5a5e6a 0%, #1d1f25 35%, #0d0e12 70%, #4a4e58 100%);
+  box-shadow: 0 40px 90px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.08);
+}
+.watch .crown { position: absolute; right: -9px; top: 62px; width: 13px; height: 46px; border-radius: 6px; background: linear-gradient(90deg, #2a2c33, #6a6e7a, #2a2c33); }
+.watch .button { position: absolute; right: -5px; top: 132px; width: 7px; height: 52px; border-radius: 4px; background: #2a2c33; }
+.watch .face { position: relative; width: 100%; height: 100%; border-radius: 52px; background: #000; overflow: hidden; }

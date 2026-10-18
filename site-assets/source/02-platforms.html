@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>Platforms</title>
+<link rel="stylesheet" href="kit.css"><script src="kit.js"></script>
+<style>
+  .stage { background:
+    radial-gradient(50% 60% at 50% 0%, rgba(141,107,255,.30), transparent 65%),
+    radial-gradient(40% 50% at 100% 100%, rgba(69,200,255,.18), transparent 60%),
+    radial-gradient(40% 50% at 0% 100%, rgba(62,230,168,.14), transparent 60%), var(--bg); }
+  .head { position: absolute; top: 92px; left: 0; right: 0; text-align: center; z-index: 2; }
+  .head .h-section { margin: 26px 0 16px; }
+  .grid { position: absolute; left: 50%; top: 360px; transform: translateX(-50%); display: grid; grid-template-columns: repeat(5, 236px); gap: 20px; z-index: 2; }
+  .cell {
+    height: 170px; border-radius: 28px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+    background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.025));
+    border: 1px solid rgba(255,255,255,.08);
+    font-size: 19px; font-weight: 600; letter-spacing: .01em;
+  }
+  .cell.more { border-style: dashed; border-color: rgba(255,255,255,.2); background: transparent; color: var(--muted); font-weight: 500; }
+  .cell.more .plus { width: 64px; height: 64px; border-radius: 24%; display: grid; place-items: center; font-size: 34px; font-weight: 300;
+    background: linear-gradient(135deg, rgba(62,230,168,.25), rgba(141,107,255,.25)); color: #fff; }
+</style></head>
+<body><div class="stage">
+  <div class="head">
+    <span class="eyebrow"><i></i>订阅额度 · API 余额</span>
+    <h2 class="h-section">一个 App，看遍所有 <span class="grad">AI 订阅</span></h2>
+    <p class="lede">主流 AI 编程订阅与 API 余额统一接入，更多平台持续加入中</p>
+  </div>
+  <div class="grid" id="g"></div>
+</div>
+<script>
+  const g = document.getElementById("g");
+  PLATFORMS.forEach(p => g.insertAdjacentHTML("beforeend", `<div class="cell">${tile(p.id, 64)}<span>${p.name}</span></div>`));
+  g.insertAdjacentHTML("beforeend", `<div class="cell more"><div class="plus">+</div><span>更多平台</span></div>`);
+</script>
+</body></html>

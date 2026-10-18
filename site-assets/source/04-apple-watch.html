@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>Apple Watch</title>
+<link rel="stylesheet" href="kit.css"><script src="kit.js"></script>
+<style>
+  .stage { background:
+    radial-gradient(45% 60% at 72% 50%, rgba(62,230,168,.20), transparent 65%),
+    radial-gradient(40% 55% at 90% 20%, rgba(141,107,255,.28), transparent 62%),
+    radial-gradient(35% 45% at 0% 100%, rgba(69,200,255,.12), transparent 60%), var(--bg); }
+  .copy { position: absolute; left: 104px; top: 50%; transform: translateY(-50%); width: 520px; z-index: 3; }
+  .copy .h-section { margin: 26px 0 20px; font-size: 56px; }
+  .soon { display: inline-block; margin-top: 36px; padding: 10px 20px; border-radius: 999px; font-size: 15px; letter-spacing: .06em;
+    color: #0b1a14; background: linear-gradient(90deg, #3ee6a8, #45c8ff); font-weight: 600; }
+  .halo { position: absolute; z-index: 0; }
+</style></head>
+<body><div class="stage" id="s">
+  <div class="copy">
+    <span class="eyebrow"><i></i>Apple Watch 表盘</span>
+    <h2 class="h-section">下一站，<br><span class="grad">你的手腕</span></h2>
+    <p class="lede">把额度做成表盘与复杂功能。写代码时不用掏手机，抬一下手腕，就知道这周的额度还够不够用。</p>
+    <span class="soon">即将推出</span>
+  </div>
+</div>
+<script>
+  const s = document.getElementById("s");
+  s.insertAdjacentHTML("beforeend", `<div class="halo" style="left:1165px;top:500px;transform:translate(-50%,-50%);opacity:.5">${rings({ size: 820, stroke: 2, gap: 70, items: [[100, "rgba(255,255,255,.25)"], [100, "rgba(141,107,255,.5)"], [100, "rgba(62,230,168,.35)"]] })}</div>`);
+  s.insertAdjacentHTML("beforeend", watch({ left: 1000 - 107, top: 520 - 128, scale: 1.45, face: FACE_RINGS }));
+  s.lastElementChild.style.zIndex = 2;
+  s.insertAdjacentHTML("beforeend", watch({ left: 1340 - 107, top: 480 - 128, scale: 1.45, face: FACE_LIST }));
+  s.lastElementChild.style.zIndex = 2;
+</script>
+</body></html>
