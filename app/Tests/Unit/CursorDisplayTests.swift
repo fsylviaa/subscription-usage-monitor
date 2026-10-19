@@ -174,7 +174,7 @@ final class CursorDisplayTests: XCTestCase {
                 }
             }
         }
-        print("T91 | Cursor隔离渲染 | 14款 x 4表面 x 3状态 x 浅深 | renders=\(renders)")
+        print("T91 | Cursor隔离渲染 | 16款 x 4表面 x 3状态 x 浅深 | renders=\(renders)")
     }
 
     /// T102: Lobe marks cut their holes with the even-odd rule. Points are probed against the
@@ -242,7 +242,7 @@ final class CursorDisplayTests: XCTestCase {
                 }
             }
         }
-        print("T102 | 平台标志隔离渲染 | 14款 x 4表面 x Codex/Cursor x 浅深 | renders=\(renders)")
+        print("T102 | 平台标志隔离渲染 | 16款 x 4表面 x Codex/Cursor x 浅深 | renders=\(renders)")
     }
 
     private func stack(_ images: [UIImage]) -> UIImage {

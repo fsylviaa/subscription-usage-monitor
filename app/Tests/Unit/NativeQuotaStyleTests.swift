@@ -30,6 +30,10 @@ final class NativeQuotaStyleTests: XCTestCase {
 
     func testT84Rave() throws { try verify(.rave, task: 84) }
 
+    func testT118LiquidGlass() throws { try verify(.liquidGlass, task: 118) }
+
+    func testT119Neumorph() throws { try verify(.neumorph, task: 119) }
+
     func testT120Clay() throws { try verify(.clay, task: 120) }
 
     /// D-76 graphics: 0% has no remaining emphasis, 100% is fully emphasised,

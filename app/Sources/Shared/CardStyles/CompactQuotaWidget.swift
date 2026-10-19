@@ -46,6 +46,7 @@ struct CompactWidgetBody: View {
             if style == .clay {
                 ClayPlatformTile(platform: input.platform, size: medium ? 20 : 18).padding(.trailing, 6)
             }
+            if style == .neumorph { NeumorphMarkTile(platform: input.platform, size: medium ? 20 : 18).padding(.trailing, 7) }
             if style == .rave {
                 Text(input.platform.displayName).font(.system(size: medium ? 14 : 13, weight: .black))
                     .shadow(color: RavePalette.shadow, radius: 0, x: 2, y: 2)
@@ -201,7 +202,7 @@ struct CompactWidgetBody: View {
             .padding(.horizontal, 11).padding(.vertical, 9)
             .background(panelFill(w.weekly), in: RoundedRectangle(cornerRadius: 13, style: .continuous))
             .overlay { RoundedRectangle(cornerRadius: 13, style: .continuous).strokeBorder(w.weekly ? .clear : c("d5cdc3", "4b4e52"), lineWidth: 1) }
-        case .blocks, .glass, .ticket, .liquidGlass:
+        case .blocks, .glass, .ticket, .liquidGlass, .neumorph:
             VStack(alignment: .leading, spacing: 0) {
                 mediumLabel(w)
                 number(w, size: 34, weight: .bold).padding(.top, 5).padding(.bottom, 9)
@@ -240,6 +241,11 @@ struct CompactWidgetBody: View {
         case .glass:
             shape.fill(dark ? Color(.sRGB, red: 30 / 255, green: 50 / 255, blue: 85 / 255, opacity: 0.55) : .white.opacity(0.55))
                 .overlay { shape.strokeBorder(dark ? Color(.sRGB, red: 137 / 255, green: 204 / 255, blue: 239 / 255, opacity: 0.35) : .white, lineWidth: 1) }
+        case .neumorph:
+            // D-84: a raised cream panel inside the widget (static; shadows stay within the widget).
+            shape.fill(NeumorphPalette.surface(dark: dark))
+                .overlay { shape.strokeBorder(NeumorphPalette.rim(dark: dark), lineWidth: 1) }
+                .neumorphRaised(dark: dark, small: true)
         default:
             shape.fill(c("fffef9", "202124")).overlay { shape.strokeBorder(c("222222", "a3a5a8"), lineWidth: 2) }
         }
@@ -252,7 +258,7 @@ struct CompactWidgetBody: View {
         case .capsule, .blocks: 14
         case .liquid: 18
         case .watermark: 7
-        case .clay: 10
+        case .clay, .neumorph: 10
         default: 16
         }
     }

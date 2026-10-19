@@ -9,6 +9,8 @@ enum QuotaCardStyle: String, CaseIterable, Codable, Sendable {
     case skala, capsule, ticks, dials, island, blocks, liquid, ticket, journal, glass, panels, watermark, rave
     /// D-83: iOS 26 Liquid Glass in the App, a static frosted approximation in widgets.
     case liquidGlass
+    /// D-84: soft-UI neumorphism, cream surface and a single low-saturation mint accent.
+    case neumorph
     /// D-85: macaron pastels on soft 3D clay; also recolours the quota page chrome.
     case clay
 
@@ -30,6 +32,7 @@ enum QuotaCardStyle: String, CaseIterable, Codable, Sendable {
         case .watermark: "蓝条水印"
         case .rave: "霓虹派对"
         case .liquidGlass: "液态玻璃"
+        case .neumorph: "薄荷新拟态"
         case .clay: "马卡龙粘土"
         }
     }

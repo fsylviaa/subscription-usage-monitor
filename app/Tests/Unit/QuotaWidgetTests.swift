@@ -169,16 +169,20 @@ final class QuotaWidgetTests: XCTestCase {
     }
 
     func testT64SharedRemainingInputPrecisionAndCatalogue() throws {
-        XCTAssertEqual(QuotaCardStyle.allCases.count, 14)
-        XCTAssertEqual(Set(QuotaCardStyle.allCases.map(\.rawValue)).count, 14)
+        XCTAssertEqual(QuotaCardStyle.allCases.count, 16)
+        XCTAssertEqual(Set(QuotaCardStyle.allCases.map(\.rawValue)).count, 16)
         XCTAssertEqual(QuotaCardStyle.allCases.first, .skala)
         XCTAssertTrue(QuotaCardStyle.allCases.contains(.rave))
         XCTAssertNil(QuotaCardStyle(rawValue: "original"))
         XCTAssertEqual(QuotaCardStyle.rave.name, "霓虹派对")
-        // D-85: 马卡龙粘土 is appended last; earlier styles keep their positions.
-        XCTAssertEqual(QuotaCardStyle.allCases.last, .clay)
+        // D-83／D-84／D-85: 液态玻璃, 薄荷新拟态, 马卡龙粘土 are appended; earlier styles keep their positions.
         XCTAssertEqual(QuotaCardStyle.allCases[12], .rave)
+        XCTAssertEqual(Array(QuotaCardStyle.allCases.suffix(3)), [.liquidGlass, .neumorph, .clay])
+        XCTAssertEqual(QuotaCardStyle.liquidGlass.name, "液态玻璃")
+        XCTAssertEqual(QuotaCardStyle.neumorph.name, "薄荷新拟态")
         XCTAssertEqual(QuotaCardStyle.clay.name, "马卡龙粘土")
+        XCTAssertEqual(QuotaCardStyle.resolve("liquidGlass"), .liquidGlass)
+        XCTAssertEqual(QuotaCardStyle.resolve("neumorph"), .neumorph)
         XCTAssertEqual(QuotaCardStyle.resolve("clay"), .clay)
         XCTAssertEqual(QuotaCardStyle.resolve(nil), .skala)
         XCTAssertEqual(QuotaCardStyle.resolve("original"), .skala)

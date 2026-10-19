@@ -152,7 +152,7 @@ final class APIBalanceDisplayTests: XCTestCase {
             }
             if let out { try write(stack(large), out, "T115-large-\(dark ? "dark" : "light").png") }
         }
-        print("T115 | 余额隔离渲染 | 14款 x 账户卡/详情卡/小号/中号 x 5种情况 x 浅深 ＋ 最大字号 | renders=\(renders)")
+        print("T115 | 余额隔离渲染 | 16款 x 账户卡/详情卡/小号/中号 x 5种情况 x 浅深 ＋ 最大字号 | renders=\(renders)")
     }
 
     /// The real detail panel for both platforms; images go to T115_OUT when set.

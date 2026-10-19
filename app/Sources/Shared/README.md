@@ -21,7 +21,7 @@ T64／T65：QuotaCardStyle保存稳定目录、表面上下文与动效策略；
 
 ## T66—T77 共用原生渲染
 
-`CardStyles/`（D-76起）：`CompactQuotaTheme`配色／背景／水印，`CompactQuotaBars`14款图形（按准确比例裁出剩余）与油表，`QuotaStyledCard`账户卡／详情单窗口，`CompactQuotaWidget`小号／中号；旧第二阶段渲染器已删除。展示输入只读`WidgetSnapshot.Account`，不保存偏好。
+`CardStyles/`（D-76起）：`CompactQuotaTheme`配色／背景／水印，`CompactQuotaBars`16款图形（2026-10-19 D-83／D-84／D-85 追加液态玻璃、薄荷新拟态、马卡龙粘土）（按准确比例裁出剩余）与油表，`QuotaStyledCard`账户卡／详情单窗口，`CompactQuotaWidget`小号／中号；旧第二阶段渲染器已删除。展示输入只读`WidgetSnapshot.Account`，不保存偏好。
 
 四上下文共用未取整remainingFraction；未知／不限量无图形。组件全静态且无邮箱／时间；App仅本地图形放开既有容器的禁动画限制，系统减少动态或后台回静态。液体可见／前台才更新时间线，平均波面面积不变；水印不参加动画。`NativeQuotaRenderAudit`仅Debug显式`--lab-probe`或隔离测试环境`T78_HOST_MOTION=1`启用，计数只在内存，Release不包含。
 

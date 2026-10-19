@@ -200,7 +200,7 @@ final class GrokBotDisplayTests: XCTestCase {
             }
             if let out { try write(stack(large), out, "grok-large-\(dark ? "dark" : "light").png") }
         }
-        print("T107 | Grok Bot隔离渲染 | 14款 x 账户卡/详情卡/小号/中号 x 5种情况 x 浅深 ＋ 最大字号 | renders=\(renders)")
+        print("T107 | Grok Bot隔离渲染 | 16款 x 账户卡/详情卡/小号/中号 x 5种情况 x 浅深 ＋ 最大字号 | renders=\(renders)")
     }
 
     private func write(_ image: UIImage, _ out: URL, _ name: String) throws {

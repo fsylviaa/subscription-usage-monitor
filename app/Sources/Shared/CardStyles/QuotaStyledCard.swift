@@ -104,6 +104,14 @@ struct QuotaStyledCard: View {
         }
         .clipShape(RoundedRectangle(cornerRadius: theme.radius, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: theme.radius, style: .continuous).strokeBorder(theme.border, lineWidth: theme.borderWidth) }
+        .background {
+            // 薄荷新拟态 (D-84): the card floats on the page (Neu/Raised); other styles stay flat.
+            if style == .neumorph {
+                RoundedRectangle(cornerRadius: theme.radius, style: .continuous)
+                    .fill(NeumorphPalette.surface(dark: dark))
+                    .neumorphRaised(dark: dark)
+            }
+        }
     }
 
     /// 马卡龙粘土 (D-85): decoration is clipped to the card, while the clay slab
@@ -128,6 +136,7 @@ struct QuotaStyledCard: View {
         HStack(alignment: .center, spacing: 8) {
             if style == .watermark { PlatformMarkShape(platform: input.platform).fill(theme.ink, style: PlatformMarkShape.fillStyle).frame(width: 24, height: 24).accessibilityHidden(true) }
             if style == .clay { ClayPlatformTile(platform: input.platform, size: large ? 40 : 32).padding(.trailing, 2) }
+            if style == .neumorph { NeumorphMarkTile(platform: input.platform, size: 28).padding(.trailing, 2) }
             Button { openDetails?() } label: {
                 // Two children keep the platform title exposed as its own text.
                 ZStack(alignment: .bottomLeading) {
@@ -224,6 +233,14 @@ struct QuotaStyledCard: View {
                  AnyView(number(w, size: numberSize * 46 / 36).padding(.top, 4).padding(.bottom, 8)),
                  AnyView(bar(w, height: style == .clay ? 12 : 9, secondary: clayAlternate(w))),
                  AnyView(reset(w, twoLines: true).padding(.top, 6))]
+            }
+        case .neumorph:
+            // D-84 / Figma: two columns of label, big number, inset groove, reset time.
+            pairGrid(ws, spacing: 18) { w in
+                [AnyView(title(w)),
+                 AnyView(number(w, size: numberSize * 46 / 36, weight: .bold).padding(.top, 2).padding(.bottom, 8)),
+                 AnyView(bar(w, height: 12)),
+                 AnyView(reset(w, twoLines: true).padding(.top, 10))]
             }
         case .panels:
             VStack(spacing: 10) { ForEach(ws) { w in w.weekly ? AnyView(orangePanel(w)) : AnyView(greyPanel(w)) } }
@@ -414,6 +431,26 @@ struct QuotaStyledCard: View {
 private struct Line: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path(); p.move(to: CGPoint(x: rect.minX, y: rect.midY)); p.addLine(to: CGPoint(x: rect.maxX, y: rect.midY)); return p
+    }
+}
+
+/// 薄荷新拟态 (D-84): the platform's own mark, white on a small raised mint tile.
+/// Replaces the placeholder tile of the Figma file with the real platform mark.
+struct NeumorphMarkTile: View {
+    let platform: QuotaPlatform
+    var size: CGFloat = 28
+    @Environment(\.colorScheme) private var scheme
+
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: size * 0.3, style: .continuous)
+        shape.fill(LinearGradient(colors: [NeumorphPalette.mintLight, NeumorphPalette.mint], startPoint: .topLeading, endPoint: .bottomTrailing))
+            .overlay {
+                PlatformMarkShape(platform: platform).fill(Color.white, style: PlatformMarkShape.fillStyle)
+                    .padding(size * 0.2)
+            }
+            .frame(width: size, height: size)
+            .neumorphRaised(dark: scheme == .dark, small: true)
+            .accessibilityHidden(true)
     }
 }
 
