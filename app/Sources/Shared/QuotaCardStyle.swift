@@ -1,10 +1,11 @@
 import SwiftUI
 
-/// Stable catalogue (D-76): 12 compact styles plus 霓虹派对. The former original
-/// style no longer exists; its stored value, a missing value or any unknown
-/// value resolves to the default 彩色斜粒 without a write or an error.
+/// Stable catalogue (D-76): 12 compact styles plus 霓虹派对, and 马卡龙粘土 (D-83)
+/// appended last so existing stored values and their order never move. The former
+/// original style no longer exists; its stored value, a missing value or any
+/// unknown value resolves to the default 彩色斜粒 without a write or an error.
 enum QuotaCardStyle: String, CaseIterable, Codable, Sendable {
-    case skala, capsule, ticks, dials, island, blocks, liquid, ticket, journal, glass, panels, watermark, rave
+    case skala, capsule, ticks, dials, island, blocks, liquid, ticket, journal, glass, panels, watermark, rave, clay
 
     static let defaultStyle = QuotaCardStyle.skala
 
@@ -23,6 +24,7 @@ enum QuotaCardStyle: String, CaseIterable, Codable, Sendable {
         case .panels: "橙色双面板"
         case .watermark: "蓝条水印"
         case .rave: "霓虹派对"
+        case .clay: "马卡龙粘土"
         }
     }
 

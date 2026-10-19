@@ -20,7 +20,7 @@ struct CompactQuotaBar: View, @MainActor Animatable {
     }
 
     /// Room for glows, the laser tip and the offset shadow outside the layout box.
-    private var bleed: CGFloat { style == .rave || style == .island || style == .capsule ? 14 : 0 }
+    private var bleed: CGFloat { style == .rave || style == .island || style == .capsule || style == .clay ? 14 : 0 }
 
     var body: some View {
         GeometryReader { g in
@@ -67,6 +67,7 @@ struct CompactBarPainter {
             else { panelTicks(on: .quotaHex("352118"), off: .quotaHex("a49a90")) }
         case .watermark: blueBar()
         case .rave: rave()
+        case .clay: clay()
         }
     }
 
@@ -386,6 +387,35 @@ struct CompactBarPainter {
         context.fill(Path(roundedRect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: r), with: .color(c("e0e3e7", "292929")))
         guard f > 0 else { return }
         context.fill(Path(roundedRect: CGRect(x: 0, y: 0, width: fw, height: h), cornerRadius: min(r, fw / 2)), with: .color(.quotaHex("329eff")))
+    }
+
+    // MARK: 马卡龙粘土 (D-83)
+
+    /// A pressed-in groove holding a raised clay bead. The bead ends exactly at
+    /// the fraction; the first window is mint, the second (`secondary`) peach.
+    private mutating func clay() {
+        let r = h / 2
+        let track = Path(roundedRect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: r)
+        context.fill(track, with: .color(c("f3e8ec", "3a3044")))
+        var groove = context; groove.clip(to: track)
+        groove.fill(Path(CGRect(x: 0, y: 0, width: w, height: h * 0.55)), with: .linearGradient(
+            Gradient(colors: [Color.quotaHex(dark ? "000000" : "b88aa0").opacity(dark ? 0.4 : 0.3), .clear]),
+            startPoint: .zero, endPoint: CGPoint(x: 0, y: h * 0.55)))
+        groove.fill(Path(CGRect(x: r, y: h - 1, width: max(0, w - h), height: 1)), with: .color(.white.opacity(dark ? 0.08 : 0.85)))
+        guard f > 0 else { return }
+        let tint = secondary ? ClayPalette.peach : ClayPalette.mint
+        let bead = Path(roundedRect: CGRect(x: 0, y: 0, width: fw, height: h), cornerRadius: min(r, fw / 2))
+        if !mini {
+            var glow = context; glow.addFilter(.blur(radius: 3))
+            glow.fill(bead.offsetBy(dx: 0, dy: 2), with: .color(tint.glow.opacity(0.4)))
+        }
+        context.fill(bead, with: .linearGradient(Gradient(colors: [tint.top, tint.bottom]), startPoint: .zero, endPoint: CGPoint(x: max(fw, 1), y: 0)))
+        var g = context; g.clip(to: bead)
+        g.fill(Path(CGRect(x: 0, y: h * 0.55, width: fw, height: h * 0.45)), with: .linearGradient(
+            Gradient(colors: [.clear, tint.glow.opacity(0.3)]), startPoint: CGPoint(x: 0, y: h * 0.55), endPoint: CGPoint(x: 0, y: h)))
+        let inset = min(r, fw / 2) * 0.8
+        let shine = CGRect(x: inset, y: h * 0.16, width: fw - inset * 2, height: max(1, h * 0.22))
+        if shine.width > 0 { g.fill(Path(roundedRect: shine, cornerRadius: shine.height / 2), with: .color(.white.opacity(0.7))) }
     }
 
     // MARK: 霓虹派对 laser beam

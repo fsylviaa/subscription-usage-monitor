@@ -14,6 +14,8 @@ struct CompactQuotaTheme {
         case radialTop([Color])
         /// Ruled paper: base colour plus a 1pt line every `spacing` points.
         case ruled(base: Color, line: Color, spacing: CGFloat)
+        /// Top to bottom, used by 马卡龙粘土 (D-83).
+        case vertical([Color])
     }
     var background: Background
     var ink: Color
@@ -90,7 +92,127 @@ extension QuotaCardStyle {
             return .init(background: .steep([.quotaHex("2412ff"), .quotaHex("1807e4")]), ink: .quotaHex("ff6eb0"),
                          muted: .quotaHex("c9ccff"), border: .quotaHex("4335ff"), widgetBorder: .quotaHex("4335ff"),
                          watermark: [.quotaHex("ff2e8b")], watermarkOpacity: 0.22, watermarkOutline: true)
+        case .clay:
+            // D-83: cream clay card; the frame line is replaced by soft clay shadows.
+            return .init(background: .vertical(ClayPalette.card(dark: d)), ink: ClayPalette.ink(dark: d), muted: ClayPalette.muted(dark: d),
+                         border: .clear, widgetBorder: h("f3dfe6", "4a3d55"), borderWidth: 0, radius: widget ? 22 : 30,
+                         watermark: hs(["e8809f", "b19bec"], ["f59ab5", "c9b8f2"]), watermarkOpacity: d ? 0.10 : 0.075)
         }
+    }
+}
+
+/// 马卡龙粘土 (D-83): macaron pastels on soft 3D clay. Display only.
+enum ClayPalette {
+    static func ink(dark: Bool) -> Color { .quotaHex(dark ? "f4ecf6" : "4a3d5e") }
+    static func muted(dark: Bool) -> Color { .quotaHex(dark ? "b7abc4" : "9a8fa8") }
+    static func card(dark: Bool) -> [Color] { (dark ? ["3a3142", "2f2838"] : ["fffdf8", "fbf4ec"]).map(Color.quotaHex) }
+    /// Page ground: strawberry to pistachio.
+    static func page(dark: Bool) -> [Color] { (dark ? ["2e2433", "1e2a27"] : ["fde4ec", "ddf3ea"]).map(Color.quotaHex) }
+    static func pageBottom(dark: Bool) -> Color { page(dark: dark)[1] }
+    /// Strawberry: add button and the selected tab.
+    static let rose = Color.quotaHex("e8809f")
+    static let roseTop = Color.quotaHex("ffc3d1"), roseBottom = Color.quotaHex("f592ae")
+    static func idle(dark: Bool) -> Color { .quotaHex(dark ? "8f839e" : "b3a9bf") }
+    /// Card drop shadow tint and the lower inner rim of the clay.
+    static func shadow(dark: Bool) -> Color { dark ? .black : .quotaHex("c98a9e") }
+    static func rim(dark: Bool) -> Color { .quotaHex(dark ? "1a141f" : "ebcbd6") }
+    /// Bar beads: the first window mint, the second peach.
+    static let mint = (top: Color.quotaHex("c4f0df"), bottom: Color.quotaHex("86d8b9"), glow: Color.quotaHex("5fbf99"))
+    static let peach = (top: Color.quotaHex("ffdcc4"), bottom: Color.quotaHex("ffb08f"), glow: Color.quotaHex("f08e68"))
+    /// Header tile per platform.
+    static func tile(_ platform: QuotaPlatform) -> [Color] {
+        switch platform {
+        case .codex: ["bfe9d8", "7fcfae"].map(Color.quotaHex)
+        case .cursor: ["d5c6f7", "b19bec"].map(Color.quotaHex)
+        case .openRouter: ["cfe5f8", "94bee3"].map(Color.quotaHex)
+        case .deepSeek: ["ffc9d6", "f59ab5"].map(Color.quotaHex)
+        }
+    }
+    /// Decorative corner bubbles alternate lemon and sky between cards.
+    static func bubble(_ variant: Int, dark: Bool) -> [Color] {
+        let lemon = dark ? ["5a5236", "4a4430"] : ["fff6cf", "fdecb0"]
+        let sky = dark ? ["34465a", "2b3a4c"] : ["e3f1fd", "cfe5f8"]
+        return (variant % 2 == 0 ? lemon : sky).map(Color.quotaHex)
+    }
+}
+
+/// A raised clay slab: vertical fill, a white top highlight and a tinted lower
+/// rim inside, plus two soft drop shadows outside. Never clips its content.
+struct ClaySurface<S: Shape>: View {
+    let shape: S
+    let fill: [Color]
+    var dark = false
+    var depth: CGFloat = 1
+
+    var body: some View {
+        shape
+            .fill(LinearGradient(colors: fill, startPoint: .top, endPoint: .bottom)
+                .shadow(.inner(color: .white.opacity(dark ? 0.12 : 1), radius: 3 * depth, x: 0, y: 3 * depth))
+                .shadow(.inner(color: ClayPalette.rim(dark: dark).opacity(dark ? 0.6 : 0.45), radius: 10 * depth, x: 0, y: -5 * depth)))
+            .shadow(color: ClayPalette.shadow(dark: dark).opacity(dark ? 0.45 : 0.22), radius: 14 * depth, x: 0, y: 9 * depth)
+            .shadow(color: ClayPalette.shadow(dark: dark).opacity(dark ? 0.3 : 0.12), radius: 3 * depth, x: 0, y: 2 * depth)
+            .accessibilityHidden(true)
+    }
+}
+
+/// Platform tile in the card header: a small clay square holding the white Lobe mark.
+struct ClayPlatformTile: View {
+    let platform: QuotaPlatform
+    var size: CGFloat = 32
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: size * 0.31, style: .continuous)
+                .fill(LinearGradient(colors: ClayPalette.tile(platform), startPoint: .top, endPoint: .bottom)
+                    .shadow(.inner(color: .white.opacity(0.6), radius: 2, x: 0, y: 2))
+                    .shadow(.inner(color: .black.opacity(0.08), radius: 4, x: 0, y: -2)))
+                .shadow(color: ClayPalette.tile(platform)[1].opacity(0.45), radius: 4, x: 0, y: 3)
+            PlatformMarkShape(platform: platform).fill(Color.white, style: PlatformMarkShape.fillStyle)
+                .frame(width: size * 0.5, height: size * 0.5)
+        }
+        .frame(width: size, height: size)
+        .accessibilityHidden(true)
+    }
+}
+
+/// Soft pastel bubble pressed into the card's lower right corner.
+struct ClayBubble: View {
+    let variant: Int
+    var dark = false
+    var size: CGFloat = 150
+
+    var body: some View {
+        Circle()
+            .fill(LinearGradient(colors: ClayPalette.bubble(variant, dark: dark), startPoint: .top, endPoint: .bottom)
+                .shadow(.inner(color: .white.opacity(dark ? 0.1 : 0.9), radius: 10, x: 0, y: 6))
+                .shadow(.inner(color: .black.opacity(dark ? 0.25 : 0.08), radius: 16, x: 0, y: -8)))
+            .frame(width: size, height: size)
+            .accessibilityHidden(true)
+            .allowsHitTesting(false)
+    }
+}
+
+/// 马卡龙粘土 page ground (D-83); the quota page and the bottom bar share its colours.
+struct ClayPageBackground: View {
+    @Environment(\.colorScheme) private var scheme
+    var body: some View {
+        LinearGradient(colors: ClayPalette.page(dark: scheme == .dark), startPoint: .top, endPoint: .bottom)
+    }
+}
+
+/// The round clay “＋” of the quota page header.
+struct ClayAddButtonLabel: View {
+    var size: CGFloat = 44
+    @Environment(\.colorScheme) private var scheme
+    @Environment(\.isEnabled) private var enabled
+
+    var body: some View {
+        ZStack {
+            ClaySurface(shape: Circle(), fill: [ClayPalette.roseTop, ClayPalette.roseBottom], dark: scheme == .dark, depth: 0.5)
+            Image(systemName: "plus").font(.system(size: size * 0.42, weight: .bold, design: .rounded)).foregroundStyle(.white)
+        }
+        .frame(width: size, height: size)
+        .opacity(enabled ? 1 : 0.5)
     }
 }
 
@@ -119,6 +241,7 @@ struct CompactQuotaBackground: View {
                 RadialGradient(colors: colors, center: .top, startRadius: 0,
                                endRadius: max(g.size.width, g.size.height))
             }
+        case let .vertical(colors): LinearGradient(colors: colors, startPoint: .top, endPoint: .bottom)
         case let .ruled(base, line, spacing):
             Canvas { context, size in
                 context.fill(Path(CGRect(origin: .zero, size: size)), with: .color(base))

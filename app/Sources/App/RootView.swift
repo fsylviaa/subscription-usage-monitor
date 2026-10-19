@@ -112,7 +112,10 @@ struct RootView: View {
             }
             .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { supportBottomInset = $0 }
             .onGeometryChange(for: CGFloat.self, of: { $0.frame(in: .global).minY }) { footerTop = $0 }
-            .background(DashboardStyle.background.ignoresSafeArea(edges: .bottom))
+            .foregroundStyle(clay && selection == .quota ? AnyShapeStyle(ClayPalette.ink(dark: dark)) : AnyShapeStyle(HierarchicalShapeStyle.primary))
+            // 马卡龙粘土 continues the quota page ground under the bar (D-83).
+            .background((clay && selection == .quota ? ClayPalette.pageBottom(dark: dark) : DashboardStyle.background)
+                .ignoresSafeArea(edges: .bottom))
         }
         .alert("排序未保存，请重试", isPresented: Binding(get: { connection.accountOrderFailed },
             set: { if !$0 { connection.dismissAccountOrderFailure() } })) {
@@ -316,18 +319,30 @@ struct RootView: View {
         }
     }
 
+    private var clay: Bool { QuotaCardStyle.resolve(cardStyle) == .clay }
+    private var dark: Bool {
+        appearance == "dark" || (appearance == "system" && systemColorScheme == .dark)
+    }
+
+    /// 马卡龙粘土: strawberry for the selected tab, soft lavender grey otherwise (D-83).
+    private func tabColor(selected: Bool) -> Color {
+        if clay { return selected ? ClayPalette.rose : ClayPalette.idle(dark: dark) }
+        return selected ? DashboardStyle.text : DashboardStyle.secondary
+    }
+
     private func tab(_ title: String, icon: AppIcon, value: Tab, id: String) -> some View {
         Button { selection = value } label: {
             VStack(spacing: 3) {
                 AppIconView(icon, size: 37)
-                Text(title).font(.body.weight(.medium))
+                    .shadow(color: clay && selection == value ? ClayPalette.rose.opacity(0.35) : .clear, radius: 3, y: 2)
+                Text(title).font(clay ? .system(.body, design: .rounded).weight(selection == value ? .bold : .medium) : .body.weight(.medium))
             }
             .frame(maxWidth: .infinity, minHeight: 50)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .foregroundStyle(selection == value ? DashboardStyle.text : DashboardStyle.secondary)
-        .opacity(selection == value ? 1 : 0.7)
+        .foregroundStyle(tabColor(selected: selection == value))
+        .opacity(selection == value || clay ? 1 : 0.7)
         .accessibilityLabel(title)
         .accessibilityAddTraits(selection == value ? .isSelected : [])
         .accessibilityIdentifier("tab.\(id)")

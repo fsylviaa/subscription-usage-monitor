@@ -4,9 +4,9 @@ import UIKit
 
 final class CodexQuotaUITests: XCTestCase {
 
-    private let stage3Styles = ["skala", "capsule", "ticks", "dials", "island", "blocks", "liquid", "ticket", "journal", "glass", "panels", "watermark", "rave"]
+    private let stage3Styles = ["skala", "capsule", "ticks", "dials", "island", "blocks", "liquid", "ticket", "journal", "glass", "panels", "watermark", "rave", "clay"]
 
-    private let stage3Names = ["彩色斜粒", "薄荷胶囊", "精密刻度", "金色仪表", "黑岛绿线", "紫色模块", "横向液体", "黑白票签", "暖黄手账", "冰蓝玻璃", "橙色双面板", "蓝条水印", "霓虹派对"]
+    private let stage3Names = ["彩色斜粒", "薄荷胶囊", "精密刻度", "金色仪表", "黑岛绿线", "紫色模块", "横向液体", "黑白票签", "暖黄手账", "冰蓝玻璃", "橙色双面板", "蓝条水印", "霓虹派对", "马卡龙粘土"]
 
     @MainActor
     private func chooseStage3Style(_ style: String, app: XCUIApplication) {
@@ -35,7 +35,7 @@ final class CodexQuotaUITests: XCTestCase {
     }
 
     /// D-76: a stored former original value (or nothing) shows 彩色斜粒, and the
-    /// catalogue offers 13 styles without the original one.
+    /// catalogue offers 14 styles (13 + 马卡龙粘土, D-83) without the original one.
     @MainActor
     func testD76OriginalPreferenceMigratesToSkala() throws {
         continueAfterFailure = false
@@ -62,7 +62,7 @@ final class CodexQuotaUITests: XCTestCase {
         app.terminate()
     }
 
-    private let d76Styles = ["skala", "capsule", "ticks", "dials", "island", "blocks", "liquid", "ticket", "journal", "glass", "panels", "watermark", "rave"]
+    private let d76Styles = ["skala", "capsule", "ticks", "dials", "island", "blocks", "liquid", "ticket", "journal", "glass", "panels", "watermark", "rave", "clay"]
 
     /// Real App, isolated two accounts (90%／70%): each style's quota page and
     /// detail card in both appearances, plus the D-74 one-screen check.

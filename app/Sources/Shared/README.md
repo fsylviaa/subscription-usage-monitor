@@ -21,10 +21,12 @@ T64／T65：QuotaCardStyle保存稳定目录、表面上下文与动效策略；
 
 ## T66—T77 共用原生渲染
 
-`CardStyles/`（D-76起）：`CompactQuotaTheme`配色／背景／水印，`CompactQuotaBars`13款图形（按准确比例裁出剩余）与油表，`QuotaStyledCard`账户卡／详情单窗口，`CompactQuotaWidget`小号／中号；旧第二阶段渲染器已删除。展示输入只读`WidgetSnapshot.Account`，不保存偏好。
+`CardStyles/`（D-76起）：`CompactQuotaTheme`配色／背景／水印，`CompactQuotaBars`14款图形（按准确比例裁出剩余）与油表，`QuotaStyledCard`账户卡／详情单窗口，`CompactQuotaWidget`小号／中号；旧第二阶段渲染器已删除。展示输入只读`WidgetSnapshot.Account`，不保存偏好。
 
 四上下文共用未取整remainingFraction；未知／不限量无图形。组件全静态且无邮箱／时间；App仅本地图形放开既有容器的禁动画限制，系统减少动态或后台回静态。液体可见／前台才更新时间线，平均波面面积不变；水印不参加动画。`NativeQuotaRenderAudit`仅Debug显式`--lab-probe`或隔离测试环境`T78_HOST_MOTION=1`启用，计数只在内存，Release不包含。
 
 T78正式Root设置选择／账户整卡已接入；T79 Codex详情额度卡已接入；Widget两尺寸新款宿主待T80—T81接入。开发者隔离入口只在Debug启动参数`--t66-native-lab`启用，跳过正式运行时、存储及发布；没有产品预览入口或调额／故障设置。已采用同一CodexBar路径及现有MIT许可（T102起平台标志改为Lobe Icons的OpenAI／Cursor，奇偶填充，见Resources/README.md）。
 
 2026-10-15 T84（D-76）：目录改为12款改后样式＋霓虹派对`rave`共13款，删除原样式及`OriginalQuotaTrack`；默认彩色斜粒`skala`，已存`original`、缺失或未知值读取时都解析为彩色斜粒（不改写原值，App启动发布解析后的值到App Group）。账户卡、详情、组件不再有原样式分支；无账户组件显示“添加账户”。
+
+2026-10-19 T118（D-83）：目录末尾追加第14款马卡龙粘土`clay`（不改变已有13款的存储值与顺序）。`CompactQuotaTheme`新增`ClayPalette`与粘土部件（`ClaySurface`、`ClayPlatformTile`、`ClayBubble`、`ClayPageBackground`、`ClayAddButtonLabel`），`CompactQuotaBars`新增粘土条（第一个窗口薄荷、其后蜜桃）。选中该款时额度页背景、＋按钮和底部栏也随之变色；其他样式与详情页其余部分不变。
