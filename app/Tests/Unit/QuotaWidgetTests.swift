@@ -95,9 +95,9 @@ final class QuotaWidgetTests: XCTestCase {
             for _ in 0..<3 { XCTAssertEqual(QuotaCardStylePreferences.read(from: shared), style) }
             QuotaCardStylePreferences.save(style, to: local, shared: shared) { requests += 1 }
         }
-        XCTAssertEqual(requests, 13)
+        XCTAssertEqual(requests, QuotaCardStyle.allCases.count)
         QuotaCardStylePreferences.save(.skala, to: local, shared: shared) { requests += 1 }
-        XCTAssertEqual(requests, 14)
+        XCTAssertEqual(requests, QuotaCardStyle.allCases.count + 1)
         for (key, value) in protected {
             XCTAssertEqual(local.string(forKey: key), value)
             XCTAssertEqual(shared.string(forKey: key), value)
