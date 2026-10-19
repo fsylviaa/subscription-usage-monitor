@@ -54,6 +54,14 @@ struct QuotaStyledCard: View {
     // MARK: Card chrome
 
     private var card: some View {
+        Group {
+            if style == .clay { clayChrome(cardContent) } else { standardChrome(cardContent) }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("native.\(style.rawValue).\(String(describing: surface))")
+    }
+
+    private var cardContent: some View {
         VStack(alignment: .leading, spacing: 0) {
             if !detail { header.padding(.bottom, style == .journal ? 8 : 12)
                 .overlay(alignment: .bottom) {
@@ -81,6 +89,10 @@ struct QuotaStyledCard: View {
         .foregroundStyle(theme.ink)
         .padding(.horizontal, 18).padding(.top, 16).padding(.bottom, style == .rave ? 20 : 16)
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func standardChrome(_ content: some View) -> some View {
+        content
         .background {
             ZStack(alignment: .topLeading) {
                 CompactQuotaBackground(style: style)
@@ -92,13 +104,30 @@ struct QuotaStyledCard: View {
         }
         .clipShape(RoundedRectangle(cornerRadius: theme.radius, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: theme.radius, style: .continuous).strokeBorder(theme.border, lineWidth: theme.borderWidth) }
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("native.\(style.rawValue).\(String(describing: surface))")
+    }
+
+    /// 马卡龙粘土 (D-85): decoration is clipped to the card, while the clay slab
+    /// sits behind it unclipped so its soft outer shadow stays visible.
+    private func clayChrome(_ content: some View) -> some View {
+        let shape = RoundedRectangle(cornerRadius: theme.radius, style: .continuous)
+        return content
+            .background {
+                ZStack {
+                    GeometryReader { g in
+                        ClayBubble(variant: variant, dark: dark, size: detail ? 120 : 150)
+                            .position(x: g.size.width - 23, y: g.size.height - 29)
+                    }
+                    CompactQuotaWatermark(style: style, size: 180, right: -34, bottom: -30)
+                }
+                .clipShape(shape)
+            }
+            .background { ClaySurface(shape: shape, fill: ClayPalette.card(dark: dark), dark: dark) }
     }
 
     private var header: some View {
         HStack(alignment: .center, spacing: 8) {
             if style == .watermark { PlatformMarkShape(platform: input.platform).fill(theme.ink, style: PlatformMarkShape.fillStyle).frame(width: 24, height: 24).accessibilityHidden(true) }
+            if style == .clay { ClayPlatformTile(platform: input.platform, size: large ? 40 : 32).padding(.trailing, 2) }
             Button { openDetails?() } label: {
                 // Two children keep the platform title exposed as its own text.
                 ZStack(alignment: .bottomLeading) {
@@ -127,6 +156,9 @@ struct QuotaStyledCard: View {
     private var headerTitle: Text {
         if style == .rave {
             return Text(input.platform.displayName).font(.system(size: headerSize + 2, weight: .black))
+        }
+        if style == .clay {
+            return Text(input.platform.displayName).font(.system(size: headerSize + 2, weight: .heavy, design: .rounded))
         }
         return Text(input.platform.displayName).font(.system(size: headerSize, weight: .semibold))
     }
@@ -185,11 +217,12 @@ struct QuotaStyledCard: View {
             pairGrid(ws) { w in
                 [AnyView(title(w)), AnyView(reset(w, twoLines: true).padding(.top, 2)), AnyView(dial(w).padding(.top, 2))]
             }
-        case .watermark:
+        case .watermark, .clay:
+            // 马卡龙粘土 keeps 蓝条水印's two-column layout with a thicker clay bead.
             pairGrid(ws, spacing: 18) { w in
                 [AnyView(title(w)),
                  AnyView(number(w, size: numberSize * 46 / 36).padding(.top, 4).padding(.bottom, 8)),
-                 AnyView(bar(w, height: 9)),
+                 AnyView(bar(w, height: style == .clay ? 12 : 9, secondary: clayAlternate(w))),
                  AnyView(reset(w, twoLines: true).padding(.top, 6))]
             }
         case .panels:
@@ -211,8 +244,14 @@ struct QuotaStyledCard: View {
     // MARK: Building blocks
 
     private func title(_ w: QuotaStyledInput.Window, color: Color? = nil) -> some View {
-        Text(w.longTitle).font(.system(size: titleSize, weight: .semibold)).foregroundStyle(color ?? theme.ink)
+        Text(w.longTitle).font(.system(size: titleSize, weight: .semibold, design: style == .clay ? .rounded : .default))
+            .foregroundStyle(color ?? theme.ink)
             .fixedSize(horizontal: false, vertical: true)
+    }
+
+    /// 马卡龙粘土 colours every window after the first in peach (D-85).
+    private func clayAlternate(_ w: QuotaStyledInput.Window) -> Bool {
+        style == .clay && w.id != input.windows.first?.id
     }
 
     /// Balances have no reset time (BAL-05): nothing is drawn.
@@ -234,7 +273,8 @@ struct QuotaStyledCard: View {
     private func number(_ w: QuotaStyledInput.Window, size: CGFloat? = nil, color: Color? = nil, rave: Bool = false,
                         weight: Font.Weight = .semibold) -> some View {
         Text(w.amount.nativeText)
-            .font(.system(size: size ?? numberSize, weight: rave ? .black : weight))
+            .font(.system(size: size ?? numberSize, weight: rave ? .black : style == .clay ? .heavy : weight,
+                          design: style == .clay ? .rounded : .default))
             .tracking(rave ? -1 : -0.5)
             .monospacedDigit()
             .foregroundStyle(color ?? theme.ink)

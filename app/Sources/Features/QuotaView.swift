@@ -96,18 +96,25 @@ struct QuotaView: View {
     @Environment(\.nativeQuotaStatic) private var staticQuota
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .headline) private var titleSize = 28
+    private var clay: Bool { cardStyle == .clay }
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                Text("订阅额度").font(.system(size: dynamicTypeSize.isAccessibilitySize ? min(titleSize, 40) : titleSize, weight: .semibold))
+                Text("订阅额度").font(.system(size: dynamicTypeSize.isAccessibilitySize ? min(titleSize, 40) : titleSize,
+                                          weight: clay ? .heavy : .semibold, design: clay ? .rounded : .default))
+                    .foregroundStyle(clay ? ClayPalette.ink(dark: colorScheme == .dark) : DashboardStyle.text)
                     .accessibilityAddTraits(.isHeader).accessibilityIdentifier("quota.title")
                     #if DEBUG
                     .accessibilityValue(AppBackgroundRuntime.shared.debugSummary)
                     #endif
                 Spacer(minLength: 12)
                 Button(action: connect) {
-                    AppIconView(.connect, size: 32).frame(width: 44, height: 44)
+                    if clay {
+                        ClayAddButtonLabel(size: 40).frame(width: 44, height: 44)
+                    } else {
+                        AppIconView(.connect, size: 32).frame(width: 44, height: 44)
+                    }
                 }
                 .disabled(!canConnect).accessibilityLabel("连接账号")
                 .accessibilityIdentifier("quota.toolbarConnect")
@@ -173,7 +180,10 @@ struct QuotaView: View {
             }
         }
         .foregroundStyle(DashboardStyle.text)
-        .background(DashboardStyle.background)
+        .background {
+            // 马卡龙粘土 (D-85) also colours the quota page; other styles keep the shared ground.
+            if clay { ClayPageBackground().ignoresSafeArea(edges: .top) } else { DashboardStyle.background.ignoresSafeArea() }
+        }
         .toolbar(.hidden, for: .navigationBar)
         .alert("删除账户？", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } })) {
             Button("取消", role: .cancel) { deleting = nil }

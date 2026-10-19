@@ -43,9 +43,14 @@ struct CompactWidgetBody: View {
                 PlatformMarkShape(platform: input.platform).fill(theme.ink, style: PlatformMarkShape.fillStyle).frame(width: medium ? 16 : 15, height: medium ? 16 : 15)
                     .padding(.trailing, 5).accessibilityHidden(true)
             }
+            if style == .clay {
+                ClayPlatformTile(platform: input.platform, size: medium ? 20 : 18).padding(.trailing, 6)
+            }
             if style == .rave {
                 Text(input.platform.displayName).font(.system(size: medium ? 14 : 13, weight: .black))
                     .shadow(color: RavePalette.shadow, radius: 0, x: 2, y: 2)
+            } else if style == .clay {
+                Text(input.platform.displayName).font(.system(size: medium ? 15 : 14, weight: .heavy, design: .rounded))
             } else {
                 Text(input.platform.displayName).font(.system(size: medium ? 14 : 13, weight: .bold))
             }
@@ -66,6 +71,12 @@ struct CompactWidgetBody: View {
                 }
                 CompactQuotaWatermark(style: style, size: medium ? 150 : 120, right: medium ? -30 : -26, bottom: medium ? -34 : -24)
             } else {
+                if style == .clay {
+                    GeometryReader { g in
+                        ClayBubble(variant: 0, dark: dark, size: medium ? 120 : 96)
+                            .position(x: g.size.width - (medium ? 14 : 10), y: g.size.height - (medium ? 18 : 12))
+                    }
+                }
                 CompactQuotaWatermark(style: style, size: medium ? 150 : 110, right: medium ? -30 : -24, bottom: medium ? -34 : -22)
             }
         }
@@ -144,7 +155,7 @@ struct CompactWidgetBody: View {
                 ForEach(ws) { w in
                     VStack(spacing: 5) {
                         labelRow(w, size: style == .watermark ? 28 : 24)
-                        bar(w, height: miniHeight)
+                        bar(w, height: miniHeight, secondary: clayAlternate(w))
                     }
                 }
             }
@@ -211,7 +222,7 @@ struct CompactWidgetBody: View {
             VStack(alignment: .leading, spacing: 0) {
                 mediumLabel(w)
                 number(w, size: style == .watermark ? 44 : 40, weight: .bold).padding(.top, 5).padding(.bottom, 9)
-                bar(w, height: miniHeight)
+                bar(w, height: miniHeight, secondary: clayAlternate(w))
             }
         }
     }
@@ -241,6 +252,7 @@ struct CompactWidgetBody: View {
         case .capsule, .blocks: 14
         case .liquid: 18
         case .watermark: 7
+        case .clay: 10
         default: 16
         }
     }
@@ -250,9 +262,16 @@ struct CompactWidgetBody: View {
              : AnyShapeStyle(c("eeeae4", "242629"))
     }
 
+    /// 马卡龙粘土 colours every window after the first in peach (D-85).
+    private func clayAlternate(_ w: QuotaStyledInput.Window) -> Bool {
+        style == .clay && w.id != input.windows.first?.id
+    }
+
+    private var labelDesign: Font.Design { style == .clay ? .rounded : .default }
+
     private func labelRow(_ w: QuotaStyledInput.Window, label: Color? = nil, number nc: Color? = nil, size: CGFloat) -> some View {
         HStack(alignment: .lastTextBaseline, spacing: 2) {
-            Text(w.title).font(.system(size: 11, weight: .semibold)).foregroundStyle(label ?? theme.ink)
+            Text(w.title).font(.system(size: 11, weight: .semibold, design: labelDesign)).foregroundStyle(label ?? theme.ink)
             Spacer(minLength: 2)
             number(w, size: size, weight: .bold, color: nc)
         }
@@ -260,11 +279,12 @@ struct CompactWidgetBody: View {
     }
 
     private func mediumLabel(_ w: QuotaStyledInput.Window, color: Color? = nil) -> some View {
-        Text(w.longTitle).font(.system(size: 12, weight: .semibold)).foregroundStyle(color ?? theme.ink).lineLimit(1)
+        Text(w.longTitle).font(.system(size: 12, weight: .semibold, design: labelDesign)).foregroundStyle(color ?? theme.ink).lineLimit(1)
     }
 
     private func number(_ w: QuotaStyledInput.Window, size: CGFloat, weight: Font.Weight, color: Color? = nil) -> some View {
-        Text(w.amount.nativeText).font(.system(size: size, weight: weight)).tracking(size > 30 ? -1 : -0.5)
+        Text(w.amount.nativeText).font(.system(size: size, weight: style == .clay ? .heavy : weight, design: labelDesign))
+            .tracking(size > 30 ? -1 : -0.5)
             .monospacedDigit().foregroundStyle(color ?? theme.ink).lineLimit(1).minimumScaleFactor(0.5)
     }
 

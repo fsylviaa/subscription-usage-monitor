@@ -30,6 +30,8 @@ final class NativeQuotaStyleTests: XCTestCase {
 
     func testT84Rave() throws { try verify(.rave, task: 84) }
 
+    func testT120Clay() throws { try verify(.clay, task: 120) }
+
     /// D-76 graphics: 0% has no remaining emphasis, 100% is fully emphasised,
     /// and a sub-grain change still moves the boundary (no whole-grain steps).
     func testD76CompactBarsEndpointsAndContinuity() throws {

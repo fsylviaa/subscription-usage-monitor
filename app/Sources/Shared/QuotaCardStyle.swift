@@ -1,12 +1,16 @@
 import SwiftUI
 
-/// Stable catalogue (D-76): 12 compact styles plus 霓虹派对, and 液态玻璃 (D-83).
-/// The former original style no longer exists; its stored value, a missing value
-/// or any unknown value resolves to the default 彩色斜粒 without a write or an error.
+/// Stable catalogue (D-76): 12 compact styles plus 霓虹派对, then 液态玻璃 (D-83),
+/// 薄荷新拟态 (D-84) and 马卡龙粘土 (D-85) appended last so existing stored values and
+/// their order never move. The former original style no longer exists; its stored
+/// value, a missing value or any unknown value resolves to the default 彩色斜粒
+/// without a write or an error.
 enum QuotaCardStyle: String, CaseIterable, Codable, Sendable {
     case skala, capsule, ticks, dials, island, blocks, liquid, ticket, journal, glass, panels, watermark, rave
     /// D-83: iOS 26 Liquid Glass in the App, a static frosted approximation in widgets.
     case liquidGlass
+    /// D-85: macaron pastels on soft 3D clay; also recolours the quota page chrome.
+    case clay
 
     static let defaultStyle = QuotaCardStyle.skala
 
@@ -26,6 +30,7 @@ enum QuotaCardStyle: String, CaseIterable, Codable, Sendable {
         case .watermark: "蓝条水印"
         case .rave: "霓虹派对"
         case .liquidGlass: "液态玻璃"
+        case .clay: "马卡龙粘土"
         }
     }
 
