@@ -67,6 +67,37 @@ struct CompactBarPainter {
             else { panelTicks(on: .quotaHex("352118"), off: .quotaHex("a49a90")) }
         case .watermark: blueBar()
         case .rave: rave()
+        case .liquidGlass: liquidGlassBar()
+        }
+    }
+
+    /// 液态玻璃 (D-83): a glass channel with a crisp fog-blue remaining fill.
+    /// No glow and no blur — the approved reference keeps the fill edge sharp.
+    private mutating func liquidGlassBar() {
+        let border: CGFloat = mini ? 1.2 : 1.5
+        let frame = CGRect(x: 0, y: 0, width: w, height: h)
+        let channel = Path(roundedRect: frame.insetBy(dx: border / 2, dy: border / 2), cornerRadius: h / 2)
+
+        // Used: a recessed glass channel.
+        context.fill(channel, with: .color(dark ? Color(.sRGB, red: 1, green: 1, blue: 1, opacity: 0.10)
+                                                : Color(.sRGB, red: 1, green: 1, blue: 1, opacity: 0.22)))
+        context.stroke(channel, with: .color(dark ? Color(.sRGB, red: 1, green: 1, blue: 1, opacity: 0.30)
+                                                 : Color(.sRGB, red: 1, green: 1, blue: 1, opacity: 0.92)),
+                       lineWidth: border)
+
+        guard f > 0 else { return }
+        var g = context
+        g.clip(to: channel)
+        let fill = Path(roundedRect: CGRect(x: 0, y: 0, width: max(h, fw), height: h), cornerRadius: h / 2)
+        g.fill(fill, with: .linearGradient(
+            Gradient(colors: [.quotaHex("93afe2"), .quotaHex("7d9dd8"), .quotaHex("7393d0")]),
+            startPoint: .zero, endPoint: CGPoint(x: 0, y: h)))
+        // Bottom edge of the remaining fill, then a thin top highlight.
+        g.stroke(fill, with: .color(.quotaHex("4e6caa").opacity(0.45)), lineWidth: mini ? 0.5 : 0.75)
+        let inset: CGFloat = mini ? 3 : 4
+        if fw > inset * 2 {
+            g.fill(Path(roundedRect: CGRect(x: inset, y: border, width: max(h, fw) - inset * 2, height: mini ? 1 : 1.5),
+                        cornerRadius: 1), with: .color(.white.opacity(0.55)))
         }
     }
 
