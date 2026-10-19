@@ -190,7 +190,7 @@ struct CompactWidgetBody: View {
             .padding(.horizontal, 11).padding(.vertical, 9)
             .background(panelFill(w.weekly), in: RoundedRectangle(cornerRadius: 13, style: .continuous))
             .overlay { RoundedRectangle(cornerRadius: 13, style: .continuous).strokeBorder(w.weekly ? .clear : c("d5cdc3", "4b4e52"), lineWidth: 1) }
-        case .blocks, .glass, .ticket:
+        case .blocks, .glass, .ticket, .liquidGlass:
             VStack(alignment: .leading, spacing: 0) {
                 mediumLabel(w)
                 number(w, size: 34, weight: .bold).padding(.top, 5).padding(.bottom, 9)
@@ -219,6 +219,11 @@ struct CompactWidgetBody: View {
     @ViewBuilder private var mediumPanel: some View {
         let shape = RoundedRectangle(cornerRadius: style == .ticket ? 7 : 13, style: .continuous)
         switch style {
+        case .liquidGlass:
+            // Static frosted plate: widgets never use a host-dependent material.
+            shape.fill(dark ? Color.white.opacity(0.08) : Color.white.opacity(0.24))
+                .overlay { shape.strokeBorder(dark ? .white.opacity(0.28) : .white.opacity(0.92), lineWidth: 1.5) }
+                .overlay { shape.inset(by: 1.5).strokeBorder(c("969ca8", "0d1014").opacity(0.26), lineWidth: 1) }
         case .blocks:
             shape.fill(c("faf7ff", "1b1a21")).overlay { shape.strokeBorder(c("ddd2ee", "423a51"), lineWidth: 1) }
         case .glass:

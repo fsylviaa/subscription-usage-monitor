@@ -14,6 +14,10 @@ struct CompactQuotaTheme {
         case radialTop([Color])
         /// Ruled paper: base colour plus a 1pt line every `spacing` points.
         case ruled(base: Color, line: Color, spacing: CGFloat)
+        /// 液态玻璃 (D-83): a soft studio-grey canvas with ambient highlights, so
+        /// the glass above it has something to refract. `tint` is laid over the
+        /// material. Widgets receive a static approximation of the same thing.
+        case glassMaterial(base: Color, glow: Color, shade: Color, tint: Color)
     }
     var background: Background
     var ink: Color
@@ -85,11 +89,65 @@ extension QuotaCardStyle {
             return .init(background: .solid(h("fafbfc", "000000")), ink: h("202124", "f4f4f5"), muted: h("6f747c", "929297"),
                          border: h("e6e8eb", "1c1c1e"), widgetBorder: h("e6e8eb", "1c1c1e"),
                          watermark: hs(["202124", "202124"], ["f4f4f5", "f4f4f5"]), watermarkOpacity: d ? 0.12 : 0.06)
+        case .liquidGlass:
+            // D-83: neutral light grey so the fog-blue reading stays the only colour.
+            return .init(background: .glassMaterial(base: h("d9dadc", "15171a"), glow: h("ffffff", "6f7b8a"),
+                                                    shade: h("c4c7cd", "0b0d10"), tint: h("ffffff", "20242b")),
+                         ink: h("16181c", "f3f4f6"), muted: h("868b93", "a2a8b2"),
+                         border: h("ffffff", "6e7a88"), widgetBorder: h("ffffff", "5b626c"),
+                         borderWidth: 2, widgetBorderWidth: 1.5, radius: 28,
+                         watermark: hs(["7e9bd1", "93afe2", "7393d0"], ["93afe2", "7e9bd1", "6f8cc4"]),
+                         watermarkOpacity: d ? 0.14 : 0.10)
         case .rave:
             // Electric blue in both appearances (D-75).
             return .init(background: .steep([.quotaHex("2412ff"), .quotaHex("1807e4")]), ink: .quotaHex("ff6eb0"),
                          muted: .quotaHex("c9ccff"), border: .quotaHex("4335ff"), widgetBorder: .quotaHex("4335ff"),
                          watermark: [.quotaHex("ff2e8b")], watermarkOpacity: 0.22, watermarkOutline: true)
+        }
+    }
+}
+
+/// 液态玻璃 (D-83). In the App on iOS 26 the panel is the system Liquid Glass
+/// material, so it refracts the page behind it in real time. Earlier systems and
+/// every widget get a fixed frosted build of the same look: widgets are static
+/// and must render identically in isolated snapshots, so they never use a
+/// material whose result depends on the host.
+struct GlassMaterialBackground: View {
+    let base: Color
+    let glow: Color
+    let shade: Color
+    let tint: Color
+    let radius: CGFloat
+    var widget = false
+
+    @Environment(\.nativeQuotaStatic) private var isStatic
+
+    private var shape: RoundedRectangle { RoundedRectangle(cornerRadius: radius, style: .continuous) }
+
+    /// Ambient light. Glass with nothing behind it reads as a flat grey slab.
+    private var ambience: some View {
+        ZStack {
+            base
+            RadialGradient(colors: [glow.opacity(0.85), .clear], center: UnitPoint(x: 0.18, y: 0.10),
+                           startRadius: 0, endRadius: 190)
+            RadialGradient(colors: [shade.opacity(0.70), .clear], center: UnitPoint(x: 0.95, y: 0.42),
+                           startRadius: 0, endRadius: 170)
+            RadialGradient(colors: [glow.opacity(0.55), .clear], center: UnitPoint(x: 0.34, y: 0.92),
+                           startRadius: 0, endRadius: 200)
+        }
+    }
+
+    var body: some View {
+        if widget || isStatic {
+            ambience.overlay(tint.opacity(0.22))
+        } else if #available(iOS 26.0, *) {
+            ambience.overlay {
+                Color.clear.glassEffect(.regular, in: .rect(cornerRadius: radius))
+            }
+        } else {
+            ambience.overlay {
+                shape.fill(.ultraThinMaterial).overlay { shape.fill(tint.opacity(0.18)) }
+            }
         }
     }
 }
@@ -110,7 +168,11 @@ struct CompactQuotaBackground: View {
     @Environment(\.colorScheme) private var scheme
 
     var body: some View {
-        switch style.compactTheme(dark: scheme == .dark, widget: widget).background {
+        let theme = style.compactTheme(dark: scheme == .dark, widget: widget)
+        switch theme.background {
+        case let .glassMaterial(base, glow, shade, tint):
+            GlassMaterialBackground(base: base, glow: glow, shade: shade, tint: tint,
+                                    radius: theme.radius, widget: widget)
         case let .solid(color): color
         case let .diagonal(colors): LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing)
         case let .steep(colors): LinearGradient(colors: colors, startPoint: UnitPoint(x: 0.33, y: 0), endPoint: UnitPoint(x: 0.67, y: 1))

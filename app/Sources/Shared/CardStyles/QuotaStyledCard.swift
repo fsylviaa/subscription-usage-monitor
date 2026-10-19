@@ -164,7 +164,7 @@ struct QuotaStyledCard: View {
             .background(LinearGradient(colors: [.quotaHex("080a09"), .quotaHex("101311")], startPoint: .top, endPoint: .bottom),
                         in: RoundedRectangle(cornerRadius: 22, style: .continuous))
             .overlay { RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(Color.quotaHex("3b423d"), lineWidth: 1) }
-        case .blocks, .liquid, .ticket, .glass:
+        case .blocks, .liquid, .ticket, .glass, .liquidGlass:
             VStack(spacing: style == .liquid ? 14 : 10) {
                 ForEach(ws) { w in
                     VStack(alignment: .leading, spacing: 0) {
@@ -173,7 +173,9 @@ struct QuotaStyledCard: View {
                             Line().stroke(c("8c929b", "6d7076"), style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
                                 .frame(height: 1).padding(.horizontal, -2).padding(.bottom, 10)
                         }
-                        numberRow(w, height: style == .liquid ? 44 : style == .ticket ? 34 : style == .glass ? 32 : 36)
+                        // 液态玻璃 keeps the slim bar of the approved reference.
+                        numberRow(w, height: style == .liquid ? 44 : style == .ticket ? 34 : style == .glass ? 32
+                                  : style == .liquidGlass ? 18 : 36)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .modifier(InsetPanel(style: style, dark: dark))
@@ -375,7 +377,7 @@ private struct Line: Shape {
     }
 }
 
-/// Inner panels of 紫色模块／黑白票签／冰蓝玻璃 (横向液体 has none).
+/// Inner panels of 紫色模块／黑白票签／冰蓝玻璃／液态玻璃 (横向液体 has none).
 private struct InsetPanel: ViewModifier {
     let style: QuotaCardStyle
     let dark: Bool
@@ -397,6 +399,15 @@ private struct InsetPanel: ViewModifier {
                 .overlay { RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .strokeBorder(dark ? Color(.sRGB, red: 137 / 255, green: 204 / 255, blue: 239 / 255, opacity: 0.35) : .white.opacity(0.95), lineWidth: 1) }
                 .shadow(color: dark ? .black.opacity(0.25) : Color.quotaHex("4678aa").opacity(0.12), radius: 7, y: 4)
+        case .liquidGlass:
+            // D-83: a thick acrylic plate — crisp white rim, a thin grey
+            // refraction line just inside it, and a close contact shadow.
+            let shape = RoundedRectangle(cornerRadius: 22, style: .continuous)
+            content.padding(.horizontal, 14).padding(.top, 10).padding(.bottom, 12)
+                .background(dark ? Color.white.opacity(0.08) : Color.white.opacity(0.22), in: shape)
+                .overlay { shape.strokeBorder(dark ? .white.opacity(0.30) : .white.opacity(0.92), lineWidth: 2) }
+                .overlay { shape.inset(by: 2).strokeBorder(Color.quotaHex(dark ? "0d1014" : "969ca8").opacity(0.28), lineWidth: 1) }
+                .shadow(color: .black.opacity(dark ? 0.30 : 0.14), radius: 4, y: 3)
         default:
             content
         }
