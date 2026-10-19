@@ -171,13 +171,14 @@ extension QuotaWidgetContent {
 struct SmallQuotaWidgetView: View {
     let content: QuotaWidgetContent
     var medium = false
+    var now: Date = .now
     @Environment(\.quotaCardStyle) private var cardStyle
     @Environment(\.colorScheme) private var scheme
 
     var body: some View {
         Group {
             if let account = content.account {
-                QuotaStyledCard(style: cardStyle, input: QuotaStyledInput(account: account), surface: medium ? .mediumWidget : .smallWidget)
+                QuotaStyledCard(style: cardStyle, input: QuotaStyledInput(account: account), surface: medium ? .mediumWidget : .smallWidget, now: now)
             } else {
                 // No published account: the single add entry, or a short failure.
                 Text(content.showsAddAccount ? "添加账户" : (content.message ?? "刷新失败"))

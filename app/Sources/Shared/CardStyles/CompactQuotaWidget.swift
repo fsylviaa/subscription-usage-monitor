@@ -2,11 +2,14 @@ import SwiftUI
 
 /// Small and medium widget layouts of the approved comparison page
 /// (smallWidget / mediumWidget, 霓虹派对 widgets()). Static, no e-mail, no
-/// time and no visible “剩余”. Background and border are drawn by the host.
+/// update time and no visible “剩余”. Background and border are drawn by the host.
+/// Each medium column ends with its reset countdown; the small widget shows
+/// only the nearest one, under that window (T121).
 struct CompactWidgetBody: View {
     let style: QuotaCardStyle
     let input: QuotaStyledInput
     let medium: Bool
+    var now: Date = .now
     @Environment(\.colorScheme) private var scheme
 
     private var dark: Bool { scheme == .dark }
@@ -103,6 +106,7 @@ struct CompactWidgetBody: View {
                     VStack(spacing: 5) {
                         labelRow(w, label: .quotaHex("a9bca8"), number: .quotaHex("f4fff1"), size: 22)
                         bar(w, height: 6)
+                        smallCountdown(w, color: .quotaHex("a9bca8"))
                     }
                     .padding(.vertical, 7)
                     .overlay(alignment: .bottom) { if i < ws.count - 1 { Rectangle().fill(Color.quotaHex("2a2f2b")).frame(height: 1) } }
@@ -119,9 +123,10 @@ struct CompactWidgetBody: View {
                         Text(w.title).font(.system(size: 11, weight: .semibold))
                         if !w.isBalance { gauge(w).frame(width: 68, height: 62).padding(.top, 3) }
                         number(w, size: 22, weight: .bold).padding(.top, 2)
+                        smallCountdown(w)
                     }
                     .frame(maxWidth: .infinity)
-                    .modifier(WindowLabel(window: w))
+                    .modifier(WindowLabel(window: w, reset: spokenReset(w)))
                 }
             }
         case .panels:
@@ -130,6 +135,7 @@ struct CompactWidgetBody: View {
                     VStack(spacing: 5) {
                         labelRow(w, number: w.weekly ? .quotaHex("26180f") : nil, size: 22)
                         bar(w, height: 12, secondary: !w.weekly)
+                        smallCountdown(w, color: w.weekly ? .quotaHex("5a3a22") : nil)
                     }
                     .foregroundStyle(w.weekly ? Color.quotaHex("26180f") : theme.ink)
                     .padding(.horizontal, 9).padding(.vertical, 7)
@@ -147,8 +153,9 @@ struct CompactWidgetBody: View {
                             raveNumber(w, size: 26)
                         }
                         bar(w, height: 9)
+                        smallCountdown(w)
                     }
-                    .modifier(WindowLabel(window: w))
+                    .modifier(WindowLabel(window: w, reset: spokenReset(w)))
                 }
             }
         default:
@@ -157,6 +164,7 @@ struct CompactWidgetBody: View {
                     VStack(spacing: 5) {
                         labelRow(w, size: style == .watermark ? 28 : 24)
                         bar(w, height: miniHeight, secondary: clayAlternate(w))
+                        smallCountdown(w)
                     }
                 }
             }
@@ -168,7 +176,7 @@ struct CompactWidgetBody: View {
     @ViewBuilder private var mediumBody: some View {
         let ws = input.windows
         HStack(alignment: .top, spacing: 18) {
-            ForEach(ws) { w in mediumColumn(w).frame(maxWidth: .infinity, alignment: .leading).modifier(WindowLabel(window: w)) }
+            ForEach(ws) { w in mediumColumn(w).frame(maxWidth: .infinity, alignment: .leading).modifier(WindowLabel(window: w, reset: spokenReset(w))) }
         }
     }
 
@@ -179,6 +187,7 @@ struct CompactWidgetBody: View {
                 mediumLabel(w, color: .quotaHex("a9bca8"))
                 number(w, size: 32, weight: .bold, color: .quotaHex("f4fff1")).padding(.top, 5).padding(.bottom, 9)
                 bar(w, height: 7)
+                countdown(w, color: .quotaHex("a9bca8")).padding(.top, 6)
             }
             .padding(.horizontal, 12).padding(.vertical, 10)
             .background(LinearGradient(colors: [.quotaHex("080a09"), .quotaHex("101311")], startPoint: .top, endPoint: .bottom),
@@ -189,7 +198,10 @@ struct CompactWidgetBody: View {
                 mediumLabel(w)
                 HStack(spacing: 8) {
                     if !w.isBalance { gauge(w).frame(width: 68, height: 62) }
-                    number(w, size: 30, weight: .bold)
+                    VStack(alignment: .leading, spacing: 2) {
+                        number(w, size: 30, weight: .bold)
+                        countdown(w)
+                    }
                 }
             }
         case .panels:
@@ -197,6 +209,7 @@ struct CompactWidgetBody: View {
                 mediumLabel(w)
                 number(w, size: 34, weight: .bold, color: w.weekly ? .quotaHex("26180f") : nil).padding(.top, 5).padding(.bottom, 9)
                 bar(w, height: 14, secondary: !w.weekly)
+                countdown(w, color: w.weekly ? .quotaHex("5a3a22") : nil).padding(.top, 6)
             }
             .foregroundStyle(w.weekly ? Color.quotaHex("26180f") : theme.ink)
             .padding(.horizontal, 11).padding(.vertical, 9)
@@ -207,6 +220,7 @@ struct CompactWidgetBody: View {
                 mediumLabel(w)
                 number(w, size: 34, weight: .bold).padding(.top, 5).padding(.bottom, 9)
                 bar(w, height: miniHeight)
+                countdown(w).padding(.top, 6)
             }
             .padding(.horizontal, 11).padding(.top, 9).padding(.bottom, 11)
             .background { mediumPanel }
@@ -217,6 +231,7 @@ struct CompactWidgetBody: View {
                     .background(alignment: .topLeading) { ghostText(w.amount.nativeText, size: 70).offset(x: -4, y: -10) }
                     .padding(.top, 4).padding(.bottom, 12)
                 bar(w, height: 12)
+                countdown(w).padding(.top, 6)
             }
             .padding(.top, 8)
         default:
@@ -224,6 +239,7 @@ struct CompactWidgetBody: View {
                 mediumLabel(w)
                 number(w, size: style == .watermark ? 44 : 40, weight: .bold).padding(.top, 5).padding(.bottom, 9)
                 bar(w, height: miniHeight, secondary: clayAlternate(w))
+                countdown(w).padding(.top, 6)
             }
         }
     }
@@ -252,6 +268,27 @@ struct CompactWidgetBody: View {
     }
 
     // MARK: Pieces
+
+    /// Balances have no reset (BAL-05), so nothing is drawn for them.
+    @ViewBuilder private func countdown(_ w: QuotaStyledInput.Window, color: Color? = nil) -> some View {
+        if !w.isBalance {
+            Text(NativeQuotaReset.countdown(w.resetsAt, now: now))
+                .font(.system(size: medium ? 11 : 10, weight: .medium, design: labelDesign))
+                .foregroundStyle(color ?? theme.muted)
+                .lineLimit(1).minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    /// What VoiceOver adds to a window whose countdown is drawn.
+    private func spokenReset(_ w: QuotaStyledInput.Window) -> String? {
+        guard !w.isBalance, medium || w.id == NativeQuotaReset.nearest(input.windows, now: now)?.id else { return nil }
+        return NativeQuotaReset.countdown(w.resetsAt, now: now)
+    }
+
+    @ViewBuilder private func smallCountdown(_ w: QuotaStyledInput.Window, color: Color? = nil) -> some View {
+        if w.id == NativeQuotaReset.nearest(input.windows, now: now)?.id { countdown(w, color: color) }
+    }
 
     private var miniHeight: CGFloat {
         switch style {
@@ -318,9 +355,11 @@ struct CompactWidgetBody: View {
 /// One spoken element per window: “每周额度，剩余 90%”.
 private struct WindowLabel: ViewModifier {
     let window: QuotaStyledInput.Window
+    var reset: String? = nil
     func body(content: Content) -> some View {
         content.accessibilityElement(children: .ignore)
-            .accessibilityLabel("\(window.longTitle)，" + (window.amount.remainingFraction == nil ? window.amount.nativeText : "剩余 " + window.amount.nativeText))
+            .accessibilityLabel("\(window.longTitle)，" + (window.amount.remainingFraction == nil ? window.amount.nativeText : "剩余 " + window.amount.nativeText)
+                                + (reset.map { "，" + $0 } ?? ""))
     }
 }
 

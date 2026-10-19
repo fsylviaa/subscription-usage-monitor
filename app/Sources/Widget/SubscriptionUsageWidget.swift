@@ -26,7 +26,17 @@ struct QuotaWidgetProvider: AppIntentTimelineProvider {
         #endif
         // A reload opportunity now performs real work, rather than rereading a
         // permanently unchanged cache. This is an earliest request, not a timer.
-        return Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(CoordinatedQuotaUpdater.interval)))
+        return Timeline(entries: Self.countdownEntries(entry), policy: .after(Date().addingTimeInterval(CoordinatedQuotaUpdater.interval)))
+    }
+    /// The same content re-dated so the reset countdown keeps moving without a
+    /// reload (T121): every minute for an hour, then every 10 minutes to a day,
+    /// in case the system grants the next reload late.
+    static func countdownEntries(_ entry: QuotaWidgetEntry) -> [QuotaWidgetEntry] {
+        let start = entry.date
+        let minute = Calendar.current.dateInterval(of: .minute, for: start)?.end ?? start.addingTimeInterval(60)
+        let dates = (0..<60).map { minute.addingTimeInterval(Double($0) * 60) }
+            + (1...138).map { minute.addingTimeInterval(3_600 + Double($0) * 600) }
+        return [entry] + dates.map { .init(date: $0, content: entry.content, appearance: entry.appearance, cardStyle: entry.cardStyle) }
     }
     private func readEntry(accountID: String?) -> QuotaWidgetEntry {
         let content = QuotaWidgetContent.read(from: .displayStore()).selecting(accountID: accountID)
@@ -58,7 +68,7 @@ private struct QuotaWidgetSurface: View {
     @Environment(\.widgetFamily) private var family
     private var scheme: ColorScheme { WidgetAppearance.colorScheme(entry.appearance) ?? systemScheme }
     var body: some View {
-        SmallQuotaWidgetView(content: entry.content, medium: family == .systemMedium)
+        SmallQuotaWidgetView(content: entry.content, medium: family == .systemMedium, now: entry.date)
             .environment(\.colorScheme, scheme)
             .environment(\.quotaCardStyle, entry.cardStyle)
             .modifier(CompactWidgetChrome(style: entry.cardStyle, shape: ContainerRelativeShape()))

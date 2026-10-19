@@ -43,7 +43,7 @@ struct QuotaStyledCard: View {
     var body: some View {
         Group {
             if widget {
-                CompactWidgetBody(style: style, input: input, medium: surface == .mediumWidget)
+                CompactWidgetBody(style: style, input: input, medium: surface == .mediumWidget, now: now)
             } else {
                 card
             }
@@ -277,7 +277,8 @@ struct QuotaStyledCard: View {
     }
 
     private func resetText(_ w: QuotaStyledInput.Window, twoLines: Bool, color: Color?) -> some View {
-        let text = NativeQuotaReset.text(w.resetsAt, now: now)
+        // The detail page keeps the reset date; the account card counts down (T121).
+        let text = detail ? NativeQuotaReset.text(w.resetsAt, now: now) : NativeQuotaReset.countdown(w.resetsAt, now: now)
         return Text(twoLines ? text.replacingOccurrences(of: " · ", with: "\n") : text)
             .font(.system(size: resetSize)).foregroundStyle(color ?? theme.muted)
             .lineLimit(large || twoLines ? nil : 1).minimumScaleFactor(0.85)

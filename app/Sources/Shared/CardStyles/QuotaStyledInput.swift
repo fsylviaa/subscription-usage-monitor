@@ -112,4 +112,24 @@ enum NativeQuotaReset {
         guard date > now else { return "已到预计时间" }
         return "预计重置 · " + date.formatted(.dateTime.month().day().hour().minute())
     }
+
+    /// Account cards and widgets (T121): time left instead of the date, e.g.
+    /// “3天5小时后重置”, “5小时20分后重置”, “20分钟后重置”. Days drop minutes.
+    static func countdown(_ date: Date?, now: Date) -> String {
+        guard let date else { return "未提供重置时间" }
+        guard date > now else { return "已到预计时间" }
+        let minutes = max(1, Int(ceil(date.timeIntervalSince(now) / 60)))
+        let days = minutes / 1440, hours = minutes % 1440 / 60, rest = minutes % 60
+        if days > 0 { return hours == 0 ? "\(days)天后重置" : "\(days)天\(hours)小时后重置" }
+        if hours > 0 { return rest == 0 ? "\(hours)小时后重置" : "\(hours)小时\(rest)分后重置" }
+        return "\(minutes)分钟后重置"
+    }
+
+    /// The window whose countdown a small widget shows: the earliest upcoming
+    /// reset; once every reset has passed, the earliest one (“已到预计时间”).
+    static func nearest(_ windows: [QuotaStyledInput.Window], now: Date) -> QuotaStyledInput.Window? {
+        let timed = windows.filter { !$0.isBalance && $0.resetsAt != nil }
+        let upcoming = timed.filter { $0.resetsAt! > now }
+        return (upcoming.isEmpty ? timed : upcoming).min { $0.resetsAt! < $1.resetsAt! }
+    }
 }

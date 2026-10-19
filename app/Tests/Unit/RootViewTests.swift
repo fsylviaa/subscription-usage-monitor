@@ -598,6 +598,36 @@ final class RootViewTests: XCTestCase {
         XCTAssertEqual(QuotaView.resetText(now.addingTimeInterval(1), now: now), "1 分钟后")
     }
 
+    /// T121: account cards and widgets show time left; days drop the minutes.
+    func testT121ResetCountdownText() {
+        let now = Date(timeIntervalSince1970: 1_790_000_000)
+        func text(_ seconds: TimeInterval) -> String { NativeQuotaReset.countdown(now.addingTimeInterval(seconds), now: now) }
+        XCTAssertEqual(NativeQuotaReset.countdown(nil, now: now), "未提供重置时间")
+        XCTAssertEqual(text(0), "已到预计时间")
+        XCTAssertEqual(text(-60), "已到预计时间")
+        XCTAssertEqual(text(1), "1分钟后重置")
+        XCTAssertEqual(text(20 * 60), "20分钟后重置")
+        XCTAssertEqual(text(3_600), "1小时后重置")
+        XCTAssertEqual(text(5 * 3_600 + 20 * 60), "5小时20分后重置")
+        XCTAssertEqual(text(86_400), "1天后重置")
+        XCTAssertEqual(text(3 * 86_400 + 5 * 3_600 + 59 * 60), "3天5小时后重置")
+        // The detail page keeps the reset date.
+        XCTAssertTrue(NativeQuotaReset.text(now.addingTimeInterval(3_600), now: now).hasPrefix("预计重置 · "))
+    }
+
+    /// T121: the small widget's single countdown is the earliest upcoming reset.
+    func testT121SmallWidgetShowsNearestReset() {
+        let now = Date(timeIntervalSince1970: 1_790_000_000)
+        let week = QuotaStyledInput.Window(kind: .weekly, amount: .unknown, resetsAt: now.addingTimeInterval(3 * 86_400))
+        let five = QuotaStyledInput.Window(kind: .fiveHours, amount: .unknown, resetsAt: now.addingTimeInterval(2 * 3_600))
+        let passed = QuotaStyledInput.Window(kind: .fiveHours, amount: .unknown, resetsAt: now.addingTimeInterval(-60))
+        let balance = QuotaStyledInput.Window(kind: .balance, amount: .unknown, resetsAt: nil, currency: "USD")
+        XCTAssertEqual(NativeQuotaReset.nearest([week, five], now: now)?.id, "fiveHours")
+        XCTAssertEqual(NativeQuotaReset.nearest([week, passed], now: now)?.id, "weekly")
+        XCTAssertEqual(NativeQuotaReset.nearest([passed], now: now)?.id, "fiveHours")
+        XCTAssertNil(NativeQuotaReset.nearest([balance], now: now))
+    }
+
     @MainActor
     func testRootViewCanLoadAndLayOutInAppHost() {
         let controller = UIHostingController(rootView: RootView())

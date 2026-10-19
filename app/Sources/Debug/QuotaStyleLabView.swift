@@ -76,7 +76,10 @@ struct QuotaStyleLabView: View {
                     Text("此处两尺寸为布局验收，桌面宿主尚未接入。数据仅在内存，不是平台查询。")
                         .font(.caption).foregroundStyle(.secondary)
                 }.padding(16).dynamicTypeSize(large ? .accessibility5 : .large)
-            }.accessibilityIdentifier("lab.scroll")
+            }
+            // `--lab-anchor bottom` opens on the widget layouts for screenshots.
+            .defaultScrollAnchor(Self.argument("--lab-anchor") == "bottom" ? .bottom : .top)
+            .accessibilityIdentifier("lab.scroll")
         }
         .preferredColorScheme(dark ? .dark : .light)
         .environment(\.nativeQuotaStatic, still || UIAccessibility.isReduceMotionEnabled)
