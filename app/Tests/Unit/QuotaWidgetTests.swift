@@ -169,12 +169,17 @@ final class QuotaWidgetTests: XCTestCase {
     }
 
     func testT64SharedRemainingInputPrecisionAndCatalogue() throws {
-        XCTAssertEqual(QuotaCardStyle.allCases.count, 13)
-        XCTAssertEqual(Set(QuotaCardStyle.allCases.map(\.rawValue)).count, 13)
+        XCTAssertEqual(QuotaCardStyle.allCases.count, 14)
+        XCTAssertEqual(Set(QuotaCardStyle.allCases.map(\.rawValue)).count, 14)
         XCTAssertEqual(QuotaCardStyle.allCases.first, .skala)
         XCTAssertTrue(QuotaCardStyle.allCases.contains(.rave))
         XCTAssertNil(QuotaCardStyle(rawValue: "original"))
         XCTAssertEqual(QuotaCardStyle.rave.name, "霓虹派对")
+        // D-84: 薄荷新拟态 is appended last; earlier styles keep their positions.
+        XCTAssertEqual(QuotaCardStyle.allCases.last, .neumorph)
+        XCTAssertEqual(QuotaCardStyle.allCases[12], .rave)
+        XCTAssertEqual(QuotaCardStyle.neumorph.name, "薄荷新拟态")
+        XCTAssertEqual(QuotaCardStyle.resolve("neumorph"), .neumorph)
         XCTAssertEqual(QuotaCardStyle.resolve(nil), .skala)
         XCTAssertEqual(QuotaCardStyle.resolve("original"), .skala)
         XCTAssertEqual(QuotaCardStyle.resolve("future"), .skala)

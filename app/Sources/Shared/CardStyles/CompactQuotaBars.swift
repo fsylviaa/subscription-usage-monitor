@@ -67,6 +67,38 @@ struct CompactBarPainter {
             else { panelTicks(on: .quotaHex("352118"), off: .quotaHex("a49a90")) }
         case .watermark: blueBar()
         case .rave: rave()
+        case .neumorph: neumorph()
+        }
+    }
+
+    // MARK: 薄荷新拟态
+
+    /// D-84 (Neu/Inset): a pressed-in cream groove = used; a mint pill sitting in
+    /// the groove = remaining. The pill width is exactly the remaining fraction of
+    /// the groove's inner width, so 0% draws nothing and decimals stay continuous.
+    private mutating func neumorph() {
+        let r = h / 2
+        let track = Path(roundedRect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: r)
+        context.fill(track, with: .color(NeumorphPalette.inset(dark: dark)))
+        var groove = context; groove.clip(to: track)
+        // Inner shade at the top-left, highlight along the bottom: the groove reads as pressed in.
+        let shade = dark ? Color.black.opacity(0.55) : Color.quotaHex("bdb7ae").opacity(0.75)
+        groove.fill(Path(CGRect(x: 0, y: 0, width: w, height: h * 0.6)), with: .linearGradient(
+            Gradient(colors: [shade, .clear]), startPoint: .zero, endPoint: CGPoint(x: 0, y: h * 0.6)))
+        groove.fill(Path(CGRect(x: 0, y: h * 0.55, width: w, height: h * 0.45)), with: .linearGradient(
+            Gradient(colors: [.clear, dark ? .white.opacity(0.05) : .white.opacity(0.9)]),
+            startPoint: CGPoint(x: 0, y: h * 0.55), endPoint: CGPoint(x: 0, y: h)))
+        guard f > 0 else { return }
+        let inset: CGFloat = mini ? 1.5 : max(2, h * 0.17)
+        let inner = CGRect(x: inset, y: inset, width: (w - inset * 2) * f, height: h - inset * 2)
+        let pill = Path(roundedRect: inner, cornerRadius: min(inner.height / 2, inner.width / 2))
+        context.fill(pill, with: .linearGradient(Gradient(colors: [NeumorphPalette.mintLight, NeumorphPalette.mint]),
+                                                 startPoint: CGPoint(x: 0, y: inner.minY), endPoint: CGPoint(x: 0, y: inner.maxY)))
+        // A thin soft highlight on the pill's upper half, kept inside its rounded ends.
+        let shine = inner.insetBy(dx: inner.height / 2, dy: 0)
+        if shine.width > 0 {
+            context.fill(Path(roundedRect: CGRect(x: shine.minX, y: inner.minY + 1, width: shine.width, height: max(1, inner.height * 0.3)),
+                              cornerRadius: 1), with: .color(.white.opacity(dark ? 0.25 : 0.45)))
         }
     }
 

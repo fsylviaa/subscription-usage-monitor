@@ -85,12 +85,46 @@ extension QuotaCardStyle {
             return .init(background: .solid(h("fafbfc", "000000")), ink: h("202124", "f4f4f5"), muted: h("6f747c", "929297"),
                          border: h("e6e8eb", "1c1c1e"), widgetBorder: h("e6e8eb", "1c1c1e"),
                          watermark: hs(["202124", "202124"], ["f4f4f5", "f4f4f5"]), watermarkOpacity: d ? 0.12 : 0.06)
+        case .neumorph:
+            // D-84: the card is the raised cream surface; widgets get the slightly
+            // deeper page tone so their raised inner panels have something to sit on.
+            return .init(background: .solid(widget ? NeumorphPalette.page(dark: d) : NeumorphPalette.surface(dark: d)),
+                         ink: h("2a2d2c", "eef0ee"), muted: h("8d908d", "9aa19e"),
+                         border: NeumorphPalette.rim(dark: d), widgetBorder: NeumorphPalette.rim(dark: d),
+                         borderWidth: 1.2, widgetBorderWidth: 1, radius: 28,
+                         watermark: hs(["8cc5b3", "5fa592"], ["7cc4ae", "5fa592"]), watermarkOpacity: d ? 0.10 : 0.09)
         case .rave:
             // Electric blue in both appearances (D-75).
             return .init(background: .steep([.quotaHex("2412ff"), .quotaHex("1807e4")]), ink: .quotaHex("ff6eb0"),
                          muted: .quotaHex("c9ccff"), border: .quotaHex("4335ff"), widgetBorder: .quotaHex("4335ff"),
                          watermark: [.quotaHex("ff2e8b")], watermarkOpacity: 0.22, watermarkOutline: true)
         }
+    }
+}
+
+/// 薄荷新拟态 (D-84) tokens, matching the Figma file「订阅额度 · 新拟态 UI」
+/// (Neu Tokens collection and the Neu/Raised, Neu/Raised Small, Neu/Inset effect styles).
+/// Mint is the only accent; everything else is cream, warm grey and ink.
+enum NeumorphPalette {
+    static func page(dark: Bool) -> Color { .quotaHex(dark ? "202326" : "ece9e4") }
+    static func surface(dark: Bool) -> Color { .quotaHex(dark ? "282b2f" : "f3f1ed") }
+    static func inset(dark: Bool) -> Color { .quotaHex(dark ? "1c1e21" : "e3e0db") }
+    static func rim(dark: Bool) -> Color { dark ? .white.opacity(0.06) : .white.opacity(0.9) }
+    /// Top-left highlight and bottom-right shade of a raised surface.
+    static func highlight(dark: Bool) -> Color { dark ? .white.opacity(0.05) : .white.opacity(0.95) }
+    static func shade(dark: Bool) -> Color { dark ? .black.opacity(0.55) : Color.quotaHex("bdb7ae").opacity(0.55) }
+    static let mint = Color.quotaHex("8cc5b3")
+    static let mintLight = Color.quotaHex("a3d4c4")
+    static let mintDeep = Color.quotaHex("5fa592")
+}
+
+extension View {
+    /// Neu/Raised: a light shadow up-left and a soft warm shade down-right.
+    /// `small` is Neu/Raised Small (buttons, tiles, widget panels).
+    func neumorphRaised(dark: Bool, small: Bool = false) -> some View {
+        let d: CGFloat = small ? 4 : 7
+        return shadow(color: NeumorphPalette.highlight(dark: dark), radius: small ? 5 : 9, x: -d, y: -d)
+            .shadow(color: NeumorphPalette.shade(dark: dark), radius: small ? 6 : 11, x: d, y: d + (small ? 1 : 2))
     }
 }
 
