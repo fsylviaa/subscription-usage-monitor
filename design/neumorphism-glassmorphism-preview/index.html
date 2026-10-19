@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#dde2e6">
+  <title>订阅额度</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #171a1e;
+      --muted: #6f7883;
+      --accent: #82a8cf;
+      --accent-deep: #648db8;
+      --surface: rgba(244, 248, 251, .38);
+      --surface-edge: rgba(255, 255, 255, .92);
+      --surface-low: rgba(208, 218, 226, .26);
+      --shadow: rgba(87, 103, 117, .25);
+      --white-shadow: rgba(255, 255, 255, .96);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #dce1e5;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: auto;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+        "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+    }
+
+    button { font: inherit; }
+
+    .phone {
+      position: relative;
+      container-type: inline-size;
+      width: min(100vw, 828px, calc(100vh * 0.46205357));
+      aspect-ratio: 828 / 1792;
+      overflow: hidden;
+      color: var(--ink);
+      isolation: isolate;
+      background:
+        radial-gradient(ellipse at 10% 11%, rgba(255, 255, 255, .96) 0 10%, transparent 34%),
+        radial-gradient(ellipse at 92% 28%, rgba(153, 179, 204, .30) 0 8%, transparent 33%),
+        radial-gradient(ellipse at 17% 60%, rgba(255, 255, 255, .72), transparent 38%),
+        linear-gradient(145deg, #e8ebed 0%, #d9dfe3 46%, #e6eaec 100%);
+    }
+
+    .phone::before,
+    .phone::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      border-radius: 999px;
+      filter: blur(8.5cqw);
+      pointer-events: none;
+    }
+
+    .phone::before {
+      width: 72cqw;
+      height: 54cqw;
+      left: -31cqw;
+      top: 35cqw;
+      background: linear-gradient(135deg, rgba(255,255,255,.82), rgba(195,211,224,.30));
+      transform: rotate(-14deg);
+    }
+
+    .phone::after {
+      width: 75cqw;
+      height: 70cqw;
+      right: -30cqw;
+      top: 17cqw;
+      background: linear-gradient(145deg, rgba(123,160,194,.36), rgba(224,232,239,.14));
+      transform: rotate(16deg);
+    }
+
+    .status-bar {
+      position: absolute;
+      top: 3.62cqw;
+      left: 8.45cqw;
+      right: 4.35cqw;
+      height: 4.7cqw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 3.92cqw;
+      font-weight: 690;
+      letter-spacing: -.08cqw;
+      z-index: 4;
+    }
+
+    .system-icons {
+      display: flex;
+      align-items: center;
+      gap: 1.14cqw;
+    }
+
+    .system-icons svg { display: block; }
+
+    .signal { width: 4.62cqw; height: 2.82cqw; }
+    .wifi { width: 4.1cqw; height: 3.05cqw; }
+    .battery { width: 6.33cqw; height: 3.05cqw; }
+
+    .page-title {
+      position: absolute;
+      top: 13.53cqw;
+      left: 4.11cqw;
+      margin: 0;
+      font-size: 6.22cqw;
+      line-height: 1.1;
+      letter-spacing: -.35cqw;
+      font-weight: 760;
+      z-index: 4;
+    }
+
+    .add-button {
+      position: absolute;
+      top: 13.78cqw;
+      right: 4.58cqw;
+      width: 7.25cqw;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border-radius: 50%;
+      border: .22cqw solid rgba(255, 255, 255, .94);
+      color: var(--ink);
+      z-index: 4;
+      background:
+        radial-gradient(circle at 30% 22%, rgba(255,255,255,.92), rgba(255,255,255,.26) 42%, transparent 65%),
+        linear-gradient(145deg, rgba(247,250,252,.56), rgba(208,218,226,.30));
+      backdrop-filter: blur(2.2cqw) saturate(125%);
+      -webkit-backdrop-filter: blur(2.2cqw) saturate(125%);
+      box-shadow:
+        -.82cqw -.76cqw 1.52cqw rgba(255,255,255,.94),
+        .82cqw 1.05cqw 1.95cqw rgba(86,103,118,.27),
+        0 .18cqw .28cqw rgba(255,255,255,.78),
+        inset .34cqw .32cqw .62cqw rgba(255,255,255,.96),
+        inset -.36cqw -.42cqw .72cqw rgba(93,112,128,.18);
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .add-button:active {
+      transform: translateY(.25cqw) scale(.98);
+      box-shadow:
+        -.25cqw -.25cqw .8cqw rgba(255,255,255,.8),
+        .35cqw .45cqw .9cqw rgba(112,124,136,.18),
+        inset .35cqw .35cqw .85cqw rgba(120,132,145,.18);
+    }
+
+    .add-button svg { width: 3.45cqw; height: 3.45cqw; }
+
+    .glass-card {
+      position: absolute;
+      left: 4.11cqw;
+      width: 91.78cqw;
+      overflow: hidden;
+      z-index: 2;
+      border: .22cqw solid rgba(255,255,255,.82);
+      background:
+        radial-gradient(ellipse at 14% 4%, rgba(255,255,255,.62), transparent 38%),
+        linear-gradient(142deg, rgba(255,255,255,.34), rgba(241,246,249,.15) 44%, rgba(202,215,225,.20));
+      backdrop-filter: blur(5.8cqw) saturate(142%) contrast(103%);
+      -webkit-backdrop-filter: blur(5.8cqw) saturate(142%) contrast(103%);
+      box-shadow:
+        -1.35cqw -1.2cqw 2.65cqw rgba(255,255,255,.88),
+        .62cqw .95cqw 1.55cqw rgba(89,105,120,.19),
+        1.75cqw 2.15cqw 4.4cqw rgba(88,106,121,.18),
+        inset .48cqw .5cqw .86cqw rgba(255,255,255,.90),
+        inset -.5cqw -.62cqw 1.05cqw rgba(94,112,128,.17);
+    }
+
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      z-index: 1;
+      background:
+        linear-gradient(112deg, rgba(255,255,255,.30) 0%, transparent 24%, transparent 65%, rgba(255,255,255,.12) 100%),
+        radial-gradient(ellipse at 50% -16%, rgba(255,255,255,.48), transparent 53%);
+      pointer-events: none;
+    }
+
+    .glass-card::after {
+      content: "";
+      position: absolute;
+      inset: .32cqw;
+      z-index: 1;
+      border-radius: calc(5.25cqw - .32cqw);
+      border-top: .18cqw solid rgba(255,255,255,.98);
+      border-left: .14cqw solid rgba(255,255,255,.78);
+      border-right: .1cqw solid rgba(117,135,151,.10);
+      border-bottom: .12cqw solid rgba(109,128,145,.13);
+      box-shadow:
+        inset 0 .22cqw .35cqw rgba(255,255,255,.38),
+        0 .16cqw .3cqw rgba(255,255,255,.40);
+      pointer-events: none;
+    }
+
+    .cursor-card {
+      top: 26.21cqw;
+      height: 47.95cqw;
+      border-radius: 5.25cqw;
+    }
+
+    .deepseek-card {
+      top: 77.29cqw;
+      height: 36.75cqw;
+      border-radius: 5.25cqw;
+    }
+
+    .card-heading {
+      position: absolute;
+      top: 3.54cqw;
+      left: 4.11cqw;
+      display: flex;
+      align-items: center;
+      gap: 2.23cqw;
+      z-index: 2;
+    }
+
+    .brand-mark {
+      width: 5.55cqw;
+      height: 5.55cqw;
+      flex: 0 0 auto;
+      color: #20242a;
+      filter: drop-shadow(.26cqw .34cqw .42cqw rgba(76,89,101,.26));
+    }
+
+    .deepseek-card .brand-mark { width: 5.65cqw; height: 5.65cqw; }
+
+    .brand-name {
+      font-size: 4.35cqw;
+      line-height: 1;
+      font-weight: 680;
+      letter-spacing: -.18cqw;
+    }
+
+    .more-button {
+      position: absolute;
+      top: 4.44cqw;
+      right: 5.9cqw;
+      z-index: 3;
+      width: 4.35cqw;
+      height: 2.4cqw;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #24282e;
+      cursor: pointer;
+    }
+
+    .more-button svg { display: block; width: 100%; height: 100%; }
+
+    .metric {
+      position: absolute;
+      z-index: 2;
+      top: 12.75cqw;
+      width: 39.61cqw;
+    }
+
+    .metric-left { left: 4.11cqw; }
+    .metric-right { left: 48.07cqw; }
+
+    .metric-label {
+      margin: 0;
+      font-size: 3.68cqw;
+      line-height: 1.2;
+      font-weight: 625;
+      letter-spacing: -.11cqw;
+    }
+
+    .metric-value {
+      margin: 1.45cqw 0 0;
+      font-size: 10.9cqw;
+      line-height: .96;
+      font-weight: 675;
+      letter-spacing: -.66cqw;
+    }
+
+    .progress {
+      position: relative;
+      width: 100%;
+      height: 2.12cqw;
+      margin-top: 3.45cqw;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(213,220,226,.76);
+      border: .12cqw solid rgba(255,255,255,.82);
+      box-shadow:
+        inset .28cqw .34cqw .58cqw rgba(93,110,126,.28),
+        inset -.2cqw -.24cqw .5cqw rgba(255,255,255,.94),
+        -.2cqw -.22cqw .45cqw rgba(255,255,255,.64),
+        .24cqw .38cqw .72cqw rgba(74,94,112,.16);
+    }
+
+    .progress > span {
+      position: absolute;
+      inset: .13cqw auto .13cqw .13cqw;
+      width: calc(var(--progress) - .26cqw);
+      border-radius: inherit;
+      background:
+        linear-gradient(180deg, rgba(174,202,226,.98), rgba(112,153,195,.98));
+      box-shadow:
+        inset 0 .2cqw .38cqw rgba(255,255,255,.68),
+        inset 0 -.18cqw .32cqw rgba(68,111,153,.20),
+        0 .28cqw .74cqw rgba(79,124,168,.32);
+    }
+
+    .progress > span::after {
+      content: "";
+      position: absolute;
+      inset: .12cqw .55cqw auto .55cqw;
+      height: .36cqw;
+      border-radius: 999px;
+      background: rgba(255,255,255,.62);
+    }
+
+    .reset {
+      margin-top: 1.65cqw;
+      color: var(--muted);
+      font-size: 3.07cqw;
+      line-height: 1.18;
+      font-weight: 470;
+      letter-spacing: -.065cqw;
+    }
+
+    .reset span { display: block; }
+
+    .ghost-logo {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+      display: block;
+      object-fit: contain;
+    }
+
+    .cursor-ghost {
+      width: 25.36cqw;
+      height: 28.26cqw;
+      right: 0;
+      bottom: 0;
+    }
+
+    .deepseek-ghost {
+      width: 28.38cqw;
+      height: 25.24cqw;
+      right: 0;
+      bottom: 0;
+    }
+
+    .balance-block {
+      position: absolute;
+      z-index: 2;
+      left: 4.11cqw;
+      top: 12.65cqw;
+    }
+
+    .balance-block .metric-label { font-size: 3.7cqw; }
+
+    .balance {
+      margin: 3.17cqw 0 0;
+      font-size: 10.84cqw;
+      line-height: .9;
+      font-weight: 650;
+      letter-spacing: -.43cqw;
+    }
+
+    .helper {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 183.7cqw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2.28cqw;
+      color: var(--ink);
+      font-size: 3.62cqw;
+      line-height: 1;
+      font-weight: 560;
+      letter-spacing: -.08cqw;
+    }
+
+    .helper svg {
+      width: 4.28cqw;
+      height: 4.28cqw;
+      filter: drop-shadow(.2cqw .24cqw .35cqw rgba(92,103,113,.12));
+    }
+
+    .bottom-nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 8.7cqw;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: end;
+      padding: 0 10.7cqw;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1.95cqw;
+      color: #858b91;
+      text-decoration: none;
+      font-size: 3.6cqw;
+      line-height: 1;
+      font-weight: 590;
+      letter-spacing: -.12cqw;
+    }
+
+    .nav-item.active { color: var(--ink); }
+
+    .nav-icon {
+      width: 8.15cqw;
+      height: 8.15cqw;
+      color: currentColor;
+      filter: drop-shadow(.24cqw .32cqw .42cqw rgba(92,103,113,.11));
+    }
+
+    .nav-item:focus-visible,
+    .add-button:focus-visible,
+    .more-button:focus-visible {
+      outline: .32cqw solid rgba(83,130,177,.48);
+      outline-offset: .45cqw;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .001ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone" aria-label="订阅额度管理界面">
+    <header class="status-bar" aria-label="系统状态栏">
+      <span>5:57</span>
+      <span class="system-icons" aria-hidden="true">
+        <svg class="signal" viewBox="0 0 38 23" fill="currentColor">
+          <rect x="0" y="14" width="6" height="9" rx="2"/>
+          <rect x="10" y="10" width="6" height="13" rx="2"/>
+          <rect x="20" y="5" width="6" height="18" rx="2"/>
+          <rect x="30" y="0" width="6" height="23" rx="2"/>
+        </svg>
+        <svg class="wifi" viewBox="0 0 34 25" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round">
+          <path d="M2.5 7.8C10.7 1 23.3 1 31.5 7.8"/>
+          <path d="M7.8 13.4c5.3-4.3 13.1-4.3 18.4 0"/>
+          <path d="M13.6 19c2-1.6 4.8-1.6 6.8 0"/>
+          <circle cx="17" cy="22.2" r="1.65" fill="currentColor" stroke="none"/>
+        </svg>
+        <svg class="battery" viewBox="0 0 54 25" fill="none" stroke="currentColor">
+          <rect x="1" y="1" width="46" height="23" rx="6" stroke-width="2" opacity=".45"/>
+          <rect x="4" y="4" width="39" height="17" rx="3.5" fill="currentColor" stroke="none"/>
+          <path d="M50 8.3v8.4c2.1-.6 3-2.2 3-4.2s-.9-3.6-3-4.2Z" fill="currentColor" stroke="none" opacity=".45"/>
+        </svg>
+      </span>
+    </header>
+
+    <h1 class="page-title">订阅额度</h1>
+
+    <button class="add-button" type="button" aria-label="添加">
+      <svg viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round">
+        <path d="M15 5v20M5 15h20"/>
+      </svg>
+    </button>
+
+    <section class="glass-card cursor-card" aria-label="Cursor 额度">
+      <div class="card-heading">
+        <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="currentColor" d="M24 1.8 44.8 13.9 24 26 3.2 13.9 24 1.8Z"/>
+          <path fill="currentColor" opacity=".95" d="M3.2 15.9 22.7 27.2v20L3.2 35.9v-20Z"/>
+          <path fill="currentColor" opacity=".72" d="M44.8 15.9 25.3 27.2v20l19.5-11.3v-20Z"/>
+          <path fill="rgba(255,255,255,.72)" d="m24 6.1 13.2 7.7L24 21.5l-13.2-7.7L24 6.1Z"/>
+        </svg>
+        <span class="brand-name">Cursor</span>
+      </div>
+
+      <button class="more-button" type="button" aria-label="更多">
+        <svg viewBox="0 0 36 18" fill="currentColor" aria-hidden="true">
+          <circle cx="5" cy="9" r="3.7"/><circle cx="18" cy="9" r="3.7"/><circle cx="31" cy="9" r="3.7"/>
+        </svg>
+      </button>
+
+      <div class="metric metric-left">
+        <p class="metric-label">本月额度</p>
+        <p class="metric-value">100%</p>
+        <div class="progress" aria-label="本月额度 100%"><span style="--progress: 100%"></span></div>
+        <p class="reset"><span>预计重置</span><span>11月14日 下午1:46</span></p>
+      </div>
+
+      <div class="metric metric-right">
+        <p class="metric-label">Grok Bot额度</p>
+        <p class="metric-value">97%</p>
+        <div class="progress" aria-label="Grok Bot额度 97%"><span style="--progress: 97%"></span></div>
+        <p class="reset"><span>预计重置</span><span>10月25日 下午7:01</span></p>
+      </div>
+
+      <img class="ghost-logo cursor-ghost" src="assets/cursor-gray-mark.png" alt="" aria-hidden="true">
+    </section>
+
+    <section class="glass-card deepseek-card" aria-label="DeepSeek 余额">
+      <div class="card-heading">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <path fill="currentColor" d="M58 20.1c-2.8 2.2-6.5 3.1-10 2.4-1-5.1-4.5-9.2-9.1-11.3 1.2-2.5 3.6-4.8 7.7-6.8-6-.9-10.9 1-14.5 5.2a28 28 0 0 0-7.9-.2C12.3 10.7 4 19.3 4 29.2c0 11.2 10.5 20.2 23.5 20.2 8.6 0 16.1-4 20.2-10a17.8 17.8 0 0 0 10.3-19.3Z"/>
+          <path d="M9.5 28.2c5 1.5 9 5.2 11.6 10.8 4.3 9 11.8 12.8 21 11.2" fill="none" stroke="rgba(255,255,255,.86)" stroke-width="4.2" stroke-linecap="round"/>
+          <path d="M38.8 28.8c4.3-3.5 9.5-3.8 14.3-1.4" fill="none" stroke="rgba(255,255,255,.86)" stroke-width="3.2" stroke-linecap="round"/>
+          <circle cx="45.5" cy="29.2" r="2.25" fill="rgba(255,255,255,.9)"/>
+        </svg>
+        <span class="brand-name">DeepSeek</span>
+      </div>
+
+      <button class="more-button" type="button" aria-label="更多">
+        <svg viewBox="0 0 36 18" fill="currentColor" aria-hidden="true">
+          <circle cx="5" cy="9" r="3.7"/><circle cx="18" cy="9" r="3.7"/><circle cx="31" cy="9" r="3.7"/>
+        </svg>
+      </button>
+
+      <div class="balance-block">
+        <p class="metric-label">余额</p>
+        <p class="balance">¥19.74</p>
+      </div>
+
+      <img class="ghost-logo deepseek-ghost" src="assets/deepseek-gray-mark.png" alt="" aria-hidden="true">
+    </section>
+
+    <div class="helper">
+      <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="3" width="12" height="12" rx="2"/>
+        <rect x="21" y="3" width="12" height="12" rx="2"/>
+        <rect x="3" y="21" width="12" height="12" rx="2"/>
+        <rect x="21" y="21" width="12" height="12" rx="2"/>
+      </svg>
+      <span>如何添加小组件</span>
+    </div>
+
+    <nav class="bottom-nav" aria-label="底部导航">
+      <a class="nav-item active" href="#" aria-current="page">
+        <svg class="nav-icon" viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 55a30 30 0 1 1 54 0"/>
+          <path d="m36 39 16-15"/>
+        </svg>
+        <span>额度</span>
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M29 6h14l2.2 9a23 23 0 0 1 5.6 3.2l8.8-2.7 7 12-6.7 6.3c.1.8.1 1.5.1 2.2s0 1.4-.1 2.2l6.7 6.3-7 12-8.8-2.7a23 23 0 0 1-5.6 3.2L43 66H29l-2.2-9a23 23 0 0 1-5.6-3.2l-8.8 2.7-7-12 6.7-6.3A18 18 0 0 1 12 36c0-.7 0-1.4.1-2.2l-6.7-6.3 7-12 8.8 2.7a23 23 0 0 1 5.6-3.2L29 6Z"/>
+          <circle cx="36" cy="36" r="10"/>
+        </svg>
+        <span>设置</span>
+      </a>
+    </nav>
+  </main>
+</body>
+</html>
