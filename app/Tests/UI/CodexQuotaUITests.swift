@@ -494,7 +494,7 @@ final class CodexQuotaUITests: XCTestCase {
                     return board.descendants(matching: .any).matching(identifier: "native.\(style).smallWidget").count >= 2
                 }
                 XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: nil)], timeout: 60), .completed)
-                let widgets = board.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "Token 仪表盘", "小组件")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
+                let widgets = board.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "TokenLeft", "小组件")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
                 XCTAssertEqual(widgets.filter { $0.frame.width < 230 }.count, 2)
                 for (n,w) in widgets.enumerated() where w.frame.width < 230 {
                     attachT65Crop(board, rect: w.frame, name: "T80-桌面-\(dark ? "dark" : "light")-\(style)-实例\(n)")
@@ -546,7 +546,7 @@ final class CodexQuotaUITests: XCTestCase {
             XCUIDevice.shared.press(.home); showT35Desktop(board)
             let expected = ["endpoints":"每周，剩余0%", "weekly":"每周，剩余70%", "unknown":"每周，剩余未知", "unlimited":"每周，剩余不限量", "failure":"每周，剩余70%", "long":"每周，剩余70%"][scenario]!
             XCTAssertTrue(board.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", expected)).firstMatch.waitForExistence(timeout: 60))
-            let widgets = board.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "Token 仪表盘", "小组件")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 && $0.frame.width < 230 }
+            let widgets = board.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "TokenLeft", "小组件")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 && $0.frame.width < 230 }
             XCTAssertEqual(widgets.count, 2)
             for (n,w) in widgets.enumerated() { attachT65Crop(board, rect:w.frame, name:"T80-桌面受控-\(scenario)-实例\(n)") }
             print("T80 controlled observed \(scenario) | \(Date().ISO8601Format())")
@@ -560,14 +560,14 @@ final class CodexQuotaUITests: XCTestCase {
         let app = XCUIApplication(), board = XCUIApplication(bundleIdentifier:"com.apple.springboard"), session = UUID().uuidString
         var created = false
         func visibleWidgets() -> [XCUIElement] {
-            board.icons.matching(NSPredicate(format:"label == %@ OR label == %@", "订阅用量", "Token 仪表盘")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
+            board.icons.matching(NSPredicate(format:"label == %@ OR label == %@", "订阅用量", "TokenLeft")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
         }
         addTeardownBlock {
             XCUIDevice.shared.press(.home)
             if created {
                 // The dedicated last blank page contains only the added widget.
                 for _ in 0..<8 {
-                    let newLabel = board.icons.matching(NSPredicate(format:"label == %@", "Token 仪表盘")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
+                    let newLabel = board.icons.matching(NSPredicate(format:"label == %@", "TokenLeft")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
                     if newLabel.count == 1 && visibleWidgets().count == 1 { break }
                     board.swipeLeft()
                 }
@@ -611,7 +611,7 @@ final class CodexQuotaUITests: XCTestCase {
         XCTAssertTrue(board.icons.allElementsBoundByIndex.filter { $0.isHittable && $0.frame.minY < 700 }.isEmpty,"必须先到独立空白页")
         board.buttons["编辑"].tap(); board.buttons["添加小组件"].tap()
         let search = board.searchFields["搜索小组件"]; XCTAssertTrue(search.waitForExistence(timeout:5));search.tap();search.typeText("Token")
-        let result = board.cells["Token 仪表盘"];XCTAssertTrue(result.waitForExistence(timeout:5));result.tap()
+        let result = board.cells["TokenLeft"];XCTAssertTrue(result.waitForExistence(timeout:5));result.tap()
         print("T80 temporary gallery selected | \(board.debugDescription)")
         let add = board.buttons.matching(NSPredicate(format:"label CONTAINS %@", "添加小组件")).firstMatch;XCTAssertTrue(add.waitForExistence(timeout:5));add.tap();created = true
         if board.buttons["完成"].waitForExistence(timeout:5) { board.buttons["完成"].tap() }
@@ -663,8 +663,8 @@ final class CodexQuotaUITests: XCTestCase {
         }
         app.launchArguments = ["--t78-desktop-fixture", "normal", session, "light"]
         app.launch(); XCTAssertTrue(app.otherElements["quota.card"].firstMatch.waitForExistence(timeout: 15))
-        let ours = board.icons.matching(NSPredicate(format: "label == %@ OR label == %@", "订阅用量", "Token 仪表盘"))
-        let widgetIcons = board.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "Token 仪表盘", "小组件"))
+        let ours = board.icons.matching(NSPredicate(format: "label == %@ OR label == %@", "订阅用量", "TokenLeft"))
+        let widgetIcons = board.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "TokenLeft", "小组件"))
         func widgetCount() -> Int { widgetIcons.count }
         func addWidget(medium: Bool) throws {
             XCUIDevice.shared.press(.home)
@@ -767,7 +767,7 @@ final class CodexQuotaUITests: XCTestCase {
                     return board.descendants(matching: .any).matching(identifier: "native.\(style).mediumWidget").count >= 1
                 }
                 XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: nil)], timeout: 60), .completed)
-                let widgets = board.icons.matching(NSPredicate(format: "label == %@ OR label == %@", "订阅用量", "Token 仪表盘")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
+                let widgets = board.icons.matching(NSPredicate(format: "label == %@ OR label == %@", "订阅用量", "TokenLeft")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
                 XCTAssertEqual(widgets.filter { $0.frame.width > 230 }.count, 1)
                 for (n,w) in widgets.enumerated() where w.frame.width > 230 {
                     attachT65Crop(board, rect: w.frame, name: "T81-桌面-\(dark ? "dark" : "light")-\(style)-实例\(n)")
@@ -825,12 +825,12 @@ final class CodexQuotaUITests: XCTestCase {
             XCUIDevice.shared.press(.home); showT35Desktop(board)
             let expected = ["endpoints":"每周，剩余0%", "weekly":"每周，剩余70%", "unknown":"每周，剩余未知", "unlimited":"每周，剩余不限量", "failure":"每周，剩余70%", "long":"每周，剩余70%"][scenario]!
             XCTAssertTrue(board.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", expected)).firstMatch.waitForExistence(timeout: 60))
-            let widgets = board.icons.matching(NSPredicate(format: "label == %@ OR label == %@", "订阅用量", "Token 仪表盘")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 && $0.frame.width > 230 }
+            let widgets = board.icons.matching(NSPredicate(format: "label == %@ OR label == %@", "订阅用量", "TokenLeft")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 && $0.frame.width > 230 }
             XCTAssertEqual(widgets.count, 1)
             for (n,w) in widgets.enumerated() { attachT65Crop(board, rect:w.frame, name:"T81-桌面受控-\(scenario)-实例\(n)") }
             if scenario == "long" {
                 XCTAssertTrue(board.staticTexts.matching(NSPredicate(format:"label CONTAINS %@","Enterprise")).firstMatch.exists,"必须实际接入长套餐，不以场景名冒充")
-                let all=board.icons.matching(NSPredicate(format:"label == %@ OR label == %@","订阅用量","Token 仪表盘")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
+                let all=board.icons.matching(NSPredicate(format:"label == %@ OR label == %@","订阅用量","TokenLeft")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
                 for (n,w) in all.enumerated() where w.frame.width < 230 { attachT65Crop(board,rect:w.frame,name:"T81-补T80实际长套餐小号-\(n)") }
             }
             print("T81 controlled observed \(scenario) | \(Date().ISO8601Format())")
@@ -844,14 +844,14 @@ final class CodexQuotaUITests: XCTestCase {
         let app = XCUIApplication(), board = XCUIApplication(bundleIdentifier:"com.apple.springboard"), session = UUID().uuidString
         var created = false
         func visibleWidgets() -> [XCUIElement] {
-            board.icons.matching(NSPredicate(format:"label == %@ OR label == %@", "订阅用量", "Token 仪表盘")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
+            board.icons.matching(NSPredicate(format:"label == %@ OR label == %@", "订阅用量", "TokenLeft")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
         }
         addTeardownBlock {
             XCUIDevice.shared.press(.home)
             if created {
                 // The dedicated last blank page contains only the added widget.
                 for _ in 0..<8 {
-                    let newLabel = board.icons.matching(NSPredicate(format:"label == %@", "Token 仪表盘")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
+                    let newLabel = board.icons.matching(NSPredicate(format:"label == %@", "TokenLeft")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
                     if newLabel.count == 1 && visibleWidgets().count == 1 { break }
                     board.swipeLeft()
                 }
@@ -895,7 +895,7 @@ final class CodexQuotaUITests: XCTestCase {
         XCTAssertTrue(board.icons.allElementsBoundByIndex.filter { $0.isHittable && $0.frame.minY < 700 }.isEmpty,"必须先到独立空白页")
         board.buttons["编辑"].tap(); board.buttons["添加小组件"].tap()
         let search = board.searchFields["搜索小组件"]; XCTAssertTrue(search.waitForExistence(timeout:5));search.tap();search.typeText("Token")
-        let result = board.cells["Token 仪表盘"];XCTAssertTrue(result.waitForExistence(timeout:5));result.tap()
+        let result = board.cells["TokenLeft"];XCTAssertTrue(result.waitForExistence(timeout:5));result.tap()
         print("T81 temporary gallery selected | \(board.debugDescription)")
         board.coordinate(withNormalizedOffset:CGVector(dx:0.8,dy:0.57)).press(forDuration:0.05,thenDragTo:board.coordinate(withNormalizedOffset:CGVector(dx:0.2,dy:0.57)))
         let add = board.buttons.matching(NSPredicate(format:"label CONTAINS %@", "添加小组件")).firstMatch;XCTAssertTrue(add.waitForExistence(timeout:5));add.tap();created = true
@@ -963,7 +963,7 @@ final class CodexQuotaUITests: XCTestCase {
         }
         XCTAssertEqual(XCTWaiter.wait(for:[XCTNSPredicateExpectation(predicate:ready,object:nil)],timeout:120),.completed)
         print("Stage3 actual production both sizes observed | \(Date().ISO8601Format())")
-        let widgets=board.icons.matching(NSPredicate(format:"label == %@ OR label == %@","订阅用量","Token 仪表盘")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
+        let widgets=board.icons.matching(NSPredicate(format:"label == %@ OR label == %@","订阅用量","TokenLeft")).allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
         for medium in [false,true] {
             let w=try XCTUnwrap(widgets.first { ($0.frame.width > 230) == medium })
             attachT65Crop(board,rect:w.frame,name:"Stage3-真实正式桌面-\(medium ? "中" : "小")")
@@ -1153,7 +1153,7 @@ final class CodexQuotaUITests: XCTestCase {
         XCUIDevice.shared.press(.home)
         showT35Desktop(springboard)
         let ready = NSPredicate { _, _ in
-            let widgets = springboard.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "Token 仪表盘", "小组件"))
+            let widgets = springboard.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "TokenLeft", "小组件"))
                 .allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
             guard widgets.contains(where: { $0.frame.width > 230 }), widgets.contains(where: { $0.frame.width < 230 }) else { return false }
             return widgets.allSatisfy { widget in
@@ -1167,7 +1167,7 @@ final class CodexQuotaUITests: XCTestCase {
         }
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: nil)], timeout: 120), .completed,
                        "正式账户和可信额度应恢复到实际两尺寸；未出现不能记通过")
-        let widgets = springboard.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "Token 仪表盘", "小组件"))
+        let widgets = springboard.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "TokenLeft", "小组件"))
             .allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
         for medium in [false, true] {
             let widget = try XCTUnwrap(widgets.first { ($0.frame.width > 230) == medium })
@@ -1220,7 +1220,7 @@ final class CodexQuotaUITests: XCTestCase {
                     self.t35BothSizesContain(weekly, on: springboard) && self.t35BothSizesContain(five, on: springboard)
                 }
                 XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: nil)], timeout: 60), .completed)
-                let cards = springboard.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "Token 仪表盘", "小组件"))
+                let cards = springboard.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "TokenLeft", "小组件"))
                     .allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
                 for card in cards {
                     let labels = springboard.staticTexts.allElementsBoundByIndex.filter {
@@ -1492,7 +1492,7 @@ final class CodexQuotaUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: ready, object: nil)], timeout: 45), .completed)
         screenshot(springboard, "T36-真实桌面两尺寸隔离基线")
         func widget(_ medium: Bool) -> XCUIElement? {
-            springboard.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "Token 仪表盘", "小组件"))
+            springboard.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "TokenLeft", "小组件"))
                 .allElementsBoundByIndex.first { $0.isHittable && $0.frame.width > 100 && ($0.frame.width > 230) == medium }
         }
         for medium in [false, true] {
@@ -1774,7 +1774,7 @@ final class CodexQuotaUITests: XCTestCase {
 
     @MainActor
     private func showT35Desktop(_ springboard: XCUIApplication) {
-        let cards = springboard.icons.matching(NSPredicate(format: "label == %@ OR label == %@", "订阅用量", "Token 仪表盘"))
+        let cards = springboard.icons.matching(NSPredicate(format: "label == %@ OR label == %@", "订阅用量", "TokenLeft"))
         func visible() -> Bool {
             let visible = cards.allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
             return visible.contains { $0.frame.width < 230 } && visible.contains { $0.frame.width > 230 }
@@ -1788,7 +1788,7 @@ final class CodexQuotaUITests: XCTestCase {
 
     @MainActor
     private func t35BothSizesContain(_ text: String, on springboard: XCUIApplication) -> Bool {
-        let cards = springboard.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "Token 仪表盘", "小组件"))
+        let cards = springboard.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "TokenLeft", "小组件"))
             .allElementsBoundByIndex.filter { $0.isHittable && $0.frame.width > 100 }
         guard cards.contains(where: { $0.frame.width < 230 }), cards.contains(where: { $0.frame.width > 230 }) else { return false }
         let labels = springboard.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", text)).allElementsBoundByIndex
@@ -1845,7 +1845,7 @@ final class CodexQuotaUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.staticTexts["quota.title"].waitForExistence(timeout: 10))
         XCUIDevice.shared.press(.home)
-        let cards = springboard.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "Token 仪表盘", "小组件"))
+        let cards = springboard.icons.matching(NSPredicate(format: "(label == %@ OR label == %@) AND value == %@", "订阅用量", "TokenLeft", "小组件"))
         if !cards.firstMatch.waitForExistence(timeout: 5) {
             springboard.swipeLeft()
             if !cards.firstMatch.waitForExistence(timeout: 3) {
