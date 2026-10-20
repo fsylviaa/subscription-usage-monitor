@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-<key>UIBackgroundModes</key><array><string>fetch</string></array>
-<key>BGTaskSchedulerPermittedIdentifiers</key><array><string>com.iceflying.SubscriptionUsage.refresh</string></array>
-<key>CFBundleURLTypes</key><array><dict><key>CFBundleURLSchemes</key><array><string>subscriptionusage</string></array></dict></array>
-</dict></plist>
+<plist version="1.0">
+<dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.pbpuw6l86s.SubscriptionUsage.refresh</string>
+	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>subscriptionusage</string>
+			</array>
+		</dict>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
+</dict>
+</plist>

@@ -142,7 +142,7 @@ extension AutomaticWidgetRefresh {
 }
 enum WidgetFixtureCredentials {
     static func service(in directory: URL) -> String {
-        "com.iceflying.SubscriptionUsage.T61.\(directory.lastPathComponent)"
+        "com.pbpuw6l86s.SubscriptionUsage.T61.\(directory.lastPathComponent)"
     }
     static func vault(in directory: URL) -> CredentialVault { CredentialVault(service: service(in: directory)) }
     static func prepare(_ account: ConnectedAccount, in directory: URL) async throws {

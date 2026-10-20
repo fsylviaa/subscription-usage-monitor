@@ -3,7 +3,7 @@ import Foundation
 /// Both processes publish through AccountStore. An unavailable group is an error, never a
 /// successful fallback to the App's private directory or a fabricated empty list.
 struct WidgetSnapshotStore: Sendable {
-    static let appGroupIdentifier = "group.com.iceflying.SubscriptionUsage"
+    static let appGroupIdentifier = "group.com.pbpuw6l86s.SubscriptionUsage"
     static let filename = "first-account.json"
     private static let maximumBytes = 65_536
 

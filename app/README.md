@@ -158,7 +158,7 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
 1. 用数据线将 iPhone 连接到 Mac 并解锁；如手机询问信任，由用户本人确认。
 2. 如尚未开启，在 iPhone 的 **设置 → 隐私与安全性 → 开发者模式** 开启，按提示重启，再确认开启并解锁。参见 [Apple 开发者模式说明](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)。
 3. 在 **Xcode → Settings → Apple Accounts** 登录自己的 Apple 账户。用户本人输入密码、验证码和处理账户协议；不向聊天或仓库提供这些信息。
-4. 打开工程，选择 App target **SubscriptionUsage → Signing & Capabilities**，保持 **Automatically manage signing** 开启，使用自己的开发团队。现有 Bundle Identifier 为 `com.iceflying.SubscriptionUsage`；个人配置由开发者保存在本机。
+4. 打开工程，选择 App target **SubscriptionUsage → Signing & Capabilities**，保持 **Automatically manage signing** 开启，使用自己的开发团队。当前协作者测试 Bundle Identifier 为 `com.pbpuw6l86s.SubscriptionUsage`，Widget 为 `com.pbpuw6l86s.SubscriptionUsage.Widget`；个人 Team 配置保存在本机忽略文件中。
 5. 顶部运行设备选择 **iOS Device** 下的实体 **iPhone**，按 **⌘R**。等待 Xcode 完成设备准备、构建和安装；如系统要求解锁，先解锁手机；若提示开发者证书未受信任，在手机 **设置 → 通用 → VPN 与设备管理** 中信任自己的开发者账户，然后回 Xcode 再运行。参见 [Apple 真机运行说明](https://developer.apple.com/documentation/xcode/running-your-app-on-simulated-or-physical-devices)。
 6. 手机出现两行标题后，回到主屏幕，点击“Token 仪表盘”图标再打开一次。
 7. 在 Xcode 点击停止调试，再从手机桌面打开一次；能看到相同页面才完成本任务最后一项验收。

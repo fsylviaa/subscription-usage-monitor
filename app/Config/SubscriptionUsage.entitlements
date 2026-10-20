@@ -3,10 +3,10 @@
 <plist version="1.0">
 <dict>
 	<key>keychain-access-groups</key>
-	<array><string>$(AppIdentifierPrefix)com.iceflying.SubscriptionUsage</string></array>
+	<array><string>$(AppIdentifierPrefix)com.pbpuw6l86s.SubscriptionUsage</string></array>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.iceflying.SubscriptionUsage</string>
+		<string>group.com.pbpuw6l86s.SubscriptionUsage</string>
 	</array>
 </dict>
 </plist>

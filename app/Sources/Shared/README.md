@@ -1,6 +1,6 @@
 # 共享展示数据
 
-T32 提供 `WidgetSnapshot` 和 `WidgetSnapshotStore`，App Group 为 `group.com.iceflying.SubscriptionUsage`，文件为容器内 `Widget/first-account.json`。T33 Widget Extension 编入这两个纯 Foundation 文件并使用同一组权限；账户投影 `Storage/WidgetSnapshotProjection.swift` 只属于 App。
+T32 提供 `WidgetSnapshot` 和 `WidgetSnapshotStore`，App Group 为 `group.com.pbpuw6l86s.SubscriptionUsage`，文件为容器内 `Widget/first-account.json`。T33 Widget Extension 编入这两个纯 Foundation 文件并使用同一组权限；账户投影 `Storage/WidgetSnapshotProjection.swift` 只属于 App。
 
 快照只含当前有效首账户的本地 ID、展示身份、套餐及观测时间、额度状态、周／5 小时的明确额度语义及原成功／重置时间、演示标记。点击目标由同一份快照的本地 ID 派生，不含邮箱或授权。未知、不限量、真实零、尚未获取、已确认无适用额度、无账户分别保存；不会跳过尚未获取额度的首账户。
 

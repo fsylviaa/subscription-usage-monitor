@@ -43,7 +43,7 @@ struct SystemBackgroundRefreshScheduler: BackgroundRefreshScheduling {
 
 @MainActor
 final class BackgroundQuotaRefresh {
-    static let identifier = "com.iceflying.SubscriptionUsage.refresh"
+    static let identifier = "com.pbpuw6l86s.SubscriptionUsage.refresh"
     static let interval: TimeInterval = 30 * 60
     let flow: CodexConnectionFlow
     private let scheduler: any BackgroundRefreshScheduling

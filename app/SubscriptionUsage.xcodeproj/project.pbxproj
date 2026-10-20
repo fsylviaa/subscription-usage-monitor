@@ -1,1264 +1,1242 @@
 // !$*UTF8*$!
 {
-	"archiveVersion" = "1";
-	"classes" = {
+	archiveVersion = 1;
+	classes = {
 	};
-	"objectVersion" = "56";
-	"objects" = {
+	objectVersion = 56;
+	objects = {
 
+/* Begin PBXBuildFile section */
+		03D934DC612B0E38B9051938 /* CodexLoginClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3590A99FA1708957F199906 /* CodexLoginClient.swift */; };
+		04DA5720DCAD4685BA2D719A /* Sources/Shared/CardStyles/QuotaStyledCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF1A96EA8FAC375A4FF3F3D /* Sources/Shared/CardStyles/QuotaStyledCard.swift */; };
+		0868E870EDC42183AF777E36 /* SubscriptionUsageApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C80EB31FAAE9AFA350E83E9 /* SubscriptionUsageApp.swift */; };
+		1029A0BE8FBD5986A9935B4D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E0E27618A2D2A8FEBDD49F35 /* Assets.xcassets */; };
+		10724C65BFB4E935CCE372E8 /* CodexLoginLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B715B2783B02EAB7679FD999 /* CodexLoginLiveTests.swift */; };
+		16B7B245FC878FC5801CCE32 /* Sources/Shared/SharedAccountAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5916E37D563DAC75D5F798 /* Sources/Shared/SharedAccountAccess.swift */; };
+		17835A4DC32C88871399052B /* Sources/Shared/CardStyles/QuotaStyledCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF1A96EA8FAC375A4FF3F3D /* Sources/Shared/CardStyles/QuotaStyledCard.swift */; };
+		18827DF4191A7FA60C48BEC4 /* Sources/Shared/CardStyles/CompactQuotaWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5294FE17501B02B7CCA7A0C2 /* Sources/Shared/CardStyles/CompactQuotaWidget.swift */; };
+		2EE7C9A1952642258DCBC14F /* Licenses/LobeIcons-MIT.txt in Resources */ = {isa = PBXBuildFile; fileRef = 56CA27E0739A4804AF72B2BE /* Licenses/LobeIcons-MIT.txt */; };
+		367440C06746850634A149C7 /* Sources/Shared/CardStyles/CompactQuotaWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5294FE17501B02B7CCA7A0C2 /* Sources/Shared/CardStyles/CompactQuotaWidget.swift */; };
+		3EC1A7DC14B4B6F2D5C05109 /* ConnectedAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04000000000000000000011 /* ConnectedAccount.swift */; };
+		4232F2B2369A337E80CBEE0B /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3362B8F6FEB9187AF06C2973 /* RootView.swift */; };
+		430EC5A9CDCEE955AED20941 /* CodexUsageParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000000000000000000003 /* CodexUsageParser.swift */; };
+		49D944FC303735BD3250BADB /* CodexLoginCompletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A154EA2F901EC5E5D4F2A96 /* CodexLoginCompletionTests.swift */; };
+		4D416D682394BBD790F187FE /* CodexDeviceAuthorizationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000021 /* CodexDeviceAuthorizationClient.swift */; };
+		522A0F57B7E88903643D0A01 /* Sources/Shared/CardStyles/CompactQuotaTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6BF10838D61D522F927824 /* Sources/Shared/CardStyles/CompactQuotaTheme.swift */; };
+		57689D2BE7C25437A8560AB9 /* AccountQuotaState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04000000000000000000021 /* AccountQuotaState.swift */; };
+		5BE15F7FAAC3A6D1B5D5D881 /* Sources/Shared/CardStyles/QuotaStyledInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FB6CE0696E94E0FB655C9CB /* Sources/Shared/CardStyles/QuotaStyledInput.swift */; };
+		5BF37A720A16FBDA80A04827 /* CodexDeviceAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000011 /* CodexDeviceAuthorization.swift */; };
+		6D522A253B3D21DDEF252835 /* CodexQuotaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12000000000000000000001 /* CodexQuotaService.swift */; };
+		7251A8DB8D008490BB24A5E6 /* CodexLoginClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3590A99FA1708957F199906 /* CodexLoginClient.swift */; };
+		728295DC67420899BA863CD5 /* Sources/Shared/CardStyles/CompactQuotaBars.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B77C6162DA7FB61F34B1D1 /* Sources/Shared/CardStyles/CompactQuotaBars.swift */; };
+		776606FC491D48AD8A4A6B52 /* NetworkScoreChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06000000000000000000011 /* NetworkScoreChecker.swift */; };
+		7C1D2E3F4A5B6C7D8E9F0A12 /* Licenses/Lucide-ISC.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7C1D2E3F4A5B6C7D8E9F0A11 /* Licenses/Lucide-ISC.txt */; };
+		827D385A84FB4C02E5E6E00F /* CodexIdentityVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA67A6E5372DB618EA78309 /* CodexIdentityVerifier.swift */; };
+		8A2024310A981901B8DF64D7 /* CodexLoginTransactionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000031 /* CodexLoginTransactionStore.swift */; };
+		8F2E9AF97361B48676285CF3 /* Sources/Services/AutomaticWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABEBA97EE4D75A4818C293A /* Sources/Services/AutomaticWidgetRefresh.swift */; };
+		92E92E143EAC2A9863389A01 /* CodexCredentialRenewal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14000000000000000000001 /* CodexCredentialRenewal.swift */; };
+		98FA8229442AB7F10FEF85D7 /* Sources/Shared/CardStyles/QuotaStyledInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FB6CE0696E94E0FB655C9CB /* Sources/Shared/CardStyles/QuotaStyledInput.swift */; };
+		A030000000000000000000012 /* QuotaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A030000000000000000000011 /* QuotaView.swift */; };
+		A030000000000000000000022 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A030000000000000000000021 /* SettingsView.swift */; };
+		A04000000000000000000012 /* ConnectedAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04000000000000000000011 /* ConnectedAccount.swift */; };
+		A04000000000000000000022 /* AccountQuotaState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04000000000000000000021 /* AccountQuotaState.swift */; };
+		A04000000000000000000032 /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04000000000000000000031 /* AccountStore.swift */; };
+		A04000000000000000000042 /* AccountStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04000000000000000000041 /* AccountStoreTests.swift */; };
+		A05000000000000000000012 /* CredentialVault.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05000000000000000000011 /* CredentialVault.swift */; };
+		A05000000000000000000022 /* CredentialVaultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05000000000000000000021 /* CredentialVaultTests.swift */; };
+		A06000000000000000000012 /* NetworkScoreChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06000000000000000000011 /* NetworkScoreChecker.swift */; };
+		A06000000000000000000022 /* NetworkScoreCheckerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06000000000000000000021 /* NetworkScoreCheckerTests.swift */; };
+		A06000000000000000000032 /* NetworkScoreLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06000000000000000000031 /* NetworkScoreLiveTests.swift */; };
+		A07000000000000000000012 /* CodexDeviceAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000011 /* CodexDeviceAuthorization.swift */; };
+		A07000000000000000000022 /* CodexDeviceAuthorizationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000021 /* CodexDeviceAuthorizationClient.swift */; };
+		A07000000000000000000032 /* CodexLoginTransactionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000031 /* CodexLoginTransactionStore.swift */; };
+		A07000000000000000000042 /* CodexConnectionFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000041 /* CodexConnectionFlow.swift */; };
+		A07000000000000000000052 /* CodexConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000051 /* CodexConnectionView.swift */; };
+		A07000000000000000000062 /* CodexConnectionUITestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000061 /* CodexConnectionUITestSupport.swift */; };
+		A07000000000000000000072 /* CodexDeviceAuthorizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000071 /* CodexDeviceAuthorizationTests.swift */; };
+		A07000000000000000000082 /* CodexConnectionFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000081 /* CodexConnectionFlowTests.swift */; };
+		A07000000000000000000092 /* CodexConnectionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000091 /* CodexConnectionUITests.swift */; };
+		A07000000000000000000102 /* CodexConnectionLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07000000000000000000101 /* CodexConnectionLiveTests.swift */; };
+		A10000000000000000000002 /* CodexLoginInterruptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* CodexLoginInterruptionTests.swift */; };
+		A10500000000000000000002 /* Sources/Debug/GrokBotUsageProbeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10500000000000000000001 /* Sources/Debug/GrokBotUsageProbeView.swift */; };
+		A10600000000000000000002 /* Tests/Unit/GrokBotQuotaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10600000000000000000001 /* Tests/Unit/GrokBotQuotaTests.swift */; };
+		A10700000000000000000002 /* Tests/Unit/GrokBotDisplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10700000000000000000001 /* Tests/Unit/GrokBotDisplayTests.swift */; };
+		A10800000000000000000002 /* Tests/Unit/GrokBotReminderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10800000000000000000001 /* Tests/Unit/GrokBotReminderTests.swift */; };
+		A11000000000000000000002 /* QuotaSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000000000000000000001 /* QuotaSnapshot.swift */; };
+		A11000000000000000000004 /* CodexUsageParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000000000000000000003 /* CodexUsageParser.swift */; };
+		A11000000000000000000006 /* CodexUsageParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000000000000000000005 /* CodexUsageParserTests.swift */; };
+		A11100000000000000000002 /* Sources/Debug/APIBalanceProbeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11100000000000000000001 /* Sources/Debug/APIBalanceProbeView.swift */; };
+		A12000000000000000000002 /* CodexQuotaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12000000000000000000001 /* CodexQuotaService.swift */; };
+		A12000000000000000000004 /* CodexQuotaServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12000000000000000000003 /* CodexQuotaServiceTests.swift */; };
+		A12000000000000000000006 /* CodexQuotaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12000000000000000000005 /* CodexQuotaUITests.swift */; };
+		A12000000000000000000008 /* CodexQuotaLiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12000000000000000000007 /* CodexQuotaLiveTests.swift */; };
+		A14000000000000000000002 /* CodexCredentialRenewal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14000000000000000000001 /* CodexCredentialRenewal.swift */; };
+		A14000000000000000000004 /* CodexCredentialRenewalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14000000000000000000003 /* CodexCredentialRenewalTests.swift */; };
+		A22000000000000000000002 /* StaleAccountResultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22000000000000000000001 /* StaleAccountResultTests.swift */; };
+		A2F5AF257A6415DF76224101 /* Tests/Unit/NativeQuotaStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30BEBEF5BF5746C3302F3F13 /* Tests/Unit/NativeQuotaStyleTests.swift */; };
+		A30000000000000000000002 /* BackgroundQuotaRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000001 /* BackgroundQuotaRefresh.swift */; };
+		A32000000000000000000002 /* Shared/WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32000000000000000000001 /* Shared/WidgetSnapshot.swift */; };
+		A32000000000000000000004 /* Shared/WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32000000000000000000003 /* Shared/WidgetSnapshotStore.swift */; };
+		A32000000000000000000006 /* Storage/WidgetSnapshotProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32000000000000000000005 /* Storage/WidgetSnapshotProjection.swift */; };
+		A32000000000000000000008 /* WidgetSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32000000000000000000007 /* WidgetSnapshotTests.swift */; };
+		A3300000000000000000000C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E0E27618A2D2A8FEBDD49F35 /* Assets.xcassets */; };
+		A33000000000000000000015 /* Shared/QuotaWidgetContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A33000000000000000000014 /* Shared/QuotaWidgetContent.swift */; };
+		A33000000000000000000016 /* Shared/QuotaWidgetContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A33000000000000000000014 /* Shared/QuotaWidgetContent.swift */; };
+		A3300000000000000000001F /* Widget/SubscriptionUsageWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3300000000000000000001E /* Widget/SubscriptionUsageWidget.swift */; };
+		A33000000000000000000029 /* QuotaWidgetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A33000000000000000000028 /* QuotaWidgetTests.swift */; };
+		A3300000000000000000003C /* Shared/WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32000000000000000000001 /* Shared/WidgetSnapshot.swift */; };
+		A3300000000000000000003D /* Shared/WidgetSnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32000000000000000000003 /* Shared/WidgetSnapshotStore.swift */; };
+		A3300000000000000000005D /* SubscriptionUsageWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A33000000000000000000046 /* SubscriptionUsageWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A38000000000000000000002 /* Sources/Services/ResetReminderSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38000000000000000000001 /* Sources/Services/ResetReminderSettings.swift */; };
+		A38000000000000000000004 /* Tests/Unit/ResetReminderSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38000000000000000000003 /* Tests/Unit/ResetReminderSettingsTests.swift */; };
+		A38000000000000000000006 /* Tests/UI/ResetReminderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38000000000000000000005 /* Tests/UI/ResetReminderUITests.swift */; };
+		A39000000000000000000002 /* Sources/Services/ResetReminderPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39000000000000000000001 /* Sources/Services/ResetReminderPlan.swift */; };
+		A39000000000000000000004 /* Sources/Services/ResetReminderScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39000000000000000000003 /* Sources/Services/ResetReminderScheduler.swift */; };
+		A39000000000000000000006 /* Tests/Unit/ResetReminderPlanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39000000000000000000005 /* Tests/Unit/ResetReminderPlanTests.swift */; };
+		A39000000000000000000008 /* Tests/Unit/ResetReminderSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39000000000000000000007 /* Tests/Unit/ResetReminderSchedulerTests.swift */; };
+		A3900000000000000000000A /* Tests/Unit/ResetReminderNotificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39000000000000000000009 /* Tests/Unit/ResetReminderNotificationTests.swift */; };
+		A3900000000000000000000C /* Tests/Unit/ResetReminderIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3900000000000000000000B /* Tests/Unit/ResetReminderIntegrationTests.swift */; };
+		A40000000000000000000001 /* Sources/Services/ResetReminderPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39000000000000000000001 /* Sources/Services/ResetReminderPlan.swift */; };
+		A40000000000000000000002 /* Sources/Services/ResetReminderScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39000000000000000000003 /* Sources/Services/ResetReminderScheduler.swift */; };
+		A40000000000000000000003 /* Sources/Services/ResetReminderSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38000000000000000000001 /* Sources/Services/ResetReminderSettings.swift */; };
+		A42000000000000000000002 /* WidgetTutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42000000000000000000001 /* WidgetTutorialView.swift */; };
+		A64000000000000000000002 /* Sources/Shared/QuotaCardStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000001 /* Sources/Shared/QuotaCardStyle.swift */; };
+		A64000000000000000000003 /* Sources/Shared/QuotaCardStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64000000000000000000001 /* Sources/Shared/QuotaCardStyle.swift */; };
+		A65000000000000000000002 /* Sources/Shared/QuotaCardStylePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65000000000000000000001 /* Sources/Shared/QuotaCardStylePreferences.swift */; };
+		A65000000000000000000003 /* Sources/Shared/QuotaCardStylePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65000000000000000000001 /* Sources/Shared/QuotaCardStylePreferences.swift */; };
+		A89000000000000000000002 /* Sources/Debug/CursorLoginProbeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89000000000000000000001 /* Sources/Debug/CursorLoginProbeView.swift */; };
+		A91000000000000000000002 /* Tests/Unit/CursorDisplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91000000000000000000001 /* Tests/Unit/CursorDisplayTests.swift */; };
+		A92000000000000000000002 /* Sources/Providers/Cursor/CursorUsageParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92000000000000000000001 /* Sources/Providers/Cursor/CursorUsageParser.swift */; };
+		A92000000000000000000003 /* Sources/Providers/Cursor/CursorUsageParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92000000000000000000001 /* Sources/Providers/Cursor/CursorUsageParser.swift */; };
+		A92100000000000000000002 /* Sources/Providers/Cursor/CursorQuotaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92100000000000000000001 /* Sources/Providers/Cursor/CursorQuotaService.swift */; };
+		A92100000000000000000003 /* Sources/Providers/Cursor/CursorQuotaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92100000000000000000001 /* Sources/Providers/Cursor/CursorQuotaService.swift */; };
+		A92200000000000000000002 /* Tests/Unit/CursorQuotaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92200000000000000000001 /* Tests/Unit/CursorQuotaTests.swift */; };
+		A93000000000000000000002 /* Sources/Providers/Cursor/CursorLoginClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93000000000000000000001 /* Sources/Providers/Cursor/CursorLoginClient.swift */; };
+		A93100000000000000000002 /* Tests/Unit/CursorConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93100000000000000000001 /* Tests/Unit/CursorConnectionTests.swift */; };
+		A94000000000000000000002 /* Tests/Unit/CursorRefreshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94000000000000000000001 /* Tests/Unit/CursorRefreshTests.swift */; };
+		ABE71F408FE85C8235C44F15 /* CredentialVault.swift in Sources */ = {isa = PBXBuildFile; fileRef = A05000000000000000000011 /* CredentialVault.swift */; };
+		ACC630393D380593150A8C04 /* CodexLoginCompletionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26017C7DE0572766FDDAF7A /* CodexLoginCompletionUITests.swift */; };
+		AD1527725FD5F00A9577F95B /* LaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5FC95C24B665C98DE0B6F1D /* LaunchTests.swift */; };
+		AD52E1D158E8C4CDD9F1FE1B /* Sources/Debug/QuotaStyleLabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A4A09B6D6CD60B2420D9C1F /* Sources/Debug/QuotaStyleLabView.swift */; };
+		B1120000000000000000AA02 /* Sources/Domain/APIBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1120000000000000000AA01 /* Sources/Domain/APIBalance.swift */; };
+		B1120000000000000000AA03 /* Sources/Domain/APIBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1120000000000000000AA01 /* Sources/Domain/APIBalance.swift */; };
+		B1120000000000000000BB04 /* Tests/Unit/APIBalanceStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1120000000000000000BB01 /* Tests/Unit/APIBalanceStoreTests.swift */; };
+		B1130000000000000000AA02 /* Sources/Providers/APIBalance/APIBalanceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1130000000000000000AA01 /* Sources/Providers/APIBalance/APIBalanceService.swift */; };
+		B1130000000000000000AA03 /* Sources/Providers/APIBalance/APIBalanceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1130000000000000000AA01 /* Sources/Providers/APIBalance/APIBalanceService.swift */; };
+		B1130000000000000000BB04 /* Tests/Unit/APIBalanceQueryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1130000000000000000BB01 /* Tests/Unit/APIBalanceQueryTests.swift */; };
+		B1140000000000000000BB04 /* Tests/Unit/APIBalanceConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1140000000000000000BB01 /* Tests/Unit/APIBalanceConnectionTests.swift */; };
+		B1150000000000000000BB04 /* Tests/Unit/APIBalanceDisplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1150000000000000000BB01 /* Tests/Unit/APIBalanceDisplayTests.swift */; };
+		B1160000000000000000BB04 /* Tests/Unit/APIBalanceDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1160000000000000000BB01 /* Tests/Unit/APIBalanceDemoTests.swift */; };
+		B70410B9B464B0A73168916A /* RootViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF5E0AD711BD84D4AC12F40 /* RootViewTests.swift */; };
+		B816BBB98BE9CF236B9C075C /* Sources/Shared/SharedAccountAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5916E37D563DAC75D5F798 /* Sources/Shared/SharedAccountAccess.swift */; };
+		BE194CB13FE87D36321FA881 /* CodexLoginClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6989AC3B71499434504A53FF /* CodexLoginClientTests.swift */; };
+		C145A686F45287CE2018F69B /* CodexAccountBindingStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA712195418CCA14A5E707D1 /* CodexAccountBindingStoreTests.swift */; };
+		C2A296549EB1F677FE8435D7 /* Sources/Services/AutomaticWidgetRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABEBA97EE4D75A4818C293A /* Sources/Services/AutomaticWidgetRefresh.swift */; };
+		C4E764B22F9E7814349D62A2 /* CodexAccountBindingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4442F0404306E19E0DD55E /* CodexAccountBindingStore.swift */; };
+		C5E1E1CB18E2CCF30699F0BE /* CodexIdentityVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA67A6E5372DB618EA78309 /* CodexIdentityVerifier.swift */; };
+		D2DFE2E8A4CDE38E05B9A8B3 /* Sources/Shared/CardStyles/QuotaWatermarkShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB70A4D7564605777F758FA3 /* Sources/Shared/CardStyles/QuotaWatermarkShape.swift */; };
+		D59AE8D1B01EA4F5BFEBA0EB /* Sources/Shared/CardStyles/CompactQuotaTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6BF10838D61D522F927824 /* Sources/Shared/CardStyles/CompactQuotaTheme.swift */; };
+		DC50337F369299F04667622D /* Storage/WidgetSnapshotProjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32000000000000000000005 /* Storage/WidgetSnapshotProjection.swift */; };
+		DE41D9A1DF492C89251199B7 /* QuotaSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11000000000000000000001 /* QuotaSnapshot.swift */; };
+		E2326650DA1A791EEA8A7E26 /* CodexIdentityVerifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCD3AE0E45D84FE8B8B965B8 /* CodexIdentityVerifierTests.swift */; };
+		E2A34026C054C46D78B68631 /* Sources/Shared/CardStyles/NativeQuotaDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E4A5B593C18C02CEC4ACF9B /* Sources/Shared/CardStyles/NativeQuotaDesign.swift */; };
+		E4A666C9A37B0B091B44A4F0 /* AccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04000000000000000000031 /* AccountStore.swift */; };
+		F0C89C3978D12B108D7BADA8 /* Sources/Shared/CardStyles/NativeQuotaDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E4A5B593C18C02CEC4ACF9B /* Sources/Shared/CardStyles/NativeQuotaDesign.swift */; };
+		FB9FB3C45464E40274CFE2F4 /* Sources/Shared/CardStyles/QuotaWatermarkShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB70A4D7564605777F758FA3 /* Sources/Shared/CardStyles/QuotaWatermarkShape.swift */; };
+		FF4D2AE188D280A23B1B139E /* Sources/Shared/CardStyles/CompactQuotaBars.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B77C6162DA7FB61F34B1D1 /* Sources/Shared/CardStyles/CompactQuotaBars.swift */; };
+/* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A3300000000000000000005B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 98F54143AB4E86B28C3AFEE0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A3300000000000000000005A;
+			remoteInfo = SubscriptionUsageWidget;
+		};
+		ACDE5B2324C1E9E41D522892 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 98F54143AB4E86B28C3AFEE0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E633290B294C2A3AB4572C63;
+			remoteInfo = SubscriptionUsage;
+		};
+		B0689DB83EDEB1556532041F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 98F54143AB4E86B28C3AFEE0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E633290B294C2A3AB4572C63;
+			remoteInfo = SubscriptionUsage;
+		};
+/* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		A3300000000000000000005E /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A3300000000000000000005D /* SubscriptionUsageWidget.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
+/* Begin PBXFileReference section */
+		03770F3FAFF1A07422B17956 /* AGENTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AGENTS.md; sourceTree = "<group>"; };
+		12874EF8E2CD6D147428E5AC /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		1DF5E0AD711BD84D4AC12F40 /* RootViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewTests.swift; sourceTree = "<group>"; };
+		2C80EB31FAAE9AFA350E83E9 /* SubscriptionUsageApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionUsageApp.swift; sourceTree = "<group>"; };
+		2D4442F0404306E19E0DD55E /* CodexAccountBindingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexAccountBindingStore.swift; sourceTree = "<group>"; };
+		30BEBEF5BF5746C3302F3F13 /* Tests/Unit/NativeQuotaStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/NativeQuotaStyleTests.swift; sourceTree = SOURCE_ROOT; };
+		3362B8F6FEB9187AF06C2973 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		3D3BC75BB5D203E4E79BB10E /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
+		4C6BF10838D61D522F927824 /* Sources/Shared/CardStyles/CompactQuotaTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Shared/CardStyles/CompactQuotaTheme.swift; sourceTree = SOURCE_ROOT; };
+		4F4E472D1F3E5F00DA086E0A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		4FB6CE0696E94E0FB655C9CB /* Sources/Shared/CardStyles/QuotaStyledInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Shared/CardStyles/QuotaStyledInput.swift; sourceTree = SOURCE_ROOT; };
+		5294FE17501B02B7CCA7A0C2 /* Sources/Shared/CardStyles/CompactQuotaWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Shared/CardStyles/CompactQuotaWidget.swift; sourceTree = SOURCE_ROOT; };
+		56CA27E0739A4804AF72B2BE /* Licenses/LobeIcons-MIT.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Licenses/LobeIcons-MIT.txt"; sourceTree = "<group>"; };
+		5EFFCF461A990651450E250C /* SubscriptionUsageUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SubscriptionUsageUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6989AC3B71499434504A53FF /* CodexLoginClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexLoginClientTests.swift; sourceTree = "<group>"; };
+		7A154EA2F901EC5E5D4F2A96 /* CodexLoginCompletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexLoginCompletionTests.swift; sourceTree = "<group>"; };
+		7C1D2E3F4A5B6C7D8E9F0A11 /* Licenses/Lucide-ISC.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Licenses/Lucide-ISC.txt"; sourceTree = "<group>"; };
+		7E4A5B593C18C02CEC4ACF9B /* Sources/Shared/CardStyles/NativeQuotaDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Shared/CardStyles/NativeQuotaDesign.swift; sourceTree = SOURCE_ROOT; };
+		8ABEBA97EE4D75A4818C293A /* Sources/Services/AutomaticWidgetRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Services/AutomaticWidgetRefresh.swift; sourceTree = SOURCE_ROOT; };
+		8B78D6DD1422F301A90CA41C /* SubscriptionUsage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SubscriptionUsage.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8BF1A96EA8FAC375A4FF3F3D /* Sources/Shared/CardStyles/QuotaStyledCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Shared/CardStyles/QuotaStyledCard.swift; sourceTree = SOURCE_ROOT; };
+		9A4A09B6D6CD60B2420D9C1F /* Sources/Debug/QuotaStyleLabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Debug/QuotaStyleLabView.swift; sourceTree = SOURCE_ROOT; };
+		A030000000000000000000011 /* QuotaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotaView.swift; sourceTree = "<group>"; };
+		A030000000000000000000021 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A04000000000000000000011 /* ConnectedAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectedAccount.swift; sourceTree = "<group>"; };
+		A04000000000000000000021 /* AccountQuotaState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountQuotaState.swift; sourceTree = "<group>"; };
+		A04000000000000000000031 /* AccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStore.swift; sourceTree = "<group>"; };
+		A04000000000000000000041 /* AccountStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountStoreTests.swift; sourceTree = "<group>"; };
+		A05000000000000000000011 /* CredentialVault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialVault.swift; sourceTree = "<group>"; };
+		A05000000000000000000021 /* CredentialVaultTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialVaultTests.swift; sourceTree = "<group>"; };
+		A06000000000000000000011 /* NetworkScoreChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkScoreChecker.swift; sourceTree = "<group>"; };
+		A06000000000000000000021 /* NetworkScoreCheckerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkScoreCheckerTests.swift; sourceTree = "<group>"; };
+		A06000000000000000000031 /* NetworkScoreLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkScoreLiveTests.swift; sourceTree = "<group>"; };
+		A07000000000000000000011 /* CodexDeviceAuthorization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexDeviceAuthorization.swift; sourceTree = "<group>"; };
+		A07000000000000000000021 /* CodexDeviceAuthorizationClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexDeviceAuthorizationClient.swift; sourceTree = "<group>"; };
+		A07000000000000000000031 /* CodexLoginTransactionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexLoginTransactionStore.swift; sourceTree = "<group>"; };
+		A07000000000000000000041 /* CodexConnectionFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexConnectionFlow.swift; sourceTree = "<group>"; };
+		A07000000000000000000051 /* CodexConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexConnectionView.swift; sourceTree = "<group>"; };
+		A07000000000000000000061 /* CodexConnectionUITestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexConnectionUITestSupport.swift; sourceTree = "<group>"; };
+		A07000000000000000000071 /* CodexDeviceAuthorizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexDeviceAuthorizationTests.swift; sourceTree = "<group>"; };
+		A07000000000000000000081 /* CodexConnectionFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexConnectionFlowTests.swift; sourceTree = "<group>"; };
+		A07000000000000000000091 /* CodexConnectionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexConnectionUITests.swift; sourceTree = "<group>"; };
+		A07000000000000000000101 /* CodexConnectionLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexConnectionLiveTests.swift; sourceTree = "<group>"; };
+		A0786A27B391A1797991F66E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A10000000000000000000001 /* CodexLoginInterruptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexLoginInterruptionTests.swift; sourceTree = "<group>"; };
+		A10500000000000000000001 /* Sources/Debug/GrokBotUsageProbeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Debug/GrokBotUsageProbeView.swift; sourceTree = SOURCE_ROOT; };
+		A10600000000000000000001 /* Tests/Unit/GrokBotQuotaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/GrokBotQuotaTests.swift; sourceTree = SOURCE_ROOT; };
+		A10700000000000000000001 /* Tests/Unit/GrokBotDisplayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/GrokBotDisplayTests.swift; sourceTree = SOURCE_ROOT; };
+		A10800000000000000000001 /* Tests/Unit/GrokBotReminderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/GrokBotReminderTests.swift; sourceTree = SOURCE_ROOT; };
+		A11000000000000000000001 /* QuotaSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotaSnapshot.swift; sourceTree = "<group>"; };
+		A11000000000000000000003 /* CodexUsageParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexUsageParser.swift; sourceTree = "<group>"; };
+		A11000000000000000000005 /* CodexUsageParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexUsageParserTests.swift; sourceTree = "<group>"; };
+		A11100000000000000000001 /* Sources/Debug/APIBalanceProbeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Debug/APIBalanceProbeView.swift; sourceTree = SOURCE_ROOT; };
+		A12000000000000000000001 /* CodexQuotaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexQuotaService.swift; sourceTree = "<group>"; };
+		A12000000000000000000003 /* CodexQuotaServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexQuotaServiceTests.swift; sourceTree = "<group>"; };
+		A12000000000000000000005 /* CodexQuotaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexQuotaUITests.swift; sourceTree = "<group>"; };
+		A12000000000000000000007 /* CodexQuotaLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexQuotaLiveTests.swift; sourceTree = "<group>"; };
+		A14000000000000000000001 /* CodexCredentialRenewal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexCredentialRenewal.swift; sourceTree = "<group>"; };
+		A14000000000000000000003 /* CodexCredentialRenewalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexCredentialRenewalTests.swift; sourceTree = "<group>"; };
+		A22000000000000000000001 /* StaleAccountResultTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaleAccountResultTests.swift; sourceTree = "<group>"; };
+		A30000000000000000000001 /* BackgroundQuotaRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundQuotaRefresh.swift; sourceTree = "<group>"; };
+		A32000000000000000000001 /* Shared/WidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/WidgetSnapshot.swift; sourceTree = "<group>"; };
+		A32000000000000000000003 /* Shared/WidgetSnapshotStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/WidgetSnapshotStore.swift; sourceTree = "<group>"; };
+		A32000000000000000000005 /* Storage/WidgetSnapshotProjection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage/WidgetSnapshotProjection.swift; sourceTree = "<group>"; };
+		A32000000000000000000007 /* WidgetSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotTests.swift; sourceTree = "<group>"; };
+		A33000000000000000000014 /* Shared/QuotaWidgetContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/QuotaWidgetContent.swift; sourceTree = "<group>"; };
+		A3300000000000000000001E /* Widget/SubscriptionUsageWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Widget/SubscriptionUsageWidget.swift; sourceTree = "<group>"; };
+		A33000000000000000000028 /* QuotaWidgetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotaWidgetTests.swift; sourceTree = "<group>"; };
+		A33000000000000000000046 /* SubscriptionUsageWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; path = SubscriptionUsageWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A38000000000000000000001 /* Sources/Services/ResetReminderSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Services/ResetReminderSettings.swift; sourceTree = SOURCE_ROOT; };
+		A38000000000000000000003 /* Tests/Unit/ResetReminderSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/ResetReminderSettingsTests.swift; sourceTree = SOURCE_ROOT; };
+		A38000000000000000000005 /* Tests/UI/ResetReminderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/UI/ResetReminderUITests.swift; sourceTree = SOURCE_ROOT; };
+		A39000000000000000000001 /* Sources/Services/ResetReminderPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Services/ResetReminderPlan.swift; sourceTree = SOURCE_ROOT; };
+		A39000000000000000000003 /* Sources/Services/ResetReminderScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Services/ResetReminderScheduler.swift; sourceTree = SOURCE_ROOT; };
+		A39000000000000000000005 /* Tests/Unit/ResetReminderPlanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/ResetReminderPlanTests.swift; sourceTree = SOURCE_ROOT; };
+		A39000000000000000000007 /* Tests/Unit/ResetReminderSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/ResetReminderSchedulerTests.swift; sourceTree = SOURCE_ROOT; };
+		A39000000000000000000009 /* Tests/Unit/ResetReminderNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/ResetReminderNotificationTests.swift; sourceTree = SOURCE_ROOT; };
+		A3900000000000000000000B /* Tests/Unit/ResetReminderIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/ResetReminderIntegrationTests.swift; sourceTree = SOURCE_ROOT; };
+		A3A1F5ADD6D6144FD2774C03 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A42000000000000000000001 /* WidgetTutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTutorialView.swift; sourceTree = "<group>"; };
+		A4616617039740D1ABBB7E3E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A64000000000000000000001 /* Sources/Shared/QuotaCardStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Shared/QuotaCardStyle.swift; sourceTree = SOURCE_ROOT; };
+		A65000000000000000000001 /* Sources/Shared/QuotaCardStylePreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Shared/QuotaCardStylePreferences.swift; sourceTree = SOURCE_ROOT; };
+		A89000000000000000000001 /* Sources/Debug/CursorLoginProbeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Debug/CursorLoginProbeView.swift; sourceTree = SOURCE_ROOT; };
+		A91000000000000000000001 /* Tests/Unit/CursorDisplayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/CursorDisplayTests.swift; sourceTree = SOURCE_ROOT; };
+		A92000000000000000000001 /* Sources/Providers/Cursor/CursorUsageParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Providers/Cursor/CursorUsageParser.swift; sourceTree = SOURCE_ROOT; };
+		A92100000000000000000001 /* Sources/Providers/Cursor/CursorQuotaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Providers/Cursor/CursorQuotaService.swift; sourceTree = SOURCE_ROOT; };
+		A92200000000000000000001 /* Tests/Unit/CursorQuotaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/CursorQuotaTests.swift; sourceTree = SOURCE_ROOT; };
+		A93000000000000000000001 /* Sources/Providers/Cursor/CursorLoginClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Providers/Cursor/CursorLoginClient.swift; sourceTree = SOURCE_ROOT; };
+		A93100000000000000000001 /* Tests/Unit/CursorConnectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/CursorConnectionTests.swift; sourceTree = SOURCE_ROOT; };
+		A94000000000000000000001 /* Tests/Unit/CursorRefreshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/CursorRefreshTests.swift; sourceTree = SOURCE_ROOT; };
+		AA4ACA445B3FBAF47CDE31AC /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		ACC8FCD787A05BFEE356200B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		B1120000000000000000AA01 /* Sources/Domain/APIBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Domain/APIBalance.swift; sourceTree = SOURCE_ROOT; };
+		B1120000000000000000BB01 /* Tests/Unit/APIBalanceStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/APIBalanceStoreTests.swift; sourceTree = SOURCE_ROOT; };
+		B1130000000000000000AA01 /* Sources/Providers/APIBalance/APIBalanceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Providers/APIBalance/APIBalanceService.swift; sourceTree = SOURCE_ROOT; };
+		B1130000000000000000BB01 /* Tests/Unit/APIBalanceQueryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/APIBalanceQueryTests.swift; sourceTree = SOURCE_ROOT; };
+		B1140000000000000000BB01 /* Tests/Unit/APIBalanceConnectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/APIBalanceConnectionTests.swift; sourceTree = SOURCE_ROOT; };
+		B1150000000000000000BB01 /* Tests/Unit/APIBalanceDisplayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/APIBalanceDisplayTests.swift; sourceTree = SOURCE_ROOT; };
+		B1160000000000000000BB01 /* Tests/Unit/APIBalanceDemoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/Unit/APIBalanceDemoTests.swift; sourceTree = SOURCE_ROOT; };
+		B715B2783B02EAB7679FD999 /* CodexLoginLiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexLoginLiveTests.swift; sourceTree = "<group>"; };
+		BA712195418CCA14A5E707D1 /* CodexAccountBindingStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexAccountBindingStoreTests.swift; sourceTree = "<group>"; };
+		BB70A4D7564605777F758FA3 /* Sources/Shared/CardStyles/QuotaWatermarkShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Shared/CardStyles/QuotaWatermarkShape.swift; sourceTree = SOURCE_ROOT; };
+		C4B77C6162DA7FB61F34B1D1 /* Sources/Shared/CardStyles/CompactQuotaBars.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Shared/CardStyles/CompactQuotaBars.swift; sourceTree = SOURCE_ROOT; };
+		C5F82E35A8E1AB26D4565F10 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		C5FC95C24B665C98DE0B6F1D /* LaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchTests.swift; sourceTree = "<group>"; };
+		CCD3AE0E45D84FE8B8B965B8 /* CodexIdentityVerifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexIdentityVerifierTests.swift; sourceTree = "<group>"; };
+		DB5916E37D563DAC75D5F798 /* Sources/Shared/SharedAccountAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/Shared/SharedAccountAccess.swift; sourceTree = SOURCE_ROOT; };
+		DC4B395B83EF4B7D4922E542 /* SubscriptionUsageTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SubscriptionUsageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E0E27618A2D2A8FEBDD49F35 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F26017C7DE0572766FDDAF7A /* CodexLoginCompletionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexLoginCompletionUITests.swift; sourceTree = "<group>"; };
+		F3590A99FA1708957F199906 /* CodexLoginClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexLoginClient.swift; sourceTree = "<group>"; };
+		F3D75B4B8AA038D86CC6B29B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		FCA67A6E5372DB618EA78309 /* CodexIdentityVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexIdentityVerifier.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		02D9DAB72C590328B299F5D4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		881D232D2A04C1E59F16365B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8A6090AD31DCC4FD32D6257B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A3300000000000000000000D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
+/* Begin PBXGroup section */
+		156052F04525D0F710673CF0 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				C5F82E35A8E1AB26D4565F10 /* README.md */,
+				73321F1B03019DC59ED43B46 /* UI */,
+				526E9B80F5C826824C672690 /* Unit */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		19ED03E8225A78EBFF67CDF6 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				A11000000000000000000001 /* QuotaSnapshot.swift */,
+				A04000000000000000000021 /* AccountQuotaState.swift */,
+				A04000000000000000000011 /* ConnectedAccount.swift */,
+				ACC8FCD787A05BFEE356200B /* README.md */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		32D7FD54A675882A40444E85 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				3D3BC75BB5D203E4E79BB10E /* Signing.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		35C57B1A3087314F0023AC30 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				A92100000000000000000001 /* Sources/Providers/Cursor/CursorQuotaService.swift */,
+				A92000000000000000000001 /* Sources/Providers/Cursor/CursorUsageParser.swift */,
+				A39000000000000000000001 /* Sources/Services/ResetReminderPlan.swift */,
+				A39000000000000000000003 /* Sources/Services/ResetReminderScheduler.swift */,
+				A38000000000000000000001 /* Sources/Services/ResetReminderSettings.swift */,
+				A93000000000000000000001 /* Sources/Providers/Cursor/CursorLoginClient.swift */,
+				A94000000000000000000001 /* Tests/Unit/CursorRefreshTests.swift */,
+				A93100000000000000000001 /* Tests/Unit/CursorConnectionTests.swift */,
+				A92200000000000000000001 /* Tests/Unit/CursorQuotaTests.swift */,
+				A38000000000000000000003 /* Tests/Unit/ResetReminderSettingsTests.swift */,
+				A3900000000000000000000B /* Tests/Unit/ResetReminderIntegrationTests.swift */,
+				A39000000000000000000009 /* Tests/Unit/ResetReminderNotificationTests.swift */,
+				A39000000000000000000007 /* Tests/Unit/ResetReminderSchedulerTests.swift */,
+				A39000000000000000000005 /* Tests/Unit/ResetReminderPlanTests.swift */,
+				A38000000000000000000005 /* Tests/UI/ResetReminderUITests.swift */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		507C28C1668CF2ACD62ACF25 /* Codex */ = {
+			isa = PBXGroup;
+			children = (
+				A14000000000000000000001 /* CodexCredentialRenewal.swift */,
+				A12000000000000000000001 /* CodexQuotaService.swift */,
+				A11000000000000000000003 /* CodexUsageParser.swift */,
+				FCA67A6E5372DB618EA78309 /* CodexIdentityVerifier.swift */,
+				F3590A99FA1708957F199906 /* CodexLoginClient.swift */,
+				A07000000000000000000021 /* CodexDeviceAuthorizationClient.swift */,
+				A07000000000000000000011 /* CodexDeviceAuthorization.swift */,
+				4F4E472D1F3E5F00DA086E0A /* README.md */,
+			);
+			path = Codex;
+			sourceTree = "<group>";
+		};
+		5151B46607EBC8890D8DFCC2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A33000000000000000000046 /* SubscriptionUsageWidget.appex */,
+				8B78D6DD1422F301A90CA41C /* SubscriptionUsage.app */,
+				DC4B395B83EF4B7D4922E542 /* SubscriptionUsageTests.xctest */,
+				5EFFCF461A990651450E250C /* SubscriptionUsageUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		526E9B80F5C826824C672690 /* Unit */ = {
+			isa = PBXGroup;
+			children = (
+				A33000000000000000000028 /* QuotaWidgetTests.swift */,
+				A32000000000000000000007 /* WidgetSnapshotTests.swift */,
+				A12000000000000000000007 /* CodexQuotaLiveTests.swift */,
+				A14000000000000000000003 /* CodexCredentialRenewalTests.swift */,
+				A22000000000000000000001 /* StaleAccountResultTests.swift */,
+				A12000000000000000000003 /* CodexQuotaServiceTests.swift */,
+				A11000000000000000000005 /* CodexUsageParserTests.swift */,
+				B715B2783B02EAB7679FD999 /* CodexLoginLiveTests.swift */,
+				7A154EA2F901EC5E5D4F2A96 /* CodexLoginCompletionTests.swift */,
+				A10000000000000000000001 /* CodexLoginInterruptionTests.swift */,
+				6989AC3B71499434504A53FF /* CodexLoginClientTests.swift */,
+				BA712195418CCA14A5E707D1 /* CodexAccountBindingStoreTests.swift */,
+				CCD3AE0E45D84FE8B8B965B8 /* CodexIdentityVerifierTests.swift */,
+				A07000000000000000000101 /* CodexConnectionLiveTests.swift */,
+				A07000000000000000000081 /* CodexConnectionFlowTests.swift */,
+				A07000000000000000000071 /* CodexDeviceAuthorizationTests.swift */,
+				A06000000000000000000031 /* NetworkScoreLiveTests.swift */,
+				A06000000000000000000021 /* NetworkScoreCheckerTests.swift */,
+				A04000000000000000000041 /* AccountStoreTests.swift */,
+				A05000000000000000000021 /* CredentialVaultTests.swift */,
+				1DF5E0AD711BD84D4AC12F40 /* RootViewTests.swift */,
+			);
+			path = Unit;
+			sourceTree = "<group>";
+		};
+		5930E46CC318FA874FAE1343 /* Providers */ = {
+			isa = PBXGroup;
+			children = (
+				507C28C1668CF2ACD62ACF25 /* Codex */,
+			);
+			path = Providers;
+			sourceTree = "<group>";
+		};
+		73321F1B03019DC59ED43B46 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				A12000000000000000000005 /* CodexQuotaUITests.swift */,
+				F26017C7DE0572766FDDAF7A /* CodexLoginCompletionUITests.swift */,
+				A07000000000000000000091 /* CodexConnectionUITests.swift */,
+				C5FC95C24B665C98DE0B6F1D /* LaunchTests.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		91468586F9881985D065A03B /* App */ = {
+			isa = PBXGroup;
+			children = (
+				3362B8F6FEB9187AF06C2973 /* RootView.swift */,
+				2C80EB31FAAE9AFA350E83E9 /* SubscriptionUsageApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		9D756A79786A998CCABA280E /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				A07000000000000000000061 /* CodexConnectionUITestSupport.swift */,
+				A07000000000000000000051 /* CodexConnectionView.swift */,
+				A07000000000000000000041 /* CodexConnectionFlow.swift */,
+				F3D75B4B8AA038D86CC6B29B /* README.md */,
+				A42000000000000000000001 /* WidgetTutorialView.swift */,
+				A030000000000000000000021 /* SettingsView.swift */,
+				A030000000000000000000011 /* QuotaView.swift */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		A024F06580C79B7582C3806A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E0E27618A2D2A8FEBDD49F35 /* Assets.xcassets */,
+				56CA27E0739A4804AF72B2BE /* Licenses/LobeIcons-MIT.txt */,
+				7C1D2E3F4A5B6C7D8E9F0A11 /* Licenses/Lucide-ISC.txt */,
+				12874EF8E2CD6D147428E5AC /* README.md */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		A9012353AFD6A66EB75D4BE2 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				A3300000000000000000001E /* Widget/SubscriptionUsageWidget.swift */,
+				7E4A5B593C18C02CEC4ACF9B /* Sources/Shared/CardStyles/NativeQuotaDesign.swift */,
+				4FB6CE0696E94E0FB655C9CB /* Sources/Shared/CardStyles/QuotaStyledInput.swift */,
+				BB70A4D7564605777F758FA3 /* Sources/Shared/CardStyles/QuotaWatermarkShape.swift */,
+				C4B77C6162DA7FB61F34B1D1 /* Sources/Shared/CardStyles/CompactQuotaBars.swift */,
+				4C6BF10838D61D522F927824 /* Sources/Shared/CardStyles/CompactQuotaTheme.swift */,
+				8BF1A96EA8FAC375A4FF3F3D /* Sources/Shared/CardStyles/QuotaStyledCard.swift */,
+				5294FE17501B02B7CCA7A0C2 /* Sources/Shared/CardStyles/CompactQuotaWidget.swift */,
+				9A4A09B6D6CD60B2420D9C1F /* Sources/Debug/QuotaStyleLabView.swift */,
+				A89000000000000000000001 /* Sources/Debug/CursorLoginProbeView.swift */,
+				A10500000000000000000001 /* Sources/Debug/GrokBotUsageProbeView.swift */,
+				A11100000000000000000001 /* Sources/Debug/APIBalanceProbeView.swift */,
+				B1160000000000000000BB01 /* Tests/Unit/APIBalanceDemoTests.swift */,
+				B1150000000000000000BB01 /* Tests/Unit/APIBalanceDisplayTests.swift */,
+				B1140000000000000000BB01 /* Tests/Unit/APIBalanceConnectionTests.swift */,
+				B1130000000000000000BB01 /* Tests/Unit/APIBalanceQueryTests.swift */,
+				B1130000000000000000AA01 /* Sources/Providers/APIBalance/APIBalanceService.swift */,
+				B1120000000000000000BB01 /* Tests/Unit/APIBalanceStoreTests.swift */,
+				B1120000000000000000AA01 /* Sources/Domain/APIBalance.swift */,
+				A91000000000000000000001 /* Tests/Unit/CursorDisplayTests.swift */,
+				A10600000000000000000001 /* Tests/Unit/GrokBotQuotaTests.swift */,
+				A10700000000000000000001 /* Tests/Unit/GrokBotDisplayTests.swift */,
+				A10800000000000000000001 /* Tests/Unit/GrokBotReminderTests.swift */,
+				30BEBEF5BF5746C3302F3F13 /* Tests/Unit/NativeQuotaStyleTests.swift */,
+				A65000000000000000000001 /* Sources/Shared/QuotaCardStylePreferences.swift */,
+				A64000000000000000000001 /* Sources/Shared/QuotaCardStyle.swift */,
+				A33000000000000000000014 /* Shared/QuotaWidgetContent.swift */,
+				A32000000000000000000001 /* Shared/WidgetSnapshot.swift */,
+				A32000000000000000000003 /* Shared/WidgetSnapshotStore.swift */,
+				A32000000000000000000005 /* Storage/WidgetSnapshotProjection.swift */,
+				91468586F9881985D065A03B /* App */,
+				19ED03E8225A78EBFF67CDF6 /* Domain */,
+				9D756A79786A998CCABA280E /* Features */,
+				5930E46CC318FA874FAE1343 /* Providers */,
+				EF972FBDF6EB970E6AA4CC4F /* Services */,
+				F8C4BA72139089CEC18AAC02 /* Shared */,
+				D92BB5E5FB4824670C77346D /* Storage */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		ADCF10F76EBF2A74473E9DC4 = {
+			isa = PBXGroup;
+			children = (
+				8ABEBA97EE4D75A4818C293A /* Sources/Services/AutomaticWidgetRefresh.swift */,
+				DB5916E37D563DAC75D5F798 /* Sources/Shared/SharedAccountAccess.swift */,
+				32D7FD54A675882A40444E85 /* Config */,
+				A9012353AFD6A66EB75D4BE2 /* Sources */,
+				A024F06580C79B7582C3806A /* Resources */,
+				156052F04525D0F710673CF0 /* Tests */,
+				AA4ACA445B3FBAF47CDE31AC /* README.md */,
+				03770F3FAFF1A07422B17956 /* AGENTS.md */,
+				5151B46607EBC8890D8DFCC2 /* Products */,
+				35C57B1A3087314F0023AC30 /* Recovered References */,
+			);
+			sourceTree = "<group>";
+		};
+		D92BB5E5FB4824670C77346D /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				2D4442F0404306E19E0DD55E /* CodexAccountBindingStore.swift */,
+				A07000000000000000000031 /* CodexLoginTransactionStore.swift */,
+				A04000000000000000000031 /* AccountStore.swift */,
+				A05000000000000000000011 /* CredentialVault.swift */,
+				A4616617039740D1ABBB7E3E /* README.md */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		EF972FBDF6EB970E6AA4CC4F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A06000000000000000000011 /* NetworkScoreChecker.swift */,
+				A30000000000000000000001 /* BackgroundQuotaRefresh.swift */,
+				A0786A27B391A1797991F66E /* README.md */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F8C4BA72139089CEC18AAC02 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				A3A1F5ADD6D6144FD2774C03 /* README.md */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
 
+/* Begin PBXNativeTarget section */
+		3A56D6E2F23E4EBB75B434CE /* SubscriptionUsageUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 37EE6485F4E834CA0D21A654 /* Build configuration list for PBXNativeTarget "SubscriptionUsageUITests" */;
+			buildPhases = (
+				1A24D49A65599DB28FB2B4F4 /* Sources */,
+				8A6090AD31DCC4FD32D6257B /* Frameworks */,
+				872557091656610AE180DBF1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D35DC79E2DA3CCF1EFDFF82C /* PBXTargetDependency */,
+			);
+			name = SubscriptionUsageUITests;
+			productName = SubscriptionUsageUITests;
+			productReference = 5EFFCF461A990651450E250C /* SubscriptionUsageUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		A3300000000000000000005A /* SubscriptionUsageWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A33000000000000000000052 /* Build configuration list for PBXNativeTarget "SubscriptionUsageWidget" */;
+			buildPhases = (
+				A3300000000000000000000A /* Sources */,
+				A3300000000000000000000D /* Frameworks */,
+				A3300000000000000000000B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SubscriptionUsageWidget;
+			productName = SubscriptionUsageWidget;
+			productReference = A33000000000000000000046 /* SubscriptionUsageWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		E633290B294C2A3AB4572C63 /* SubscriptionUsage */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1FE9F28EBC51C8E8D89B6142 /* Build configuration list for PBXNativeTarget "SubscriptionUsage" */;
+			buildPhases = (
+				DBD765969E2C480B353169C4 /* Sources */,
+				881D232D2A04C1E59F16365B /* Frameworks */,
+				1F4348A705DE26BA70374258 /* Resources */,
+				A3300000000000000000005E /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A3300000000000000000005C /* PBXTargetDependency */,
+			);
+			name = SubscriptionUsage;
+			productName = SubscriptionUsage;
+			productReference = 8B78D6DD1422F301A90CA41C /* SubscriptionUsage.app */;
+			productType = "com.apple.product-type.application";
+		};
+		EABDCA511F0CE0D17BB7AB89 /* SubscriptionUsageTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 74CD2B3BC49A9ADEB4EE1018 /* Build configuration list for PBXNativeTarget "SubscriptionUsageTests" */;
+			buildPhases = (
+				5B69A3EAFB58604EE5337742 /* Sources */,
+				02D9DAB72C590328B299F5D4 /* Frameworks */,
+				5EAA65B7B2103252AADC92C9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				04572472F88EED2EF683B581 /* PBXTargetDependency */,
+			);
+			name = SubscriptionUsageTests;
+			productName = SubscriptionUsageTests;
+			productReference = DC4B395B83EF4B7D4922E542 /* SubscriptionUsageTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
 
-
-
-
-"30BEBEF5BF5746C3302F3F13" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/NativeQuotaStyleTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A2F5AF257A6415DF76224101" = { "isa" = "PBXBuildFile"; "fileRef" = "30BEBEF5BF5746C3302F3F13"; };
-
-"9A4A09B6D6CD60B2420D9C1F" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Debug/QuotaStyleLabView.swift"; "sourceTree" = SOURCE_ROOT; };
-"AD52E1D158E8C4CDD9F1FE1B" = { "isa" = "PBXBuildFile"; "fileRef" = "9A4A09B6D6CD60B2420D9C1F"; };
-"A89000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Debug/CursorLoginProbeView.swift"; "sourceTree" = SOURCE_ROOT; };
-"A89000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A89000000000000000000001"; };
-"A10500000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Debug/GrokBotUsageProbeView.swift"; "sourceTree" = SOURCE_ROOT; };
-"A10500000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A10500000000000000000001"; };
-"A11100000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Debug/APIBalanceProbeView.swift"; "sourceTree" = SOURCE_ROOT; };
-"A11100000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A11100000000000000000001"; };
-"B1160000000000000000BB01" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/APIBalanceDemoTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"B1160000000000000000BB04" = { "isa" = "PBXBuildFile"; "fileRef" = "B1160000000000000000BB01"; };
-"B1150000000000000000BB01" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/APIBalanceDisplayTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"B1150000000000000000BB04" = { "isa" = "PBXBuildFile"; "fileRef" = "B1150000000000000000BB01"; };
-"B1140000000000000000BB01" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/APIBalanceConnectionTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"B1140000000000000000BB04" = { "isa" = "PBXBuildFile"; "fileRef" = "B1140000000000000000BB01"; };
-"B1130000000000000000BB01" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/APIBalanceQueryTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"B1130000000000000000BB04" = { "isa" = "PBXBuildFile"; "fileRef" = "B1130000000000000000BB01"; };
-"B1130000000000000000AA01" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Providers/APIBalance/APIBalanceService.swift"; "sourceTree" = SOURCE_ROOT; };
-"B1130000000000000000AA02" = { "isa" = "PBXBuildFile"; "fileRef" = "B1130000000000000000AA01"; };
-"B1130000000000000000AA03" = { "isa" = "PBXBuildFile"; "fileRef" = "B1130000000000000000AA01"; };
-"B1120000000000000000BB01" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/APIBalanceStoreTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"B1120000000000000000BB04" = { "isa" = "PBXBuildFile"; "fileRef" = "B1120000000000000000BB01"; };
-"B1120000000000000000AA01" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Domain/APIBalance.swift"; "sourceTree" = SOURCE_ROOT; };
-"B1120000000000000000AA02" = { "isa" = "PBXBuildFile"; "fileRef" = "B1120000000000000000AA01"; };
-"B1120000000000000000AA03" = { "isa" = "PBXBuildFile"; "fileRef" = "B1120000000000000000AA01"; };
-"A94000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/CursorRefreshTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A94000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A94000000000000000000001"; };
-"A93100000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/CursorConnectionTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A93100000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A93100000000000000000001"; };
-"A93000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Providers/Cursor/CursorLoginClient.swift"; "sourceTree" = SOURCE_ROOT; };
-"A93000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A93000000000000000000001"; };
-"A92200000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/CursorQuotaTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A92200000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A92200000000000000000001"; };
-"A92100000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Providers/Cursor/CursorQuotaService.swift"; "sourceTree" = SOURCE_ROOT; };
-"A92100000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A92100000000000000000001"; };
-"A92100000000000000000003" = { "isa" = "PBXBuildFile"; "fileRef" = "A92100000000000000000001"; };
-"A92000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Providers/Cursor/CursorUsageParser.swift"; "sourceTree" = SOURCE_ROOT; };
-"A92000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A92000000000000000000001"; };
-"A92000000000000000000003" = { "isa" = "PBXBuildFile"; "fileRef" = "A92000000000000000000001"; };
-"A10600000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/GrokBotQuotaTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A10600000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A10600000000000000000001"; };
-"A10700000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/GrokBotDisplayTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A10700000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A10700000000000000000001"; };
-"A10800000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/GrokBotReminderTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A10800000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A10800000000000000000001"; };
-"A91000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/CursorDisplayTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A91000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A91000000000000000000001"; };
-
-"5294FE17501B02B7CCA7A0C2" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Shared/CardStyles/CompactQuotaWidget.swift"; "sourceTree" = SOURCE_ROOT; };
-"18827DF4191A7FA60C48BEC4" = { "isa" = "PBXBuildFile"; "fileRef" = "5294FE17501B02B7CCA7A0C2"; };
-"367440C06746850634A149C7" = { "isa" = "PBXBuildFile"; "fileRef" = "5294FE17501B02B7CCA7A0C2"; };
-"8BF1A96EA8FAC375A4FF3F3D" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Shared/CardStyles/QuotaStyledCard.swift"; "sourceTree" = SOURCE_ROOT; };
-"04DA5720DCAD4685BA2D719A" = { "isa" = "PBXBuildFile"; "fileRef" = "8BF1A96EA8FAC375A4FF3F3D"; };
-"17835A4DC32C88871399052B" = { "isa" = "PBXBuildFile"; "fileRef" = "8BF1A96EA8FAC375A4FF3F3D"; };
-"4C6BF10838D61D522F927824" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Shared/CardStyles/CompactQuotaTheme.swift"; "sourceTree" = SOURCE_ROOT; };
-"522A0F57B7E88903643D0A01" = { "isa" = "PBXBuildFile"; "fileRef" = "4C6BF10838D61D522F927824"; };
-"D59AE8D1B01EA4F5BFEBA0EB" = { "isa" = "PBXBuildFile"; "fileRef" = "4C6BF10838D61D522F927824"; };
-"C4B77C6162DA7FB61F34B1D1" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Shared/CardStyles/CompactQuotaBars.swift"; "sourceTree" = SOURCE_ROOT; };
-"FF4D2AE188D280A23B1B139E" = { "isa" = "PBXBuildFile"; "fileRef" = "C4B77C6162DA7FB61F34B1D1"; };
-"728295DC67420899BA863CD5" = { "isa" = "PBXBuildFile"; "fileRef" = "C4B77C6162DA7FB61F34B1D1"; };
-
-"BB70A4D7564605777F758FA3" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Shared/CardStyles/QuotaWatermarkShape.swift"; "sourceTree" = SOURCE_ROOT; };
-"FB9FB3C45464E40274CFE2F4" = { "isa" = "PBXBuildFile"; "fileRef" = "BB70A4D7564605777F758FA3"; };
-"D2DFE2E8A4CDE38E05B9A8B3" = { "isa" = "PBXBuildFile"; "fileRef" = "BB70A4D7564605777F758FA3"; };
-
-
-"4FB6CE0696E94E0FB655C9CB" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Shared/CardStyles/QuotaStyledInput.swift"; "sourceTree" = SOURCE_ROOT; };
-"5BE15F7FAAC3A6D1B5D5D881" = { "isa" = "PBXBuildFile"; "fileRef" = "4FB6CE0696E94E0FB655C9CB"; };
-"98FA8229442AB7F10FEF85D7" = { "isa" = "PBXBuildFile"; "fileRef" = "4FB6CE0696E94E0FB655C9CB"; };
-
-"7E4A5B593C18C02CEC4ACF9B" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Shared/CardStyles/NativeQuotaDesign.swift"; "sourceTree" = SOURCE_ROOT; };
-"F0C89C3978D12B108D7BADA8" = { "isa" = "PBXBuildFile"; "fileRef" = "7E4A5B593C18C02CEC4ACF9B"; };
-"E2A34026C054C46D78B68631" = { "isa" = "PBXBuildFile"; "fileRef" = "7E4A5B593C18C02CEC4ACF9B"; };
-
-"A65000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Shared/QuotaCardStylePreferences.swift"; "sourceTree" = SOURCE_ROOT; };
-"A65000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A65000000000000000000001"; };
-"A65000000000000000000003" = { "isa" = "PBXBuildFile"; "fileRef" = "A65000000000000000000001"; };
-
-"A64000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Shared/QuotaCardStyle.swift"; "sourceTree" = SOURCE_ROOT; };
-"A64000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A64000000000000000000001"; };
-"A64000000000000000000003" = { "isa" = "PBXBuildFile"; "fileRef" = "A64000000000000000000001"; };
-
-        "56CA27E0739A4804AF72B2BE" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "text"; "path" = "Licenses/LobeIcons-MIT.txt"; "sourceTree" = "<group>"; };
-        "2EE7C9A1952642258DCBC14F" = { "isa" = "PBXBuildFile"; "fileRef" = "56CA27E0739A4804AF72B2BE"; };
-        "7C1D2E3F4A5B6C7D8E9F0A11" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "text"; "path" = "Licenses/Lucide-ISC.txt"; "sourceTree" = "<group>"; };
-        "7C1D2E3F4A5B6C7D8E9F0A12" = { "isa" = "PBXBuildFile"; "fileRef" = "7C1D2E3F4A5B6C7D8E9F0A11"; };
-
-"A42000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "WidgetTutorialView.swift"; "sourceTree" = "<group>"; };
-"A42000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A42000000000000000000001"; };
-"A40000000000000000000001" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000001"; };
-"A40000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000003"; };
-"A40000000000000000000003" = { "isa" = "PBXBuildFile"; "fileRef" = "A38000000000000000000001"; };
-"A3900000000000000000000B" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/ResetReminderIntegrationTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A3900000000000000000000C" = { "isa" = "PBXBuildFile"; "fileRef" = "A3900000000000000000000B"; };
-"A39000000000000000000009" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/ResetReminderNotificationTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A3900000000000000000000A" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000009"; };
-"A39000000000000000000007" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/ResetReminderSchedulerTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A39000000000000000000008" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000007"; };
-"A39000000000000000000005" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/ResetReminderPlanTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A39000000000000000000006" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000005"; };
-"A39000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Services/ResetReminderScheduler.swift"; "sourceTree" = SOURCE_ROOT; };
-"A39000000000000000000004" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000003"; };
-"A39000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Services/ResetReminderPlan.swift"; "sourceTree" = SOURCE_ROOT; };
-"A39000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A39000000000000000000001"; };
-"A38000000000000000000005" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/UI/ResetReminderUITests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A38000000000000000000006" = { "isa" = "PBXBuildFile"; "fileRef" = "A38000000000000000000005"; };
-"A38000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Tests/Unit/ResetReminderSettingsTests.swift"; "sourceTree" = SOURCE_ROOT; };
-"A38000000000000000000004" = { "isa" = "PBXBuildFile"; "fileRef" = "A38000000000000000000003"; };
-"A38000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Services/ResetReminderSettings.swift"; "sourceTree" = SOURCE_ROOT; };
-"A38000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A38000000000000000000001"; };
-"DB5916E37D563DAC75D5F798" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Shared/SharedAccountAccess.swift"; "sourceTree" = SOURCE_ROOT; };
-"B816BBB98BE9CF236B9C075C" = { "isa" = "PBXBuildFile"; "fileRef" = "DB5916E37D563DAC75D5F798"; };
-"16B7B245FC878FC5801CCE32" = { "isa" = "PBXBuildFile"; "fileRef" = "DB5916E37D563DAC75D5F798"; };
-"8ABEBA97EE4D75A4818C293A" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Sources/Services/AutomaticWidgetRefresh.swift"; "sourceTree" = SOURCE_ROOT; };
-"C2A296549EB1F677FE8435D7" = { "isa" = "PBXBuildFile"; "fileRef" = "8ABEBA97EE4D75A4818C293A"; };
-"8F2E9AF97361B48676285CF3" = { "isa" = "PBXBuildFile"; "fileRef" = "8ABEBA97EE4D75A4818C293A"; };
-"E4A666C9A37B0B091B44A4F0" = { "isa" = "PBXBuildFile"; "fileRef" = "A04000000000000000000031"; };
-"ABE71F408FE85C8235C44F15" = { "isa" = "PBXBuildFile"; "fileRef" = "A05000000000000000000011"; };
-"DC50337F369299F04667622D" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000005"; };
-"3EC1A7DC14B4B6F2D5C05109" = { "isa" = "PBXBuildFile"; "fileRef" = "A04000000000000000000011"; };
-"57689D2BE7C25437A8560AB9" = { "isa" = "PBXBuildFile"; "fileRef" = "A04000000000000000000021"; };
-"6D522A253B3D21DDEF252835" = { "isa" = "PBXBuildFile"; "fileRef" = "A12000000000000000000001"; };
-"92E92E143EAC2A9863389A01" = { "isa" = "PBXBuildFile"; "fileRef" = "A14000000000000000000001"; };
-"827D385A84FB4C02E5E6E00F" = { "isa" = "PBXBuildFile"; "fileRef" = "FCA67A6E5372DB618EA78309"; };
-"430EC5A9CDCEE955AED20941" = { "isa" = "PBXBuildFile"; "fileRef" = "A11000000000000000000003"; };
-"4D416D682394BBD790F187FE" = { "isa" = "PBXBuildFile"; "fileRef" = "A07000000000000000000021"; };
-"5BF37A720A16FBDA80A04827" = { "isa" = "PBXBuildFile"; "fileRef" = "A07000000000000000000011"; };
-"7251A8DB8D008490BB24A5E6" = { "isa" = "PBXBuildFile"; "fileRef" = "F3590A99FA1708957F199906"; };
-"776606FC491D48AD8A4A6B52" = { "isa" = "PBXBuildFile"; "fileRef" = "A06000000000000000000011"; };
-"DE41D9A1DF492C89251199B7" = { "isa" = "PBXBuildFile"; "fileRef" = "A11000000000000000000001"; };
-"8A2024310A981901B8DF64D7" = { "isa" = "PBXBuildFile"; "fileRef" = "A07000000000000000000031"; };
-        "A3300000000000000000000A" = { "isa" = "PBXSourcesBuildPhase"; "buildActionMask" = "2147483647"; "files" = ( "B1130000000000000000AA03", "B1120000000000000000AA03", "A92100000000000000000003", "A92000000000000000000003", "728295DC67420899BA863CD5", "D59AE8D1B01EA4F5BFEBA0EB", "17835A4DC32C88871399052B", "367440C06746850634A149C7", "D2DFE2E8A4CDE38E05B9A8B3", "98FA8229442AB7F10FEF85D7", "E2A34026C054C46D78B68631", "A65000000000000000000003", "A64000000000000000000003", "A40000000000000000000001", "A40000000000000000000002", "A40000000000000000000003", "16B7B245FC878FC5801CCE32", "8F2E9AF97361B48676285CF3", "E4A666C9A37B0B091B44A4F0", "ABE71F408FE85C8235C44F15", "DC50337F369299F04667622D", "3EC1A7DC14B4B6F2D5C05109", "57689D2BE7C25437A8560AB9", "6D522A253B3D21DDEF252835", "92E92E143EAC2A9863389A01", "827D385A84FB4C02E5E6E00F", "430EC5A9CDCEE955AED20941", "4D416D682394BBD790F187FE", "5BF37A720A16FBDA80A04827", "7251A8DB8D008490BB24A5E6", "776606FC491D48AD8A4A6B52", "DE41D9A1DF492C89251199B7", "8A2024310A981901B8DF64D7", "A33000000000000000000016", "A3300000000000000000001F", "A3300000000000000000003C", "A3300000000000000000003D" , ); "runOnlyForDeploymentPostprocessing" = "0"; };
-        "A3300000000000000000000C" = { "isa" = "PBXBuildFile"; "fileRef" = "E0E27618A2D2A8FEBDD49F35"; };
-        "A3300000000000000000000B" = { "isa" = "PBXResourcesBuildPhase"; "buildActionMask" = "2147483647"; "files" = ( "A3300000000000000000000C" , ); "runOnlyForDeploymentPostprocessing" = "0"; };
-        "A3300000000000000000000D" = { "isa" = "PBXFrameworksBuildPhase"; "buildActionMask" = "2147483647"; "files" = (  ); "runOnlyForDeploymentPostprocessing" = "0"; };
-        "A33000000000000000000014" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Shared/QuotaWidgetContent.swift"; "sourceTree" = "<group>"; };
-        "A33000000000000000000015" = { "isa" = "PBXBuildFile"; "fileRef" = "A33000000000000000000014"; };
-        "A33000000000000000000016" = { "isa" = "PBXBuildFile"; "fileRef" = "A33000000000000000000014"; };
-        "A3300000000000000000001E" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Widget/SubscriptionUsageWidget.swift"; "sourceTree" = "<group>"; };
-        "A3300000000000000000001F" = { "isa" = "PBXBuildFile"; "fileRef" = "A3300000000000000000001E"; };
-        "A33000000000000000000028" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "QuotaWidgetTests.swift"; "sourceTree" = "<group>"; };
-        "A33000000000000000000029" = { "isa" = "PBXBuildFile"; "fileRef" = "A33000000000000000000028"; };
-        "A3300000000000000000003C" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000001"; };
-        "A3300000000000000000003D" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000003"; };
-        "A33000000000000000000046" = { "isa" = "PBXFileReference"; "explicitFileType" = "wrapper.app-extension"; "path" = "SubscriptionUsageWidget.appex"; "sourceTree" = "BUILT_PRODUCTS_DIR"; };
-        "A33000000000000000000050" = { "isa" = "XCBuildConfiguration"; "baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E"; "buildSettings" = { "CODE_SIGN_ENTITLEMENTS" = "Config/SubscriptionUsage.entitlements"; "MARKETING_VERSION" = "0.1.0"; "SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator"; "PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsage.Widget"; "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" = "AccentColor"; "CURRENT_PROJECT_VERSION" = "20"; "INFOPLIST_KEY_CFBundleDisplayName" = "Token 仪表盘"; "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO"; "SUPPORTS_MACCATALYST" = "NO"; "TARGETED_DEVICE_FAMILY" = "1"; "CODE_SIGN_STYLE" = "Automatic"; "LD_RUNPATH_SEARCH_PATHS" = ( "$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks" , ); "PRODUCT_NAME" = "$(TARGET_NAME)"; "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO"; "INFOPLIST_FILE" = "Config/Widget-Info.plist"; "GENERATE_INFOPLIST_FILE" = "YES"; "APPLICATION_EXTENSION_API_ONLY" = "YES"; "SKIP_INSTALL" = "YES"; }; "name" = "Debug"; };
-        "A33000000000000000000051" = { "isa" = "XCBuildConfiguration"; "baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E"; "buildSettings" = { "CODE_SIGN_ENTITLEMENTS" = "Config/SubscriptionUsage.entitlements"; "MARKETING_VERSION" = "0.1.0"; "SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator"; "PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsage.Widget"; "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" = "AccentColor"; "CURRENT_PROJECT_VERSION" = "20"; "INFOPLIST_KEY_CFBundleDisplayName" = "Token 仪表盘"; "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO"; "SUPPORTS_MACCATALYST" = "NO"; "TARGETED_DEVICE_FAMILY" = "1"; "CODE_SIGN_STYLE" = "Automatic"; "LD_RUNPATH_SEARCH_PATHS" = ( "$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks" , ); "PRODUCT_NAME" = "$(TARGET_NAME)"; "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO"; "INFOPLIST_FILE" = "Config/Widget-Info.plist"; "GENERATE_INFOPLIST_FILE" = "YES"; "APPLICATION_EXTENSION_API_ONLY" = "YES"; "SKIP_INSTALL" = "YES"; }; "name" = "Release"; };
-        "A33000000000000000000052" = { "isa" = "XCConfigurationList"; "buildConfigurations" = ( "A33000000000000000000050", "A33000000000000000000051" , ); "defaultConfigurationIsVisible" = "0"; "defaultConfigurationName" = "Release"; };
-        "A3300000000000000000005A" = { "isa" = "PBXNativeTarget"; "buildConfigurationList" = "A33000000000000000000052"; "buildPhases" = ( "A3300000000000000000000A", "A3300000000000000000000D", "A3300000000000000000000B" , ); "buildRules" = (  ); "dependencies" = (  ); "name" = "SubscriptionUsageWidget"; "productName" = "SubscriptionUsageWidget"; "productReference" = "A33000000000000000000046"; "productType" = "com.apple.product-type.app-extension"; };
-        "A3300000000000000000005B" = { "isa" = "PBXContainerItemProxy"; "containerPortal" = "98F54143AB4E86B28C3AFEE0"; "proxyType" = "1"; "remoteGlobalIDString" = "A3300000000000000000005A"; "remoteInfo" = "SubscriptionUsageWidget"; };
-        "A3300000000000000000005C" = { "isa" = "PBXTargetDependency"; "target" = "A3300000000000000000005A"; "targetProxy" = "A3300000000000000000005B"; };
-        "A3300000000000000000005D" = { "isa" = "PBXBuildFile"; "fileRef" = "A33000000000000000000046"; "settings" = { "ATTRIBUTES" = ( "RemoveHeadersOnCopy" , ); }; };
-        "A3300000000000000000005E" = { "isa" = "PBXCopyFilesBuildPhase"; "buildActionMask" = "2147483647"; "dstPath" = ""; "dstSubfolderSpec" = "13"; "files" = ( "A3300000000000000000005D" , ); "name" = "Embed App Extensions"; "runOnlyForDeploymentPostprocessing" = "0"; };
-
-        "A32000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Shared/WidgetSnapshot.swift"; "sourceTree" = "<group>"; };
-        "A32000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000001"; };
-        "A32000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Shared/WidgetSnapshotStore.swift"; "sourceTree" = "<group>"; };
-        "A32000000000000000000004" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000003"; };
-        "A32000000000000000000005" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "Storage/WidgetSnapshotProjection.swift"; "sourceTree" = "<group>"; };
-        "A32000000000000000000006" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000005"; };
-        "A32000000000000000000007" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "WidgetSnapshotTests.swift"; "sourceTree" = "<group>"; };
-        "A32000000000000000000008" = { "isa" = "PBXBuildFile"; "fileRef" = "A32000000000000000000007"; };
-
-        "A30000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "BackgroundQuotaRefresh.swift"; "sourceTree" = "<group>"; };
-        "A30000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A30000000000000000000001"; };
-
-        "A22000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "StaleAccountResultTests.swift"; "sourceTree" = "<group>"; };
-        "A22000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A22000000000000000000001"; };
-        "A14000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexCredentialRenewalTests.swift"; "sourceTree" = "<group>"; };
-        "A14000000000000000000004" = { "isa" = "PBXBuildFile"; "fileRef" = "A14000000000000000000003"; };
-        "A14000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexCredentialRenewal.swift"; "sourceTree" = "<group>"; };
-        "A14000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A14000000000000000000001"; };
-        "A12000000000000000000007" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexQuotaLiveTests.swift"; "sourceTree" = "<group>"; };
-        "A12000000000000000000008" = { "isa" = "PBXBuildFile"; "fileRef" = "A12000000000000000000007"; };
-        "A12000000000000000000005" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexQuotaUITests.swift"; "sourceTree" = "<group>"; };
-        "A12000000000000000000006" = { "isa" = "PBXBuildFile"; "fileRef" = "A12000000000000000000005"; };
-        "A12000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexQuotaServiceTests.swift"; "sourceTree" = "<group>"; };
-        "A12000000000000000000004" = { "isa" = "PBXBuildFile"; "fileRef" = "A12000000000000000000003"; };
-        "A12000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexQuotaService.swift"; "sourceTree" = "<group>"; };
-        "A12000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A12000000000000000000001"; };
-        "A11000000000000000000005" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexUsageParserTests.swift"; "sourceTree" = "<group>"; };
-        "A11000000000000000000006" = { "isa" = "PBXBuildFile"; "fileRef" = "A11000000000000000000005"; };
-        "A11000000000000000000003" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexUsageParser.swift"; "sourceTree" = "<group>"; };
-        "A11000000000000000000004" = { "isa" = "PBXBuildFile"; "fileRef" = "A11000000000000000000003"; };
-        "A11000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "QuotaSnapshot.swift"; "sourceTree" = "<group>"; };
-        "A11000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A11000000000000000000001"; };
-        "A10000000000000000000001" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexLoginInterruptionTests.swift"; "sourceTree" = "<group>"; };
-        "A10000000000000000000002" = { "isa" = "PBXBuildFile"; "fileRef" = "A10000000000000000000001"; };
-        "F26017C7DE0572766FDDAF7A" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexLoginCompletionUITests.swift"; "sourceTree" = "<group>"; };
-        "ACC630393D380593150A8C04" = { "isa" = "PBXBuildFile"; "fileRef" = "F26017C7DE0572766FDDAF7A"; };
-        "B715B2783B02EAB7679FD999" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexLoginLiveTests.swift"; "sourceTree" = "<group>"; };
-        "10724C65BFB4E935CCE372E8" = { "isa" = "PBXBuildFile"; "fileRef" = "B715B2783B02EAB7679FD999"; };
-        "7A154EA2F901EC5E5D4F2A96" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexLoginCompletionTests.swift"; "sourceTree" = "<group>"; };
-        "49D944FC303735BD3250BADB" = { "isa" = "PBXBuildFile"; "fileRef" = "7A154EA2F901EC5E5D4F2A96"; };
-        "6989AC3B71499434504A53FF" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexLoginClientTests.swift"; "sourceTree" = "<group>"; };
-        "BE194CB13FE87D36321FA881" = { "isa" = "PBXBuildFile"; "fileRef" = "6989AC3B71499434504A53FF"; };
-        "BA712195418CCA14A5E707D1" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexAccountBindingStoreTests.swift"; "sourceTree" = "<group>"; };
-        "C145A686F45287CE2018F69B" = { "isa" = "PBXBuildFile"; "fileRef" = "BA712195418CCA14A5E707D1"; };
-        "CCD3AE0E45D84FE8B8B965B8" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexIdentityVerifierTests.swift"; "sourceTree" = "<group>"; };
-        "E2326650DA1A791EEA8A7E26" = { "isa" = "PBXBuildFile"; "fileRef" = "CCD3AE0E45D84FE8B8B965B8"; };
-        "2D4442F0404306E19E0DD55E" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexAccountBindingStore.swift"; "sourceTree" = "<group>"; };
-        "C4E764B22F9E7814349D62A2" = { "isa" = "PBXBuildFile"; "fileRef" = "2D4442F0404306E19E0DD55E"; };
-        "FCA67A6E5372DB618EA78309" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexIdentityVerifier.swift"; "sourceTree" = "<group>"; };
-        "C5E1E1CB18E2CCF30699F0BE" = { "isa" = "PBXBuildFile"; "fileRef" = "FCA67A6E5372DB618EA78309"; };
-        "F3590A99FA1708957F199906" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexLoginClient.swift"; "sourceTree" = "<group>"; };
-        "03D934DC612B0E38B9051938" = { "isa" = "PBXBuildFile"; "fileRef" = "F3590A99FA1708957F199906"; };
-        "A07000000000000000000101" = { "isa" = "PBXFileReference"; "lastKnownFileType" = "sourcecode.swift"; "path" = "CodexConnectionLiveTests.swift"; "sourceTree" = "<group>"; };
-        "A07000000000000000000102" = { "isa" = "PBXBuildFile"; "fileRef" = "A07000000000000000000101"; };
-		"A07000000000000000000091" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "CodexConnectionUITests.swift";
-			"sourceTree" = "<group>";
-		};
-		"A07000000000000000000092" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A07000000000000000000091";
-		};
-
-		"A07000000000000000000081" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "CodexConnectionFlowTests.swift";
-			"sourceTree" = "<group>";
-		};
-		"A07000000000000000000082" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A07000000000000000000081";
-		};
-
-		"A07000000000000000000071" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "CodexDeviceAuthorizationTests.swift";
-			"sourceTree" = "<group>";
-		};
-		"A07000000000000000000072" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A07000000000000000000071";
-		};
-
-		"A07000000000000000000061" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "CodexConnectionUITestSupport.swift";
-			"sourceTree" = "<group>";
-		};
-		"A07000000000000000000062" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A07000000000000000000061";
-		};
-
-		"A07000000000000000000051" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "CodexConnectionView.swift";
-			"sourceTree" = "<group>";
-		};
-		"A07000000000000000000052" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A07000000000000000000051";
-		};
-
-		"A07000000000000000000041" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "CodexConnectionFlow.swift";
-			"sourceTree" = "<group>";
-		};
-		"A07000000000000000000042" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A07000000000000000000041";
-		};
-
-		"A07000000000000000000031" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "CodexLoginTransactionStore.swift";
-			"sourceTree" = "<group>";
-		};
-		"A07000000000000000000032" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A07000000000000000000031";
-		};
-
-		"A07000000000000000000021" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "CodexDeviceAuthorizationClient.swift";
-			"sourceTree" = "<group>";
-		};
-		"A07000000000000000000022" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A07000000000000000000021";
-		};
-
-		"A07000000000000000000011" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "CodexDeviceAuthorization.swift";
-			"sourceTree" = "<group>";
-		};
-		"A07000000000000000000012" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A07000000000000000000011";
-		};
-
-		"A06000000000000000000031" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "NetworkScoreLiveTests.swift";
-			"sourceTree" = "<group>";
-		};
-		"A06000000000000000000032" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A06000000000000000000031";
-		};
-		"A06000000000000000000021" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "NetworkScoreCheckerTests.swift";
-			"sourceTree" = "<group>";
-		};
-		"A06000000000000000000022" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A06000000000000000000021";
-		};
-		"A06000000000000000000011" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "NetworkScoreChecker.swift";
-			"sourceTree" = "<group>";
-		};
-		"A06000000000000000000012" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A06000000000000000000011";
-		};
-		"A05000000000000000000011" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "CredentialVault.swift";
-			"sourceTree" = "<group>";
-		};
-		"A05000000000000000000012" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A05000000000000000000011";
-		};
-		"A05000000000000000000021" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "CredentialVaultTests.swift";
-			"sourceTree" = "<group>";
-		};
-		"A05000000000000000000022" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A05000000000000000000021";
-		};
-
-		"A04000000000000000000011" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "ConnectedAccount.swift";
-			"sourceTree" = "<group>";
-		};
-		"A04000000000000000000012" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A04000000000000000000011";
-		};
-		"A04000000000000000000021" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "AccountQuotaState.swift";
-			"sourceTree" = "<group>";
-		};
-		"A04000000000000000000022" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A04000000000000000000021";
-		};
-		"A04000000000000000000031" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "AccountStore.swift";
-			"sourceTree" = "<group>";
-		};
-		"A04000000000000000000032" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A04000000000000000000031";
-		};
-		"A04000000000000000000041" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "AccountStoreTests.swift";
-			"sourceTree" = "<group>";
-		};
-		"A04000000000000000000042" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A04000000000000000000041";
-		};
-
-		"A030000000000000000000011" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "QuotaView.swift";
-			"sourceTree" = "<group>";
-		};
-		"A030000000000000000000012" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A030000000000000000000011";
-		};
-		"A030000000000000000000021" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "SettingsView.swift";
-			"sourceTree" = "<group>";
-		};
-		"A030000000000000000000022" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "A030000000000000000000021";
-		};
-
-		"3362B8F6FEB9187AF06C2973" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "RootView.swift";
-			"sourceTree" = "<group>";
-		};
-		"2C80EB31FAAE9AFA350E83E9" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "SubscriptionUsageApp.swift";
-			"sourceTree" = "<group>";
-		};
-		"91468586F9881985D065A03B" = {
-			"isa" = "PBXGroup";
-			"children" = (
-				"3362B8F6FEB9187AF06C2973",
-				"2C80EB31FAAE9AFA350E83E9",
-			);
-			"path" = "App";
-			"sourceTree" = "<group>";
-		};
-		"ACC8FCD787A05BFEE356200B" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "net.daringfireball.markdown";
-			"path" = "README.md";
-			"sourceTree" = "<group>";
-		};
-		"19ED03E8225A78EBFF67CDF6" = {
-			"isa" = "PBXGroup";
-			"children" = (
-                "A11000000000000000000001",
-				"A04000000000000000000021",
-				"A04000000000000000000011",
-				"ACC8FCD787A05BFEE356200B",
-			);
-			"path" = "Domain";
-			"sourceTree" = "<group>";
-		};
-		"F3D75B4B8AA038D86CC6B29B" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "net.daringfireball.markdown";
-			"path" = "README.md";
-			"sourceTree" = "<group>";
-		};
-		"9D756A79786A998CCABA280E" = {
-			"isa" = "PBXGroup";
-			"children" = (
-				"A07000000000000000000061",
-				"A07000000000000000000051",
-				"A07000000000000000000041",
-				"F3D75B4B8AA038D86CC6B29B",
-				"A42000000000000000000001",
-				"A030000000000000000000021",
-				"A030000000000000000000011",
-			);
-			"path" = "Features";
-			"sourceTree" = "<group>";
-		};
-		"4F4E472D1F3E5F00DA086E0A" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "net.daringfireball.markdown";
-			"path" = "README.md";
-			"sourceTree" = "<group>";
-		};
-		"507C28C1668CF2ACD62ACF25" = {
-			"isa" = "PBXGroup";
-			"children" = (
-                "A14000000000000000000001",
-                "A12000000000000000000001",
-                "A11000000000000000000003",
-                "FCA67A6E5372DB618EA78309",
-                "F3590A99FA1708957F199906",
-				"A07000000000000000000021",
-				"A07000000000000000000011",
-				"4F4E472D1F3E5F00DA086E0A",
-			);
-			"path" = "Codex";
-			"sourceTree" = "<group>";
-		};
-		"5930E46CC318FA874FAE1343" = {
-			"isa" = "PBXGroup";
-			"children" = (
-				"507C28C1668CF2ACD62ACF25",
-			);
-			"path" = "Providers";
-			"sourceTree" = "<group>";
-		};
-		"A0786A27B391A1797991F66E" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "net.daringfireball.markdown";
-			"path" = "README.md";
-			"sourceTree" = "<group>";
-		};
-		"EF972FBDF6EB970E6AA4CC4F" = {
-			"isa" = "PBXGroup";
-			"children" = (
-				"A06000000000000000000011",
-                "A30000000000000000000001",
-				"A0786A27B391A1797991F66E",
-			);
-			"path" = "Services";
-			"sourceTree" = "<group>";
-		};
-		"A3A1F5ADD6D6144FD2774C03" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "net.daringfireball.markdown";
-			"path" = "README.md";
-			"sourceTree" = "<group>";
-		};
-		"F8C4BA72139089CEC18AAC02" = {
-			"isa" = "PBXGroup";
-			"children" = (
-				"A3A1F5ADD6D6144FD2774C03",
-			);
-			"path" = "Shared";
-			"sourceTree" = "<group>";
-		};
-		"A4616617039740D1ABBB7E3E" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "net.daringfireball.markdown";
-			"path" = "README.md";
-			"sourceTree" = "<group>";
-		};
-		"D92BB5E5FB4824670C77346D" = {
-			"isa" = "PBXGroup";
-			"children" = (
-                "2D4442F0404306E19E0DD55E",
-				"A07000000000000000000031",
-				"A04000000000000000000031",
-				"A05000000000000000000011",
-				"A4616617039740D1ABBB7E3E",
-			);
-			"path" = "Storage";
-			"sourceTree" = "<group>";
-		};
-		"A9012353AFD6A66EB75D4BE2" = {
-			"isa" = "PBXGroup";
-			"children" = (
-                "A3300000000000000000001E",
-                "7E4A5B593C18C02CEC4ACF9B", "4FB6CE0696E94E0FB655C9CB", "BB70A4D7564605777F758FA3", "C4B77C6162DA7FB61F34B1D1", "4C6BF10838D61D522F927824", "8BF1A96EA8FAC375A4FF3F3D", "5294FE17501B02B7CCA7A0C2", "9A4A09B6D6CD60B2420D9C1F", "A89000000000000000000001", "A10500000000000000000001", "A11100000000000000000001", "B1160000000000000000BB01", "B1150000000000000000BB01", "B1140000000000000000BB01", "B1130000000000000000BB01", "B1130000000000000000AA01", "B1120000000000000000BB01", "B1120000000000000000AA01", "A91000000000000000000001", "A10600000000000000000001", "A10700000000000000000001", "A10800000000000000000001", "30BEBEF5BF5746C3302F3F13", "A65000000000000000000001", "A64000000000000000000001", "A33000000000000000000014",
-                "A32000000000000000000001",
-                "A32000000000000000000003",
-                "A32000000000000000000005",
-				"91468586F9881985D065A03B",
-				"19ED03E8225A78EBFF67CDF6",
-				"9D756A79786A998CCABA280E",
-				"5930E46CC318FA874FAE1343",
-				"EF972FBDF6EB970E6AA4CC4F",
-				"F8C4BA72139089CEC18AAC02",
-				"D92BB5E5FB4824670C77346D",
-			);
-			"path" = "Sources";
-			"sourceTree" = "<group>";
-		};
-		"C5F82E35A8E1AB26D4565F10" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "net.daringfireball.markdown";
-			"path" = "README.md";
-			"sourceTree" = "<group>";
-		};
-		"C5FC95C24B665C98DE0B6F1D" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "LaunchTests.swift";
-			"sourceTree" = "<group>";
-		};
-		"73321F1B03019DC59ED43B46" = {
-			"isa" = "PBXGroup";
-			"children" = (
-                "A12000000000000000000005",
-                "F26017C7DE0572766FDDAF7A",
-				"A07000000000000000000091",
-				"C5FC95C24B665C98DE0B6F1D",
-			);
-			"path" = "UI";
-			"sourceTree" = "<group>";
-		};
-		"1DF5E0AD711BD84D4AC12F40" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "sourcecode.swift";
-			"path" = "RootViewTests.swift";
-			"sourceTree" = "<group>";
-		};
-		"526E9B80F5C826824C672690" = {
-			"isa" = "PBXGroup";
-			"children" = (
-                "A33000000000000000000028",
-                "A32000000000000000000007",
-                "A12000000000000000000007",
-                "A14000000000000000000003",
-                "A22000000000000000000001",
-                "A12000000000000000000003",
-                "A11000000000000000000005",
-                "B715B2783B02EAB7679FD999",
-                "7A154EA2F901EC5E5D4F2A96",
-                "A10000000000000000000001",
-                "6989AC3B71499434504A53FF",
-                "BA712195418CCA14A5E707D1",
-                "CCD3AE0E45D84FE8B8B965B8",
-				"A07000000000000000000101",
-				"A07000000000000000000081",
-				"A07000000000000000000071",
-				"A06000000000000000000031",
-				"A06000000000000000000021",
-				"A04000000000000000000041",
-				"A05000000000000000000021",
-				"1DF5E0AD711BD84D4AC12F40",
-			);
-			"path" = "Unit";
-			"sourceTree" = "<group>";
-		};
-		"156052F04525D0F710673CF0" = {
-			"isa" = "PBXGroup";
-			"children" = (
-				"C5F82E35A8E1AB26D4565F10",
-				"73321F1B03019DC59ED43B46",
-				"526E9B80F5C826824C672690",
-			);
-			"path" = "Tests";
-			"sourceTree" = "<group>";
-		};
-		"E0E27618A2D2A8FEBDD49F35" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "folder.assetcatalog";
-			"path" = "Assets.xcassets";
-			"sourceTree" = "<group>";
-		};
-		"12874EF8E2CD6D147428E5AC" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "net.daringfireball.markdown";
-			"path" = "README.md";
-			"sourceTree" = "<group>";
-		};
-		"A024F06580C79B7582C3806A" = {
-			"isa" = "PBXGroup";
-			"children" = (
-				"E0E27618A2D2A8FEBDD49F35",
-                "56CA27E0739A4804AF72B2BE",
-                "7C1D2E3F4A5B6C7D8E9F0A11",
-				"12874EF8E2CD6D147428E5AC",
-			);
-			"path" = "Resources";
-			"sourceTree" = "<group>";
-		};
-		"8B78D6DD1422F301A90CA41C" = {
-			"isa" = "PBXFileReference";
-			"explicitFileType" = "wrapper.application";
-			"includeInIndex" = "0";
-			"path" = "SubscriptionUsage.app";
-			"sourceTree" = "BUILT_PRODUCTS_DIR";
-		};
-		"DC4B395B83EF4B7D4922E542" = {
-			"isa" = "PBXFileReference";
-			"explicitFileType" = "wrapper.cfbundle";
-			"includeInIndex" = "0";
-			"path" = "SubscriptionUsageTests.xctest";
-			"sourceTree" = "BUILT_PRODUCTS_DIR";
-		};
-		"5EFFCF461A990651450E250C" = {
-			"isa" = "PBXFileReference";
-			"explicitFileType" = "wrapper.cfbundle";
-			"includeInIndex" = "0";
-			"path" = "SubscriptionUsageUITests.xctest";
-			"sourceTree" = "BUILT_PRODUCTS_DIR";
-		};
-		"5151B46607EBC8890D8DFCC2" = {
-			"isa" = "PBXGroup";
-			"children" = (
-                "A33000000000000000000046",
-				"8B78D6DD1422F301A90CA41C",
-				"DC4B395B83EF4B7D4922E542",
-				"5EFFCF461A990651450E250C",
-			);
-			"name" = "Products";
-			"sourceTree" = "<group>";
-		};
-		"AA4ACA445B3FBAF47CDE31AC" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "net.daringfireball.markdown";
-			"path" = "README.md";
-			"sourceTree" = "<group>";
-		};
-		"03770F3FAFF1A07422B17956" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "net.daringfireball.markdown";
-			"path" = "AGENTS.md";
-			"sourceTree" = "<group>";
-		};
-		"3D3BC75BB5D203E4E79BB10E" = {
-			"isa" = "PBXFileReference";
-			"lastKnownFileType" = "text.xcconfig";
-			"path" = "Signing.xcconfig";
-			"sourceTree" = "<group>";
-		};
-		"32D7FD54A675882A40444E85" = {
-			"isa" = "PBXGroup";
-			"children" = (
-				"3D3BC75BB5D203E4E79BB10E",
-			);
-			"path" = "Config";
-			"sourceTree" = "<group>";
-		};
-		"ADCF10F76EBF2A74473E9DC4" = {
-			"isa" = "PBXGroup";
-			"children" = ( "8ABEBA97EE4D75A4818C293A", "DB5916E37D563DAC75D5F798",
-				"32D7FD54A675882A40444E85",
-				"A9012353AFD6A66EB75D4BE2",
-				"A024F06580C79B7582C3806A",
-				"156052F04525D0F710673CF0",
-				"AA4ACA445B3FBAF47CDE31AC",
-				"03770F3FAFF1A07422B17956",
-				"5151B46607EBC8890D8DFCC2",
-			);
-			"sourceTree" = "<group>";
-		};
-		"262E02E3C63E2FBADCBCB6A2" = {
-			"isa" = "XCBuildConfiguration";
-			"buildSettings" = {
-				"ALWAYS_SEARCH_USER_PATHS" = "NO";
-				"CLANG_ENABLE_MODULES" = "YES";
-				"CLANG_ENABLE_OBJC_ARC" = "YES";
-				"CLANG_WARN_DOCUMENTATION_COMMENTS" = "YES";
-				"CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER" = "YES";
-				"COPY_PHASE_STRIP" = "NO";
-				"GCC_C_LANGUAGE_STANDARD" = "gnu17";
-				"GCC_NO_COMMON_BLOCKS" = "YES";
-				"IPHONEOS_DEPLOYMENT_TARGET" = "17.0";
-				"SDKROOT" = "iphoneos";
-				"SWIFT_VERSION" = "6.0";
-				"SWIFT_STRICT_CONCURRENCY" = "complete";
-				"DEBUG_INFORMATION_FORMAT" = "dwarf";
-				"ENABLE_TESTABILITY" = "YES";
-				"GCC_OPTIMIZATION_LEVEL" = "0";
-				"GCC_PREPROCESSOR_DEFINITIONS" = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				"ONLY_ACTIVE_ARCH" = "YES";
-				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "$(inherited) DEBUG";
-				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
-			};
-			"name" = "Debug";
-		};
-		"86E0D76135EE80816AB07AC0" = {
-			"isa" = "XCBuildConfiguration";
-			"buildSettings" = {
-				"ALWAYS_SEARCH_USER_PATHS" = "NO";
-				"CLANG_ENABLE_MODULES" = "YES";
-				"CLANG_ENABLE_OBJC_ARC" = "YES";
-				"CLANG_WARN_DOCUMENTATION_COMMENTS" = "YES";
-				"CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER" = "YES";
-				"COPY_PHASE_STRIP" = "NO";
-				"GCC_C_LANGUAGE_STANDARD" = "gnu17";
-				"GCC_NO_COMMON_BLOCKS" = "YES";
-				"IPHONEOS_DEPLOYMENT_TARGET" = "17.0";
-				"SDKROOT" = "iphoneos";
-				"SWIFT_VERSION" = "6.0";
-				"SWIFT_STRICT_CONCURRENCY" = "complete";
-				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
-				"SWIFT_COMPILATION_MODE" = "wholemodule";
-				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
-				"VALIDATE_PRODUCT" = "YES";
-			};
-			"name" = "Release";
-		};
-		"12D04D787E90C9B967248BFD" = {
-			"isa" = "XCConfigurationList";
-			"buildConfigurations" = (
-				"262E02E3C63E2FBADCBCB6A2",
-				"86E0D76135EE80816AB07AC0",
-			);
-			"defaultConfigurationIsVisible" = "0";
-			"defaultConfigurationName" = "Release";
-		};
-		"89291EB5FEBDC4EA06C9EEEA" = {
-			"isa" = "XCBuildConfiguration";
-			"baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E";
-			"buildSettings" = {
-				"CODE_SIGN_STYLE" = "Automatic";
-				"CURRENT_PROJECT_VERSION" = "20";
-				"GENERATE_INFOPLIST_FILE" = "YES";
-				"MARKETING_VERSION" = "0.1.0";
-				"PRODUCT_NAME" = "$(TARGET_NAME)";
-				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"TARGETED_DEVICE_FAMILY" = "1";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsage";
-                "CODE_SIGN_ENTITLEMENTS" = "Config/SubscriptionUsage.entitlements";
-                "INFOPLIST_FILE" = "Config/Info.plist";
-				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
-				"ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" = "AccentColor";
-				"INFOPLIST_KEY_CFBundleDisplayName" = "Token 仪表盘";
-				"INFOPLIST_KEY_LSApplicationCategoryType" = "public.app-category.utilities";
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation" = "YES";
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents" = "YES";
-				"INFOPLIST_KEY_UILaunchScreen_Generation" = "YES";
-				"INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone" = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				"LD_RUNPATH_SEARCH_PATHS" = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-			};
-			"name" = "Debug";
-		};
-		"43709F679F348B2EF2352978" = {
-			"isa" = "XCBuildConfiguration";
-			"baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E";
-			"buildSettings" = {
-				"CODE_SIGN_STYLE" = "Automatic";
-				"CURRENT_PROJECT_VERSION" = "20";
-				"GENERATE_INFOPLIST_FILE" = "YES";
-				"MARKETING_VERSION" = "0.1.0";
-				"PRODUCT_NAME" = "$(TARGET_NAME)";
-				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"TARGETED_DEVICE_FAMILY" = "1";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsage";
-                "CODE_SIGN_ENTITLEMENTS" = "Config/SubscriptionUsage.entitlements";
-                "INFOPLIST_FILE" = "Config/Info.plist";
-				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
-				"ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" = "AccentColor";
-				"INFOPLIST_KEY_CFBundleDisplayName" = "Token 仪表盘";
-				"INFOPLIST_KEY_LSApplicationCategoryType" = "public.app-category.utilities";
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation" = "YES";
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents" = "YES";
-				"INFOPLIST_KEY_UILaunchScreen_Generation" = "YES";
-				"INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone" = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				"LD_RUNPATH_SEARCH_PATHS" = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-			};
-			"name" = "Release";
-		};
-		"1FE9F28EBC51C8E8D89B6142" = {
-			"isa" = "XCConfigurationList";
-			"buildConfigurations" = (
-				"89291EB5FEBDC4EA06C9EEEA",
-				"43709F679F348B2EF2352978",
-			);
-			"defaultConfigurationIsVisible" = "0";
-			"defaultConfigurationName" = "Release";
-		};
-		"431F226BD8B344E05B177FD2" = {
-			"isa" = "XCBuildConfiguration";
-			"baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E";
-			"buildSettings" = {
-				"CODE_SIGN_STYLE" = "Automatic";
-				"CURRENT_PROJECT_VERSION" = "20";
-				"GENERATE_INFOPLIST_FILE" = "YES";
-				"MARKETING_VERSION" = "0.1.0";
-				"PRODUCT_NAME" = "$(TARGET_NAME)";
-				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"TARGETED_DEVICE_FAMILY" = "1";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsageTests";
-				"BUNDLE_LOADER" = "$(TEST_HOST)";
-				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/SubscriptionUsage.app/SubscriptionUsage";
-				"LD_RUNPATH_SEARCH_PATHS" = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-			};
-			"name" = "Debug";
-		};
-		"2B5BA518B56BFFF492DB836F" = {
-			"isa" = "XCBuildConfiguration";
-			"baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E";
-			"buildSettings" = {
-				"CODE_SIGN_STYLE" = "Automatic";
-				"CURRENT_PROJECT_VERSION" = "20";
-				"GENERATE_INFOPLIST_FILE" = "YES";
-				"MARKETING_VERSION" = "0.1.0";
-				"PRODUCT_NAME" = "$(TARGET_NAME)";
-				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"TARGETED_DEVICE_FAMILY" = "1";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsageTests";
-				"BUNDLE_LOADER" = "$(TEST_HOST)";
-				"TEST_HOST" = "$(BUILT_PRODUCTS_DIR)/SubscriptionUsage.app/SubscriptionUsage";
-				"LD_RUNPATH_SEARCH_PATHS" = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-			};
-			"name" = "Release";
-		};
-		"74CD2B3BC49A9ADEB4EE1018" = {
-			"isa" = "XCConfigurationList";
-			"buildConfigurations" = (
-				"431F226BD8B344E05B177FD2",
-				"2B5BA518B56BFFF492DB836F",
-			);
-			"defaultConfigurationIsVisible" = "0";
-			"defaultConfigurationName" = "Release";
-		};
-		"F8A38335325F6B60B821FB18" = {
-			"isa" = "XCBuildConfiguration";
-			"baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E";
-			"buildSettings" = {
-				"CODE_SIGN_STYLE" = "Automatic";
-				"CURRENT_PROJECT_VERSION" = "20";
-				"GENERATE_INFOPLIST_FILE" = "YES";
-				"MARKETING_VERSION" = "0.1.0";
-				"PRODUCT_NAME" = "$(TARGET_NAME)";
-				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"TARGETED_DEVICE_FAMILY" = "1";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsageUITests";
-				"TEST_TARGET_NAME" = "SubscriptionUsage";
-				"LD_RUNPATH_SEARCH_PATHS" = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-			};
-			"name" = "Debug";
-		};
-		"47AB09F738116BB2ACFB5BA4" = {
-			"isa" = "XCBuildConfiguration";
-			"baseConfigurationReference" = "3D3BC75BB5D203E4E79BB10E";
-			"buildSettings" = {
-				"CODE_SIGN_STYLE" = "Automatic";
-				"CURRENT_PROJECT_VERSION" = "20";
-				"GENERATE_INFOPLIST_FILE" = "YES";
-				"MARKETING_VERSION" = "0.1.0";
-				"PRODUCT_NAME" = "$(TARGET_NAME)";
-				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
-				"SUPPORTS_MACCATALYST" = "NO";
-				"SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD" = "NO";
-				"TARGETED_DEVICE_FAMILY" = "1";
-				"PRODUCT_BUNDLE_IDENTIFIER" = "com.iceflying.SubscriptionUsageUITests";
-				"TEST_TARGET_NAME" = "SubscriptionUsage";
-				"LD_RUNPATH_SEARCH_PATHS" = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-			};
-			"name" = "Release";
-		};
-		"37EE6485F4E834CA0D21A654" = {
-			"isa" = "XCConfigurationList";
-			"buildConfigurations" = (
-				"F8A38335325F6B60B821FB18",
-				"47AB09F738116BB2ACFB5BA4",
-			);
-			"defaultConfigurationIsVisible" = "0";
-			"defaultConfigurationName" = "Release";
-		};
-		"0868E870EDC42183AF777E36" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "2C80EB31FAAE9AFA350E83E9";
-		};
-		"4232F2B2369A337E80CBEE0B" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "3362B8F6FEB9187AF06C2973";
-		};
-		"DBD765969E2C480B353169C4" = {
-			"isa" = "PBXSourcesBuildPhase";
-			"buildActionMask" = "2147483647";
-			"files" = ( "AD52E1D158E8C4CDD9F1FE1B", "A93000000000000000000002", "A92100000000000000000002", "A92000000000000000000002", "A89000000000000000000002", "A10500000000000000000002", "A11100000000000000000002", "B1130000000000000000AA02", "B1120000000000000000AA02", "FF4D2AE188D280A23B1B139E", "522A0F57B7E88903643D0A01", "04DA5720DCAD4685BA2D719A", "18827DF4191A7FA60C48BEC4", "FB9FB3C45464E40274CFE2F4", "5BE15F7FAAC3A6D1B5D5D881", "F0C89C3978D12B108D7BADA8", "A65000000000000000000002", "A64000000000000000000002", "A38000000000000000000002", "A39000000000000000000004", "A39000000000000000000002", "B816BBB98BE9CF236B9C075C", "C2A296549EB1F677FE8435D7",
-                "A33000000000000000000015",
-                "A32000000000000000000002",
-                "A32000000000000000000004",
-                "A32000000000000000000006",
-                "A14000000000000000000002",
-                "A12000000000000000000002",
-                "A11000000000000000000004",
-                "A11000000000000000000002",
-                "C4E764B22F9E7814349D62A2",
-                "C5E1E1CB18E2CCF30699F0BE",
-                "03D934DC612B0E38B9051938",
-				"A07000000000000000000062",
-				"A07000000000000000000052",
-				"A07000000000000000000042",
-				"A07000000000000000000032",
-				"A07000000000000000000022",
-				"A07000000000000000000012",
-				"A06000000000000000000012",
-                "A30000000000000000000002",
-				"A04000000000000000000032",
-				"A05000000000000000000012",
-				"A04000000000000000000022",
-				"A04000000000000000000012",
-				"A42000000000000000000002",
-				"A030000000000000000000022",
-				"A030000000000000000000012",
-				"0868E870EDC42183AF777E36",
-				"4232F2B2369A337E80CBEE0B",
-			);
-			"runOnlyForDeploymentPostprocessing" = "0";
-		};
-		"881D232D2A04C1E59F16365B" = {
-			"isa" = "PBXFrameworksBuildPhase";
-			"buildActionMask" = "2147483647";
-			"files" = (
-			);
-			"runOnlyForDeploymentPostprocessing" = "0";
-		};
-		"1029A0BE8FBD5986A9935B4D" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "E0E27618A2D2A8FEBDD49F35";
-		};
-		"1F4348A705DE26BA70374258" = {
-			"isa" = "PBXResourcesBuildPhase";
-			"buildActionMask" = "2147483647";
-			"files" = (
-				"1029A0BE8FBD5986A9935B4D",
-                "2EE7C9A1952642258DCBC14F",
-                "7C1D2E3F4A5B6C7D8E9F0A12",
-			);
-			"runOnlyForDeploymentPostprocessing" = "0";
-		};
-		"E633290B294C2A3AB4572C63" = {
-			"isa" = "PBXNativeTarget";
-			"buildConfigurationList" = "1FE9F28EBC51C8E8D89B6142";
-			"buildPhases" = (
-				"DBD765969E2C480B353169C4",
-				"881D232D2A04C1E59F16365B",
-				"1F4348A705DE26BA70374258",
-                "A3300000000000000000005E",
-			);
-			"buildRules" = (
-			);
-			"dependencies" = (
-                "A3300000000000000000005C",
-			);
-			"name" = "SubscriptionUsage";
-			"productName" = "SubscriptionUsage";
-			"productReference" = "8B78D6DD1422F301A90CA41C";
-			"productType" = "com.apple.product-type.application";
-		};
-		"ACDE5B2324C1E9E41D522892" = {
-			"isa" = "PBXContainerItemProxy";
-			"containerPortal" = "98F54143AB4E86B28C3AFEE0";
-			"proxyType" = "1";
-			"remoteGlobalIDString" = "E633290B294C2A3AB4572C63";
-			"remoteInfo" = "SubscriptionUsage";
-		};
-		"04572472F88EED2EF683B581" = {
-			"isa" = "PBXTargetDependency";
-			"target" = "E633290B294C2A3AB4572C63";
-			"targetProxy" = "ACDE5B2324C1E9E41D522892";
-		};
-		"B70410B9B464B0A73168916A" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "1DF5E0AD711BD84D4AC12F40";
-		};
-		"5B69A3EAFB58604EE5337742" = {
-			"isa" = "PBXSourcesBuildPhase";
-			"buildActionMask" = "2147483647";
-			"files" = ( "A2F5AF257A6415DF76224101", "B1160000000000000000BB04", "B1150000000000000000BB04", "B1140000000000000000BB04", "B1130000000000000000BB04", "B1120000000000000000BB04", "A94000000000000000000002", "A93100000000000000000002", "A92200000000000000000002", "A91000000000000000000002", "A10600000000000000000002", "A10700000000000000000002", "A10800000000000000000002", "A38000000000000000000004", "A3900000000000000000000C", "A3900000000000000000000A", "A39000000000000000000008", "A39000000000000000000006",
-                "A33000000000000000000029",
-                "A32000000000000000000008",
-                "A12000000000000000000008",
-                "A14000000000000000000004",
-                "A22000000000000000000002",
-                "A12000000000000000000004",
-                "A11000000000000000000006",
-                "10724C65BFB4E935CCE372E8",
-                "49D944FC303735BD3250BADB",
-                "A10000000000000000000002",
-                "BE194CB13FE87D36321FA881",
-                "C145A686F45287CE2018F69B",
-                "E2326650DA1A791EEA8A7E26",
-				"A07000000000000000000102",
-				"A07000000000000000000082",
-				"A07000000000000000000072",
-				"A06000000000000000000032",
-				"A06000000000000000000022",
-				"A04000000000000000000042",
-				"A05000000000000000000022",
-				"B70410B9B464B0A73168916A",
-			);
-			"runOnlyForDeploymentPostprocessing" = "0";
-		};
-		"02D9DAB72C590328B299F5D4" = {
-			"isa" = "PBXFrameworksBuildPhase";
-			"buildActionMask" = "2147483647";
-			"files" = (
-			);
-			"runOnlyForDeploymentPostprocessing" = "0";
-		};
-		"5EAA65B7B2103252AADC92C9" = {
-			"isa" = "PBXResourcesBuildPhase";
-			"buildActionMask" = "2147483647";
-			"files" = (
-			);
-			"runOnlyForDeploymentPostprocessing" = "0";
-		};
-		"EABDCA511F0CE0D17BB7AB89" = {
-			"isa" = "PBXNativeTarget";
-			"buildConfigurationList" = "74CD2B3BC49A9ADEB4EE1018";
-			"buildPhases" = (
-				"5B69A3EAFB58604EE5337742",
-				"02D9DAB72C590328B299F5D4",
-				"5EAA65B7B2103252AADC92C9",
-			);
-			"buildRules" = (
-			);
-			"dependencies" = (
-				"04572472F88EED2EF683B581",
-			);
-			"name" = "SubscriptionUsageTests";
-			"productName" = "SubscriptionUsageTests";
-			"productReference" = "DC4B395B83EF4B7D4922E542";
-			"productType" = "com.apple.product-type.bundle.unit-test";
-		};
-		"B0689DB83EDEB1556532041F" = {
-			"isa" = "PBXContainerItemProxy";
-			"containerPortal" = "98F54143AB4E86B28C3AFEE0";
-			"proxyType" = "1";
-			"remoteGlobalIDString" = "E633290B294C2A3AB4572C63";
-			"remoteInfo" = "SubscriptionUsage";
-		};
-		"D35DC79E2DA3CCF1EFDFF82C" = {
-			"isa" = "PBXTargetDependency";
-			"target" = "E633290B294C2A3AB4572C63";
-			"targetProxy" = "B0689DB83EDEB1556532041F";
-		};
-		"AD1527725FD5F00A9577F95B" = {
-			"isa" = "PBXBuildFile";
-			"fileRef" = "C5FC95C24B665C98DE0B6F1D";
-		};
-		"1A24D49A65599DB28FB2B4F4" = {
-			"isa" = "PBXSourcesBuildPhase";
-			"buildActionMask" = "2147483647";
-			"files" = ( "A38000000000000000000006",
-                "A12000000000000000000006",
-                "ACC630393D380593150A8C04",
-				"A07000000000000000000092",
-				"AD1527725FD5F00A9577F95B",
-			);
-			"runOnlyForDeploymentPostprocessing" = "0";
-		};
-		"8A6090AD31DCC4FD32D6257B" = {
-			"isa" = "PBXFrameworksBuildPhase";
-			"buildActionMask" = "2147483647";
-			"files" = (
-			);
-			"runOnlyForDeploymentPostprocessing" = "0";
-		};
-		"872557091656610AE180DBF1" = {
-			"isa" = "PBXResourcesBuildPhase";
-			"buildActionMask" = "2147483647";
-			"files" = (
-			);
-			"runOnlyForDeploymentPostprocessing" = "0";
-		};
-		"3A56D6E2F23E4EBB75B434CE" = {
-			"isa" = "PBXNativeTarget";
-			"buildConfigurationList" = "37EE6485F4E834CA0D21A654";
-			"buildPhases" = (
-				"1A24D49A65599DB28FB2B4F4",
-				"8A6090AD31DCC4FD32D6257B",
-				"872557091656610AE180DBF1",
-			);
-			"buildRules" = (
-			);
-			"dependencies" = (
-				"D35DC79E2DA3CCF1EFDFF82C",
-			);
-			"name" = "SubscriptionUsageUITests";
-			"productName" = "SubscriptionUsageUITests";
-			"productReference" = "5EFFCF461A990651450E250C";
-			"productType" = "com.apple.product-type.bundle.ui-testing";
-		};
-		"98F54143AB4E86B28C3AFEE0" = {
-			"isa" = "PBXProject";
-			"attributes" = {
-				"BuildIndependentTargetsInParallel" = "YES";
-				"LastSwiftUpdateCheck" = "2660";
-				"LastUpgradeCheck" = "2660";
-				"TargetAttributes" = {
-					"E633290B294C2A3AB4572C63" = {
-						"CreatedOnToolsVersion" = "26.6";
+/* Begin PBXProject section */
+		98F54143AB4E86B28C3AFEE0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {
+					3A56D6E2F23E4EBB75B434CE = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = E633290B294C2A3AB4572C63;
 					};
-					"EABDCA511F0CE0D17BB7AB89" = {
-						"CreatedOnToolsVersion" = "26.6";
-						"TestTargetID" = "E633290B294C2A3AB4572C63";
+					E633290B294C2A3AB4572C63 = {
+						CreatedOnToolsVersion = 26.6;
 					};
-					"3A56D6E2F23E4EBB75B434CE" = {
-						"CreatedOnToolsVersion" = "26.6";
-						"TestTargetID" = "E633290B294C2A3AB4572C63";
+					EABDCA511F0CE0D17BB7AB89 = {
+						CreatedOnToolsVersion = 26.6;
+						TestTargetID = E633290B294C2A3AB4572C63;
 					};
 				};
 			};
-			"buildConfigurationList" = "12D04D787E90C9B967248BFD";
-			"compatibilityVersion" = "Xcode 14.0";
-			"developmentRegion" = "zh-Hans";
-			"hasScannedForEncodings" = "0";
-			"knownRegions" = (
+			buildConfigurationList = 12D04D787E90C9B967248BFD /* Build configuration list for PBXProject "SubscriptionUsage" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = "zh-Hans";
+			hasScannedForEncodings = 0;
+			knownRegions = (
 				"zh-Hans",
-				"en",
-				"Base",
+				en,
+				Base,
 			);
-			"mainGroup" = "ADCF10F76EBF2A74473E9DC4";
-			"productRefGroup" = "5151B46607EBC8890D8DFCC2";
-			"projectDirPath" = "";
-			"projectRoot" = "";
-			"targets" = (
-                "A3300000000000000000005A",
-				"E633290B294C2A3AB4572C63",
-				"EABDCA511F0CE0D17BB7AB89",
-				"3A56D6E2F23E4EBB75B434CE",
+			mainGroup = ADCF10F76EBF2A74473E9DC4;
+			productRefGroup = 5151B46607EBC8890D8DFCC2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A3300000000000000000005A /* SubscriptionUsageWidget */,
+				E633290B294C2A3AB4572C63 /* SubscriptionUsage */,
+				EABDCA511F0CE0D17BB7AB89 /* SubscriptionUsageTests */,
+				3A56D6E2F23E4EBB75B434CE /* SubscriptionUsageUITests */,
 			);
 		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1F4348A705DE26BA70374258 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1029A0BE8FBD5986A9935B4D /* Assets.xcassets in Resources */,
+				2EE7C9A1952642258DCBC14F /* Licenses/LobeIcons-MIT.txt in Resources */,
+				7C1D2E3F4A5B6C7D8E9F0A12 /* Licenses/Lucide-ISC.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5EAA65B7B2103252AADC92C9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		872557091656610AE180DBF1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A3300000000000000000000B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A3300000000000000000000C /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1A24D49A65599DB28FB2B4F4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A38000000000000000000006 /* Tests/UI/ResetReminderUITests.swift in Sources */,
+				A12000000000000000000006 /* CodexQuotaUITests.swift in Sources */,
+				ACC630393D380593150A8C04 /* CodexLoginCompletionUITests.swift in Sources */,
+				A07000000000000000000092 /* CodexConnectionUITests.swift in Sources */,
+				AD1527725FD5F00A9577F95B /* LaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5B69A3EAFB58604EE5337742 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2F5AF257A6415DF76224101 /* Tests/Unit/NativeQuotaStyleTests.swift in Sources */,
+				B1160000000000000000BB04 /* Tests/Unit/APIBalanceDemoTests.swift in Sources */,
+				B1150000000000000000BB04 /* Tests/Unit/APIBalanceDisplayTests.swift in Sources */,
+				B1140000000000000000BB04 /* Tests/Unit/APIBalanceConnectionTests.swift in Sources */,
+				B1130000000000000000BB04 /* Tests/Unit/APIBalanceQueryTests.swift in Sources */,
+				B1120000000000000000BB04 /* Tests/Unit/APIBalanceStoreTests.swift in Sources */,
+				A94000000000000000000002 /* Tests/Unit/CursorRefreshTests.swift in Sources */,
+				A93100000000000000000002 /* Tests/Unit/CursorConnectionTests.swift in Sources */,
+				A92200000000000000000002 /* Tests/Unit/CursorQuotaTests.swift in Sources */,
+				A91000000000000000000002 /* Tests/Unit/CursorDisplayTests.swift in Sources */,
+				A10600000000000000000002 /* Tests/Unit/GrokBotQuotaTests.swift in Sources */,
+				A10700000000000000000002 /* Tests/Unit/GrokBotDisplayTests.swift in Sources */,
+				A10800000000000000000002 /* Tests/Unit/GrokBotReminderTests.swift in Sources */,
+				A38000000000000000000004 /* Tests/Unit/ResetReminderSettingsTests.swift in Sources */,
+				A3900000000000000000000C /* Tests/Unit/ResetReminderIntegrationTests.swift in Sources */,
+				A3900000000000000000000A /* Tests/Unit/ResetReminderNotificationTests.swift in Sources */,
+				A39000000000000000000008 /* Tests/Unit/ResetReminderSchedulerTests.swift in Sources */,
+				A39000000000000000000006 /* Tests/Unit/ResetReminderPlanTests.swift in Sources */,
+				A33000000000000000000029 /* QuotaWidgetTests.swift in Sources */,
+				A32000000000000000000008 /* WidgetSnapshotTests.swift in Sources */,
+				A12000000000000000000008 /* CodexQuotaLiveTests.swift in Sources */,
+				A14000000000000000000004 /* CodexCredentialRenewalTests.swift in Sources */,
+				A22000000000000000000002 /* StaleAccountResultTests.swift in Sources */,
+				A12000000000000000000004 /* CodexQuotaServiceTests.swift in Sources */,
+				A11000000000000000000006 /* CodexUsageParserTests.swift in Sources */,
+				10724C65BFB4E935CCE372E8 /* CodexLoginLiveTests.swift in Sources */,
+				49D944FC303735BD3250BADB /* CodexLoginCompletionTests.swift in Sources */,
+				A10000000000000000000002 /* CodexLoginInterruptionTests.swift in Sources */,
+				BE194CB13FE87D36321FA881 /* CodexLoginClientTests.swift in Sources */,
+				C145A686F45287CE2018F69B /* CodexAccountBindingStoreTests.swift in Sources */,
+				E2326650DA1A791EEA8A7E26 /* CodexIdentityVerifierTests.swift in Sources */,
+				A07000000000000000000102 /* CodexConnectionLiveTests.swift in Sources */,
+				A07000000000000000000082 /* CodexConnectionFlowTests.swift in Sources */,
+				A07000000000000000000072 /* CodexDeviceAuthorizationTests.swift in Sources */,
+				A06000000000000000000032 /* NetworkScoreLiveTests.swift in Sources */,
+				A06000000000000000000022 /* NetworkScoreCheckerTests.swift in Sources */,
+				A04000000000000000000042 /* AccountStoreTests.swift in Sources */,
+				A05000000000000000000022 /* CredentialVaultTests.swift in Sources */,
+				B70410B9B464B0A73168916A /* RootViewTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A3300000000000000000000A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B1130000000000000000AA03 /* Sources/Providers/APIBalance/APIBalanceService.swift in Sources */,
+				B1120000000000000000AA03 /* Sources/Domain/APIBalance.swift in Sources */,
+				A92100000000000000000003 /* Sources/Providers/Cursor/CursorQuotaService.swift in Sources */,
+				A92000000000000000000003 /* Sources/Providers/Cursor/CursorUsageParser.swift in Sources */,
+				728295DC67420899BA863CD5 /* Sources/Shared/CardStyles/CompactQuotaBars.swift in Sources */,
+				D59AE8D1B01EA4F5BFEBA0EB /* Sources/Shared/CardStyles/CompactQuotaTheme.swift in Sources */,
+				17835A4DC32C88871399052B /* Sources/Shared/CardStyles/QuotaStyledCard.swift in Sources */,
+				367440C06746850634A149C7 /* Sources/Shared/CardStyles/CompactQuotaWidget.swift in Sources */,
+				D2DFE2E8A4CDE38E05B9A8B3 /* Sources/Shared/CardStyles/QuotaWatermarkShape.swift in Sources */,
+				98FA8229442AB7F10FEF85D7 /* Sources/Shared/CardStyles/QuotaStyledInput.swift in Sources */,
+				E2A34026C054C46D78B68631 /* Sources/Shared/CardStyles/NativeQuotaDesign.swift in Sources */,
+				A65000000000000000000003 /* Sources/Shared/QuotaCardStylePreferences.swift in Sources */,
+				A64000000000000000000003 /* Sources/Shared/QuotaCardStyle.swift in Sources */,
+				A40000000000000000000001 /* Sources/Services/ResetReminderPlan.swift in Sources */,
+				A40000000000000000000002 /* Sources/Services/ResetReminderScheduler.swift in Sources */,
+				A40000000000000000000003 /* Sources/Services/ResetReminderSettings.swift in Sources */,
+				16B7B245FC878FC5801CCE32 /* Sources/Shared/SharedAccountAccess.swift in Sources */,
+				8F2E9AF97361B48676285CF3 /* Sources/Services/AutomaticWidgetRefresh.swift in Sources */,
+				E4A666C9A37B0B091B44A4F0 /* AccountStore.swift in Sources */,
+				ABE71F408FE85C8235C44F15 /* CredentialVault.swift in Sources */,
+				DC50337F369299F04667622D /* Storage/WidgetSnapshotProjection.swift in Sources */,
+				3EC1A7DC14B4B6F2D5C05109 /* ConnectedAccount.swift in Sources */,
+				57689D2BE7C25437A8560AB9 /* AccountQuotaState.swift in Sources */,
+				6D522A253B3D21DDEF252835 /* CodexQuotaService.swift in Sources */,
+				92E92E143EAC2A9863389A01 /* CodexCredentialRenewal.swift in Sources */,
+				827D385A84FB4C02E5E6E00F /* CodexIdentityVerifier.swift in Sources */,
+				430EC5A9CDCEE955AED20941 /* CodexUsageParser.swift in Sources */,
+				4D416D682394BBD790F187FE /* CodexDeviceAuthorizationClient.swift in Sources */,
+				5BF37A720A16FBDA80A04827 /* CodexDeviceAuthorization.swift in Sources */,
+				7251A8DB8D008490BB24A5E6 /* CodexLoginClient.swift in Sources */,
+				776606FC491D48AD8A4A6B52 /* NetworkScoreChecker.swift in Sources */,
+				DE41D9A1DF492C89251199B7 /* QuotaSnapshot.swift in Sources */,
+				8A2024310A981901B8DF64D7 /* CodexLoginTransactionStore.swift in Sources */,
+				A33000000000000000000016 /* Shared/QuotaWidgetContent.swift in Sources */,
+				A3300000000000000000001F /* Widget/SubscriptionUsageWidget.swift in Sources */,
+				A3300000000000000000003C /* Shared/WidgetSnapshot.swift in Sources */,
+				A3300000000000000000003D /* Shared/WidgetSnapshotStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBD765969E2C480B353169C4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD52E1D158E8C4CDD9F1FE1B /* Sources/Debug/QuotaStyleLabView.swift in Sources */,
+				A93000000000000000000002 /* Sources/Providers/Cursor/CursorLoginClient.swift in Sources */,
+				A92100000000000000000002 /* Sources/Providers/Cursor/CursorQuotaService.swift in Sources */,
+				A92000000000000000000002 /* Sources/Providers/Cursor/CursorUsageParser.swift in Sources */,
+				A89000000000000000000002 /* Sources/Debug/CursorLoginProbeView.swift in Sources */,
+				A10500000000000000000002 /* Sources/Debug/GrokBotUsageProbeView.swift in Sources */,
+				A11100000000000000000002 /* Sources/Debug/APIBalanceProbeView.swift in Sources */,
+				B1130000000000000000AA02 /* Sources/Providers/APIBalance/APIBalanceService.swift in Sources */,
+				B1120000000000000000AA02 /* Sources/Domain/APIBalance.swift in Sources */,
+				FF4D2AE188D280A23B1B139E /* Sources/Shared/CardStyles/CompactQuotaBars.swift in Sources */,
+				522A0F57B7E88903643D0A01 /* Sources/Shared/CardStyles/CompactQuotaTheme.swift in Sources */,
+				04DA5720DCAD4685BA2D719A /* Sources/Shared/CardStyles/QuotaStyledCard.swift in Sources */,
+				18827DF4191A7FA60C48BEC4 /* Sources/Shared/CardStyles/CompactQuotaWidget.swift in Sources */,
+				FB9FB3C45464E40274CFE2F4 /* Sources/Shared/CardStyles/QuotaWatermarkShape.swift in Sources */,
+				5BE15F7FAAC3A6D1B5D5D881 /* Sources/Shared/CardStyles/QuotaStyledInput.swift in Sources */,
+				F0C89C3978D12B108D7BADA8 /* Sources/Shared/CardStyles/NativeQuotaDesign.swift in Sources */,
+				A65000000000000000000002 /* Sources/Shared/QuotaCardStylePreferences.swift in Sources */,
+				A64000000000000000000002 /* Sources/Shared/QuotaCardStyle.swift in Sources */,
+				A38000000000000000000002 /* Sources/Services/ResetReminderSettings.swift in Sources */,
+				A39000000000000000000004 /* Sources/Services/ResetReminderScheduler.swift in Sources */,
+				A39000000000000000000002 /* Sources/Services/ResetReminderPlan.swift in Sources */,
+				B816BBB98BE9CF236B9C075C /* Sources/Shared/SharedAccountAccess.swift in Sources */,
+				C2A296549EB1F677FE8435D7 /* Sources/Services/AutomaticWidgetRefresh.swift in Sources */,
+				A33000000000000000000015 /* Shared/QuotaWidgetContent.swift in Sources */,
+				A32000000000000000000002 /* Shared/WidgetSnapshot.swift in Sources */,
+				A32000000000000000000004 /* Shared/WidgetSnapshotStore.swift in Sources */,
+				A32000000000000000000006 /* Storage/WidgetSnapshotProjection.swift in Sources */,
+				A14000000000000000000002 /* CodexCredentialRenewal.swift in Sources */,
+				A12000000000000000000002 /* CodexQuotaService.swift in Sources */,
+				A11000000000000000000004 /* CodexUsageParser.swift in Sources */,
+				A11000000000000000000002 /* QuotaSnapshot.swift in Sources */,
+				C4E764B22F9E7814349D62A2 /* CodexAccountBindingStore.swift in Sources */,
+				C5E1E1CB18E2CCF30699F0BE /* CodexIdentityVerifier.swift in Sources */,
+				03D934DC612B0E38B9051938 /* CodexLoginClient.swift in Sources */,
+				A07000000000000000000062 /* CodexConnectionUITestSupport.swift in Sources */,
+				A07000000000000000000052 /* CodexConnectionView.swift in Sources */,
+				A07000000000000000000042 /* CodexConnectionFlow.swift in Sources */,
+				A07000000000000000000032 /* CodexLoginTransactionStore.swift in Sources */,
+				A07000000000000000000022 /* CodexDeviceAuthorizationClient.swift in Sources */,
+				A07000000000000000000012 /* CodexDeviceAuthorization.swift in Sources */,
+				A06000000000000000000012 /* NetworkScoreChecker.swift in Sources */,
+				A30000000000000000000002 /* BackgroundQuotaRefresh.swift in Sources */,
+				A04000000000000000000032 /* AccountStore.swift in Sources */,
+				A05000000000000000000012 /* CredentialVault.swift in Sources */,
+				A04000000000000000000022 /* AccountQuotaState.swift in Sources */,
+				A04000000000000000000012 /* ConnectedAccount.swift in Sources */,
+				A42000000000000000000002 /* WidgetTutorialView.swift in Sources */,
+				A030000000000000000000022 /* SettingsView.swift in Sources */,
+				A030000000000000000000012 /* QuotaView.swift in Sources */,
+				0868E870EDC42183AF777E36 /* SubscriptionUsageApp.swift in Sources */,
+				4232F2B2369A337E80CBEE0B /* RootView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		04572472F88EED2EF683B581 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E633290B294C2A3AB4572C63 /* SubscriptionUsage */;
+			targetProxy = ACDE5B2324C1E9E41D522892 /* PBXContainerItemProxy */;
+		};
+		A3300000000000000000005C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A3300000000000000000005A /* SubscriptionUsageWidget */;
+			targetProxy = A3300000000000000000005B /* PBXContainerItemProxy */;
+		};
+		D35DC79E2DA3CCF1EFDFF82C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E633290B294C2A3AB4572C63 /* SubscriptionUsage */;
+			targetProxy = B0689DB83EDEB1556532041F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		262E02E3C63E2FBADCBCB6A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		2B5BA518B56BFFF492DB836F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D3BC75BB5D203E4E79BB10E /* Signing.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 20;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pbpuw6l86s.SubscriptionUsageTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SubscriptionUsage.app/SubscriptionUsage";
+			};
+			name = Release;
+		};
+		431F226BD8B344E05B177FD2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D3BC75BB5D203E4E79BB10E /* Signing.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 20;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pbpuw6l86s.SubscriptionUsageTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SubscriptionUsage.app/SubscriptionUsage";
+			};
+			name = Debug;
+		};
+		43709F679F348B2EF2352978 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D3BC75BB5D203E4E79BB10E /* Signing.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/SubscriptionUsage.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 20;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Token 仪表盘";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pbpuw6l86s.SubscriptionUsage;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		47AB09F738116BB2ACFB5BA4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D3BC75BB5D203E4E79BB10E /* Signing.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 20;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pbpuw6l86s.SubscriptionUsageUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = SubscriptionUsage;
+			};
+			name = Release;
+		};
+		86E0D76135EE80816AB07AC0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		89291EB5FEBDC4EA06C9EEEA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D3BC75BB5D203E4E79BB10E /* Signing.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/SubscriptionUsage.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 20;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Token 仪表盘";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pbpuw6l86s.SubscriptionUsage;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		A33000000000000000000050 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D3BC75BB5D203E4E79BB10E /* Signing.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/SubscriptionUsage.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 20;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/Widget-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Token 仪表盘";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pbpuw6l86s.SubscriptionUsage.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		A33000000000000000000051 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D3BC75BB5D203E4E79BB10E /* Signing.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/SubscriptionUsage.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 20;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/Widget-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Token 仪表盘";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pbpuw6l86s.SubscriptionUsage.Widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		F8A38335325F6B60B821FB18 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D3BC75BB5D203E4E79BB10E /* Signing.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 20;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pbpuw6l86s.SubscriptionUsageUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = SubscriptionUsage;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		12D04D787E90C9B967248BFD /* Build configuration list for PBXProject "SubscriptionUsage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				262E02E3C63E2FBADCBCB6A2 /* Debug */,
+				86E0D76135EE80816AB07AC0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1FE9F28EBC51C8E8D89B6142 /* Build configuration list for PBXNativeTarget "SubscriptionUsage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				89291EB5FEBDC4EA06C9EEEA /* Debug */,
+				43709F679F348B2EF2352978 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		37EE6485F4E834CA0D21A654 /* Build configuration list for PBXNativeTarget "SubscriptionUsageUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F8A38335325F6B60B821FB18 /* Debug */,
+				47AB09F738116BB2ACFB5BA4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		74CD2B3BC49A9ADEB4EE1018 /* Build configuration list for PBXNativeTarget "SubscriptionUsageTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				431F226BD8B344E05B177FD2 /* Debug */,
+				2B5BA518B56BFFF492DB836F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A33000000000000000000052 /* Build configuration list for PBXNativeTarget "SubscriptionUsageWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A33000000000000000000050 /* Debug */,
+				A33000000000000000000051 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
 	};
-	"rootObject" = "98F54143AB4E86B28C3AFEE0";
+	rootObject = 98F54143AB4E86B28C3AFEE0 /* Project object */;
 }

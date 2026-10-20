@@ -53,7 +53,7 @@ final class CredentialVault {
     }
 
     nonisolated static func applicationVault() -> CredentialVault {
-        CredentialVault(service: "com.iceflying.SubscriptionUsage.authorization")
+        CredentialVault(service: "com.pbpuw6l86s.SubscriptionUsage.authorization")
     }
 
     /// nil means only errSecItemNotFound. Locked/unavailable storage must be retried.
