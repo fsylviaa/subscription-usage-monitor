@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct CodexConnectionView: View {
     @ObservedObject var flow: CodexConnectionFlow
@@ -200,11 +201,11 @@ private struct APIKeyEntryView: View {
                     .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 14))
                     .disabled(flow.keyVerifying)
                     .accessibilityIdentifier("connection.keyField")
-                PasteButton(payloadType: String.self) { values in
-                    guard let value = values.first else { return }
-                    Task { @MainActor in key = value }
+                Button("粘贴") {
+                    key = (UIPasteboard.general.string ?? "")
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
                 }
-                .labelStyle(.titleOnly).buttonBorderShape(.roundedRectangle(radius: 14))
+                .buttonStyle(.borderedProminent).buttonBorderShape(.roundedRectangle(radius: 14))
                 .tint(DashboardStyle.accent)
                 .disabled(flow.keyVerifying)
                 .accessibilityIdentifier("connection.keyPaste")
