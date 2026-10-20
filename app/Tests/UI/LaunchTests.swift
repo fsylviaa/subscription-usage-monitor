@@ -908,7 +908,7 @@ final class LaunchTests: XCTestCase {
     private func assertT42Step(in app: XCUIApplication, second: Bool) {
         let text = app.staticTexts["tutorial.instructions.\(second ? 1 : 0)"]
         XCTAssertTrue(text.waitForExistence(timeout: 5))
-        XCTAssertEqual(text.label, second ? "长按小组件，选择要显示的账号" : "长按主屏幕，然后添加 Token 仪表盘。")
+        XCTAssertEqual(text.label, second ? "长按小组件，选择要显示的账号" : "长按主屏幕，然后添加 TokenLeft。")
         XCTAssertFalse(app.staticTexts["tutorial.stepTitle"].exists)
         XCTAssertFalse(app.staticTexts["tutorial.defaultAccount"].exists)
         XCTAssertEqual(app.buttons["tutorial.next"].label, second ? "完成" : "继续")

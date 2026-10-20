@@ -37,7 +37,7 @@ struct WidgetTutorialView: View {
                                 .background(DashboardStyle.elevated, in: RoundedRectangle(cornerRadius: 26))
 
                             Text(page == 0
-                                 ? "长按主屏幕，然后添加 Token 仪表盘。"
+                                 ? "长按主屏幕，然后添加 TokenLeft。"
                                  : "长按小组件，选择要显示的账号")
                                 .font(.title2.weight(.semibold))
                                 .accessibilityAddTraits(.isHeader)
